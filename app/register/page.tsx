@@ -23,7 +23,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
 
   const [form, setForm] = useState({
-    email: 'test@natiive.com',
+    email: 'test2@natiive.com',
     password: 'Test@1234',
     full_name: 'Ravi Kumar',
     gender: 'male',
@@ -57,15 +57,8 @@ export default function RegisterPage() {
     setError('')
 
     try {
-      // 1. Create auth user
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: form.email,
-        password: form.password,
-      })
-      if (authError) throw authError
-
-      const userId = authData.user?.id
-      if (!userId) throw new Error('User creation failed')
+      // Generate a temporary UUID for testing (auth will be added later)
+      const userId = crypto.randomUUID()
 
       // 2. Upload photo
       let photoUrl = ''
@@ -82,7 +75,6 @@ export default function RegisterPage() {
 
       // 3. Create profile
       const { error: profileError } = await supabase.from('profiles').insert({
-        user_id: userId,
         full_name: form.full_name,
         gender: form.gender,
         date_of_birth: form.date_of_birth,
