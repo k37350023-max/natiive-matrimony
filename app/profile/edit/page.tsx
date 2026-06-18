@@ -143,7 +143,7 @@ export default function EditProfilePage() {
         photoUrl = urlData.publicUrl
       }
 
-      const { error: saveErr } = await supabase.from('profiles').update({
+      const coreFields = {
         full_name: form.full_name.trim(),
         gender: form.gender,
         date_of_birth: form.date_of_birth,
@@ -163,7 +163,17 @@ export default function EditProfilePage() {
         religion: form.religion.trim(),
         photo_url: photoUrl,
         photo_visibility: form.photo_visibility,
-      }).eq('id', profileId)
+      }
+
+      let { error: saveErr } = await supabase.from('profiles').update(coreFields).eq('id', profileId)
+
+      // If photo_visibility column doesn't exist yet (migration pending), retry without it
+      if (saveErr?.message?.includes('photo_visibility') || saveErr?.code === '42703') {
+        const { photo_visibility: _pv, ...withoutVisibility } = coreFields
+        const retry = await supabase.from('profiles').update(withoutVisibility).eq('id', profileId)
+        saveErr = retry.error
+      }
+
       if (saveErr) throw saveErr
       setCurrentPhotoUrl(photoUrl)
       setSuccess('Profile saved!')
