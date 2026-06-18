@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import IndiaMap from './components/IndiaMap'
+import MapHero from './components/MapHero'
 
 export default function Home() {
   return (
@@ -60,38 +60,14 @@ export default function Home() {
 
         {/* Map section */}
         <div className="py-12 px-5" style={{ background: 'white', borderTop: '1px solid #EDE8E0', borderBottom: '1px solid #EDE8E0' }}>
-          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-10">
-
-            {/* Map */}
-            <div className="w-full sm:w-auto sm:flex-shrink-0" style={{ maxWidth: '320px' }}>
-              <IndiaMap mode="animated" />
-            </div>
-
-            {/* Copy */}
-            <div className="text-center sm:text-left">
-              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>How it works</p>
-              <h2 className="font-serif-display text-3xl font-bold text-stone-900 mb-4 leading-snug">
-                Click your native place.<br />See your matches.
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-8">
+              <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#B45309' }}>How it works</p>
+              <h2 className="font-serif-display text-3xl font-bold text-stone-900 leading-snug">
+                Click your native place.<br />See who's from there.
               </h2>
-              <p className="text-stone-500 leading-relaxed mb-6 max-w-sm">
-                Filter by Telangana, Coastal Andhra, or Rayalaseema — then drill down to your district.
-                Native place is not a filter here. It's the whole point.
-              </p>
-              <div className="space-y-2 mb-8">
-                {[
-                  { icon: '📍', text: 'Telangana — Hyderabad, Warangal, Karimnagar & more' },
-                  { icon: '🌊', text: 'Coastal Andhra — Vizag, East & West Godavari, Krishna' },
-                  { icon: '🏔️', text: 'Rayalaseema — Kurnool, Kadapa, Chittoor, Anantapur' },
-                ].map(r => (
-                  <div key={r.icon} className="flex items-center gap-2 text-sm text-stone-600">
-                    <span>{r.icon}</span><span>{r.text}</span>
-                  </div>
-                ))}
-              </div>
-              <Link href="/browse" className="inline-flex font-semibold px-6 py-3 rounded-xl text-white" style={{ background: '#B45309' }}>
-                Browse by native place →
-              </Link>
             </div>
+            <MapHero />
           </div>
         </div>
 
