@@ -12,30 +12,131 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #FFF7ED;
+  color: #1C1917;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .input {
   width: 100%;
-  border: 1px solid #d1d5db;
+  border: 1.5px solid #E7E5E4;
   border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.95rem;
+  padding: 0.6rem 0.875rem;
+  font-size: 0.9375rem;
   outline: none;
   background: white;
+  color: #1C1917;
+  transition: border-color 0.15s;
 }
 
 .input:focus {
-  border-color: #ea580c;
-  box-shadow: 0 0 0 2px rgba(234,88,12,0.15);
+  border-color: #C2410C;
+  box-shadow: 0 0 0 3px rgba(194,65,12,0.1);
+}
+
+.input::placeholder {
+  color: #A8A29E;
+}
+
+.btn-primary {
+  background: #C2410C;
+  color: white;
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  transition: background 0.15s, transform 0.1s;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #9A3412;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-outline {
+  background: transparent;
+  color: #C2410C;
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  border: 1.5px solid #C2410C;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.btn-outline:hover {
+  background: #FFF7ED;
+}
+
+.card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.card-hover {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card-hover:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-verified {
+  background: #DBEAFE;
+  color: #1D4ED8;
+}
+
+.badge-pending {
+  background: #FEF9C3;
+  color: #854D0E;
+}
+
+.badge-approved {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.badge-rejected {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #A8A29E;
+}
+
+.avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.125rem;
+  flex-shrink: 0;
 }
