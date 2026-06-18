@@ -25,6 +25,19 @@ const VISIBILITY_OPTIONS: { value: PhotoVisibility; label: string; desc: string 
   { value: 'hidden', label: 'Hidden', desc: 'Photo never shown — only initials displayed' },
 ]
 
+const COUNTRY_CODES = [
+  { code: '+91', label: '🇮🇳 +91' },
+  { code: '+1',  label: '🇺🇸 +1' },
+  { code: '+44', label: '🇬🇧 +44' },
+  { code: '+61', label: '🇦🇺 +61' },
+  { code: '+971', label: '🇦🇪 +971' },
+  { code: '+65', label: '🇸🇬 +65' },
+  { code: '+60', label: '🇲🇾 +60' },
+  { code: '+64', label: '🇳🇿 +64' },
+  { code: '+974', label: '🇶🇦 +974' },
+  { code: '+968', label: '🇴🇲 +968' },
+]
+
 const Label = ({ children }: { children: React.ReactNode }) => (
   <label className="form-label">{children}</label>
 )
@@ -43,6 +56,8 @@ export default function EditProfilePage() {
   const [otpSent, setOtpSent] = useState(false)
   const [otpCode, setOtpCode] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
+
+  const [phoneCode, setPhoneCode] = useState('+91')
 
   // Photo
   const [photo, setPhoto] = useState<File | null>(null)
@@ -74,11 +89,21 @@ export default function EditProfilePage() {
   async function loadProfile(id: string) {
     const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single()
     if (error || !data) { router.push('/browse'); return }
+    const rawPhone = data.phone || ''
+    if (rawPhone.startsWith('+')) {
+      const spaceIdx = rawPhone.indexOf(' ')
+      if (spaceIdx > 0) {
+        setPhoneCode(rawPhone.slice(0, spaceIdx))
+        // digits stored into form.phone below
+      }
+    }
     setForm({
       full_name: data.full_name || '',
       gender: data.gender || '',
       date_of_birth: data.date_of_birth || '',
-      phone: data.phone || '',
+      phone: rawPhone.startsWith('+') && rawPhone.indexOf(' ') > 0
+        ? rawPhone.slice(rawPhone.indexOf(' ') + 1)
+        : rawPhone,
       profession: data.profession || '',
       education: data.education || '',
       about: data.about || '',
@@ -122,7 +147,7 @@ export default function EditProfilePage() {
         full_name: form.full_name.trim(),
         gender: form.gender,
         date_of_birth: form.date_of_birth,
-        phone: form.phone.trim(),
+        phone: form.phone.trim() ? `${phoneCode} ${form.phone.trim()}` : '',
         profession: form.profession.trim(),
         education: form.education.trim(),
         about: form.about.trim(),
@@ -296,7 +321,21 @@ export default function EditProfilePage() {
             </div>
             <div>
               <Label>Mobile number</Label>
-              <input className="input" type="tel" placeholder="10-digit number" value={form.phone} onChange={e => set('phone', e.target.value)} />
+              <div className="flex rounded-lg overflow-hidden" style={{border: '1.5px solid var(--border)'}}>
+                <select
+                  value={phoneCode}
+                  onChange={e => setPhoneCode(e.target.value)}
+                  className="bg-stone-50 text-sm font-medium text-stone-700 px-2 py-2.5 border-r outline-none shrink-0"
+                  style={{borderColor: 'var(--border)'}}>
+                  {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
+                </select>
+                <input
+                  className="flex-1 px-3 py-2.5 text-sm outline-none bg-white"
+                  type="tel"
+                  placeholder="Mobile number"
+                  value={form.phone}
+                  onChange={e => set('phone', e.target.value.replace(/\D/g, ''))} />
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>

@@ -19,11 +19,25 @@ const REGIONS: Record<string, Record<string, string[]>> = {
 
 const STEPS = ['Basic Info', 'Native Place', 'About You']
 
+const COUNTRY_CODES = [
+  { code: '+91', label: '🇮🇳 +91' },
+  { code: '+1',  label: '🇺🇸 +1' },
+  { code: '+44', label: '🇬🇧 +44' },
+  { code: '+61', label: '🇦🇺 +61' },
+  { code: '+971', label: '🇦🇪 +971' },
+  { code: '+65', label: '🇸🇬 +65' },
+  { code: '+60', label: '🇲🇾 +60' },
+  { code: '+64', label: '🇳🇿 +64' },
+  { code: '+974', label: '🇶🇦 +974' },
+  { code: '+968', label: '🇴🇲 +968' },
+]
+
 export default function RegisterPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [phoneCode, setPhoneCode] = useState('+91')
 
   const [form, setForm] = useState({
     email: '', password: '', full_name: '', gender: '',
@@ -84,7 +98,7 @@ export default function RegisterPage() {
 
       const { data: profileData, error: profileError } = await supabase.from('profiles').insert({
         user_id: userId, full_name: form.full_name, gender: form.gender, date_of_birth: form.date_of_birth,
-        phone: form.phone, email: form.email, profession: form.profession,
+        phone: form.phone ? `${phoneCode} ${form.phone.trim()}` : '', email: form.email, profession: form.profession,
         education: form.education, about: form.about, native_region: form.native_region,
         native_state: form.native_state, native_district: form.native_district,
         current_city: form.current_city, current_state: form.current_state,
@@ -184,7 +198,21 @@ export default function RegisterPage() {
                 </div>
                 <div>
                   <Label>Mobile number</Label>
-                  <input className="input" type="tel" placeholder="10-digit number" value={form.phone} onChange={e => set('phone', e.target.value)} />
+                  <div className="flex rounded-lg overflow-hidden" style={{border: '1.5px solid var(--border)'}}>
+                    <select
+                      value={phoneCode}
+                      onChange={e => setPhoneCode(e.target.value)}
+                      className="bg-stone-50 text-sm font-medium text-stone-700 px-2 py-2.5 border-r outline-none shrink-0"
+                      style={{borderColor: 'var(--border)'}}>
+                      {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
+                    </select>
+                    <input
+                      className="flex-1 px-3 py-2.5 text-sm outline-none bg-white"
+                      type="tel"
+                      placeholder="Mobile number"
+                      value={form.phone}
+                      onChange={e => set('phone', e.target.value.replace(/\D/g, ''))} />
+                  </div>
                 </div>
                 <div>
                   <Label>Email address</Label>
