@@ -163,6 +163,7 @@ export default function EditProfilePage() {
   async function handleSave() {
     if (!profileId) return
     if (!form.full_name.trim()) { setError('Full name is required'); return }
+    if (!photo && !currentPhotoUrl) { setError('Please upload a profile photo — it is required'); return }
     setSaving(true)
     setError('')
     setSuccess('')

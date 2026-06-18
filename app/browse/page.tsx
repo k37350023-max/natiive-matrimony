@@ -217,6 +217,25 @@ export default function BrowsePage() {
     </div>
   )
 
+  // Gate: must have a created profile to browse
+  if (!myProfileId) return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center gap-6" style={{ background: '#FAFAF9' }}>
+      <div className="w-16 h-16 rounded-full flex items-center justify-center mb-2" style={{ background: '#FEF9EC' }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div>
+        <h2 className="text-xl font-bold text-stone-900 font-serif-display mb-2">Create your profile first</h2>
+        <p className="text-stone-500 text-sm max-w-xs">You need a complete profile before you can browse and connect with matches.</p>
+      </div>
+      <div className="flex flex-col gap-3 w-full max-w-xs">
+        <Link href="/register" className="btn-primary py-3 text-center text-sm">Create Profile</Link>
+        <Link href="/login" className="btn-ghost py-3 text-center text-sm">Sign in</Link>
+      </div>
+    </div>
+  )
+
   const genderLabelPlural = oppositeGender === 'female' ? 'brides' : oppositeGender === 'male' ? 'grooms' : 'profiles'
 
   return (
@@ -487,8 +506,16 @@ export default function BrowsePage() {
                           <h3 className="font-semibold text-stone-900 text-sm truncate">{p.full_name}</h3>
                           {isVerified(p) && <span className="badge badge-verified shrink-0">✓</span>}
                           {isSerious(p) && (
-                            <span className="text-xs px-1.5 py-0.5 rounded-md font-semibold shrink-0"
-                              style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★</span>
+                            <span className="relative group cursor-default text-xs px-1.5 py-0.5 rounded-md font-semibold shrink-0"
+                              style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+                              ★
+                              <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-48 px-2.5 py-2 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed text-left font-normal"
+                                style={{ background: '#1C1917' }}>
+                                <span className="font-semibold block mb-0.5">Serious Seeker</span>
+                                Has filled photo, education, about, height &amp; caste — a complete, genuine profile.
+                                <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
+                              </span>
+                            </span>
                           )}
                         </div>
                         <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth) != null ? `${getAge(p.date_of_birth)} yrs · ` : ''}{p.profession}</p>
@@ -552,8 +579,15 @@ export default function BrowsePage() {
                         <h3 className="font-semibold text-stone-900 text-sm">{p.full_name}</h3>
                         <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth) != null ? `${getAge(p.date_of_birth)} yrs · ` : ''}{p.profession}</p>
                         {isSerious(p) && (
-                          <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-md font-semibold"
-                            style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★ Serious Seeker</span>
+                          <span className="relative group cursor-default inline-block mt-1.5 text-xs px-2 py-0.5 rounded-md font-semibold"
+                            style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+                            ★ Serious Seeker
+                            <span className="absolute bottom-full left-0 mb-1.5 w-48 px-2.5 py-2 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed font-normal"
+                              style={{ background: '#1C1917' }}>
+                              Has filled photo, education, about, height &amp; caste — a complete, genuine profile.
+                              <span className="absolute top-full left-4 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
+                            </span>
+                          </span>
                         )}
                         <div className="mt-2.5 pt-2.5 border-t flex items-center justify-between" style={{ borderColor: '#F0EBE3' }}>
                           {interestMap[p.id] ? (
