@@ -432,7 +432,28 @@ export default function EditProfilePage() {
               </div>
             </div>
             <div>
-              <Label>About yourself</Label>
+              <div className="flex items-center justify-between mb-1">
+                <Label>About yourself</Label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const name = form.full_name.split(' ')[0] || 'I'
+                    const place = [form.native_district, form.native_state].filter(Boolean).join(', ')
+                    const edu = form.education ? `, with a ${form.education} background` : ''
+                    const fam = form.family_type === 'joint' ? 'joint' : form.family_type === 'nuclear' ? 'nuclear' : ''
+                    const famStr = fam ? ` from a ${fam} family` : ''
+                    const templates = [
+                      `${name} is from ${place || 'a Telugu family'}${edu}. Currently working as a ${form.profession || 'professional'}${famStr}. Looking for a compatible life partner who values family and Telugu roots.`,
+                      `From ${place || 'a Telugu household'}${edu}. ${form.profession ? `Working as a ${form.profession}` : 'A working professional'}${famStr}. Hoping to find a kind, family-oriented partner to share life with.`,
+                      `${name} is a ${form.profession || 'professional'} from ${place || 'Andhra / Telangana'}${edu}. Down-to-earth${famStr}. Seeking a life partner with strong values and a good heart.`,
+                    ]
+                    set('about', templates[Math.floor(Math.random() * templates.length)].slice(0, 400))
+                  }}
+                  className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors"
+                  style={{background: '#FEF9EC', color: '#B45309'}}>
+                  ✨ Generate bio
+                </button>
+              </div>
               <textarea className="input" rows={3}
                 placeholder="A short note about yourself, what you're looking for..."
                 value={form.about} onChange={e => set('about', e.target.value)} />

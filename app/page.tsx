@@ -34,7 +34,7 @@ export default function Home() {
             <span style={{ color: '#B45309' }}>from your native place</span>
           </h1>
           <p className="text-base text-stone-500 max-w-sm mx-auto mb-8 leading-relaxed">
-            The only Telugu matrimony platform built around native district.
+            Telugu matrimony, built around your native place.
             Browse and connect — completely free during our launch.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
@@ -44,6 +44,19 @@ export default function Home() {
             <Link href="/browse" className="btn-ghost px-7 py-3 text-sm w-full sm:w-auto">
               Browse Profiles
             </Link>
+          </div>
+        </div>
+
+        {/* Map section — moved above trust bar so it's visible without scrolling on mobile */}
+        <div className="py-10 px-5">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-6">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: '#B45309' }}>How it works</p>
+              <h2 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900">
+                Pick your native place.<br />See who's from there.
+              </h2>
+            </div>
+            <MapHero />
           </div>
         </div>
 
@@ -60,19 +73,6 @@ export default function Home() {
                 <p className="text-xs text-stone-400 mt-0.5">{label}</p>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Map section */}
-        <div className="py-14 px-5">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: '#B45309' }}>How it works</p>
-              <h2 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900">
-                Pick your native place.<br />See who's from there.
-              </h2>
-            </div>
-            <MapHero />
           </div>
         </div>
 

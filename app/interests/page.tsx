@@ -9,8 +9,10 @@ import NotificationBell from '../components/NotificationBell'
 type Interest = {
   id: string
   from_user: string
+  to_user: string
   status: string
   created_at: string
+  note?: string
   profile: {
     id: string
     full_name: string
@@ -34,28 +36,53 @@ function initials(name: string) {
 const COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return COLORS[name.charCodeAt(0) % COLORS.length] }
 
+const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; border: string }> = {
+  pending:  { label: 'Awaiting response', bg: '#FEF9EC', color: '#92400E', border: '#F0E4C0' },
+  accepted: { label: 'Accepted ✓',        bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
+  rejected: { label: 'Declined',          bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' },
+}
+
 export default function InterestsPage() {
-  const [interests, setInterests] = useState<Interest[]>([])
+  const [tab, setTab] = useState<'received' | 'sent'>('received')
+  const [received, setReceived] = useState<Interest[]>([])
+  const [sent, setSent] = useState<Interest[]>([])
   const [loading, setLoading] = useState(true)
   const myId = typeof window !== 'undefined' ? localStorage.getItem('my_profile_id') : null
 
   useEffect(() => {
-    if (myId) { load() } else { setLoading(false) }
+    if (myId) { loadAll() } else { setLoading(false) }
   }, [])
 
-  async function load() {
+  async function loadAll() {
+    setLoading(true)
+    await Promise.all([loadReceived(), loadSent()])
+    setLoading(false)
+  }
+
+  async function loadReceived() {
     const { data: rows } = await supabase
       .from('interests').select('*')
       .eq('to_user', myId).eq('status', 'pending')
       .order('created_at', { ascending: false })
-    if (!rows?.length) { setLoading(false); return }
+    if (!rows?.length) { setReceived([]); return }
     const ids = rows.map(r => r.from_user)
     const { data: profiles } = await supabase.from('profiles').select('*').in('id', ids)
-    const merged = rows
+    setReceived(rows
       .map(r => ({ ...r, profile: profiles?.find(p => p.id === r.from_user) }))
-      .filter(r => r.profile)
-    setInterests(merged as Interest[])
-    setLoading(false)
+      .filter(r => r.profile) as Interest[])
+  }
+
+  async function loadSent() {
+    const { data: rows } = await supabase
+      .from('interests').select('*')
+      .eq('from_user', myId)
+      .order('created_at', { ascending: false })
+    if (!rows?.length) { setSent([]); return }
+    const ids = rows.map(r => r.to_user)
+    const { data: profiles } = await supabase.from('profiles').select('*').in('id', ids)
+    setSent(rows
+      .map(r => ({ ...r, profile: profiles?.find(p => p.id === r.to_user) }))
+      .filter(r => r.profile) as Interest[])
   }
 
   async function respond(interestId: string, fromUser: string, accept: boolean) {
@@ -67,7 +94,6 @@ export default function InterestsPage() {
       if (!existing) {
         await supabase.from('matches').insert({ user1: fromUser, user2: myId })
       }
-      // Notify the sender that their interest was accepted
       const [{ data: sender }, { data: me }] = await Promise.all([
         supabase.from('profiles').select('user_id, email').eq('id', fromUser).single(),
         supabase.from('profiles').select('full_name').eq('id', myId).single(),
@@ -97,7 +123,7 @@ export default function InterestsPage() {
         }).catch(() => {})
       }
     }
-    setInterests(i => i.filter(r => r.id !== interestId))
+    setReceived(i => i.filter(r => r.id !== interestId))
   }
 
   if (!myId) return (
@@ -106,9 +132,60 @@ export default function InterestsPage() {
         <Link href="/" className="text-lg font-bold text-stone-900 font-serif-display">Natiive<span style={{color: '#B45309'}}>Matrimony</span></Link>
       </header>
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-        <p className="font-semibold text-stone-700 mb-2">Login to see interests received</p>
+        <p className="font-semibold text-stone-700 mb-2">Login to see interests</p>
         <Link href="/login" className="btn-primary px-6 py-2.5 mt-2">Login</Link>
       </div>
+    </div>
+  )
+
+  const ProfileCard = ({ i, showActions }: { i: Interest; showActions?: boolean }) => (
+    <div className="card p-5">
+      <div className="flex items-start gap-3">
+        <div className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+          style={{background: avatarBg(i.profile.full_name)}}>
+          {initials(i.profile.full_name)}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <div className="flex items-center gap-2">
+                <Link href={`/profile/${i.profile.id}`} className="font-bold text-stone-900 hover:text-amber-700 text-sm">{i.profile.full_name}</Link>
+                {i.profile.verified && <span className="badge badge-verified">✓ Verified</span>}
+              </div>
+              <p className="text-xs text-stone-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
+              <p className="text-xs mt-0.5" style={{color: '#92400E'}}>📍 {i.profile.native_district}, {i.profile.native_state}</p>
+            </div>
+            {!showActions && (() => {
+              const s = STATUS_STYLES[i.status] || STATUS_STYLES.pending
+              return (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0"
+                  style={{background: s.bg, color: s.color, borderColor: s.border}}>
+                  {s.label}
+                </span>
+              )
+            })()}
+          </div>
+          {i.note && (
+            <p className="mt-2 text-xs text-stone-500 italic bg-stone-50 rounded-lg px-3 py-2 border" style={{borderColor: '#E8E0D6'}}>
+              "{i.note}"
+            </p>
+          )}
+        </div>
+      </div>
+      {showActions && (
+        <div className="flex gap-2 mt-4">
+          <button onClick={() => respond(i.id, i.from_user, true)}
+            className="flex-1 py-2 text-white text-sm font-semibold rounded-lg"
+            style={{background: '#059669'}}>
+            Accept
+          </button>
+          <button onClick={() => respond(i.id, i.from_user, false)}
+            className="flex-1 py-2 text-sm font-semibold rounded-lg border"
+            style={{borderColor: '#EDE8E0', color: '#78716C'}}>
+            Decline
+          </button>
+        </div>
+      )}
     </div>
   )
 
@@ -126,54 +203,69 @@ export default function InterestsPage() {
       </header>
       <LaunchBanner />
 
-      <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold text-stone-900 font-serif-display mb-1">Interests Received</h1>
-        <p className="text-sm text-stone-500 mb-6">Accept to create a mutual match — they can then see your full biodata</p>
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <h1 className="text-2xl font-bold text-stone-900 font-serif-display mb-4">Interests</h1>
+
+        {/* Tab bar */}
+        <div className="flex rounded-xl p-1 mb-6" style={{background: '#F5F0EB'}}>
+          {([['received', 'Received', received.length], ['sent', 'Sent', sent.length]] as const).map(([key, label, count]) => (
+            <button key={key}
+              onClick={() => setTab(key)}
+              className="flex-1 py-2 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+              style={tab === key
+                ? {background: 'white', color: '#1C1917', boxShadow: '0 1px 3px rgba(0,0,0,0.08)'}
+                : {color: '#78716C'}}>
+              {label}
+              {!loading && count > 0 && (
+                <span className="text-xs px-1.5 py-0.5 rounded-full font-bold"
+                  style={tab === key
+                    ? {background: '#B45309', color: 'white'}
+                    : {background: '#E8E0D6', color: '#78716C'}}>
+                  {count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
 
         {loading && <p className="text-stone-400 text-sm text-center py-12">Loading...</p>}
 
-        {!loading && interests.length === 0 && (
-          <div className="card p-12 text-center">
-            <p className="text-3xl mb-3">💌</p>
-            <p className="font-semibold text-stone-700">No pending interests</p>
-            <p className="text-sm text-stone-400 mt-1">When someone expresses interest in you, it appears here.</p>
-          </div>
+        {/* Received tab */}
+        {!loading && tab === 'received' && (
+          <>
+            {received.length === 0 ? (
+              <div className="card p-12 text-center">
+                <p className="text-3xl mb-3">💌</p>
+                <p className="font-semibold text-stone-700">No pending interests</p>
+                <p className="text-sm text-stone-400 mt-1">When someone expresses interest in you, it appears here.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-stone-400 mb-3">Accept to create a mutual match — they can then see your full biodata</p>
+                {received.map(i => <ProfileCard key={i.id} i={i} showActions />)}
+              </div>
+            )}
+          </>
         )}
 
-        <div className="space-y-3">
-          {interests.map(i => (
-            <div key={i.id} className="card p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-                    style={{background: avatarBg(i.profile.full_name)}}>
-                    {initials(i.profile.full_name)}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <Link href={`/profile/${i.profile.id}`} className="font-bold text-stone-900 hover:text-amber-700">{i.profile.full_name}</Link>
-                      {i.profile.verified && <span className="badge badge-verified">✓ Verified</span>}
-                    </div>
-                    <p className="text-sm text-stone-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
-                    <p className="text-xs mt-0.5" style={{color: '#92400E'}}>📍 {i.profile.native_district}, {i.profile.native_state}</p>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2 shrink-0">
-                  <button onClick={() => respond(i.id, i.from_user, true)}
-                    className="px-4 py-2 text-white text-sm font-semibold rounded-lg"
-                    style={{background: '#059669'}}>
-                    Accept
-                  </button>
-                  <button onClick={() => respond(i.id, i.from_user, false)}
-                    className="px-4 py-2 text-sm font-semibold rounded-lg border"
-                    style={{borderColor: '#EDE8E0', color: '#78716C'}}>
-                    Decline
-                  </button>
-                </div>
+        {/* Sent tab */}
+        {!loading && tab === 'sent' && (
+          <>
+            {sent.length === 0 ? (
+              <div className="card p-12 text-center">
+                <p className="text-3xl mb-3">🤝</p>
+                <p className="font-semibold text-stone-700">No interests sent yet</p>
+                <p className="text-sm text-stone-400 mt-1 mb-6">Browse profiles and express interest to get started.</p>
+                <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>
               </div>
-            </div>
-          ))}
-        </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-stone-400 mb-3">Interests you've sent — status updates when they respond</p>
+                {sent.map(i => <ProfileCard key={i.id} i={i} />)}
+              </div>
+            )}
+          </>
+        )}
       </div>
       <MobileNav />
     </div>

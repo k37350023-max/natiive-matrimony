@@ -25,6 +25,7 @@ type Profile = {
   family_type: string
   about: string
   verified: boolean
+  phone_verified: boolean
   phone: string
   email: string
   photo_url: string
@@ -252,12 +253,12 @@ export default function ProfilePage() {
                 <h1 className="text-2xl font-bold text-stone-900 font-serif-display tracking-tight">{profile.full_name}</h1>
                 <p className="text-stone-500 mt-0.5 text-sm">{getAge(profile.date_of_birth)} years · {profile.gender === 'male' ? 'Groom' : 'Bride'}</p>
               </div>
-              {profile.verified ? (
+              {(profile.verified || profile.phone_verified) ? (
                 <div className="relative group shrink-0 mt-1">
                   <span className="badge badge-verified cursor-default">✓ Verified</span>
                   <div className="absolute bottom-full right-0 mb-2 w-52 px-3 py-2 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed"
                     style={{ background: '#1C1917' }}>
-                    Verified via phone linkage &amp; manual community review
+                    {profile.verified ? 'Verified via phone linkage & manual community review' : 'Email verified'}
                     <div className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
                   </div>
                 </div>

@@ -46,6 +46,11 @@ type Profile = {
   native_region: string
   current_city: string
   verified: boolean
+  phone_verified: boolean
+}
+
+function isVerified(p: Pick<Profile, 'verified' | 'phone_verified'>): boolean {
+  return p.verified || p.phone_verified
 }
 
 function isSerious(p: Pick<Profile, 'education' | 'about' | 'height_cm' | 'photo_url' | 'caste'>): boolean {
@@ -63,6 +68,13 @@ function initials(name: string) {
 const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D', '#C2410C', '#0891B2']
 function avatarBg(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length] }
 
+const INTEREST_STATUS: Record<string, { label: string; bg: string; color: string }> = {
+  matched:  { label: 'Matched ✓',      bg: '#ECFDF5', color: '#065F46' },
+  accepted: { label: 'Accepted ✓',     bg: '#ECFDF5', color: '#065F46' },
+  pending:  { label: 'Interest Sent',  bg: '#FEF9EC', color: '#92400E' },
+  rejected: { label: 'Declined',       bg: '#FEF2F2', color: '#991B1B' },
+}
+
 export default function BrowsePage() {
   const [sessionChecked, setSessionChecked] = useState(false)
   const [myGender, setMyGender] = useState<string | null>(null)
@@ -76,6 +88,7 @@ export default function BrowsePage() {
   const [profCat, setProfCat] = useState('')
   const [showMoreFilters, setShowMoreFilters] = useState(false)
   const [alertSet, setAlertSet] = useState(false)
+  const [interestMap, setInterestMap] = useState<Record<string, string>>({})
 
   const availableStates = region ? Object.keys(REGIONS[region] || {}) : []
   const availableDistricts = state ? (REGIONS[region]?.[state] || []) : []
@@ -85,8 +98,21 @@ export default function BrowsePage() {
     const myId = localStorage.getItem('my_profile_id')
     setMyProfileId(myId)
     if (!myId) { setSessionChecked(true); return }
-    supabase.from('profiles').select('gender').eq('id', myId).single()
-      .then(({ data }) => { setMyGender(data?.gender ?? null); setSessionChecked(true) })
+    Promise.all([
+      supabase.from('profiles').select('gender').eq('id', myId).single(),
+      supabase.from('interests').select('to_user, status').eq('from_user', myId),
+      supabase.from('matches').select('user1, user2').or(`user1.eq.${myId},user2.eq.${myId}`),
+    ]).then(([{ data: profile }, { data: interests }, { data: matches }]) => {
+      setMyGender(profile?.gender ?? null)
+      const map: Record<string, string> = {}
+      interests?.forEach(i => { map[i.to_user] = i.status })
+      matches?.forEach(m => {
+        const other = m.user1 === myId ? m.user2 : m.user1
+        map[other] = 'matched'
+      })
+      setInterestMap(map)
+      setSessionChecked(true)
+    })
   }, [])
 
   useEffect(() => {
@@ -429,7 +455,7 @@ export default function BrowsePage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-stone-900 text-sm truncate">{p.full_name}</h3>
-                          {p.verified && <span className="badge badge-verified shrink-0">✓</span>}
+                          {isVerified(p) && <span className="badge badge-verified shrink-0">✓</span>}
                           {isSerious(p) && (
                             <span className="text-xs px-1.5 py-0.5 rounded-md font-semibold shrink-0"
                               style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★</span>
@@ -437,10 +463,17 @@ export default function BrowsePage() {
                         </div>
                         <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
                         <div className="flex items-center gap-2 mt-1.5">
-                          <span className="text-xs px-2 py-0.5 rounded-md font-medium"
-                            style={{ background: '#FEF9EC', color: '#92400E' }}>
-                            {p.native_district}
-                          </span>
+                          {interestMap[p.id] ? (
+                            <span className="text-xs px-2 py-0.5 rounded-md font-semibold"
+                              style={{ background: INTEREST_STATUS[interestMap[p.id]]?.bg, color: INTEREST_STATUS[interestMap[p.id]]?.color }}>
+                              {INTEREST_STATUS[interestMap[p.id]]?.label}
+                            </span>
+                          ) : (
+                            <span className="text-xs px-2 py-0.5 rounded-md font-medium"
+                              style={{ background: '#FEF9EC', color: '#92400E' }}>
+                              {p.native_district}
+                            </span>
+                          )}
                           <span className="text-xs text-stone-400">{p.current_city}</span>
                         </div>
                       </div>
@@ -457,7 +490,7 @@ export default function BrowsePage() {
                           style={{ background: avatarBg(p.full_name) }}>
                           {initials(p.full_name)}
                         </div>
-                        {p.verified && (
+                        {isVerified(p) && (
                           <div className="absolute top-2 right-2 group">
                             <span className="badge badge-verified cursor-default">✓ Verified</span>
                             <div className="absolute bottom-full right-0 mb-1.5 w-44 px-2.5 py-1.5 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed"
@@ -476,10 +509,17 @@ export default function BrowsePage() {
                             style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★ Serious Seeker</span>
                         )}
                         <div className="mt-2.5 pt-2.5 border-t flex items-center justify-between" style={{ borderColor: '#F0EBE3' }}>
-                          <span className="text-xs font-medium px-2 py-0.5 rounded-md"
-                            style={{ background: '#FEF9EC', color: '#92400E' }}>
-                            {p.native_district}
-                          </span>
+                          {interestMap[p.id] ? (
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded-md"
+                              style={{ background: INTEREST_STATUS[interestMap[p.id]]?.bg, color: INTEREST_STATUS[interestMap[p.id]]?.color }}>
+                              {INTEREST_STATUS[interestMap[p.id]]?.label}
+                            </span>
+                          ) : (
+                            <span className="text-xs font-medium px-2 py-0.5 rounded-md"
+                              style={{ background: '#FEF9EC', color: '#92400E' }}>
+                              {p.native_district}
+                            </span>
+                          )}
                           <span className="text-xs text-stone-400">{p.current_city}</span>
                         </div>
                       </div>
