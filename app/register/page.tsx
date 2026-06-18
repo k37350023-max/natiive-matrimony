@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import BiodataUploader from '../components/BiodataUploader'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -55,6 +56,7 @@ export default function RegisterPage() {
 
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState('')
+  const [biodataParsed, setBiodataParsed] = useState(false)
 
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
 
@@ -142,6 +144,43 @@ export default function RegisterPage() {
 
       <div className="flex-1 flex items-start justify-center px-4 py-8">
         <div className="w-full max-w-md">
+
+          {/* Biodata auto-fill */}
+          <div className="mb-5">
+            <BiodataUploader onParsed={data => {
+              const districtToRegion: Record<string, { region: string; state: string }> = {}
+              Object.entries(REGIONS).forEach(([region, states]) => {
+                Object.entries(states).forEach(([state, districts]) => {
+                  districts.forEach(d => { districtToRegion[d.toLowerCase()] = { region, state } })
+                })
+              })
+              const nd = String(data.native_district || '').trim()
+              const regionInfo = districtToRegion[nd.toLowerCase()]
+              setForm(f => ({
+                ...f,
+                ...(data.full_name ? { full_name: String(data.full_name) } : {}),
+                ...(data.gender ? { gender: String(data.gender) } : {}),
+                ...(data.date_of_birth ? { date_of_birth: String(data.date_of_birth) } : {}),
+                ...(data.religion ? { religion: String(data.religion) } : {}),
+                ...(data.caste ? { caste: String(data.caste) } : {}),
+                ...(data.mother_tongue ? { mother_tongue: String(data.mother_tongue) } : {}),
+                ...(data.education ? { education: String(data.education) } : {}),
+                ...(data.profession ? { profession: String(data.profession) } : {}),
+                ...(data.height_cm ? { height_cm: String(data.height_cm) } : {}),
+                ...(data.native_district ? { native_district: nd } : {}),
+                ...(regionInfo ? { native_region: regionInfo.region, native_state: regionInfo.state } : {}),
+                ...(data.current_city ? { current_city: String(data.current_city) } : {}),
+                ...(data.current_state ? { current_state: String(data.current_state) } : {}),
+                ...(data.about ? { about: String(data.about).slice(0, 400) } : {}),
+              }))
+              setBiodataParsed(true)
+            }} />
+            {biodataParsed && (
+              <p className="text-xs text-center text-stone-400 mt-2">
+                Fields filled — complete remaining details below then create your account
+              </p>
+            )}
+          </div>
 
           {/* Step indicator */}
           <div className="mb-6">

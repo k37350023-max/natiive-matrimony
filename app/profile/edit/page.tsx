@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import BiodataUploader from '../../components/BiodataUploader'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -296,6 +297,56 @@ export default function EditProfilePage() {
           <h1 className="text-xl font-bold text-stone-900 font-serif-display">Edit Profile</h1>
           <p className="text-sm text-stone-400 mt-0.5">Changes are saved to your profile immediately</p>
         </div>
+
+        <BiodataUploader onParsed={data => {
+          // Map any REGIONS district to native_region/native_state
+          const districtToRegion: Record<string, { region: string; state: string }> = {}
+          Object.entries(REGIONS).forEach(([region, states]) => {
+            Object.entries(states).forEach(([state, districts]) => {
+              districts.forEach(d => { districtToRegion[d.toLowerCase()] = { region, state } })
+            })
+          })
+          const nd = String(data.native_district || '').trim()
+          const regionInfo = districtToRegion[nd.toLowerCase()]
+
+          setForm(f => ({
+            ...f,
+            ...(data.full_name ? { full_name: String(data.full_name) } : {}),
+            ...(data.gender ? { gender: String(data.gender) } : {}),
+            ...(data.date_of_birth ? { date_of_birth: String(data.date_of_birth) } : {}),
+            ...(data.birth_time ? { birth_time: String(data.birth_time) } : {}),
+            ...(data.birth_place ? { birth_place: String(data.birth_place) } : {}),
+            ...(data.height_cm ? { height_cm: String(data.height_cm) } : {}),
+            ...(data.religion ? { religion: String(data.religion) } : {}),
+            ...(data.caste ? { caste: String(data.caste) } : {}),
+            ...(data.mother_tongue ? { mother_tongue: String(data.mother_tongue) } : {}),
+            ...(data.education ? { education: String(data.education) } : {}),
+            ...(data.profession ? { profession: String(data.profession) } : {}),
+            ...(data.company ? { company: String(data.company) } : {}),
+            ...(data.annual_income ? { annual_income: String(data.annual_income) } : {}),
+            ...(data.visa_status ? { visa_status: String(data.visa_status) } : {}),
+            ...(data.native_district ? { native_district: nd } : {}),
+            ...(regionInfo ? { native_region: regionInfo.region, native_state: regionInfo.state } : {}),
+            ...(data.current_city ? { current_city: String(data.current_city) } : {}),
+            ...(data.current_state ? { current_state: String(data.current_state) } : {}),
+            ...(data.father_name ? { father_name: String(data.father_name) } : {}),
+            ...(data.father_occupation ? { father_occupation: String(data.father_occupation) } : {}),
+            ...(data.mother_name ? { mother_name: String(data.mother_name) } : {}),
+            ...(data.mother_occupation ? { mother_occupation: String(data.mother_occupation) } : {}),
+            ...(data.siblings ? { siblings: String(data.siblings) } : {}),
+            ...(data.siblings_married ? { siblings_married: String(data.siblings_married) } : {}),
+            ...(data.star ? { star: String(data.star) } : {}),
+            ...(data.rashi ? { rashi: String(data.rashi) } : {}),
+            ...(data.gotra ? { gotra: String(data.gotra) } : {}),
+            ...(data.manglik ? { manglik: String(data.manglik) } : {}),
+            ...(data.diet ? { diet: String(data.diet) } : {}),
+            ...(data.smoking ? { smoking: String(data.smoking) } : {}),
+            ...(data.drinking ? { drinking: String(data.drinking) } : {}),
+            ...(data.about ? { about: String(data.about).slice(0, 400) } : {}),
+          }))
+          setSuccess('Profile fields filled from your biodata — review below and save!')
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }} />
 
         {error && (
           <div className="px-4 py-3 rounded-lg text-sm" style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}>
@@ -839,6 +890,23 @@ export default function EditProfilePage() {
             className="btn-ghost py-3 text-sm px-5">
             View Profile
           </Link>
+        </div>
+
+        {/* Sign out */}
+        <div className="pt-2 pb-4 flex justify-center">
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut()
+              localStorage.removeItem('my_profile_id')
+              localStorage.removeItem('my_user_id')
+              router.push('/')
+            }}
+            className="flex items-center gap-1.5 text-sm text-stone-400 hover:text-red-500 transition-colors px-4 py-2">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            Sign out
+          </button>
         </div>
       </div>
     </div>
