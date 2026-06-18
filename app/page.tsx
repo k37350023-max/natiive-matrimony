@@ -24,33 +24,33 @@ export default function Home() {
 
       <main className="flex-1">
 
-        {/* Hero */}
-        <div className="text-center px-5 pt-14 pb-12">
-          <div className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full mb-6" style={{ background: '#FEF9EC', color: '#92400E', border: '1px solid #F0E4C0' }}>
+        {/* Hero — compact on mobile so the map is visible without scrolling */}
+        <div className="text-center px-5 pt-6 pb-3 sm:pt-14 sm:pb-10">
+          <div className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full mb-6" style={{ background: '#FEF9EC', color: '#92400E', border: '1px solid #F0E4C0' }}>
             Telugu families · Native place first
           </div>
-          <h1 className="font-serif-display text-4xl sm:text-5xl font-bold text-stone-900 mb-5 leading-tight tracking-tight">
+          <h1 className="font-serif-display text-3xl sm:text-5xl font-bold text-stone-900 mb-3 sm:mb-5 leading-tight tracking-tight">
             Find your match<br />
             <span style={{ color: '#B45309' }}>from your native place</span>
           </h1>
-          <p className="text-base text-stone-500 max-w-sm mx-auto mb-8 leading-relaxed">
+          <p className="hidden sm:block text-base text-stone-500 max-w-sm mx-auto mb-8 leading-relaxed">
             Telugu matrimony, built around your native place.
             Browse and connect — completely free during our launch.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-            <Link href="/register" className="btn-primary px-7 py-3 text-sm w-full sm:w-auto">
-              Create Free Profile
+          <div className="flex flex-row sm:flex-row gap-2 sm:gap-3 justify-center items-center">
+            <Link href="/register" className="btn-primary px-5 py-2 sm:px-7 sm:py-3 text-sm flex-1 sm:flex-none sm:w-auto">
+              Create Profile
             </Link>
-            <Link href="/browse" className="btn-ghost px-7 py-3 text-sm w-full sm:w-auto">
-              Browse Profiles
+            <Link href="/browse" className="btn-ghost px-5 py-2 sm:px-7 sm:py-3 text-sm flex-1 sm:flex-none sm:w-auto">
+              Browse
             </Link>
           </div>
         </div>
 
-        {/* Map section — moved above trust bar so it's visible without scrolling on mobile */}
-        <div className="py-10 px-5">
+        {/* Map — immediately below hero on mobile, no heading needed */}
+        <div className="px-4 pt-3 pb-6 sm:py-10 sm:px-5">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-6">
+            <div className="hidden sm:block text-center mb-6">
               <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: '#B45309' }}>How it works</p>
               <h2 className="font-serif-display text-2xl sm:text-3xl font-bold text-stone-900">
                 Pick your native place.<br />See who's from there.
