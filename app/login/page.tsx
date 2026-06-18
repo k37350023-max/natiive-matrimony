@@ -24,30 +24,46 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col">
-      <header className="border-b bg-white px-5 h-14 flex items-center justify-between">
-        <Link href="/" className="text-lg font-bold text-stone-900">Natiive<span className="text-orange-700">Matrimony</span></Link>
+    <div className="min-h-screen flex flex-col" style={{background: '#FFFBF5'}}>
+      <header className="bg-white border-b px-5 h-14 flex items-center" style={{borderColor: '#EDE8E0'}}>
+        <Link href="/" className="text-lg font-bold text-stone-900 font-serif-display">
+          Natiive<span style={{color: '#B45309'}}>Matrimony</span>
+        </Link>
       </header>
-      <div className="flex-1 flex items-center justify-center px-4 py-10">
-        <div className="bg-white rounded-2xl shadow-sm border border-stone-100 p-8 w-full max-w-sm">
-          <h1 className="text-2xl font-bold text-stone-900 mb-1">Welcome back</h1>
-          <p className="text-sm text-stone-500 mb-6">Sign in to your account</p>
-          {error && <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">{error}</div>}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1.5">Email</label>
-              <input className="input" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1.5">Password</label>
-              <input className="input" type="password" placeholder="Your password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleLogin()} />
-            </div>
-            <button onClick={handleLogin} disabled={loading} className="w-full bg-orange-700 text-white font-semibold py-3 rounded-xl hover:bg-orange-800 disabled:opacity-50 mt-2">
-              {loading ? 'Signing in...' : 'Sign In'}
-            </button>
+
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-sm">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-stone-900 font-serif-display">Welcome back</h1>
+            <p className="text-sm text-stone-500 mt-1">Sign in to your account</p>
           </div>
-          <p className="text-center text-sm text-stone-500 mt-6">
-            No account? <Link href="/register" className="text-orange-700 font-semibold">Register free</Link>
+
+          <div className="card p-7">
+            {error && (
+              <div className="mb-5 p-3 rounded-lg text-sm font-medium" style={{background: '#FEE2E2', color: '#991B1B'}}>
+                {error}
+              </div>
+            )}
+            <div className="space-y-4">
+              <div>
+                <label className="section-label block mb-1.5">Email</label>
+                <input className="input" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} />
+              </div>
+              <div>
+                <label className="section-label block mb-1.5">Password</label>
+                <input className="input" type="password" placeholder="Your password" value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleLogin()} />
+              </div>
+              <button onClick={handleLogin} disabled={loading} className="btn-primary w-full py-3 mt-1">
+                {loading ? 'Signing in...' : 'Sign In'}
+              </button>
+            </div>
+          </div>
+
+          <p className="text-center text-sm text-stone-500 mt-5">
+            No account?{' '}
+            <Link href="/register" className="font-semibold" style={{color: '#B45309'}}>Register free →</Link>
           </p>
         </div>
       </div>

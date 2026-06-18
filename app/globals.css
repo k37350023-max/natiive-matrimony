@@ -1,126 +1,111 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --primary: #B45309;
+  --primary-hover: #92400E;
+  --primary-light: #FFFBF5;
+  --primary-ring: rgba(180,83,9,0.15);
+  --border: #E8E0D6;
+  --bg: #FFFBF5;
 }
 
 body {
-  background: #FFF7ED;
+  background: var(--bg);
   color: #1C1917;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
+.font-serif-display {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* ── Inputs ── */
 .input {
   width: 100%;
-  border: 1.5px solid #E7E5E4;
-  border-radius: 0.5rem;
-  padding: 0.6rem 0.875rem;
+  border: 1.5px solid var(--border);
+  border-radius: 0.625rem;
+  padding: 0.625rem 0.875rem;
   font-size: 0.9375rem;
   outline: none;
   background: white;
   color: #1C1917;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-
 .input:focus {
-  border-color: #C2410C;
-  box-shadow: 0 0 0 3px rgba(194,65,12,0.1);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-ring);
 }
+.input::placeholder { color: #C4B9AE; }
 
-.input::placeholder {
-  color: #A8A29E;
-}
-
+/* ── Buttons ── */
 .btn-primary {
-  background: #C2410C;
+  background: var(--primary);
   color: white;
   padding: 0.625rem 1.5rem;
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   font-weight: 600;
   font-size: 0.9375rem;
-  transition: background 0.15s, transform 0.1s;
   border: none;
   cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
-
-.btn-primary:hover {
-  background: #9A3412;
-}
-
-.btn-primary:active {
-  transform: scale(0.98);
-}
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-outline {
   background: transparent;
-  color: #C2410C;
+  color: var(--primary);
   padding: 0.625rem 1.5rem;
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   font-weight: 600;
   font-size: 0.9375rem;
-  border: 1.5px solid #C2410C;
-  transition: background 0.15s;
+  border: 1.5px solid var(--primary);
   cursor: pointer;
+  transition: background 0.15s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
+.btn-outline:hover { background: var(--primary-light); }
 
-.btn-outline:hover {
-  background: #FFF7ED;
-}
-
+/* ── Cards ── */
 .card {
   background: white;
   border-radius: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  border: 1px solid #EDE8E0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
-
 .card-hover {
-  transition: box-shadow 0.2s, transform 0.2s;
+  transition: box-shadow 0.2s, transform 0.18s;
 }
-
 .card-hover:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
   transform: translateY(-2px);
 }
 
+/* ── Badges ── */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.2rem 0.6rem;
+  padding: 0.2rem 0.625rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
+.badge-verified   { background: #D1FAE5; color: #065F46; }
+.badge-pending    { background: #FEF3C7; color: #92400E; }
+.badge-approved   { background: #D1FAE5; color: #065F46; }
+.badge-rejected   { background: #FEE2E2; color: #991B1B; }
+.badge-native     { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
 
-.badge-verified {
-  background: #DBEAFE;
-  color: #1D4ED8;
-}
-
-.badge-pending {
-  background: #FEF9C3;
-  color: #854D0E;
-}
-
-.badge-approved {
-  background: #DCFCE7;
-  color: #166534;
-}
-
-.badge-rejected {
-  background: #FEE2E2;
-  color: #991B1B;
-}
-
+/* ── Labels ── */
 .section-label {
   font-size: 0.6875rem;
   font-weight: 700;
@@ -129,6 +114,7 @@ body {
   color: #A8A29E;
 }
 
+/* ── Avatar ── */
 .avatar {
   width: 3rem;
   height: 3rem;
@@ -140,3 +126,6 @@ body {
   font-size: 1.125rem;
   flex-shrink: 0;
 }
+
+/* ── Divider ── */
+.divider { border: none; border-top: 1px solid #EDE8E0; }
