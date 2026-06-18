@@ -70,6 +70,7 @@ export default function ProfilePage() {
   const [viewerRelation, setViewerRelation] = useState<'matched' | 'interested' | 'received' | 'none'>('none')
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [noteText, setNoteText] = useState('')
+  const [photoExpanded, setPhotoExpanded] = useState(false)
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
@@ -215,8 +216,11 @@ export default function ProfilePage() {
               <div className="relative py-8 flex flex-col items-center"
                 style={{ background: 'linear-gradient(160deg, #FEF9EC 0%, #FFF7F0 100%)' }}>
                 {showPhoto ? (
-                  <img src={profile.photo_url} alt={profile.full_name}
-                    className="w-24 h-24 rounded-full object-cover mb-3 ring-4 ring-white shadow-md" />
+                  <button onClick={() => setPhotoExpanded(true)} className="mb-3 focus:outline-none group relative">
+                    <img src={profile.photo_url} alt={profile.full_name}
+                      className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md transition-transform group-hover:scale-105 cursor-zoom-in" />
+                    <div className="absolute inset-0 rounded-full bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
+                  </button>
                 ) : (
                   <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 ring-4 ring-white shadow-sm"
                     style={{ background: avatarBg(profile.full_name) }}>
@@ -384,6 +388,28 @@ export default function ProfilePage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Photo lightbox */}
+      {photoExpanded && profile && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.85)' }}
+          onClick={() => setPhotoExpanded(false)}>
+          <button
+            onClick={() => setPhotoExpanded(false)}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-white"
+            style={{ background: 'rgba(255,255,255,0.15)' }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+          <img
+            src={profile.photo_url}
+            alt={profile.full_name}
+            onClick={e => e.stopPropagation()}
+            className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain shadow-2xl" />
         </div>
       )}
 
