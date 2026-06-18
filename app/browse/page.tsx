@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
+import LaunchBanner from '../components/LaunchBanner'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -75,7 +76,7 @@ export default function BrowsePage() {
   }, [])
 
   useEffect(() => {
-    if (sessionChecked && oppositeGender) loadProfiles()
+    if (sessionChecked) loadProfiles()
   }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat])
 
   async function loadProfiles() {
@@ -113,9 +114,12 @@ export default function BrowsePage() {
         <div className="flex items-center gap-3 shrink-0">
           <Link href="/interests" className="text-sm text-stone-500 hover:text-amber-700 hidden sm:block">Interests</Link>
           <Link href="/matches" className="text-sm text-stone-500 hover:text-amber-700 hidden sm:block">Matches</Link>
-          {sessionChecked && !myGender
-            ? <Link href="/login" className="btn-primary text-xs px-3 py-1.5">Login</Link>
-            : null}
+          {sessionChecked && !myGender && (
+            <>
+              <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-amber-700 hidden sm:block">Login</Link>
+              <Link href="/register" className="btn-primary text-xs px-3 py-1.5">Register Free</Link>
+            </>
+          )}
         </div>
       </div>
     </header>
@@ -127,35 +131,32 @@ export default function BrowsePage() {
     </div>
   )
 
-  // Login wall
-  if (!myGender) return (
-    <div className="min-h-screen" style={{ background: '#FFFBF5' }}>
-      {header}
-      <div className="max-w-md mx-auto px-5 py-12 text-center">
-        <div className="mb-6 max-w-xs mx-auto">
-          <IndiaMap mode="animated" />
-        </div>
-        <h2 className="font-serif-display text-2xl font-bold text-stone-900 mb-3">
-          Register to browse profiles
-        </h2>
-        <p className="text-stone-500 mb-8 leading-relaxed text-sm max-w-xs mx-auto">
-          We show compatible matches from your native region — based on your profile. Register free to start.
-        </p>
-        <div className="flex flex-col gap-3">
-          <Link href="/register" className="btn-primary py-3.5 text-base">Register Free →</Link>
-          <Link href="/login" className="btn-outline py-3.5 text-base">I have an account</Link>
-        </div>
-      </div>
-    </div>
-  )
+  const genderLabel = oppositeGender === 'female' ? 'bride' : oppositeGender === 'male' ? 'groom' : 'profile'
+  const genderLabelPlural = oppositeGender === 'female' ? 'brides' : oppositeGender === 'male' ? 'grooms' : 'profiles'
 
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FFFBF5' }}>
       {header}
+      <LaunchBanner />
 
       <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
 
-        {/* ── Filter panel ── */}
+        {/* Guest register nudge — only for non-logged-in */}
+        {!myGender && (
+          <div className="rounded-xl border-2 p-4 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+            style={{ background: '#FFFBF5', borderColor: '#FDE68A' }}>
+            <div>
+              <p className="font-bold text-stone-800 text-sm">Register to see your best matches</p>
+              <p className="text-xs text-stone-500 mt-0.5">We filter by your native region and show compatible profiles. Free — no card needed.</p>
+            </div>
+            <div className="flex gap-2 shrink-0">
+              <Link href="/login" className="btn-outline text-xs px-4 py-2">Login</Link>
+              <Link href="/register" className="btn-primary text-xs px-4 py-2">Register Free →</Link>
+            </div>
+          </div>
+        )}
+
+        {/* Filter panel */}
         <div className="card p-4 mb-4">
           <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
 
@@ -168,7 +169,7 @@ export default function BrowsePage() {
             {/* Right side: all filter controls */}
             <div className="flex-1 w-full min-w-0">
 
-              {/* Region chips — horizontal scroll on mobile */}
+              {/* Region chips */}
               <p className="section-label mb-2">Native region</p>
               <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
                 {['Telangana', 'Coastal Andhra', 'Rayalaseema'].map(r => (
@@ -262,7 +263,7 @@ export default function BrowsePage() {
         {/* Results meta */}
         <div className="flex items-center gap-3 mb-4">
           <p className="text-sm text-stone-500 font-medium">
-            {loading ? 'Loading...' : `${profiles.length} ${oppositeGender === 'female' ? 'bride' : 'groom'}${profiles.length !== 1 ? 's' : ''} found`}
+            {loading ? 'Loading...' : `${profiles.length} ${profiles.length !== 1 ? genderLabelPlural : genderLabel} found`}
           </p>
           <div className="flex-1 border-t" style={{ borderColor: '#EDE8E0' }} />
           <span className="text-xs text-stone-400 flex items-center gap-1.5 shrink-0">
@@ -276,7 +277,13 @@ export default function BrowsePage() {
           <div className="card p-16 text-center">
             <p className="text-3xl mb-3">🔍</p>
             <p className="font-semibold text-stone-700">No profiles found</p>
-            <p className="text-sm text-stone-400 mt-1">Try a broader region or clear some filters</p>
+            <p className="text-sm text-stone-400 mt-1">
+              {activeFilterCount > 0 ? 'Try a broader region or clear some filters' : 'Be the first from your region — register your profile!'}
+            </p>
+            {activeFilterCount > 0
+              ? <button onClick={clearAll} className="btn-outline px-5 py-2 text-sm mt-4">Clear all filters</button>
+              : <Link href="/register" className="btn-primary px-5 py-2 text-sm mt-4 inline-flex">Register Free →</Link>
+            }
           </div>
         )}
 

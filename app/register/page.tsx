@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import LaunchBanner from '../components/LaunchBanner'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -67,7 +68,6 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     try {
-      // Create Supabase auth account
       const { data: authData, error: authError } = await supabase.auth.signUp({ email: form.email, password: form.password })
       if (authError) throw authError
       const userId = authData.user?.id
@@ -82,6 +82,7 @@ export default function RegisterPage() {
         const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(fileName)
         photoUrl = urlData.publicUrl
       }
+
       const { data: profileData, error: profileError } = await supabase.from('profiles').insert({
         user_id: userId, full_name: form.full_name, gender: form.gender, date_of_birth: form.date_of_birth,
         phone: form.phone, email: form.email, profession: form.profession,
@@ -90,12 +91,14 @@ export default function RegisterPage() {
         current_city: form.current_city, current_state: form.current_state,
         height_cm: form.height_cm ? parseInt(form.height_cm) : null,
         religion: form.religion, caste: form.caste, mother_tongue: form.mother_tongue,
-        family_type: form.family_type, photo_url: photoUrl, status: 'pending', verified: false,
+        family_type: form.family_type, photo_url: photoUrl,
+        status: 'approved', verified: false,
       }).select('id').single()
       if (profileError) throw profileError
+
       localStorage.setItem('my_user_id', userId)
       if (profileData?.id) localStorage.setItem('my_profile_id', profileData.id)
-      router.push('/pending')
+      router.push('/browse')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -105,7 +108,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col" style={{background: '#FFFBF5'}}>
-      {/* Header */}
       <header className="bg-white border-b" style={{borderColor: '#EDE8E0'}}>
         <div className="max-w-xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">
@@ -115,11 +117,22 @@ export default function RegisterPage() {
         </div>
       </header>
 
-      <div className="flex-1 flex items-start justify-center px-4 py-10">
+      <LaunchBanner />
+
+      <div className="flex-1 flex items-start justify-center px-4 py-8">
         <div className="w-full max-w-md">
+
+          {/* Free offer pill */}
+          <div className="text-center mb-6">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border"
+              style={{ background: '#F0FDF4', color: '#166534', borderColor: '#BBF7D0' }}>
+              🎉 Free access to all features until September 2026
+            </span>
+          </div>
+
           {/* Step indicator */}
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
+          <div className="mb-6">
+            <div className="flex items-center gap-2">
               {STEPS.map((s, i) => (
                 <div key={s} className="flex items-center gap-2 flex-1">
                   <div className="flex items-center gap-2">
@@ -146,9 +159,27 @@ export default function RegisterPage() {
 
             {step === 1 && (
               <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="section-label block mb-1.5">Gender *</label>
+                    <select className="input" value={form.gender} onChange={e => set('gender', e.target.value)}>
+                      <option value="">Select</option>
+                      <option value="male">Male (Groom)</option>
+                      <option value="female">Female (Bride)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="section-label block mb-1.5">Date of Birth *</label>
+                    <input className="input" type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
+                  </div>
+                </div>
                 <div>
                   <label className="section-label block mb-1.5">Full Name *</label>
                   <input className="input" placeholder="e.g. Ravi Kumar" value={form.full_name} onChange={e => set('full_name', e.target.value)} />
+                </div>
+                <div>
+                  <label className="section-label block mb-1.5">Phone</label>
+                  <input className="input" type="tel" placeholder="10-digit mobile number" value={form.phone} onChange={e => set('phone', e.target.value)} />
                 </div>
                 <div>
                   <label className="section-label block mb-1.5">Email *</label>
@@ -157,24 +188,6 @@ export default function RegisterPage() {
                 <div>
                   <label className="section-label block mb-1.5">Password *</label>
                   <input className="input" type="password" placeholder="Min. 6 characters" value={form.password} onChange={e => set('password', e.target.value)} />
-                </div>
-                <div>
-                  <label className="section-label block mb-1.5">Phone</label>
-                  <input className="input" type="tel" placeholder="10-digit mobile number" value={form.phone} onChange={e => set('phone', e.target.value)} />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="section-label block mb-1.5">Gender *</label>
-                    <select className="input" value={form.gender} onChange={e => set('gender', e.target.value)}>
-                      <option value="">Select</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="section-label block mb-1.5">Date of Birth *</label>
-                    <input className="input" type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
-                  </div>
                 </div>
               </div>
             )}
@@ -235,32 +248,57 @@ export default function RegisterPage() {
                     <input className="input" type="number" placeholder="e.g. 170" value={form.height_cm} onChange={e => set('height_cm', e.target.value)} />
                   </div>
                 </div>
-                <div>
-                  <label className="section-label block mb-1.5">Family Type</label>
-                  <select className="input" value={form.family_type} onChange={e => set('family_type', e.target.value)}>
-                    <option value="">Select</option>
-                    <option value="nuclear">Nuclear</option>
-                    <option value="joint">Joint</option>
-                  </select>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="section-label block mb-1.5">Mother Tongue</label>
+                    <select className="input" value={form.mother_tongue} onChange={e => set('mother_tongue', e.target.value)}>
+                      <option value="Telugu">Telugu</option>
+                      <option value="Tamil">Tamil</option>
+                      <option value="Kannada">Kannada</option>
+                      <option value="Hindi">Hindi</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="section-label block mb-1.5">Family Type</label>
+                    <select className="input" value={form.family_type} onChange={e => set('family_type', e.target.value)}>
+                      <option value="">Select</option>
+                      <option value="nuclear">Nuclear</option>
+                      <option value="joint">Joint</option>
+                    </select>
+                  </div>
                 </div>
                 <div>
                   <label className="section-label block mb-1.5">About yourself</label>
                   <textarea className="input" rows={3} placeholder="A short note about yourself, family background, expectations..." value={form.about} onChange={e => set('about', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Profile Photo *</label>
+                  <label className="section-label block mb-1.5">Profile Photo</label>
                   <div className="flex items-center gap-4">
                     {photoPreview && (
                       <img src={photoPreview} alt="Preview" className="w-16 h-16 rounded-full object-cover border-2 border-orange-200" />
                     )}
                     <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-stone-300 rounded-lg text-sm text-stone-500 cursor-pointer hover:border-orange-400 hover:text-orange-600 transition-colors">
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      {photo ? photo.name : 'Upload photo'}
+                      {photo ? photo.name : 'Upload photo (visible only after match)'}
                       <input type="file" accept="image/*" className="hidden" onChange={e => {
                         const file = e.target.files?.[0]
                         if (file) { setPhoto(file); setPhotoPreview(URL.createObjectURL(file)) }
                       }} />
                     </label>
+                  </div>
+                  <p className="text-xs text-stone-400 mt-1.5">Your photo is only shown after both parties accept each other's interest.</p>
+                </div>
+
+                {/* What you get */}
+                <div className="rounded-xl p-4 border" style={{ background: '#F0FDF4', borderColor: '#BBF7D0' }}>
+                  <p className="text-xs font-bold mb-2" style={{ color: '#166534' }}>What you get — FREE until Sep 2026</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {['Instant profile activation', 'Unlimited interests', 'Contact after match', 'Biodata PDF export'].map(f => (
+                      <p key={f} className="text-xs text-stone-600 flex items-center gap-1">
+                        <span style={{ color: '#16A34A' }}>✓</span> {f}
+                      </p>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -275,14 +313,19 @@ export default function RegisterPage() {
                   const err = validateStep(step)
                   if (err) { setError(err); return }
                   setError(''); setStep(s => s + 1)
-                }} className="btn-primary px-5 py-2.5 text-sm">Continue</button>
+                }} className="btn-primary px-5 py-2.5 text-sm">Continue →</button>
               ) : (
-                <button onClick={handleSubmit} disabled={loading} className="btn-primary px-5 py-2.5 text-sm disabled:opacity-50">
-                  {loading ? 'Submitting...' : 'Submit Profile'}
+                <button onClick={handleSubmit} disabled={loading} className="btn-primary px-6 py-2.5 text-sm disabled:opacity-50">
+                  {loading ? 'Creating profile...' : 'Create My Profile →'}
                 </button>
               )}
             </div>
           </div>
+
+          <p className="text-center text-xs text-stone-400 mt-4">
+            Already registered?{' '}
+            <Link href="/login" className="font-semibold" style={{color: '#B45309'}}>Sign in →</Link>
+          </p>
         </div>
       </div>
     </div>

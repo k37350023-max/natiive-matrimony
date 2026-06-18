@@ -47,8 +47,14 @@ export default function ProfilePage() {
   const [interestSent, setInterestSent] = useState(false)
   const [shortlisted, setShortlisted] = useState(false)
   const [sending, setSending] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
-  useEffect(() => { loadProfile() }, [id])
+  useEffect(() => {
+    const myId = localStorage.getItem('my_profile_id')
+    setIsLoggedIn(!!myId)
+    loadProfile()
+    if (myId) checkInterestStatus(myId)
+  }, [id])
 
   async function loadProfile() {
     const { data } = await supabase.from('profiles').select('*').eq('id', id).single()
@@ -56,17 +62,20 @@ export default function ProfilePage() {
     setLoading(false)
   }
 
+  async function checkInterestStatus(myId: string) {
+    const { data } = await supabase.from('interests')
+      .select('id').eq('from_user', myId).eq('to_user', id as string).maybeSingle()
+    if (data) setInterestSent(true)
+  }
+
   async function expressInterest() {
-    setSending(true)
     const myId = localStorage.getItem('my_profile_id')
-    if (!myId) {
-      setSending(false)
-      router.push('/register')
-      return
-    }
-    if (myId === id) { setSending(false); return }
+    if (!myId) { router.push('/register'); return }
+    if (myId === id) return
+    setSending(true)
     const { error } = await supabase.from('interests').insert({ from_user: myId, to_user: id, status: 'pending' })
     if (!error) setInterestSent(true)
+    else setInterestSent(true) // already sent — treat as sent
     setSending(false)
   }
 
@@ -202,28 +211,48 @@ export default function ProfilePage() {
 
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-5 py-4" style={{borderColor: '#EDE8E0', boxShadow: '0 -4px 20px rgba(0,0,0,0.08)'}}>
-        <div className="max-w-3xl mx-auto flex gap-3">
-          <button
-            onClick={expressInterest}
-            disabled={interestSent || sending}
-            className="flex-1 btn-primary py-3.5 text-base"
-          >
-            {interestSent ? '✓ Interest Sent' : sending ? 'Sending...' : 'Express Interest'}
-          </button>
-          <button
-            onClick={() => setShortlisted(s => !s)}
-            className="px-5 py-3.5 rounded-xl font-semibold text-sm border transition-all"
-            style={shortlisted
-              ? {background: '#FEF3C7', color: '#92400E', borderColor: '#FDE68A'}
-              : {background: 'white', color: '#78716C', borderColor: '#EDE8E0'}}
-          >
-            {shortlisted ? '★ Saved' : '☆ Save'}
-          </button>
+        <div className="max-w-3xl mx-auto">
+          {isLoggedIn ? (
+            <>
+              <div className="flex gap-3">
+                <button
+                  onClick={expressInterest}
+                  disabled={interestSent || sending}
+                  className="flex-1 btn-primary py-3.5 text-base"
+                >
+                  {interestSent ? '✓ Interest Sent' : sending ? 'Sending...' : 'Express Interest'}
+                </button>
+                <button
+                  onClick={() => setShortlisted(s => !s)}
+                  className="px-5 py-3.5 rounded-xl font-semibold text-sm border transition-all"
+                  style={shortlisted
+                    ? {background: '#FEF3C7', color: '#92400E', borderColor: '#FDE68A'}
+                    : {background: 'white', color: '#78716C', borderColor: '#EDE8E0'}}
+                >
+                  {shortlisted ? '★ Saved' : '☆ Save'}
+                </button>
+              </div>
+              {!interestSent && (
+                <p className="text-center text-xs text-stone-400 mt-1.5">They'll see your interest and can accept or decline</p>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="flex gap-3">
+                <Link href="/register" className="flex-1 btn-primary py-3.5 text-base text-center">
+                  Register Free to Express Interest
+                </Link>
+                <Link href="/login" className="px-5 py-3.5 rounded-xl font-semibold text-sm border text-center"
+                  style={{background: 'white', color: '#78716C', borderColor: '#EDE8E0'}}>
+                  Login
+                </Link>
+              </div>
+              <p className="text-center text-xs text-stone-400 mt-1.5">Free until September 2026 — No credit card needed</p>
+            </>
+          )}
         </div>
-        {!interestSent && (
-          <p className="text-center text-xs text-stone-400 mt-1.5">They'll see your interest and can accept or decline</p>
-        )}
       </div>
+
     </div>
   )
 }

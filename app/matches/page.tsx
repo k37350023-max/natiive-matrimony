@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
+import LaunchBanner from '../components/LaunchBanner'
 
 type Profile = {
   id: string
@@ -125,6 +126,7 @@ export default function MatchesPage() {
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{background: '#FFF7ED'}}>
       {header}
+      <LaunchBanner />
       <div className="max-w-3xl mx-auto px-4 py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-stone-900">My Matches</h1>

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
+import LaunchBanner from '../components/LaunchBanner'
 
 type Interest = {
   id: string
@@ -92,6 +93,7 @@ export default function InterestsPage() {
           </div>
         </div>
       </header>
+      <LaunchBanner />
 
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold text-stone-900 font-serif-display mb-1">Interests Received</h1>
