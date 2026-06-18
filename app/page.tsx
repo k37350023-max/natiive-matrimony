@@ -1,24 +1,14 @@
-import Link from 'next/link'
 import MapHero from './components/MapHero'
 import LaunchBanner from './components/LaunchBanner'
+import HomeHeader from './components/HomeHeader'
+import HeroCTA from './components/HeroCTA'
+import Link from 'next/link'
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: '#FAFAF9' }}>
 
-      {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-50" style={{ borderColor: '#E8E0D6' }}>
-        <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-          <span className="text-lg font-bold tracking-tight text-stone-900 font-serif-display">
-            Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
-          </span>
-          <div className="flex items-center gap-1">
-            <Link href="/browse" className="text-sm font-medium text-stone-500 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Browse</Link>
-            <Link href="/login" className="text-sm font-medium text-stone-500 px-3 py-1.5 rounded-lg hover:bg-stone-50">Login</Link>
-            <Link href="/register" className="btn-primary text-sm px-4 py-1.5 ml-1">Register Free</Link>
-          </div>
-        </div>
-      </header>
+      <HomeHeader />
 
       <LaunchBanner />
 
@@ -37,14 +27,7 @@ export default function Home() {
             Telugu matrimony, built around your native place.
             Browse and connect — completely free during our launch.
           </p>
-          <div className="flex flex-row sm:flex-row gap-2 sm:gap-3 justify-center items-center">
-            <Link href="/register" className="btn-primary px-5 py-2 sm:px-7 sm:py-3 text-sm flex-1 sm:flex-none sm:w-auto">
-              Create Profile
-            </Link>
-            <Link href="/browse" className="btn-ghost px-5 py-2 sm:px-7 sm:py-3 text-sm flex-1 sm:flex-none sm:w-auto">
-              Browse
-            </Link>
-          </div>
+          <HeroCTA />
         </div>
 
         {/* Map — immediately below hero on mobile, no heading needed */}

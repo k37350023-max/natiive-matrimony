@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -38,6 +38,12 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [phoneCode, setPhoneCode] = useState('+91')
+
+  // Redirect already-logged-in users away from the register page
+  useEffect(() => {
+    const id = localStorage.getItem('my_profile_id')
+    if (id) router.replace(`/profile/${id}`)
+  }, [])
 
   const [form, setForm] = useState({
     email: '', password: '', full_name: '', gender: '',
