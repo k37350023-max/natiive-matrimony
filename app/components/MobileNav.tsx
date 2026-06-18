@@ -76,16 +76,28 @@ export default function MobileNav() {
           <span className="text-xs font-semibold" style={{ color: path.startsWith('/interests') ? '#B45309' : '#78716C' }}>Interests</span>
         </Link>
 
+        <Link href="/chat"
+          className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
+          <div className="relative">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+              stroke={path.startsWith('/chat') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <Badge count={unreadMessages} />
+          </div>
+          <span className="text-xs font-semibold" style={{ color: path.startsWith('/chat') ? '#B45309' : '#78716C' }}>Chat</span>
+        </Link>
+
         <Link href="/matches"
           className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
           <div className="relative">
             <svg width="22" height="22" viewBox="0 0 24 24" fill={path.startsWith('/matches') || path.startsWith('/chat') ? '#B45309' : 'none'}
-              stroke={path.startsWith('/matches') || path.startsWith('/chat') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              stroke={path.startsWith('/matches') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            <Badge count={matchCount + unreadMessages} />
+            <Badge count={matchCount} />
           </div>
-          <span className="text-xs font-semibold" style={{ color: path.startsWith('/matches') || path.startsWith('/chat') ? '#B45309' : '#78716C' }}>Matches</span>
+          <span className="text-xs font-semibold" style={{ color: path.startsWith('/matches') ? '#B45309' : '#78716C' }}>Matches</span>
         </Link>
 
         <Link href={profileHref}
