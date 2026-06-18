@@ -64,8 +64,10 @@ function canShowPhoto(profile: Profile, relation: string): boolean {
   return false
 }
 
-function getAge(dob: string) {
-  return Math.floor((Date.now() - new Date(dob + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365.25))
+function getAge(dob: string): number | null {
+  if (!dob) return null
+  const age = Math.floor((Date.now() - new Date(dob + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365.25))
+  return age > 0 ? age : null
 }
 
 function initials(name: string) {
@@ -240,14 +242,12 @@ export default function ProfilePage() {
         { label: 'Manglik', value: profile.manglik || null },
       ],
     },
-    {
-      heading: 'Contact',
-      rows: [
-        { label: 'Phone', value: profile.phone || null },
-        { label: 'Email', value: profile.email || null },
-      ],
-    },
   ].map(s => ({ ...s, rows: s.rows.filter(r => r.value) })).filter(s => s.rows.length > 0)
+
+  const contactRows = [
+    { label: 'Phone', value: profile.phone || null },
+    { label: 'Email', value: profile.email || null },
+  ].filter(r => r.value)
 
   return (
     <div className="min-h-screen pb-28" style={{ background: '#FAFAF9' }}>
@@ -320,7 +320,9 @@ export default function ProfilePage() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-bold text-stone-900 font-serif-display tracking-tight">{profile.full_name}</h1>
-                <p className="text-stone-500 mt-0.5 text-sm">{getAge(profile.date_of_birth)} years · {profile.gender === 'male' ? 'Groom' : 'Bride'}</p>
+                <p className="text-stone-500 mt-0.5 text-sm whitespace-nowrap">
+                  {getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs · ` : ''}{profile.gender === 'male' ? 'Groom' : 'Bride'}
+                </p>
               </div>
               {(profile.verified || profile.phone_verified) ? (
                 <div className="relative group shrink-0 mt-1">
@@ -406,10 +408,25 @@ export default function ProfilePage() {
             </div>
           )
           return unlocked ? (
-            <div className="card px-6 py-5">
-              <p className="section-label mb-4">Full biodata</p>
-              {biodataContent}
-            </div>
+            <>
+              <div className="card px-6 py-5">
+                <p className="section-label mb-4">Full biodata</p>
+                {biodataContent}
+              </div>
+              {contactRows.length > 0 && (
+                <div className="card px-6 py-5">
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>Contact</p>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                    {contactRows.map(f => (
+                      <div key={f.label} className={f.label === 'Email' ? 'col-span-2' : ''}>
+                        <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
+                        <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           ) : (
             <div className="card overflow-hidden relative">
               <div className="px-6 py-5" style={{ filter: 'blur(6px)', pointerEvents: 'none', userSelect: 'none' }}>
@@ -504,15 +521,32 @@ export default function ProfilePage() {
         <div className="max-w-3xl mx-auto">
           {myProfileId === profile.id ? (
             /* Own profile — show edit + matches links */
-            <div className="flex gap-2.5">
-              <Link href="/profile/edit" className="flex-1 btn-primary py-3 text-sm text-center">
-                Edit Profile
-              </Link>
-              <Link href="/matches"
-                className="flex-1 py-3 rounded-lg font-semibold text-sm border text-center"
-                style={{ background: 'white', color: '#78716C', borderColor: '#E8E0D6' }}>
-                My Matches
-              </Link>
+            <div>
+              <div className="flex gap-2.5">
+                <Link href="/profile/edit" className="flex-1 btn-primary py-3 text-sm text-center">
+                  Edit Profile
+                </Link>
+                <Link href="/matches"
+                  className="flex-1 py-3 rounded-lg font-semibold text-sm border text-center"
+                  style={{ background: 'white', color: '#78716C', borderColor: '#E8E0D6' }}>
+                  My Matches
+                </Link>
+              </div>
+              <div className="flex justify-center mt-2.5">
+                <button
+                  onClick={async () => {
+                    await supabase.auth.signOut()
+                    localStorage.removeItem('my_profile_id')
+                    localStorage.removeItem('my_user_id')
+                    router.push('/')
+                  }}
+                  className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-red-500 transition-colors px-3 py-1.5">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  Sign out
+                </button>
+              </div>
             </div>
           ) : isLoggedIn ? (
             <>

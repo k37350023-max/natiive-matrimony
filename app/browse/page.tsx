@@ -58,8 +58,10 @@ function isSerious(p: Pick<Profile, 'education' | 'about' | 'height_cm' | 'photo
   return [p.education, p.about, p.height_cm, p.photo_url, p.caste].filter(Boolean).length >= 3
 }
 
-function getAge(dob: string) {
-  return Math.floor((Date.now() - new Date(dob + 'T00:00:00').getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+function getAge(dob: string): number | null {
+  if (!dob) return null
+  const age = Math.floor((Date.now() - new Date(dob + 'T00:00:00').getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+  return age > 0 ? age : null
 }
 
 function initials(name: string) {
@@ -489,7 +491,7 @@ export default function BrowsePage() {
                               style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★</span>
                           )}
                         </div>
-                        <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth) != null ? `${getAge(p.date_of_birth)} yrs · ` : ''}{p.profession}</p>
                         <div className="flex items-center gap-2 mt-1.5">
                           {interestMap[p.id] ? (
                             <span className="text-xs px-2 py-0.5 rounded-md font-semibold"
@@ -548,7 +550,7 @@ export default function BrowsePage() {
                       </div>
                       <div className="p-3.5">
                         <h3 className="font-semibold text-stone-900 text-sm">{p.full_name}</h3>
-                        <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth) != null ? `${getAge(p.date_of_birth)} yrs · ` : ''}{p.profession}</p>
                         {isSerious(p) && (
                           <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-md font-semibold"
                             style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★ Serious Seeker</span>
