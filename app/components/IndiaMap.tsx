@@ -1,36 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
+import IndiaData from '@svg-maps/india'
 
-// ViewBox 0 0 300 380 — simplified illustrative India
-const PATHS = {
-  north:    'M22,5 L278,5 L290,28 L282,65 L258,82 L228,78 L195,88 L168,85 L120,92 L78,88 L50,102 L28,85 L12,50 Z',
-  maha:     'M50,102 L120,92 L148,108 L158,140 L146,168 L104,175 L58,165 L44,142 Z',
-  karnataka:'M44,142 L104,175 L146,168 L178,170 L168,200 L175,228 L158,252 L128,258 L100,242 L78,218 L62,185 Z',
-  tn:       'M128,258 L158,252 L175,228 L195,248 L222,245 L218,295 L196,332 L170,338 L148,312 L128,285 Z',
-  kerala:   'M62,185 L78,218 L100,242 L128,258 L128,285 L110,320 L86,308 L70,260 Z',
-  telangana:'M120,92 L168,85 L195,88 L208,118 L212,148 L198,165 L178,170 L158,140 L148,108 Z',
-  coastal:  'M195,88 L228,78 L258,82 L274,108 L280,155 L258,172 L238,178 L218,158 L212,148 L208,118 Z',
-  rayala:   'M178,170 L198,165 L212,148 L218,158 L238,178 L244,215 L222,245 L195,248 L175,228 L168,200 Z',
-}
-
-const REGIONS = {
-  telangana: {
-    path: 'telangana', cx: 175, cy: 132, label: 'Telangana', region: 'Telangana',
-    pins: [{ i: 'PR', dx: -16, dy: -10 }, { i: 'SK', dx: 12, dy: -14 }, { i: 'AK', dx: 4, dy: 10 }],
-  },
-  coastal: {
-    path: 'coastal', cx: 242, cy: 132, label: 'Coastal Andhra', region: 'Coastal Andhra',
-    pins: [{ i: 'RV', dx: -12, dy: -10 }, { i: 'MK', dx: 14, dy: -6 }, { i: 'SR', dx: 2, dy: 11 }],
-  },
-  rayala: {
-    path: 'rayala', cx: 210, cy: 208, label: 'Rayalaseema', region: 'Rayalaseema',
-    pins: [{ i: 'VR', dx: -13, dy: -8 }, { i: 'NK', dx: 13, dy: 4 }],
-  },
-}
-
-const SEQ = ['telangana', 'coastal', 'rayala'] as const
-
-type RegionKey = keyof typeof REGIONS
+const TELUGU_IDS = new Set(['tg', 'ap'])
 
 interface Props {
   mode: 'animated' | 'filter'
@@ -39,138 +11,143 @@ interface Props {
   compact?: boolean
 }
 
-export default function IndiaMap({ mode, selectedRegion, onRegionClick, compact }: Props) {
-  const [active, setActive] = useState<string[]>([])
-  const [pulsing, setPulsing] = useState<string | null>(null)
+function regionToStateId(region: string): string | null {
+  if (region === 'Telangana') return 'tg'
+  if (region === 'Coastal Andhra' || region === 'Rayalaseema') return 'ap'
+  return null
+}
+
+const TG_CX = 225, TG_CY = 468
+const AP_CX = 305, AP_CY = 510
+const ZOOM_ORIGIN = '36% 80%'
+const ZOOM_SCALE = 2.2
+
+export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, compact }: Props) {
+  const [animHighlight, setAnimHighlight] = useState<string | null>(null)
+  const [zoomed, setZoomed] = useState(false)
 
   useEffect(() => {
     if (mode !== 'animated') return
     let cancelled = false
     const timers: ReturnType<typeof setTimeout>[] = []
-
     function s(fn: () => void, ms: number) {
       const t = setTimeout(() => { if (!cancelled) fn() }, ms)
       timers.push(t)
     }
-
     function loop() {
       let t = 0
-      setActive([]); setPulsing(null); t += 600
-
-      SEQ.forEach((key, i) => {
-        s(() => setPulsing(key), t); t += 1000
-        s(() => { setActive(prev => [...prev, key]); setPulsing(null) }, t)
-        t += i < SEQ.length - 1 ? 1800 : 2400
-      })
-
-      s(loop, t)
+      setAnimHighlight(null); setZoomed(false); t += 600
+      s(() => setZoomed(true), t); t += 1000
+      s(() => setAnimHighlight('tg'), t); t += 2200
+      s(() => setAnimHighlight('ap'), t); t += 2200
+      s(() => { setAnimHighlight(null); setZoomed(false) }, t); t += 800
+      s(loop, t + 200)
     }
-
     loop()
     return () => { cancelled = true; timers.forEach(clearTimeout) }
   }, [mode])
 
-  function handleClick(key: RegionKey) {
+  function handleClick(stateId: string) {
     if (mode !== 'filter' || !onRegionClick) return
-    const r = REGIONS[key]
-    onRegionClick(selectedRegion === r.region ? '' : r.region)
+    if (stateId === 'tg') {
+      onRegionClick(selectedRegion === 'Telangana' ? '' : 'Telangana')
+    } else if (stateId === 'ap') {
+      if (selectedRegion === '' || selectedRegion === 'Telangana') onRegionClick('Coastal Andhra')
+      else if (selectedRegion === 'Coastal Andhra') onRegionClick('Rayalaseema')
+      else onRegionClick('')
+    }
   }
 
-  function isActive(key: string) {
-    return mode === 'filter'
-      ? selectedRegion === REGIONS[key as RegionKey]?.region
-      : active.includes(key)
-  }
+  const highlightedId = mode === 'filter' ? regionToStateId(selectedRegion) : animHighlight
+  const isZoomed = mode === 'animated' ? zoomed : false
+  const size = compact ? '200px' : '260px'
 
-  const maxW = compact ? '210px' : mode === 'animated' ? '340px' : '250px'
+  const apLabel =
+    selectedRegion === 'Coastal Andhra' ? 'Coastal Andhra' :
+    selectedRegion === 'Rayalaseema' ? 'Rayalaseema' :
+    mode === 'animated' && animHighlight === 'ap' ? 'Andhra Pradesh' :
+    'Andhra Pradesh'
 
   return (
     <>
       <style>{`
-        @keyframes pinIn {
-          0%   { opacity:0; transform: scale(0.3) translateY(-10px); }
-          65%  { transform: scale(1.15) translateY(1px); }
-          100% { opacity:1; transform: scale(1) translateY(0); }
+        @keyframes indiaMapPulse {
+          0%   { opacity:.8; transform:scale(1); }
+          100% { opacity:0;  transform:scale(3.5); }
         }
-        @keyframes pulseRing {
-          0%   { opacity:.85; transform: scale(1); }
-          100% { opacity:0;   transform: scale(3.5); }
-        }
-        .map-pin { animation: pinIn .42s ease-out both; }
-        .map-pulse { animation: pulseRing .9s ease-out infinite; }
+        .india-map-pulse { animation: indiaMapPulse .9s ease-out infinite; }
       `}</style>
+      <div style={{
+        width: '100%', maxWidth: size, aspectRatio: '612/696',
+        overflow: 'hidden', borderRadius: '14px',
+        margin: '0 auto', background: '#F5F0E8',
+      }}>
+        <svg
+          viewBox={IndiaData.viewBox}
+          width="100%" height="100%"
+          preserveAspectRatio="xMidYMid meet"
+          style={{
+            display: 'block',
+            transform: isZoomed ? `scale(${ZOOM_SCALE})` : 'scale(1)',
+            transformOrigin: ZOOM_ORIGIN,
+            transition: 'transform 1.1s cubic-bezier(0.4,0,0.2,1)',
+          }}
+        >
+          {IndiaData.locations.map(loc => {
+            const isTelugu = TELUGU_IDS.has(loc.id)
+            const isOn = highlightedId === loc.id
+            let fill = '#EAE4D6'
+            let stroke = '#D5CDB8'
+            let sw = '0.5'
+            if (isTelugu) {
+              fill = isOn ? '#FEF3C7' : '#D6C9AA'
+              stroke = isOn ? '#B45309' : '#9E8E6A'
+              sw = isOn ? '2.5' : '1'
+            }
+            return (
+              <path key={loc.id} d={loc.path}
+                fill={fill} stroke={stroke} strokeWidth={sw}
+                style={{
+                  cursor: (isTelugu && mode === 'filter') ? 'pointer' : 'default',
+                  transition: 'fill .35s, stroke .35s, stroke-width .35s',
+                }}
+                onClick={() => handleClick(loc.id)}
+              />
+            )
+          })}
 
-      <svg viewBox="0 0 300 380" width="100%"
-        style={{ display: 'block', maxWidth: maxW, margin: '0 auto' }}>
-
-        {/* Non-interactive background states */}
-        {(['north','maha','karnataka','tn','kerala'] as const).map(k => (
-          <path key={k} d={PATHS[k]} fill="#E8E2D6" stroke="#D0C8BA" strokeWidth="1" />
-        ))}
-
-        {/* Interactive Telugu regions */}
-        {(Object.keys(REGIONS) as RegionKey[]).map(key => {
-          const r = REGIONS[key]
-          const on = isActive(key)
-          return (
-            <path key={key}
-              d={PATHS[r.path as keyof typeof PATHS]}
-              fill={on ? '#FEF3C7' : '#DDD5C2'}
-              stroke={on ? '#B45309' : '#B8AC98'}
-              strokeWidth={on ? '2' : '1'}
-              style={{ cursor: mode === 'filter' ? 'pointer' : 'default', transition: 'fill .3s,stroke .3s' }}
-              onClick={() => handleClick(key)}
-            />
-          )
-        })}
-
-        {/* Region labels */}
-        {(Object.keys(REGIONS) as RegionKey[]).map(key => {
-          const r = REGIONS[key]
-          const on = isActive(key)
-          return (
-            <text key={`lbl-${key}`}
-              x={r.cx} y={r.cy + 1}
-              textAnchor="middle" fontSize="6.5" fontWeight="700"
-              fill={on ? '#92400E' : '#7A6F60'}
-              style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
-              {r.label}
+          {/* State labels */}
+          <text x={TG_CX} y={TG_CY} textAnchor="middle" fontSize={compact ? '7' : '9'} fontWeight="700"
+            fill={highlightedId === 'tg' ? '#92400E' : '#7A6F5A'}
+            style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
+            Telangana
+          </text>
+          <text x={AP_CX} y={AP_CY} textAnchor="middle" fontSize={compact ? '6' : '8'} fontWeight="700"
+            fill={highlightedId === 'ap' ? '#92400E' : '#7A6F5A'}
+            style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
+            {apLabel}
+          </text>
+          {mode === 'filter' && highlightedId === 'ap' && (
+            <text x={AP_CX} y={AP_CY + 10} textAnchor="middle" fontSize="5" fill="#B45309"
+              style={{ pointerEvents: 'none', userSelect: 'none' }}>
+              tap again to switch
             </text>
-          )
-        })}
+          )}
 
-        {/* Pulsing ring on current animated region */}
-        {pulsing && REGIONS[pulsing as RegionKey] && (() => {
-          const r = REGIONS[pulsing as RegionKey]
-          return (
-            <circle key={pulsing}
-              cx={r.cx} cy={r.cy} r="10"
-              fill="none" stroke="#B45309" strokeWidth="2.5"
-              className="map-pulse"
-              style={{ transformOrigin: `${r.cx}px ${r.cy}px` }}
-            />
-          )
-        })()}
-
-        {/* Profile pins (animated mode) */}
-        {mode === 'animated' && (Object.keys(REGIONS) as RegionKey[]).map(key => {
-          const r = REGIONS[key]
-          if (!active.includes(key)) return null
-          return r.pins.map((pin, i) => (
-            <g key={`${key}-${i}`}
-              transform={`translate(${r.cx + pin.dx},${r.cy + pin.dy})`}>
-              <g className="map-pin" style={{ animationDelay: `${i * 90}ms`,
-                transformOrigin: '0 0' }}>
-                <circle r="9" fill="#B45309" stroke="white" strokeWidth="1.5" />
-                <text textAnchor="middle" y="3.5" fill="white" fontSize="5.5" fontWeight="bold">
-                  {pin.i}
-                </text>
-              </g>
-            </g>
-          ))
-        })}
-
-      </svg>
+          {/* Animated pulse ring */}
+          {mode === 'animated' && animHighlight && (() => {
+            const cx = animHighlight === 'tg' ? TG_CX : AP_CX
+            const cy = animHighlight === 'tg' ? TG_CY : AP_CY
+            return (
+              <circle cx={cx} cy={cy} r="12"
+                fill="none" stroke="#B45309" strokeWidth="2.5"
+                className="india-map-pulse"
+                style={{ transformOrigin: `${cx}px ${cy}px` }}
+              />
+            )
+          })()}
+        </svg>
+      </div>
     </>
   )
 }

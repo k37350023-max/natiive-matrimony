@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import MobileNav from '../components/MobileNav'
 
 type Interest = {
   id: string
@@ -81,7 +82,7 @@ export default function InterestsPage() {
   )
 
   return (
-    <div className="min-h-screen" style={{background: '#FFFBF5'}}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{background: '#FFFBF5'}}>
       <header className="bg-white border-b sticky top-0 z-40" style={{borderColor: '#EDE8E0'}}>
         <div className="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
           <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">Natiive<span style={{color: '#B45309'}}>Matrimony</span></Link>
@@ -141,6 +142,7 @@ export default function InterestsPage() {
           ))}
         </div>
       </div>
+      <MobileNav />
     </div>
   )
 }

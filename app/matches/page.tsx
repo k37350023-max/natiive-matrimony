@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import MobileNav from '../components/MobileNav'
 
 type Profile = {
   id: string
@@ -122,9 +123,9 @@ export default function MatchesPage() {
   )
 
   return (
-    <div className="min-h-screen" style={{background: '#FFF7ED'}}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{background: '#FFF7ED'}}>
       {header}
-      <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="max-w-3xl mx-auto px-4 py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-stone-900">My Matches</h1>
           <p className="text-stone-500 text-sm mt-1">Mutual connections — full biodata and contact unlocked</p>
@@ -186,6 +187,7 @@ export default function MatchesPage() {
           ))}
         </div>
       </div>
+      <MobileNav />
     </div>
   )
 }
