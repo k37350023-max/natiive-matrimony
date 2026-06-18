@@ -74,6 +74,7 @@ export default function BrowsePage() {
   const [ageRange, setAgeRange] = useState('')
   const [profCat, setProfCat] = useState('')
   const [showMoreFilters, setShowMoreFilters] = useState(false)
+  const [alertSet, setAlertSet] = useState(false)
 
   const availableStates = region ? Object.keys(REGIONS[region] || {}) : []
   const availableDistricts = state ? (REGIONS[region]?.[state] || []) : []
@@ -127,8 +128,25 @@ export default function BrowsePage() {
     setLoading(false)
   }
 
-  function handleMapRegion(r: string) { setRegion(r); setState(''); setDistrict('') }
-  function clearAll() { setRegion(''); setState(''); setDistrict(''); setAgeRange(''); setProfCat('') }
+  function handleMapRegion(r: string) { setRegion(r); setState(''); setDistrict(''); setAlertSet(false) }
+  function clearAll() { setRegion(''); setState(''); setDistrict(''); setAgeRange(''); setProfCat(''); setAlertSet(false) }
+
+  function handleSetAlert() {
+    const key = district || state || region
+    if (!key) return
+    const existing: string[] = JSON.parse(localStorage.getItem('region_alerts') || '[]')
+    if (!existing.includes(key)) {
+      localStorage.setItem('region_alerts', JSON.stringify([...existing, key]))
+    }
+    setAlertSet(true)
+  }
+
+  useEffect(() => {
+    const key = district || state || region
+    if (!key) { setAlertSet(false); return }
+    const existing: string[] = JSON.parse(localStorage.getItem('region_alerts') || '[]')
+    setAlertSet(existing.includes(key))
+  }, [region, state, district])
 
   const activeFilterCount = [region, state, district, ageRange, profCat].filter(Boolean).length
 
@@ -345,27 +363,53 @@ export default function BrowsePage() {
                 )}
               </p>
               <div className="flex items-center gap-1.5 text-xs text-stone-400">
-                <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#059669' }} />
-                All verified
+                <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#B45309' }} />
+                ✓ Verified profiles marked
               </div>
             </div>
 
             {/* Empty state */}
             {!loading && profiles.length === 0 && (
-              <div className="card p-12 text-center">
+              <div className="card p-8 text-center">
                 <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#FEF9EC' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.75">
-                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
                   </svg>
                 </div>
-                <p className="font-semibold text-stone-700 mb-1">No profiles found</p>
-                <p className="text-sm text-stone-400">
-                  {activeFilterCount > 0 ? 'Try broadening your filters' : 'Be the first from your region — register your profile!'}
-                </p>
-                {activeFilterCount > 0
-                  ? <button onClick={clearAll} className="btn-ghost px-5 py-2 text-sm mt-4">Clear filters</button>
-                  : <Link href="/register" className="btn-primary px-5 py-2 text-sm mt-4 inline-flex">Register Free</Link>
-                }
+                {(region || state || district) ? (
+                  <>
+                    <p className="font-semibold text-stone-800 mb-1">
+                      No {genderLabelPlural} from {district || state || region} yet
+                    </p>
+                    <p className="text-sm text-stone-500 mb-5 leading-relaxed max-w-xs mx-auto">
+                      Be the first from your area, or invite friends and family to join.
+                      {myProfileId ? ' We\'ll alert you when someone from here registers.' : ''}
+                    </p>
+                    <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
+                      {myProfileId ? (
+                        <button
+                          onClick={handleSetAlert}
+                          disabled={alertSet}
+                          className={alertSet ? 'btn-ghost px-5 py-2.5 text-sm' : 'btn-primary px-5 py-2.5 text-sm'}>
+                          {alertSet ? `✓ Alert set for ${district || state || region}` : 'Notify me when someone joins'}
+                        </button>
+                      ) : (
+                        <Link href="/register" className="btn-primary px-5 py-2.5 text-sm">
+                          Create Your Profile
+                        </Link>
+                      )}
+                      <button onClick={clearAll} className="btn-ghost px-5 py-2.5 text-sm text-stone-400">
+                        Show all {genderLabelPlural}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p className="font-semibold text-stone-700 mb-1">No profiles found</p>
+                    <p className="text-sm text-stone-400 mb-4">Be the first from your region — register your profile!</p>
+                    <Link href="/register" className="btn-primary px-5 py-2 text-sm inline-flex">Register Free</Link>
+                  </>
+                )}
               </div>
             )}
 

@@ -53,12 +53,14 @@ export default function ProfilePage() {
   const [shortlisted, setShortlisted] = useState(false)
   const [sending, setSending] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [myProfileId, setMyProfileId] = useState<string | null>(null)
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [noteText, setNoteText] = useState('')
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
     setIsLoggedIn(!!myId)
+    setMyProfileId(myId)
     loadProfile()
     if (myId) checkInterestStatus(myId)
   }, [id])
@@ -166,7 +168,7 @@ export default function ProfilePage() {
                 <h1 className="text-2xl font-bold text-stone-900 font-serif-display tracking-tight">{profile.full_name}</h1>
                 <p className="text-stone-500 mt-0.5 text-sm">{getAge(profile.date_of_birth)} years · {profile.gender === 'male' ? 'Groom' : 'Bride'}</p>
               </div>
-              {profile.verified && (
+              {profile.verified ? (
                 <div className="relative group shrink-0 mt-1">
                   <span className="badge badge-verified cursor-default">✓ Verified</span>
                   <div className="absolute bottom-full right-0 mb-2 w-52 px-3 py-2 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed"
@@ -175,7 +177,12 @@ export default function ProfilePage() {
                     <div className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
                   </div>
                 </div>
-              )}
+              ) : myProfileId === profile.id ? (
+                <span className="text-xs px-2.5 py-1 rounded-full font-medium shrink-0 mt-1"
+                  style={{ background: '#FFFBEB', color: '#92400E', border: '1px solid #FDE68A' }}>
+                  Verification pending · up to 24h
+                </span>
+              ) : null}
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
