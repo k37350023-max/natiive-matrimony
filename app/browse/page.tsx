@@ -459,15 +459,27 @@ export default function BrowsePage() {
                   <div className="card card-hover cursor-pointer active:scale-[0.99] transition-all">
                     {/* Mobile: horizontal layout */}
                     <div className="sm:hidden flex items-center gap-3.5 p-3.5">
-                      {p.photo_url && p.photo_visibility === 'public' ? (
-                        <img src={p.photo_url} alt={p.full_name}
-                          className="w-12 h-12 rounded-full object-cover shrink-0 ring-2 ring-stone-100" />
-                      ) : (
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-                          style={{ background: avatarBg(p.full_name) }}>
-                          {initials(p.full_name)}
-                        </div>
-                      )}
+                      <div className="relative shrink-0">
+                        {p.photo_url && p.photo_visibility === 'public' ? (
+                          <img src={p.photo_url} alt={p.full_name}
+                            className="w-12 h-12 rounded-full object-cover ring-2 ring-stone-100" />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold"
+                            style={{ background: avatarBg(p.full_name) }}>
+                            {initials(p.full_name)}
+                          </div>
+                        )}
+                        {interestMap[p.id] && (
+                          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white"
+                            style={{ background: interestMap[p.id] === 'rejected' ? '#EF4444' : '#059669' }}>
+                            {interestMap[p.id] === 'rejected' ? (
+                              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                            ) : (
+                              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            )}
+                          </div>
+                        )}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-stone-900 text-sm truncate">{p.full_name}</h3>
@@ -502,15 +514,27 @@ export default function BrowsePage() {
                     <div className="hidden sm:block overflow-hidden">
                       <div className="h-24 flex items-center justify-center relative"
                         style={{ background: 'linear-gradient(135deg, #FEF9EC, #FFF7F0)' }}>
-                        {p.photo_url && p.photo_visibility === 'public' ? (
-                          <img src={p.photo_url} alt={p.full_name}
-                            className="w-14 h-14 rounded-full object-cover ring-2 ring-white shadow-sm" />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-base font-bold"
-                            style={{ background: avatarBg(p.full_name) }}>
-                            {initials(p.full_name)}
-                          </div>
-                        )}
+                        <div className="relative">
+                          {p.photo_url && p.photo_visibility === 'public' ? (
+                            <img src={p.photo_url} alt={p.full_name}
+                              className="w-14 h-14 rounded-full object-cover ring-2 ring-white shadow-sm" />
+                          ) : (
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-base font-bold"
+                              style={{ background: avatarBg(p.full_name) }}>
+                              {initials(p.full_name)}
+                            </div>
+                          )}
+                          {interestMap[p.id] && (
+                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center ring-2 ring-white"
+                              style={{ background: interestMap[p.id] === 'rejected' ? '#EF4444' : '#059669' }}>
+                              {interestMap[p.id] === 'rejected' ? (
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                              ) : (
+                                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                              )}
+                            </div>
+                          )}
+                        </div>
                         {isVerified(p) && (
                           <div className="absolute top-2 right-2 group">
                             <span className="badge badge-verified cursor-default">✓ Verified</span>
