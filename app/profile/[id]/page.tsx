@@ -48,6 +48,11 @@ type Profile = {
   email: string
   photo_url: string
   photo_visibility: string | null
+  marital_status: string | null
+  profile_created_by: string | null
+  last_login_at: string | null
+  pref_age_min: number | null
+  pref_age_max: number | null
 }
 
 function isSerious(p: Profile): boolean {
@@ -74,6 +79,21 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
+function cmToFeet(cm: number): string {
+  const ft = Math.floor(cm / 30.48)
+  const inches = Math.round((cm % 30.48) / 2.54)
+  return `${ft}'${inches}" (${cm} cm)`
+}
+
+function lastSeenLabel(ts: string | null): string | null {
+  if (!ts) return null
+  const days = Math.floor((Date.now() - new Date(ts).getTime()) / (1000 * 60 * 60 * 24))
+  if (days === 0) return 'Active today'
+  if (days <= 7) return `Active ${days}d ago`
+  if (days <= 30) return `Active ${Math.floor(days / 7)}w ago`
+  return null
+}
+
 const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length] }
 
@@ -91,6 +111,10 @@ export default function ProfilePage() {
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [noteText, setNoteText] = useState('')
   const [photoExpanded, setPhotoExpanded] = useState(false)
+  const [photoRequested, setPhotoRequested] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false)
+  const [reportReason, setReportReason] = useState('')
+  const [reportSent, setReportSent] = useState(false)
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
@@ -204,7 +228,9 @@ export default function ProfilePage() {
         { label: 'Date of Birth', value: profile.date_of_birth ? new Date(profile.date_of_birth + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : null },
         { label: 'Time of Birth', value: profile.birth_time || null },
         { label: 'Place of Birth', value: profile.birth_place || null },
-        { label: 'Height', value: profile.height_cm ? `${profile.height_cm} cm` : null },
+        { label: 'Height', value: profile.height_cm ? cmToFeet(profile.height_cm) : null },
+        { label: 'Marital status', value: profile.marital_status ? cap(profile.marital_status.replace(/_/g, ' ')) : 'Never married' },
+        { label: 'Profile by', value: profile.profile_created_by ? cap(profile.profile_created_by.replace(/_/g, ' ')) : null },
         { label: 'Religion', value: profile.religion || null },
         { label: 'Caste', value: profile.caste || null },
         { label: 'Mother tongue', value: profile.mother_tongue || null },
@@ -293,12 +319,30 @@ export default function ProfilePage() {
                   </div>
                 )}
                 {!showPhoto && profile.photo_url && (
-                  <div className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border mb-2"
-                    style={{ background: 'white', borderColor: '#E8E0D6', color: '#78716C' }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    {profile.photo_visibility === 'after_interest' ? 'Send interest to see photo' : 'Photo visible after mutual match'}
+                  <div className="flex flex-col items-center gap-2 mb-1">
+                    <div className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border"
+                      style={{ background: 'white', borderColor: '#E8E0D6', color: '#78716C' }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                      {profile.photo_visibility === 'after_interest' ? 'Send interest to see photo' : 'Photo visible after mutual match'}
+                    </div>
+                    {isLoggedIn && myProfileId !== profile.id && profile.photo_visibility !== 'hidden' && (
+                      <button
+                        onClick={async () => {
+                          const myId = localStorage.getItem('my_profile_id')
+                          if (!myId) return
+                          await supabase.from('photo_requests').upsert({ from_user: myId, to_user: id as string }, { onConflict: 'from_user,to_user' }).then(() => {})
+                          setPhotoRequested(true)
+                        }}
+                        disabled={photoRequested}
+                        className="text-xs font-semibold px-4 py-1.5 rounded-full border transition-all"
+                        style={photoRequested
+                          ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
+                          : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+                        {photoRequested ? '✓ Photo requested' : '📷 Request photo'}
+                      </button>
+                    )}
                   </div>
                 )}
                 {isLoggedIn && myProfileId !== profile.id && (
@@ -322,6 +366,9 @@ export default function ProfilePage() {
                 <h1 className="text-2xl font-bold text-stone-900 font-serif-display tracking-tight">{profile.full_name}</h1>
                 <p className="text-stone-500 mt-0.5 text-sm whitespace-nowrap">
                   {getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs · ` : ''}{profile.gender === 'male' ? 'Groom' : 'Bride'}
+                  {lastSeenLabel(profile.last_login_at) && (
+                    <span className="ml-2 text-xs text-stone-400">· {lastSeenLabel(profile.last_login_at)}</span>
+                  )}
                 </p>
               </div>
               {(profile.verified || profile.phone_verified) ? (
@@ -449,6 +496,17 @@ export default function ProfilePage() {
         })()}
       </div>
 
+      {/* Report link */}
+      {isLoggedIn && myProfileId !== profile.id && (
+        <div className="flex justify-center pb-2">
+          <button
+            onClick={() => setShowReportModal(true)}
+            className="text-xs text-stone-300 hover:text-red-400 transition-colors px-4 py-2">
+            Report / Block profile
+          </button>
+        </div>
+      )}
+
       {/* Personalized Note Modal */}
       {showNoteModal && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
@@ -489,6 +547,54 @@ export default function ProfilePage() {
                 {sending ? 'Sending...' : 'Send with Note'}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
+          onClick={e => e.target === e.currentTarget && setShowReportModal(false)}>
+          <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
+            <h3 className="font-bold text-stone-900 font-serif-display mb-4">Report profile</h3>
+            {reportSent ? (
+              <div className="text-center py-4">
+                <p className="text-2xl mb-2">✓</p>
+                <p className="font-semibold text-stone-700">Report submitted</p>
+                <p className="text-xs text-stone-400 mt-1">Our team will review this within 24 hours.</p>
+                <button onClick={() => setShowReportModal(false)} className="btn-ghost mt-4 px-6 py-2 text-sm">Close</button>
+              </div>
+            ) : (
+              <>
+                <p className="text-xs text-stone-400 mb-4">Select a reason</p>
+                <div className="space-y-2 mb-5">
+                  {['Fake or scam profile', 'Inappropriate content or photo', 'Harassment or abusive behaviour', 'Married / misleading information', 'Other'].map(r => (
+                    <label key={r} className="flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors"
+                      style={{ borderColor: reportReason === r ? '#B45309' : '#E8E0D6', background: reportReason === r ? '#FEF9EC' : 'white' }}>
+                      <input type="radio" name="report_reason" value={r} checked={reportReason === r}
+                        onChange={() => setReportReason(r)} className="accent-amber-700" />
+                      <span className="text-sm text-stone-700">{r}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex gap-2.5">
+                  <button onClick={() => setShowReportModal(false)} className="flex-1 btn-ghost py-2.5 text-sm">Cancel</button>
+                  <button
+                    disabled={!reportReason}
+                    onClick={async () => {
+                      const myId = localStorage.getItem('my_profile_id')
+                      if (!myId || !reportReason) return
+                      await supabase.from('reports').insert({ reporter: myId, reported: id as string, reason: reportReason }).then(() => {})
+                      setReportSent(true)
+                    }}
+                    className="flex-1 btn-primary py-2.5 text-sm"
+                    style={!reportReason ? { opacity: 0.5 } : {}}>
+                    Submit report
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

@@ -260,7 +260,10 @@ export default function InterestsPage() {
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-xs text-stone-400 mb-3">Interests you've sent — status updates when they respond</p>
+                <div className="flex items-center justify-between py-2.5 px-3 rounded-lg mb-1" style={{ background: '#FEF9EC' }}>
+                  <span className="text-xs font-semibold text-stone-700">{sent.length} interest{sent.length !== 1 ? 's' : ''} sent</span>
+                  <span className="text-xs text-stone-400">Interests you've sent — status updates when they respond</span>
+                </div>
                 {sent.map(i => <ProfileCard key={i.id} i={i} />)}
               </div>
             )}

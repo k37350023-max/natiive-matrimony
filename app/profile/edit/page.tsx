@@ -82,11 +82,14 @@ export default function EditProfilePage() {
     current_city: '', current_state: '',
     height_cm: '', caste: '', mother_tongue: 'Telugu',
     family_type: '', religion: 'Hindu',
+    marital_status: 'never_married',
+    profile_created_by: 'self',
     father_name: '', father_occupation: '',
     mother_name: '', mother_occupation: '',
     siblings: '', siblings_married: '',
     star: '', rashi: '', gotra: '', manglik: '',
     diet: '', smoking: '', drinking: '',
+    pref_age_min: '21', pref_age_max: '35',
     photo_visibility: 'after_match' as PhotoVisibility,
   })
 
@@ -151,6 +154,10 @@ export default function EditProfilePage() {
       diet: data.diet || '',
       smoking: data.smoking || '',
       drinking: data.drinking || '',
+      marital_status: data.marital_status || 'never_married',
+      profile_created_by: data.profile_created_by || 'self',
+      pref_age_min: data.pref_age_min ? String(data.pref_age_min) : '21',
+      pref_age_max: data.pref_age_max ? String(data.pref_age_max) : '35',
       photo_visibility: (data.photo_visibility as PhotoVisibility) || 'after_match',
     })
     setCurrentPhotoUrl(data.photo_url || '')
@@ -214,6 +221,10 @@ export default function EditProfilePage() {
         diet: form.diet,
         smoking: form.smoking,
         drinking: form.drinking,
+        marital_status: form.marital_status,
+        profile_created_by: form.profile_created_by,
+        pref_age_min: form.pref_age_min ? parseInt(form.pref_age_min) : null,
+        pref_age_max: form.pref_age_max ? parseInt(form.pref_age_max) : null,
         photo_url: photoUrl,
         photo_visibility: form.photo_visibility,
       }
@@ -473,6 +484,26 @@ export default function EditProfilePage() {
             <div>
               <Label>Caste</Label>
               <input className="input" placeholder="Optional" value={form.caste} onChange={e => set('caste', e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Marital status</Label>
+                <select className="input" value={form.marital_status} onChange={e => set('marital_status', e.target.value)}>
+                  <option value="never_married">Never married</option>
+                  <option value="divorced">Divorced</option>
+                  <option value="widowed">Widowed</option>
+                  <option value="separated">Separated</option>
+                </select>
+              </div>
+              <div>
+                <Label>Profile created by</Label>
+                <select className="input" value={form.profile_created_by} onChange={e => set('profile_created_by', e.target.value)}>
+                  <option value="self">Self</option>
+                  <option value="parents">Parents</option>
+                  <option value="sibling">Sibling</option>
+                  <option value="relatives">Relatives</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
@@ -752,6 +783,25 @@ export default function EditProfilePage() {
                 <option value="Occasionally">Occasionally</option>
                 <option value="Regularly">Regularly</option>
               </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Partner Preferences */}
+        <div className="card p-5">
+          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Partner Preferences</p>
+          <p className="text-xs text-stone-400 mb-4">Helps us surface more compatible matches for you</p>
+          <div className="space-y-4">
+            <div>
+              <Label>Preferred age range (years)</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <input className="input text-center w-20" type="number" placeholder="Min" min="18" max="60"
+                  value={form.pref_age_min} onChange={e => set('pref_age_min', e.target.value)} />
+                <span className="text-stone-400 text-sm">to</span>
+                <input className="input text-center w-20" type="number" placeholder="Max" min="18" max="70"
+                  value={form.pref_age_max} onChange={e => set('pref_age_max', e.target.value)} />
+                <span className="text-stone-400 text-sm">yrs</span>
+              </div>
             </div>
           </div>
         </div>

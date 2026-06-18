@@ -48,6 +48,23 @@ type Profile = {
   current_city: string
   verified: boolean
   phone_verified: boolean
+  marital_status: string | null
+  last_login_at: string | null
+}
+
+function cmToFeet(cm: number): string {
+  const ft = Math.floor(cm / 30.48)
+  const inches = Math.round((cm % 30.48) / 2.54)
+  return `${ft}'${inches}"`
+}
+
+function lastSeen(ts: string | null): string | null {
+  if (!ts) return null
+  const days = Math.floor((Date.now() - new Date(ts).getTime()) / (1000 * 60 * 60 * 24))
+  if (days === 0) return 'Active today'
+  if (days <= 7) return `Active ${days}d ago`
+  if (days <= 30) return `Active ${Math.floor(days / 7)}w ago`
+  return null
 }
 
 function isVerified(p: Pick<Profile, 'verified' | 'phone_verified'>): boolean {
@@ -91,6 +108,7 @@ export default function BrowsePage() {
   const [profCat, setProfCat] = useState('')
   const [showMoreFilters, setShowMoreFilters] = useState(false)
   const [alertSet, setAlertSet] = useState(false)
+  const [maritalFilter, setMaritalFilter] = useState('')
   const [interestMap, setInterestMap] = useState<Record<string, string>>({})
 
   const availableStates = region ? Object.keys(REGIONS[region] || {}) : []
@@ -101,6 +119,8 @@ export default function BrowsePage() {
     const myId = localStorage.getItem('my_profile_id')
     setMyProfileId(myId)
     if (!myId) { setSessionChecked(true); return }
+    // Update last active timestamp
+    supabase.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', myId).then(() => {})
     Promise.all([
       supabase.from('profiles').select('gender').eq('id', myId).single(),
       supabase.from('interests').select('to_user, status').eq('from_user', myId),
@@ -120,7 +140,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     if (sessionChecked) loadProfiles()
-  }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat, myProfileId])
+  }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat, maritalFilter, myProfileId])
 
   async function loadProfiles() {
     setLoading(true)
@@ -154,12 +174,15 @@ export default function BrowsePage() {
       const kws = PROF_KEYWORDS[profCat] || []
       if (kws.length) results = results.filter(p => kws.some(k => p.profession?.toLowerCase().includes(k)))
     }
+    if (maritalFilter) {
+      results = results.filter(p => (p.marital_status || 'never_married') === maritalFilter)
+    }
     setProfiles(results)
     setLoading(false)
   }
 
   function handleMapRegion(r: string) { setRegion(r); setState(''); setDistrict(''); setAlertSet(false) }
-  function clearAll() { setRegion(''); setState(''); setDistrict(''); setAgeRange(''); setProfCat(''); setAlertSet(false) }
+  function clearAll() { setRegion(''); setState(''); setDistrict(''); setAgeRange(''); setProfCat(''); setMaritalFilter(''); setAlertSet(false) }
 
   function handleSetAlert() {
     const key = district || state || region
@@ -178,7 +201,13 @@ export default function BrowsePage() {
     setAlertSet(existing.includes(key))
   }, [region, state, district])
 
-  const activeFilterCount = [region, state, district, ageRange, profCat].filter(Boolean).length
+  const activeFilterCount = [region, state, district, ageRange, profCat, maritalFilter].filter(Boolean).length
+
+  const MARITAL_OPTIONS = [
+    { value: 'never_married', label: 'Never married' },
+    { value: 'divorced', label: 'Divorced' },
+    { value: 'widowed', label: 'Widowed' },
+  ]
 
   const header = (
     <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
@@ -327,6 +356,21 @@ export default function BrowsePage() {
               </div>
             </div>
 
+            <div className="card p-4">
+              <p className="section-label mb-3">Marital status</p>
+              <div className="flex flex-wrap gap-1.5">
+                {MARITAL_OPTIONS.map(o => (
+                  <button key={o.value} onClick={() => setMaritalFilter(f => f === o.value ? '' : o.value)}
+                    className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
+                    style={maritalFilter === o.value
+                      ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
+                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {activeFilterCount > 0 && (
               <button onClick={clearAll} className="text-xs text-stone-400 hover:text-red-500 font-medium text-left">
                 Clear all filters ({activeFilterCount})
@@ -404,6 +448,20 @@ export default function BrowsePage() {
                             ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
                             : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
                           {p}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="section-label mb-2">Marital status</p>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {MARITAL_OPTIONS.map(o => (
+                        <button key={o.value} onClick={() => setMaritalFilter(f => f === o.value ? '' : o.value)}
+                          className="text-xs px-2.5 py-1.5 rounded-md border font-medium"
+                          style={maritalFilter === o.value
+                            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
+                            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                          {o.label}
                         </button>
                       ))}
                     </div>
@@ -526,11 +584,18 @@ export default function BrowsePage() {
 
                     {/* Card footer */}
                     <div className="px-3 py-2.5">
-                      <p className="text-xs font-medium text-stone-700 truncate">{p.profession}</p>
+                      <div className="flex items-center justify-between gap-1">
+                        <p className="text-xs font-medium text-stone-700 truncate">{p.profession}</p>
+                        {p.height_cm ? <span className="text-xs text-stone-400 shrink-0">{cmToFeet(p.height_cm)}</span> : null}
+                      </div>
                       <div className="flex items-center justify-between mt-1.5 gap-1">
                         <span className="text-xs text-stone-400 truncate flex items-center gap-1">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                          {p.native_district}
+                          {lastSeen(p.last_login_at) || (
+                            <>
+                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                              {p.native_district}
+                            </>
+                          )}
                         </span>
                         {isSerious(p) ? (
                           <span className="relative group/tip cursor-default shrink-0 text-xs px-1.5 py-0.5 rounded font-semibold"
