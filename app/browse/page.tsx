@@ -37,6 +37,7 @@ type Profile = {
   profession: string
   native_district: string
   native_state: string
+  native_region: string
   current_city: string
   verified: boolean
 }
@@ -49,8 +50,8 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D']
-function avatarBg(name: string) { return COLORS[name.charCodeAt(0) % COLORS.length] }
+const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D', '#C2410C', '#0891B2']
+function avatarBg(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length] }
 
 export default function BrowsePage() {
   const [sessionChecked, setSessionChecked] = useState(false)
@@ -106,17 +107,17 @@ export default function BrowsePage() {
   const activeFilterCount = [region, state, district, ageRange, profCat].filter(Boolean).length
 
   const header = (
-    <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#EDE8E0' }}>
+    <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
         <Link href="/" className="text-base font-bold text-stone-900 font-serif-display shrink-0">
           Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
         </Link>
-        <div className="flex items-center gap-3 shrink-0">
-          <Link href="/interests" className="text-sm text-stone-500 hover:text-amber-700 hidden sm:block">Interests</Link>
-          <Link href="/matches" className="text-sm text-stone-500 hover:text-amber-700 hidden sm:block">Matches</Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link href="/interests" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Interests</Link>
+          <Link href="/matches" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Matches</Link>
           {sessionChecked && !myGender && (
             <>
-              <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-amber-700 hidden sm:block">Login</Link>
+              <Link href="/login" className="text-sm font-medium text-stone-600 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Login</Link>
               <Link href="/register" className="btn-primary text-xs px-3 py-1.5">Register Free</Link>
             </>
           )}
@@ -126,115 +127,164 @@ export default function BrowsePage() {
   )
 
   if (!sessionChecked) return (
-    <div className="min-h-screen" style={{ background: '#FFFBF5' }}>{header}
+    <div className="min-h-screen" style={{ background: '#FAFAF9' }}>{header}
       <div className="flex items-center justify-center py-24 text-stone-400 text-sm">Loading...</div>
     </div>
   )
 
-  const genderLabel = oppositeGender === 'female' ? 'bride' : oppositeGender === 'male' ? 'groom' : 'profile'
   const genderLabelPlural = oppositeGender === 'female' ? 'brides' : oppositeGender === 'male' ? 'grooms' : 'profiles'
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FFFBF5' }}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FAFAF9' }}>
       {header}
       <LaunchBanner />
 
-      <div className="max-w-6xl mx-auto px-4 py-4 sm:py-6">
+      <div className="max-w-6xl mx-auto px-4 py-5">
 
-        {/* Guest register nudge — only for non-logged-in */}
+        {/* Guest nudge — slim, non-intrusive */}
         {!myGender && (
-          <div className="rounded-xl border-2 p-4 mb-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
-            style={{ background: '#FFFBF5', borderColor: '#FDE68A' }}>
-            <div>
-              <p className="font-bold text-stone-800 text-sm">Register to see your best matches</p>
-              <p className="text-xs text-stone-500 mt-0.5">We filter by your native region and show compatible profiles. Free — no card needed.</p>
-            </div>
+          <div className="rounded-lg border px-4 py-3 mb-4 flex items-center justify-between gap-4"
+            style={{ background: 'white', borderColor: '#E8E0D6' }}>
+            <p className="text-sm text-stone-600">
+              <span className="font-semibold text-stone-800">Register for better matches.</span>{' '}
+              We filter by your native region and show compatible profiles.
+            </p>
             <div className="flex gap-2 shrink-0">
-              <Link href="/login" className="btn-outline text-xs px-4 py-2">Login</Link>
-              <Link href="/register" className="btn-primary text-xs px-4 py-2">Register Free →</Link>
+              <Link href="/login" className="btn-ghost text-xs px-3 py-1.5">Login</Link>
+              <Link href="/register" className="btn-primary text-xs px-3 py-1.5">Register Free</Link>
             </div>
           </div>
         )}
 
-        {/* Filter panel */}
-        <div className="card p-4 mb-4">
-          <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+        <div className="flex gap-5">
 
-            {/* Desktop: accurate India map */}
-            <div className="hidden sm:block shrink-0">
-              <p className="section-label mb-2">Filter by native region</p>
+          {/* Desktop sidebar: map + filters */}
+          <aside className="hidden sm:flex flex-col gap-4 w-56 shrink-0">
+            <div className="card p-4">
+              <p className="section-label mb-3">Filter by region</p>
               <IndiaMap mode="filter" selectedRegion={region} onRegionClick={handleMapRegion} compact />
-            </div>
-
-            {/* Right side: all filter controls */}
-            <div className="flex-1 w-full min-w-0">
-
-              {/* Region chips */}
-              <p className="section-label mb-2">Native region</p>
-              <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" style={{ scrollbarWidth: 'none' }}>
+              <div className="mt-3 flex flex-wrap gap-1.5">
                 {['Telangana', 'Coastal Andhra', 'Rayalaseema'].map(r => (
                   <button key={r}
                     onClick={() => handleMapRegion(region === r ? '' : r)}
-                    className="text-xs px-3.5 py-2 rounded-full border font-semibold shrink-0 transition-all"
+                    className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
                     style={region === r
-                      ? { background: '#FEF3C7', color: '#92400E', borderColor: '#B45309' }
-                      : { borderColor: '#EDE8E0', color: '#78716C', background: 'white' }}>
+                      ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
+                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
                     {r}
                   </button>
                 ))}
               </div>
+            </div>
 
-              {/* State + District */}
-              <div className="grid grid-cols-2 gap-2 mt-3">
+            {region && (
+              <div className="card p-4 space-y-3">
                 <select className="input text-sm" value={state}
-                  onChange={e => { setState(e.target.value); setDistrict('') }}
-                  disabled={!region}>
-                  <option value="">State</option>
+                  onChange={e => { setState(e.target.value); setDistrict('') }}>
+                  <option value="">All states</option>
                   {availableStates.map(s => <option key={s}>{s}</option>)}
                 </select>
                 <select className="input text-sm" value={district}
                   onChange={e => setDistrict(e.target.value)}
                   disabled={!state}>
-                  <option value="">District</option>
+                  <option value="">All districts</option>
                   {availableDistricts.map(d => <option key={d}>{d}</option>)}
                 </select>
               </div>
+            )}
 
-              {/* More filters toggle */}
-              <div className="flex items-center justify-between mt-3">
+            <div className="card p-4">
+              <p className="section-label mb-3">Age range</p>
+              <div className="flex flex-wrap gap-1.5">
+                {AGE_RANGES.map(a => (
+                  <button key={a} onClick={() => setAgeRange(r => r === a ? '' : a)}
+                    className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
+                    style={ageRange === a
+                      ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
+                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                    {a}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="card p-4">
+              <p className="section-label mb-3">Profession</p>
+              <div className="flex flex-wrap gap-1.5">
+                {PROFESSIONS.map(p => (
+                  <button key={p} onClick={() => setProfCat(c => c === p ? '' : p)}
+                    className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
+                    style={profCat === p
+                      ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
+                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {activeFilterCount > 0 && (
+              <button onClick={clearAll} className="text-xs text-stone-400 hover:text-red-500 font-medium text-left">
+                Clear all filters ({activeFilterCount})
+              </button>
+            )}
+          </aside>
+
+          {/* Main content */}
+          <div className="flex-1 min-w-0">
+
+            {/* Mobile filter bar */}
+            <div className="sm:hidden mb-4">
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
+                {['Telangana', 'Coastal Andhra', 'Rayalaseema'].map(r => (
+                  <button key={r}
+                    onClick={() => handleMapRegion(region === r ? '' : r)}
+                    className="text-xs px-3 py-2 rounded-lg border font-semibold shrink-0 transition-all"
+                    style={region === r
+                      ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
+                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                    {r}
+                  </button>
+                ))}
                 <button
                   onClick={() => setShowMoreFilters(f => !f)}
-                  className="text-xs font-semibold flex items-center gap-1.5"
-                  style={{ color: activeFilterCount > 0 ? '#B45309' : '#78716C' }}>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  className="text-xs px-3 py-2 rounded-lg border font-semibold shrink-0 flex items-center gap-1.5"
+                  style={activeFilterCount > 0
+                    ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
+                    : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
                   </svg>
-                  {showMoreFilters ? 'Hide filters' : 'More filters'}
-                  {activeFilterCount > 0 && (
-                    <span className="ml-1 text-white text-xs px-1.5 py-0.5 rounded-full font-bold"
-                      style={{ background: '#B45309' }}>
-                      {activeFilterCount}
-                    </span>
-                  )}
+                  Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
                 </button>
-                {activeFilterCount > 0 && (
-                  <button onClick={clearAll} className="text-xs text-stone-400 hover:text-red-500 font-medium">
-                    Clear all
-                  </button>
-                )}
               </div>
 
               {showMoreFilters && (
-                <div className="mt-3 pt-3 border-t space-y-3" style={{ borderColor: '#EDE8E0' }}>
+                <div className="card p-4 mt-3 space-y-4">
+                  {region && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <select className="input text-sm" value={state}
+                        onChange={e => { setState(e.target.value); setDistrict('') }}>
+                        <option value="">State</option>
+                        {availableStates.map(s => <option key={s}>{s}</option>)}
+                      </select>
+                      <select className="input text-sm" value={district}
+                        onChange={e => setDistrict(e.target.value)}
+                        disabled={!state}>
+                        <option value="">District</option>
+                        {availableDistricts.map(d => <option key={d}>{d}</option>)}
+                      </select>
+                    </div>
+                  )}
                   <div>
-                    <p className="section-label mb-2">Age range</p>
+                    <p className="section-label mb-2">Age</p>
                     <div className="flex gap-1.5 flex-wrap">
                       {AGE_RANGES.map(a => (
                         <button key={a} onClick={() => setAgeRange(r => r === a ? '' : a)}
-                          className="text-xs px-3 py-1.5 rounded-full border font-semibold transition-all"
+                          className="text-xs px-2.5 py-1.5 rounded-md border font-medium"
                           style={ageRange === a
                             ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                            : { borderColor: '#EDE8E0', color: '#78716C', background: 'white' }}>
+                            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
                           {a}
                         </button>
                       ))}
@@ -245,88 +295,115 @@ export default function BrowsePage() {
                     <div className="flex gap-1.5 flex-wrap">
                       {PROFESSIONS.map(p => (
                         <button key={p} onClick={() => setProfCat(c => c === p ? '' : p)}
-                          className="text-xs px-3 py-1.5 rounded-full border font-semibold transition-all"
+                          className="text-xs px-2.5 py-1.5 rounded-md border font-medium"
                           style={profCat === p
                             ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                            : { borderColor: '#EDE8E0', color: '#78716C', background: 'white' }}>
+                            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
                           {p}
                         </button>
                       ))}
                     </div>
                   </div>
+                  {activeFilterCount > 0 && (
+                    <button onClick={clearAll} className="text-xs text-stone-400 hover:text-red-500 font-medium">Clear all</button>
+                  )}
                 </div>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Results meta */}
-        <div className="flex items-center gap-3 mb-4">
-          <p className="text-sm text-stone-500 font-medium">
-            {loading ? 'Loading...' : `${profiles.length} ${profiles.length !== 1 ? genderLabelPlural : genderLabel} found`}
-          </p>
-          <div className="flex-1 border-t" style={{ borderColor: '#EDE8E0' }} />
-          <span className="text-xs text-stone-400 flex items-center gap-1.5 shrink-0">
-            <span className="w-2 h-2 rounded-full inline-block" style={{ background: '#059669' }} />
-            All verified
-          </span>
-        </div>
-
-        {/* Empty */}
-        {!loading && profiles.length === 0 && (
-          <div className="card p-16 text-center">
-            <p className="text-3xl mb-3">🔍</p>
-            <p className="font-semibold text-stone-700">No profiles found</p>
-            <p className="text-sm text-stone-400 mt-1">
-              {activeFilterCount > 0 ? 'Try a broader region or clear some filters' : 'Be the first from your region — register your profile!'}
-            </p>
-            {activeFilterCount > 0
-              ? <button onClick={clearAll} className="btn-outline px-5 py-2 text-sm mt-4">Clear all filters</button>
-              : <Link href="/register" className="btn-primary px-5 py-2 text-sm mt-4 inline-flex">Register Free →</Link>
-            }
-          </div>
-        )}
-
-        {/* Profile grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {profiles.map(p => (
-            <Link href={`/profile/${p.id}`} key={p.id}>
-              <div className="card card-hover overflow-hidden cursor-pointer active:scale-[0.98] transition-transform">
-                {/* Avatar area */}
-                <div className="h-28 flex items-center justify-center relative"
-                  style={{ background: 'linear-gradient(135deg, #FEF3C7, #FFFBF5)' }}>
-                  <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-lg font-bold"
-                    style={{ background: avatarBg(p.full_name) }}>
-                    {initials(p.full_name)}
-                  </div>
-                  {p.verified && (
-                    <div className="absolute top-2 right-2">
-                      <span className="badge badge-verified text-xs">✓ Verified</span>
-                    </div>
-                  )}
-                  <div className="absolute bottom-2 left-0 right-0 flex justify-center">
-                    <span className="text-xs text-stone-400 bg-white bg-opacity-80 px-2 py-0.5 rounded-full flex items-center gap-1">
-                      <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                      </svg>
-                      Photo after match
-                    </span>
-                  </div>
-                </div>
-                {/* Info */}
-                <div className="p-3.5">
-                  <h3 className="font-bold text-stone-900 text-sm">{p.full_name}</h3>
-                  <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
-                  <div className="mt-2.5 pt-2.5 border-t flex items-center justify-between" style={{ borderColor: '#F0EBE3' }}>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#FEF3C7', color: '#92400E' }}>
-                      📍 {p.native_district}
-                    </span>
-                    <span className="text-xs text-stone-400">{p.current_city}</span>
-                  </div>
-                </div>
+            {/* Results count */}
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm text-stone-500">
+                {loading ? 'Loading...' : (
+                  <><span className="font-semibold text-stone-800">{profiles.length}</span> {genderLabelPlural} found</>
+                )}
+              </p>
+              <div className="flex items-center gap-1.5 text-xs text-stone-400">
+                <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#059669' }} />
+                All verified
               </div>
-            </Link>
-          ))}
+            </div>
+
+            {/* Empty state */}
+            {!loading && profiles.length === 0 && (
+              <div className="card p-12 text-center">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#FEF9EC' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.75">
+                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                  </svg>
+                </div>
+                <p className="font-semibold text-stone-700 mb-1">No profiles found</p>
+                <p className="text-sm text-stone-400">
+                  {activeFilterCount > 0 ? 'Try broadening your filters' : 'Be the first from your region — register your profile!'}
+                </p>
+                {activeFilterCount > 0
+                  ? <button onClick={clearAll} className="btn-ghost px-5 py-2 text-sm mt-4">Clear filters</button>
+                  : <Link href="/register" className="btn-primary px-5 py-2 text-sm mt-4 inline-flex">Register Free</Link>
+                }
+              </div>
+            )}
+
+            {/* Profile list */}
+            <div className="space-y-2.5 sm:grid sm:grid-cols-2 sm:gap-3 sm:space-y-0 lg:grid-cols-3">
+              {profiles.map(p => (
+                <Link href={`/profile/${p.id}`} key={p.id} className="block">
+                  <div className="card card-hover cursor-pointer active:scale-[0.99] transition-all">
+                    {/* Mobile: horizontal layout */}
+                    <div className="sm:hidden flex items-center gap-3.5 p-3.5">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
+                        style={{ background: avatarBg(p.full_name) }}>
+                        {initials(p.full_name)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-stone-900 text-sm truncate">{p.full_name}</h3>
+                          {p.verified && <span className="badge badge-verified shrink-0">✓</span>}
+                        </div>
+                        <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className="text-xs px-2 py-0.5 rounded-md font-medium"
+                            style={{ background: '#FEF9EC', color: '#92400E' }}>
+                            {p.native_district}
+                          </span>
+                          <span className="text-xs text-stone-400">{p.current_city}</span>
+                        </div>
+                      </div>
+                      <svg className="text-stone-300 shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="m9 18 6-6-6-6"/>
+                      </svg>
+                    </div>
+
+                    {/* Desktop: vertical card */}
+                    <div className="hidden sm:block overflow-hidden">
+                      <div className="h-24 flex items-center justify-center relative"
+                        style={{ background: 'linear-gradient(135deg, #FEF9EC, #FFF7F0)' }}>
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-base font-bold"
+                          style={{ background: avatarBg(p.full_name) }}>
+                          {initials(p.full_name)}
+                        </div>
+                        {p.verified && (
+                          <div className="absolute top-2 right-2">
+                            <span className="badge badge-verified">✓ Verified</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-3.5">
+                        <h3 className="font-semibold text-stone-900 text-sm">{p.full_name}</h3>
+                        <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
+                        <div className="mt-2.5 pt-2.5 border-t flex items-center justify-between" style={{ borderColor: '#F0EBE3' }}>
+                          <span className="text-xs font-medium px-2 py-0.5 rounded-md"
+                            style={{ background: '#FEF9EC', color: '#92400E' }}>
+                            {p.native_district}
+                          </span>
+                          <span className="text-xs text-stone-400">{p.current_city}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 

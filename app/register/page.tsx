@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import LaunchBanner from '../components/LaunchBanner'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -18,7 +17,7 @@ const REGIONS: Record<string, Record<string, string[]>> = {
   },
 }
 
-const STEPS = ['Basic Info', 'Native Place', 'Profession & Photo']
+const STEPS = ['Basic Info', 'Native Place', 'About You']
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -106,53 +105,59 @@ export default function RegisterPage() {
     }
   }
 
+  const Label = ({ children }: { children: React.ReactNode }) => (
+    <label className="form-label">{children}</label>
+  )
+
   return (
-    <div className="min-h-screen flex flex-col" style={{background: '#FFFBF5'}}>
-      <header className="bg-white border-b" style={{borderColor: '#EDE8E0'}}>
-        <div className="max-w-xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div className="min-h-screen flex flex-col" style={{ background: '#FAFAF9' }}>
+      <header className="bg-white border-b" style={{ borderColor: '#E8E0D6' }}>
+        <div className="max-w-xl mx-auto px-5 h-14 flex items-center justify-between">
           <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">
-            Natiive<span style={{color: '#B45309'}}>Matrimony</span>
+            Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
           </Link>
-          <Link href="/browse" className="text-sm text-stone-500 hover:text-orange-700">Browse profiles</Link>
+          <Link href="/browse" className="text-sm text-stone-500 hover:text-stone-700">Browse profiles</Link>
         </div>
       </header>
-
-      <LaunchBanner />
 
       <div className="flex-1 flex items-start justify-center px-4 py-8">
         <div className="w-full max-w-md">
 
-          {/* Free offer pill */}
-          <div className="text-center mb-6">
-            <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border"
-              style={{ background: '#F0FDF4', color: '#166534', borderColor: '#BBF7D0' }}>
-              🎉 Free access to all features until September 2026
-            </span>
-          </div>
-
           {/* Step indicator */}
           <div className="mb-6">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               {STEPS.map((s, i) => (
-                <div key={s} className="flex items-center gap-2 flex-1">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${i + 1 < step ? 'bg-orange-700 text-white' : i + 1 === step ? 'bg-orange-700 text-white' : 'bg-stone-200 text-stone-400'}`}>
-                      {i + 1 < step ? '✓' : i + 1}
+                <div key={s} className="flex items-center flex-1 last:flex-none">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
+                      i + 1 < step ? 'text-white' : i + 1 === step ? 'text-white' : 'text-stone-400'
+                    }`} style={{
+                      background: i + 1 <= step ? '#B45309' : '#E8E0D6'
+                    }}>
+                      {i + 1 < step ? (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      ) : i + 1}
                     </div>
-                    <span className={`text-xs font-medium hidden sm:block ${i + 1 === step ? 'text-stone-800' : 'text-stone-400'}`}>{s}</span>
+                    <span className={`text-xs font-medium hidden sm:block ${i + 1 === step ? 'text-stone-700' : 'text-stone-400'}`}>{s}</span>
                   </div>
-                  {i < STEPS.length - 1 && <div className={`flex-1 h-0.5 ${i + 1 < step ? 'bg-orange-700' : 'bg-stone-200'}`} />}
+                  {i < STEPS.length - 1 && (
+                    <div className="flex-1 h-px mx-3" style={{ background: i + 1 < step ? '#B45309' : '#E8E0D6' }} />
+                  )}
                 </div>
               ))}
             </div>
           </div>
 
           <div className="card p-6">
-            <h2 className="text-xl font-bold text-stone-900 mb-1">{STEPS[step - 1]}</h2>
-            <p className="text-sm text-stone-500 mb-6">Step {step} of {STEPS.length}</p>
+            <div className="mb-5">
+              <h2 className="text-xl font-bold text-stone-900 font-serif-display">{STEPS[step - 1]}</h2>
+              <p className="text-sm text-stone-400 mt-0.5">Step {step} of {STEPS.length}</p>
+            </div>
 
             {error && (
-              <div className="mb-4 px-4 py-3 rounded-lg text-sm font-medium" style={{background: '#FEE2E2', color: '#991B1B'}}>
+              <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}>
                 {error}
               </div>
             )}
@@ -161,7 +166,7 @@ export default function RegisterPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="section-label block mb-1.5">Gender *</label>
+                    <Label>Gender</Label>
                     <select className="input" value={form.gender} onChange={e => set('gender', e.target.value)}>
                       <option value="">Select</option>
                       <option value="male">Male (Groom)</option>
@@ -169,25 +174,25 @@ export default function RegisterPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="section-label block mb-1.5">Date of Birth *</label>
+                    <Label>Date of birth</Label>
                     <input className="input" type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
                   </div>
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Full Name *</label>
+                  <Label>Full name</Label>
                   <input className="input" placeholder="e.g. Ravi Kumar" value={form.full_name} onChange={e => set('full_name', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Phone</label>
-                  <input className="input" type="tel" placeholder="10-digit mobile number" value={form.phone} onChange={e => set('phone', e.target.value)} />
+                  <Label>Mobile number</Label>
+                  <input className="input" type="tel" placeholder="10-digit number" value={form.phone} onChange={e => set('phone', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Email *</label>
+                  <Label>Email address</Label>
                   <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={e => set('email', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Password *</label>
-                  <input className="input" type="password" placeholder="Min. 6 characters" value={form.password} onChange={e => set('password', e.target.value)} />
+                  <Label>Password</Label>
+                  <input className="input" type="password" placeholder="Minimum 6 characters" value={form.password} onChange={e => set('password', e.target.value)} />
                 </div>
               </div>
             )}
@@ -195,21 +200,21 @@ export default function RegisterPage() {
             {step === 2 && (
               <div className="space-y-4">
                 <div>
-                  <label className="section-label block mb-1.5">Native Region *</label>
+                  <Label>Native region</Label>
                   <select className="input" value={form.native_region} onChange={e => { set('native_region', e.target.value); set('native_state', ''); set('native_district', '') }}>
                     <option value="">Select region</option>
                     {Object.keys(REGIONS).map(r => <option key={r} value={r}>{r}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Native State *</label>
+                  <Label>Native state</Label>
                   <select className="input" value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }} disabled={!form.native_region}>
                     <option value="">Select state</option>
                     {availableStates.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Native District *</label>
+                  <Label>Native district</Label>
                   <select className="input" value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
                     <option value="">Select district</option>
                     {availableDistricts.map(d => <option key={d} value={d}>{d}</option>)}
@@ -217,11 +222,11 @@ export default function RegisterPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="section-label block mb-1.5">Current City *</label>
+                    <Label>Current city</Label>
                     <input className="input" placeholder="e.g. Hyderabad" value={form.current_city} onChange={e => set('current_city', e.target.value)} />
                   </div>
                   <div>
-                    <label className="section-label block mb-1.5">Current State</label>
+                    <Label>Current state</Label>
                     <input className="input" placeholder="e.g. Telangana" value={form.current_state} onChange={e => set('current_state', e.target.value)} />
                   </div>
                 </div>
@@ -231,26 +236,26 @@ export default function RegisterPage() {
             {step === 3 && (
               <div className="space-y-4">
                 <div>
-                  <label className="section-label block mb-1.5">Profession *</label>
+                  <Label>Profession</Label>
                   <input className="input" placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Education</label>
+                  <Label>Education</Label>
                   <input className="input" placeholder="e.g. B.Tech, MBA" value={form.education} onChange={e => set('education', e.target.value)} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="section-label block mb-1.5">Caste</label>
+                    <Label>Caste</Label>
                     <input className="input" placeholder="Optional" value={form.caste} onChange={e => set('caste', e.target.value)} />
                   </div>
                   <div>
-                    <label className="section-label block mb-1.5">Height (cm)</label>
+                    <Label>Height (cm)</Label>
                     <input className="input" type="number" placeholder="e.g. 170" value={form.height_cm} onChange={e => set('height_cm', e.target.value)} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="section-label block mb-1.5">Mother Tongue</label>
+                    <Label>Mother tongue</Label>
                     <select className="input" value={form.mother_tongue} onChange={e => set('mother_tongue', e.target.value)}>
                       <option value="Telugu">Telugu</option>
                       <option value="Tamil">Tamil</option>
@@ -260,7 +265,7 @@ export default function RegisterPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="section-label block mb-1.5">Family Type</label>
+                    <Label>Family type</Label>
                     <select className="input" value={form.family_type} onChange={e => set('family_type', e.target.value)}>
                       <option value="">Select</option>
                       <option value="nuclear">Nuclear</option>
@@ -269,62 +274,62 @@ export default function RegisterPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">About yourself</label>
-                  <textarea className="input" rows={3} placeholder="A short note about yourself, family background, expectations..." value={form.about} onChange={e => set('about', e.target.value)} />
+                  <Label>About yourself</Label>
+                  <textarea className="input" rows={3}
+                    placeholder="A short note about yourself, family background, what you're looking for..."
+                    value={form.about} onChange={e => set('about', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Profile Photo</label>
-                  <div className="flex items-center gap-4">
-                    {photoPreview && (
-                      <img src={photoPreview} alt="Preview" className="w-16 h-16 rounded-full object-cover border-2 border-orange-200" />
-                    )}
-                    <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-stone-300 rounded-lg text-sm text-stone-500 cursor-pointer hover:border-orange-400 hover:text-orange-600 transition-colors">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      {photo ? photo.name : 'Upload photo (visible only after match)'}
-                      <input type="file" accept="image/*" className="hidden" onChange={e => {
-                        const file = e.target.files?.[0]
-                        if (file) { setPhoto(file); setPhotoPreview(URL.createObjectURL(file)) }
-                      }} />
-                    </label>
-                  </div>
-                  <p className="text-xs text-stone-400 mt-1.5">Your photo is only shown after both parties accept each other's interest.</p>
-                </div>
-
-                {/* What you get */}
-                <div className="rounded-xl p-4 border" style={{ background: '#F0FDF4', borderColor: '#BBF7D0' }}>
-                  <p className="text-xs font-bold mb-2" style={{ color: '#166534' }}>What you get — FREE until Sep 2026</p>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {['Instant profile activation', 'Unlimited interests', 'Contact after match', 'Biodata PDF export'].map(f => (
-                      <p key={f} className="text-xs text-stone-600 flex items-center gap-1">
-                        <span style={{ color: '#16A34A' }}>✓</span> {f}
-                      </p>
-                    ))}
-                  </div>
+                  <Label>Profile photo</Label>
+                  <label className="flex items-center gap-3 px-4 py-3 rounded-lg border-2 border-dashed cursor-pointer transition-colors"
+                    style={{ borderColor: photo ? '#B45309' : '#E8E0D6' }}>
+                    {photoPreview
+                      ? <img src={photoPreview} alt="Preview" className="w-10 h-10 rounded-full object-cover shrink-0" />
+                      : (
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: '#FEF9EC' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.75">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                          </svg>
+                        </div>
+                      )
+                    }
+                    <div>
+                      <p className="text-sm font-medium text-stone-700">{photo ? photo.name : 'Upload a photo'}</p>
+                      <p className="text-xs text-stone-400 mt-0.5">Visible only after a mutual match</p>
+                    </div>
+                    <input type="file" accept="image/*" className="hidden" onChange={e => {
+                      const file = e.target.files?.[0]
+                      if (file) { setPhoto(file); setPhotoPreview(URL.createObjectURL(file)) }
+                    }} />
+                  </label>
                 </div>
               </div>
             )}
 
-            <div className="flex justify-between mt-8 pt-6" style={{borderTop: '1px solid #F5F5F4'}}>
+            <div className="flex justify-between mt-7 pt-5 border-t" style={{ borderColor: '#F0EBE3' }}>
               {step > 1 ? (
-                <button onClick={() => { setError(''); setStep(s => s - 1) }} className="btn-outline px-5 py-2.5 text-sm">Back</button>
+                <button onClick={() => { setError(''); setStep(s => s - 1) }} className="btn-ghost px-5 py-2.5 text-sm">Back</button>
               ) : <div />}
               {step < 3 ? (
                 <button onClick={() => {
                   const err = validateStep(step)
                   if (err) { setError(err); return }
                   setError(''); setStep(s => s + 1)
-                }} className="btn-primary px-5 py-2.5 text-sm">Continue →</button>
+                }} className="btn-primary px-6 py-2.5 text-sm">Continue</button>
               ) : (
-                <button onClick={handleSubmit} disabled={loading} className="btn-primary px-6 py-2.5 text-sm disabled:opacity-50">
-                  {loading ? 'Creating profile...' : 'Create My Profile →'}
+                <button onClick={handleSubmit} disabled={loading} className="btn-primary px-6 py-2.5 text-sm">
+                  {loading ? 'Creating profile...' : 'Create Profile'}
                 </button>
               )}
             </div>
           </div>
 
-          <p className="text-center text-xs text-stone-400 mt-4">
-            Already registered?{' '}
-            <Link href="/login" className="font-semibold" style={{color: '#B45309'}}>Sign in →</Link>
+          <p className="text-center text-xs text-stone-400 mt-5">
+            Already have an account?{' '}
+            <Link href="/login" className="font-semibold" style={{ color: '#B45309' }}>Sign in</Link>
+          </p>
+          <p className="text-center text-xs text-stone-400 mt-2">
+            Free access to all features until 30 September 2026
           </p>
         </div>
       </div>

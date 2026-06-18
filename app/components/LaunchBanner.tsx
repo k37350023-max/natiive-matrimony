@@ -1,23 +1,32 @@
 'use client'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function LaunchBanner() {
+  const [dismissed, setDismissed] = useState(false)
+  if (dismissed) return null
   return (
-    <div className="border-b py-2.5 px-4" style={{ background: '#052E16', borderColor: '#166534' }}>
-      <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 text-center">
-        <span className="text-xs font-bold" style={{ color: '#4ADE80' }}>
-          🎉 LAUNCH OFFER
-        </span>
-        <span className="text-xs text-white font-medium">
-          All premium features FREE until <span className="font-bold" style={{ color: '#86EFAC' }}>30 September 2026</span>
-          <span className="mx-2 opacity-40">·</span>
-          No credit card. No subscription. No hidden fees.
-        </span>
-        <Link href="/register"
-          className="text-xs font-bold px-3 py-1 rounded-full shrink-0"
-          style={{ background: '#16A34A', color: 'white' }}>
-          Register Free →
-        </Link>
+    <div className="border-b px-4 py-2.5" style={{ background: '#FEF9EC', borderColor: '#F0E4C0' }}>
+      <div className="max-w-5xl mx-auto flex items-center gap-3">
+        <div className="flex-1 flex items-center gap-2 min-w-0">
+          <span className="text-xs font-bold shrink-0" style={{ color: '#B45309' }}>Launch offer</span>
+          <span className="text-stone-300 text-xs shrink-0">·</span>
+          <span className="text-xs text-stone-600 truncate">All features free until 30 Sept 2026 — no credit card or subscription</span>
+        </div>
+        <div className="flex items-center gap-2.5 shrink-0">
+          <Link href="/register"
+            className="text-xs font-semibold px-3 py-1 rounded-md border"
+            style={{ color: '#B45309', borderColor: '#E8C99A', background: 'white' }}>
+            Join free
+          </Link>
+          <button onClick={() => setDismissed(true)}
+            className="text-stone-300 hover:text-stone-500 transition-colors"
+            aria-label="Dismiss">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M18 6 6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   )
