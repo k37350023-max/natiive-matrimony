@@ -26,6 +26,11 @@ type Profile = {
   verified: boolean
   phone: string
   email: string
+  photo_url: string
+}
+
+function isSerious(p: Profile): boolean {
+  return [p.education, p.about, p.height_cm, p.photo_url, p.caste].filter(Boolean).length >= 3
 }
 
 function getAge(dob: string) {
@@ -48,6 +53,8 @@ export default function ProfilePage() {
   const [shortlisted, setShortlisted] = useState(false)
   const [sending, setSending] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [showNoteModal, setShowNoteModal] = useState(false)
+  const [noteText, setNoteText] = useState('')
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
@@ -68,15 +75,27 @@ export default function ProfilePage() {
     if (data) setInterestSent(true)
   }
 
-  async function expressInterest() {
+  function openNoteModal() {
+    const myId = localStorage.getItem('my_profile_id')
+    if (!myId) { router.push('/register'); return }
+    if (myId === id) return
+    setShowNoteModal(true)
+  }
+
+  async function expressInterest(note?: string) {
     const myId = localStorage.getItem('my_profile_id')
     if (!myId) { router.push('/register'); return }
     if (myId === id) return
     setSending(true)
-    const { error } = await supabase.from('interests').insert({ from_user: myId, to_user: id, status: 'pending' })
-    if (!error) setInterestSent(true)
-    else setInterestSent(true)
+    const payload: Record<string, unknown> = { from_user: myId, to_user: id as string, status: 'pending' }
+    if (note?.trim()) payload.note = note.trim()
+    const { error } = await supabase.from('interests').insert(payload)
+    if (error && note) {
+      await supabase.from('interests').insert({ from_user: myId, to_user: id as string, status: 'pending' })
+    }
+    setInterestSent(true)
     setSending(false)
+    setShowNoteModal(false)
   }
 
   if (loading) return (
@@ -148,7 +167,14 @@ export default function ProfilePage() {
                 <p className="text-stone-500 mt-0.5 text-sm">{getAge(profile.date_of_birth)} years · {profile.gender === 'male' ? 'Groom' : 'Bride'}</p>
               </div>
               {profile.verified && (
-                <span className="badge badge-verified shrink-0 mt-1">✓ Verified</span>
+                <div className="relative group shrink-0 mt-1">
+                  <span className="badge badge-verified cursor-default">✓ Verified</span>
+                  <div className="absolute bottom-full right-0 mb-2 w-52 px-3 py-2 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed"
+                    style={{ background: '#1C1917' }}>
+                    Verified via phone linkage &amp; manual community review
+                    <div className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
+                  </div>
+                </div>
               )}
             </div>
 
@@ -160,6 +186,12 @@ export default function ProfilePage() {
                 <span className="text-xs px-3 py-1.5 rounded-full border font-medium"
                   style={{ borderColor: '#E8E0D6', color: '#78716C' }}>
                   {profile.native_region}
+                </span>
+              )}
+              {isSerious(profile) && (
+                <span className="text-xs px-3 py-1.5 rounded-full font-semibold"
+                  style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
+                  ★ Serious Seeker
                 </span>
               )}
             </div>
@@ -219,6 +251,50 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Personalized Note Modal */}
+      {showNoteModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
+          onClick={e => e.target === e.currentTarget && setShowNoteModal(false)}>
+          <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="font-bold text-stone-900 font-serif-display">Break the ice</h3>
+                <p className="text-xs text-stone-400 mt-0.5">Add a personal note — optional but encouraged</p>
+              </div>
+              <button onClick={() => setShowNoteModal(false)} className="text-stone-300 hover:text-stone-500 ml-3 mt-0.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6 6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <textarea
+              className="input w-full resize-none text-sm"
+              rows={3}
+              placeholder={`Hi, I noticed we share the same native place...`}
+              maxLength={200}
+              value={noteText}
+              onChange={e => setNoteText(e.target.value)}
+            />
+            <p className="text-xs text-stone-400 text-right mt-1">{noteText.length}/200</p>
+            <div className="flex gap-2.5 mt-4">
+              <button
+                onClick={() => expressInterest()}
+                disabled={sending}
+                className="flex-1 btn-ghost py-2.5 text-sm">
+                Skip &amp; Send
+              </button>
+              <button
+                onClick={() => expressInterest(noteText)}
+                disabled={sending}
+                className="flex-1 btn-primary py-2.5 text-sm">
+                {sending ? 'Sending...' : 'Send with Note'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3.5"
         style={{ borderColor: '#E8E0D6', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
@@ -227,7 +303,7 @@ export default function ProfilePage() {
             <>
               <div className="flex gap-2.5">
                 <button
-                  onClick={expressInterest}
+                  onClick={openNoteModal}
                   disabled={interestSent || sending}
                   className="flex-1 btn-primary py-3 text-sm"
                 >

@@ -35,11 +35,20 @@ type Profile = {
   gender: string
   date_of_birth: string
   profession: string
+  education: string
+  about: string
+  height_cm: number
+  photo_url: string
+  caste: string
   native_district: string
   native_state: string
   native_region: string
   current_city: string
   verified: boolean
+}
+
+function isSerious(p: Pick<Profile, 'education' | 'about' | 'height_cm' | 'photo_url' | 'caste'>): boolean {
+  return [p.education, p.about, p.height_cm, p.photo_url, p.caste].filter(Boolean).length >= 3
 }
 
 function getAge(dob: string) {
@@ -56,6 +65,7 @@ function avatarBg(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVAT
 export default function BrowsePage() {
   const [sessionChecked, setSessionChecked] = useState(false)
   const [myGender, setMyGender] = useState<string | null>(null)
+  const [myProfileId, setMyProfileId] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(false)
   const [region, setRegion] = useState('')
@@ -71,6 +81,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
+    setMyProfileId(myId)
     if (!myId) { setSessionChecked(true); return }
     supabase.from('profiles').select('gender').eq('id', myId).single()
       .then(({ data }) => { setMyGender(data?.gender ?? null); setSessionChecked(true) })
@@ -78,16 +89,31 @@ export default function BrowsePage() {
 
   useEffect(() => {
     if (sessionChecked) loadProfiles()
-  }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat])
+  }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat, myProfileId])
 
   async function loadProfiles() {
     setLoading(true)
-    let query = supabase.from('profiles').select('*').eq('status', 'approved')
-    if (oppositeGender) query = query.eq('gender', oppositeGender)
-    if (region) query = query.eq('native_region', region)
-    if (state) query = query.eq('native_state', state)
-    if (district) query = query.eq('native_district', district)
-    const { data } = await query.order('created_at', { ascending: false })
+
+    function buildBase() {
+      let q = supabase.from('profiles').select('*').eq('status', 'approved')
+      if (oppositeGender) q = q.eq('gender', oppositeGender)
+      if (region) q = q.eq('native_region', region)
+      if (state) q = q.eq('native_state', state)
+      if (district) q = q.eq('native_district', district)
+      return q
+    }
+
+    const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+    let orClause = `last_login_at.gt.${fourteenDaysAgo},last_login_at.is.null`
+    if (myProfileId) orClause += `,id.eq.${myProfileId}`
+
+    let { data, error } = await buildBase().or(orClause).order('created_at', { ascending: false })
+    if (error) {
+      // Column doesn't exist yet — fall back to unfiltered
+      const result = await buildBase().order('created_at', { ascending: false })
+      data = result.data
+    }
+
     let results = data || []
     if (ageRange) {
       const [minA, maxA] = ageRange === '40+' ? [40, 99] : ageRange.split('–').map(Number)
@@ -358,6 +384,10 @@ export default function BrowsePage() {
                         <div className="flex items-center gap-2">
                           <h3 className="font-semibold text-stone-900 text-sm truncate">{p.full_name}</h3>
                           {p.verified && <span className="badge badge-verified shrink-0">✓</span>}
+                          {isSerious(p) && (
+                            <span className="text-xs px-1.5 py-0.5 rounded-md font-semibold shrink-0"
+                              style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★</span>
+                          )}
                         </div>
                         <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
                         <div className="flex items-center gap-2 mt-1.5">
@@ -382,14 +412,23 @@ export default function BrowsePage() {
                           {initials(p.full_name)}
                         </div>
                         {p.verified && (
-                          <div className="absolute top-2 right-2">
-                            <span className="badge badge-verified">✓ Verified</span>
+                          <div className="absolute top-2 right-2 group">
+                            <span className="badge badge-verified cursor-default">✓ Verified</span>
+                            <div className="absolute bottom-full right-0 mb-1.5 w-44 px-2.5 py-1.5 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed"
+                              style={{ background: '#1C1917' }}>
+                              Verified via phone linkage &amp; manual community review
+                              <div className="absolute top-full right-2 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
+                            </div>
                           </div>
                         )}
                       </div>
                       <div className="p-3.5">
                         <h3 className="font-semibold text-stone-900 text-sm">{p.full_name}</h3>
                         <p className="text-xs text-stone-500 mt-0.5">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
+                        {isSerious(p) && (
+                          <span className="inline-block mt-1.5 text-xs px-2 py-0.5 rounded-md font-semibold"
+                            style={{ background: '#EFF6FF', color: '#1D4ED8' }}>★ Serious Seeker</span>
+                        )}
                         <div className="mt-2.5 pt-2.5 border-t flex items-center justify-between" style={{ borderColor: '#F0EBE3' }}>
                           <span className="text-xs font-medium px-2 py-0.5 rounded-md"
                             style={{ background: '#FEF9EC', color: '#92400E' }}>

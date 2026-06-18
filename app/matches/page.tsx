@@ -68,10 +68,14 @@ async function downloadPDF(p: Profile) {
   doc.save(`${p.full_name.replace(/ /g, '_')}_biodata.pdf`)
 }
 
+type WhatsAppModal = { profile: Profile } | null
+
 export default function MatchesPage() {
   const [myId, setMyId] = useState<string | null>(null)
   const [matches, setMatches] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
+  const [revealedIds, setRevealedIds] = useState<Set<string>>(new Set())
+  const [whatsappModal, setWhatsappModal] = useState<WhatsAppModal>(null)
 
   useEffect(() => {
     const id = localStorage.getItem('my_profile_id')
@@ -164,8 +168,6 @@ export default function MatchesPage() {
                 {[
                   ['Native', `${p.native_district}, ${p.native_state}`],
                   ['City', p.current_city],
-                  ['Phone', p.phone],
-                  ['Email', p.email],
                   ['Education', p.education || '—'],
                   ['Caste', p.caste || '—'],
                   ['Height', p.height_cm ? `${p.height_cm} cm` : '—'],
@@ -177,6 +179,24 @@ export default function MatchesPage() {
                   </div>
                 ))}
               </div>
+
+              {revealedIds.has(p.id) ? (
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-4 pt-3" style={{borderTop: '1px solid #F5F5F4'}}>
+                  {[['Phone', p.phone], ['Email', p.email]].map(([label, value]) => (
+                    <div key={label}>
+                      <p className="section-label">{label}</p>
+                      <p className="text-sm font-medium text-stone-700 mt-0.5">{value}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <button
+                  onClick={() => setWhatsappModal({ profile: p })}
+                  className="w-full mb-4 py-2.5 text-sm font-semibold rounded-lg border transition-all"
+                  style={{ background: '#F0FDF4', color: '#166534', borderColor: '#BBF7D0' }}>
+                  View Contact Details
+                </button>
+              )}
 
               {p.about && (
                 <p className="text-sm text-stone-500 italic mb-4 pt-3" style={{borderTop: '1px solid #F5F5F4'}}>"{p.about}"</p>
@@ -190,6 +210,50 @@ export default function MatchesPage() {
         </div>
       </div>
       <MobileNav />
+
+      {/* WhatsApp Safety Modal */}
+      {whatsappModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)' }}
+          onClick={e => e.target === e.currentTarget && setWhatsappModal(null)}>
+          <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
+              style={{ background: '#FEF9EC' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3 className="font-bold text-stone-900 font-serif-display mb-0.5">Before you connect</h3>
+            <p className="text-xs text-stone-400 mb-5">A quick community safety reminder</p>
+            <div className="space-y-4 mb-6">
+              {[
+                'Always verify on a video call before meeting in person or sharing any sensitive information.',
+                'Never share Aadhaar, PAN, or financial details over WhatsApp — even after a mutual match.',
+                'Trust your instincts. Block and report anyone who makes you feel pressured or uncomfortable.',
+              ].map((tip, i) => (
+                <div key={i} className="flex gap-3">
+                  <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
+                    style={{ background: '#FEF9EC', color: '#B45309' }}>{i + 1}</div>
+                  <p className="text-sm text-stone-600 leading-relaxed">{tip}</p>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2.5">
+              <button onClick={() => setWhatsappModal(null)} className="flex-1 btn-ghost py-2.5 text-sm">
+                Go back
+              </button>
+              <button
+                onClick={() => {
+                  setRevealedIds(prev => new Set([...prev, whatsappModal.profile.id]))
+                  setWhatsappModal(null)
+                }}
+                className="flex-1 btn-primary py-2.5 text-sm">
+                I understand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

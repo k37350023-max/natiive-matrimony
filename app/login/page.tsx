@@ -20,7 +20,10 @@ export default function LoginPage() {
       if (authError) throw authError
       const userId = data.user.id
       const { data: profile } = await supabase.from('profiles').select('id').eq('user_id', userId).single()
-      if (profile) localStorage.setItem('my_profile_id', profile.id)
+      if (profile) {
+        localStorage.setItem('my_profile_id', profile.id)
+        supabase.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', profile.id)
+      }
       localStorage.setItem('my_user_id', userId)
       router.push('/browse')
     } catch (err: unknown) {
