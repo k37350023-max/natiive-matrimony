@@ -320,31 +320,48 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Locked biodata */}
-        <div className="card overflow-hidden relative">
-          <div className="px-6 py-5" style={{ filter: 'blur(6px)', pointerEvents: 'none', userSelect: 'none' }}>
-            <p className="section-label mb-4">Full biodata</p>
-            <div className="grid grid-cols-2 gap-4">
-              {bioRows.map(f => (
-                <div key={f.label}>
-                  <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
-                  <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
+        {/* Biodata — unlocked for own profile or mutual match */}
+        {(() => {
+          const unlocked = myProfileId === profile.id || viewerRelation === 'matched'
+          return unlocked ? (
+            <div className="card px-6 py-5">
+              <p className="section-label mb-4">Full biodata</p>
+              <div className="grid grid-cols-2 gap-4">
+                {bioRows.map(f => (
+                  <div key={f.label}>
+                    <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
+                    <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="card overflow-hidden relative">
+              <div className="px-6 py-5" style={{ filter: 'blur(6px)', pointerEvents: 'none', userSelect: 'none' }}>
+                <p className="section-label mb-4">Full biodata</p>
+                <div className="grid grid-cols-2 gap-4">
+                  {bioRows.map(f => (
+                    <div key={f.label}>
+                      <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
+                      <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center"
+                style={{ background: 'rgba(250,250,249,0.82)' }}>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
+                  style={{ background: '#FEF9EC' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </div>
+                <p className="font-semibold text-stone-800 text-sm">Biodata is private</p>
+                <p className="text-xs text-stone-400 mt-1">Unlocks after a mutual match</p>
+              </div>
             </div>
-          </div>
-          <div className="absolute inset-0 flex flex-col items-center justify-center"
-            style={{ background: 'rgba(250,250,249,0.82)' }}>
-            <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
-              style={{ background: '#FEF9EC' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-            </div>
-            <p className="font-semibold text-stone-800 text-sm">Biodata is private</p>
-            <p className="text-xs text-stone-400 mt-1">Unlocks after a mutual match</p>
-          </div>
-        </div>
+          )
+        })()}
       </div>
 
       {/* Personalized Note Modal */}
@@ -417,7 +434,19 @@ export default function ProfilePage() {
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3.5"
         style={{ borderColor: '#E8E0D6', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
         <div className="max-w-3xl mx-auto">
-          {isLoggedIn ? (
+          {myProfileId === profile.id ? (
+            /* Own profile — show edit + matches links */
+            <div className="flex gap-2.5">
+              <Link href="/profile/edit" className="flex-1 btn-primary py-3 text-sm text-center">
+                Edit Profile
+              </Link>
+              <Link href="/matches"
+                className="flex-1 py-3 rounded-lg font-semibold text-sm border text-center"
+                style={{ background: 'white', color: '#78716C', borderColor: '#E8E0D6' }}>
+                My Matches
+              </Link>
+            </div>
+          ) : isLoggedIn ? (
             <>
               <div className="flex gap-2.5">
                 <button
