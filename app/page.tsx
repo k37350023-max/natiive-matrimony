@@ -6,13 +6,17 @@ export default function Home() {
       <div className="text-center max-w-2xl">
         <h1 className="text-4xl font-bold text-orange-700 mb-2">NatiiveMatrimony</h1>
         <p className="text-lg text-gray-600 mb-8">Find your match from your native place</p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
           <Link href="/register" className="bg-orange-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-orange-700">
             Register Now
           </Link>
           <Link href="/browse" className="border border-orange-600 text-orange-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-orange-50">
             Browse Profiles
           </Link>
+        </div>
+        <div className="flex gap-4 justify-center text-sm">
+          <Link href="/matches" className="text-orange-600 underline">My Matches</Link>
+          <Link href="/admin" className="text-gray-400 underline">Admin</Link>
         </div>
       </div>
     </main>
