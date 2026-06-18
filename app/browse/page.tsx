@@ -74,9 +74,9 @@ export default function BrowsePage() {
           <Link href="/" className="text-lg font-bold text-stone-900 tracking-tight">
             Natiive<span className="text-orange-700">Matrimony</span>
           </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/matches" className="text-sm font-medium text-stone-600 hover:text-orange-700">My Matches</Link>
-            <Link href="/register" className="btn-primary text-sm px-4 py-2">Register</Link>
+          <div className="flex items-center gap-3">
+            <Link href="/matches" className="text-sm font-medium text-stone-600 hover:text-orange-700 whitespace-nowrap">My Matches</Link>
+            <Link href="/register" className="btn-primary text-sm px-4 py-2 whitespace-nowrap">Register</Link>
           </div>
         </div>
       </header>
@@ -145,12 +145,13 @@ export default function BrowsePage() {
             <Link href={`/profile/${p.id}`} key={p.id}>
               <div className="card card-hover overflow-hidden cursor-pointer">
                 {/* Photo area */}
-                <div className="h-36 flex items-center justify-center relative" style={{background: 'linear-gradient(135deg, #FFF7ED, #FFEDD5)'}}>
-                  <div className="avatar text-white text-xl" style={{width: '4rem', height: '4rem', background: avatarColor(p.full_name), filter: 'blur(8px)'}}>
-                    {initials(p.full_name)}
-                  </div>
-                  <div className="absolute bottom-3 left-0 right-0 text-center">
-                    <span className="text-xs text-stone-500 bg-white bg-opacity-90 px-3 py-1 rounded-full">Photo after match</span>
+                <div className="h-36 flex items-center justify-center relative overflow-hidden" style={{background: 'linear-gradient(135deg, #FFF7ED, #FFEDD5)'}}>
+                  <div style={{width: '5rem', height: '5rem', borderRadius: '9999px', background: avatarColor(p.full_name), filter: 'blur(12px)', opacity: 0.6}} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-1">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span className="text-xs text-stone-400">Photo after match</span>
                   </div>
                 </div>
                 {/* Info */}
