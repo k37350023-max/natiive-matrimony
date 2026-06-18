@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
 import LaunchBanner from '../components/LaunchBanner'
+import NotificationBell from '../components/NotificationBell'
 
 type Interest = {
   id: string
@@ -66,6 +67,35 @@ export default function InterestsPage() {
       if (!existing) {
         await supabase.from('matches').insert({ user1: fromUser, user2: myId })
       }
+      // Notify the sender that their interest was accepted
+      const [{ data: sender }, { data: me }] = await Promise.all([
+        supabase.from('profiles').select('user_id, email').eq('id', fromUser).single(),
+        supabase.from('profiles').select('full_name').eq('id', myId).single(),
+      ])
+      if (sender?.user_id) {
+        supabase.from('notifications').insert({
+          user_id: sender.user_id,
+          type: 'interest_accepted',
+          message: `${me?.full_name || 'Someone'} accepted your interest — you now have a mutual match!`,
+          from_profile_id: myId,
+          read: false
+        })
+      }
+      if (sender?.email) {
+        fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: sender.email,
+            subject: 'Your interest was accepted — NatiiveMatrimony',
+            html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
+              <h2 style="color:#1C1917">Great news!</h2>
+              <p style="color:#57534E"><strong>${me?.full_name || 'Someone'}</strong> accepted your interest. You now have a mutual match on NatiiveMatrimony.</p>
+              <a href="https://nativematrimony.com/matches" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#B45309;color:white;border-radius:8px;text-decoration:none;font-weight:600">View Matches</a>
+            </div>`
+          })
+        }).catch(() => {})
+      }
     }
     setInterests(i => i.filter(r => r.id !== interestId))
   }
@@ -87,9 +117,10 @@ export default function InterestsPage() {
       <header className="bg-white border-b sticky top-0 z-40" style={{borderColor: '#EDE8E0'}}>
         <div className="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
           <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">Natiive<span style={{color: '#B45309'}}>Matrimony</span></Link>
-          <div className="flex gap-4">
+          <div className="flex items-center gap-3">
             <Link href="/browse" className="text-sm text-stone-500 hover:text-amber-700">Browse</Link>
             <Link href="/matches" className="text-sm text-stone-500 hover:text-amber-700">Matches</Link>
+            <NotificationBell />
           </div>
         </div>
       </header>

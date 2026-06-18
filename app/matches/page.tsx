@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
 import LaunchBanner from '../components/LaunchBanner'
+import NotificationBell from '../components/NotificationBell'
 
 type Profile = {
   id: string
@@ -24,6 +25,8 @@ type Profile = {
   caste: string
   mother_tongue: string
   family_type: string
+  photo_url: string
+  photo_visibility: string | null
 }
 
 function getAge(dob: string) {
@@ -103,6 +106,7 @@ export default function MatchesPage() {
         <div className="flex items-center gap-3">
           <Link href="/interests" className="text-sm text-stone-600 hover:text-orange-700">Interests</Link>
           <span className="text-sm font-semibold text-stone-700">Matches</span>
+          <NotificationBell />
         </div>
       </div>
     </header>
@@ -152,9 +156,14 @@ export default function MatchesPage() {
           {matches.map(p => (
             <div key={p.id} className="card p-6">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-800 flex items-center justify-center font-bold text-base shrink-0">
-                  {initials(p.full_name)}
-                </div>
+                {p.photo_url && p.photo_visibility !== 'hidden' ? (
+                  <img src={p.photo_url} alt={p.full_name}
+                    className="w-12 h-12 rounded-full object-cover shrink-0 ring-2 ring-stone-100" />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-orange-100 text-orange-800 flex items-center justify-center font-bold text-base shrink-0">
+                    {initials(p.full_name)}
+                  </div>
+                )}
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h2 className="text-lg font-bold text-stone-900">{p.full_name}</h2>

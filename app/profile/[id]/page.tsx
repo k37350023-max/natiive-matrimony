@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 type Profile = {
   id: string
+  user_id: string
   full_name: string
   gender: string
   date_of_birth: string
@@ -27,10 +28,21 @@ type Profile = {
   phone: string
   email: string
   photo_url: string
+  photo_visibility: string | null
 }
 
 function isSerious(p: Profile): boolean {
   return [p.education, p.about, p.height_cm, p.photo_url, p.caste].filter(Boolean).length >= 3
+}
+
+function canShowPhoto(profile: Profile, relation: string): boolean {
+  if (!profile.photo_url) return false
+  const v = profile.photo_visibility || 'after_match'
+  if (v === 'hidden') return false
+  if (v === 'public') return true
+  if (v === 'after_match') return relation === 'matched'
+  if (v === 'after_interest') return relation === 'matched' || relation === 'interested' || relation === 'received'
+  return false
 }
 
 function getAge(dob: string) {
@@ -54,6 +66,7 @@ export default function ProfilePage() {
   const [sending, setSending] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [myProfileId, setMyProfileId] = useState<string | null>(null)
+  const [viewerRelation, setViewerRelation] = useState<'matched' | 'interested' | 'received' | 'none'>('none')
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [noteText, setNoteText] = useState('')
 
@@ -62,7 +75,10 @@ export default function ProfilePage() {
     setIsLoggedIn(!!myId)
     setMyProfileId(myId)
     loadProfile()
-    if (myId) checkInterestStatus(myId)
+    if (myId) {
+      checkInterestStatus(myId)
+      checkRelation(myId)
+    }
   }, [id])
 
   async function loadProfile() {
@@ -75,6 +91,19 @@ export default function ProfilePage() {
     const { data } = await supabase.from('interests')
       .select('id').eq('from_user', myId).eq('to_user', id as string).maybeSingle()
     if (data) setInterestSent(true)
+  }
+
+  async function checkRelation(myId: string) {
+    const { data: match } = await supabase.from('matches').select('id')
+      .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
+      .maybeSingle()
+    if (match) { setViewerRelation('matched'); return }
+    const { data: sent } = await supabase.from('interests').select('id')
+      .eq('from_user', myId).eq('to_user', id as string).maybeSingle()
+    if (sent) { setViewerRelation('interested'); return }
+    const { data: received } = await supabase.from('interests').select('id')
+      .eq('from_user', id as string).eq('to_user', myId).maybeSingle()
+    if (received) setViewerRelation('received')
   }
 
   function openNoteModal() {
@@ -95,6 +124,35 @@ export default function ProfilePage() {
     if (error && note) {
       await supabase.from('interests').insert({ from_user: myId, to_user: id as string, status: 'pending' })
     }
+
+    // Notification + email
+    if (profile) {
+      const { data: me } = await supabase.from('profiles').select('full_name').eq('id', myId).single()
+      const msg = note?.trim()
+        ? `${me?.full_name || 'Someone'} sent you an interest: "${note.trim()}"`
+        : `${me?.full_name || 'Someone'} sent you an interest request`
+      supabase.from('notifications').insert({
+        user_id: profile.user_id, type: 'interest_received',
+        message: msg, from_profile_id: myId, read: false
+      })
+      if (profile.email) {
+        fetch('/api/notify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: profile.email,
+            subject: 'New Interest — NatiiveMatrimony',
+            html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
+              <h2 style="color:#1C1917">You have a new interest!</h2>
+              <p style="color:#57534E"><strong>${me?.full_name || 'Someone'}</strong> sent you an interest on NatiiveMatrimony.</p>
+              ${note?.trim() ? `<blockquote style="border-left:3px solid #B45309;margin:16px 0;padding:8px 16px;color:#57534E;font-style:italic">"${note.trim()}"</blockquote>` : ''}
+              <a href="https://nativematrimony.com/interests" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#B45309;color:white;border-radius:8px;text-decoration:none;font-weight:600">View &amp; Respond</a>
+            </div>`
+          })
+        }).catch(() => {})
+      }
+    }
+
     setInterestSent(true)
     setSending(false)
     setShowNoteModal(false)
@@ -139,7 +197,10 @@ export default function ProfilePage() {
           <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">
             Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
           </Link>
-          <Link href="/matches" className="text-sm font-medium text-stone-500 hover:text-stone-700">Matches</Link>
+          {myProfileId === profile?.id
+            ? <Link href="/profile/edit" className="text-sm font-medium px-3 py-1.5 rounded-lg" style={{ color: '#B45309', background: '#FEF9EC' }}>Edit</Link>
+            : <Link href="/matches" className="text-sm font-medium text-stone-500 hover:text-stone-700">Matches</Link>
+          }
         </div>
       </header>
 
@@ -147,20 +208,43 @@ export default function ProfilePage() {
 
         {/* Hero card */}
         <div className="card overflow-hidden">
-          <div className="relative py-10 flex flex-col items-center"
-            style={{ background: 'linear-gradient(160deg, #FEF9EC 0%, #FFF7F0 100%)' }}>
-            <div className="w-20 h-20 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 ring-4 ring-white shadow-sm"
-              style={{ background: avatarBg(profile.full_name) }}>
-              {initials(profile.full_name)}
-            </div>
-            <div className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border"
-              style={{ background: 'white', borderColor: '#E8E0D6', color: '#78716C' }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              Photo visible after mutual match
-            </div>
-          </div>
+          {(() => {
+            const showPhoto = canShowPhoto(profile, viewerRelation)
+            return (
+              <div className="relative py-8 flex flex-col items-center"
+                style={{ background: 'linear-gradient(160deg, #FEF9EC 0%, #FFF7F0 100%)' }}>
+                {showPhoto ? (
+                  <img src={profile.photo_url} alt={profile.full_name}
+                    className="w-24 h-24 rounded-full object-cover mb-3 ring-4 ring-white shadow-md" />
+                ) : (
+                  <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 ring-4 ring-white shadow-sm"
+                    style={{ background: avatarBg(profile.full_name) }}>
+                    {initials(profile.full_name)}
+                  </div>
+                )}
+                {!showPhoto && profile.photo_url && (
+                  <div className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border mb-2"
+                    style={{ background: 'white', borderColor: '#E8E0D6', color: '#78716C' }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    {profile.photo_visibility === 'after_interest' ? 'Send interest to see photo' : 'Photo visible after mutual match'}
+                  </div>
+                )}
+                {isLoggedIn && myProfileId !== profile.id && (
+                  <button
+                    onClick={openNoteModal}
+                    disabled={interestSent || sending}
+                    className="mt-1 text-xs font-semibold px-4 py-1.5 rounded-full"
+                    style={interestSent
+                      ? { background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }
+                      : { background: '#B45309', color: 'white' }}>
+                    {interestSent ? '✓ Interest Sent' : '+ Send Interest'}
+                  </button>
+                )}
+              </div>
+            )
+          })()}
 
           <div className="px-6 py-5">
             <div className="flex items-start justify-between gap-3">

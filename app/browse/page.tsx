@@ -6,6 +6,7 @@ import Link from 'next/link'
 import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import LaunchBanner from '../components/LaunchBanner'
+import NotificationBell from '../components/NotificationBell'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -159,6 +160,7 @@ export default function BrowsePage() {
         <div className="flex items-center gap-2 shrink-0">
           <Link href="/interests" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Interests</Link>
           <Link href="/matches" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Matches</Link>
+          <NotificationBell />
           {sessionChecked && !myGender && (
             <>
               <Link href="/login" className="text-sm font-medium text-stone-600 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Login</Link>
