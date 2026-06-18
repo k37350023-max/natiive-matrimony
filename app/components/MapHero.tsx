@@ -1,31 +1,34 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import IndiaData from '@svg-maps/india'
 
-// ViewBox 0 0 300 380 — simplified illustrative India
-const PATHS = {
-  north:     'M22,5 L278,5 L290,28 L282,65 L258,82 L228,78 L195,88 L168,85 L120,92 L78,88 L50,102 L28,85 L12,50 Z',
-  maha:      'M50,102 L120,92 L148,108 L158,140 L146,168 L104,175 L58,165 L44,142 Z',
-  karnataka: 'M44,142 L104,175 L146,168 L178,170 L168,200 L175,228 L158,252 L128,258 L100,242 L78,218 L62,185 Z',
-  tn:        'M128,258 L158,252 L175,228 L195,248 L222,245 L218,295 L196,332 L170,338 L148,312 L128,285 Z',
-  kerala:    'M62,185 L78,218 L100,242 L128,258 L128,285 L110,320 L86,308 L70,260 Z',
-  telangana: 'M120,92 L168,85 L195,88 L208,118 L212,148 L198,165 L178,170 L158,140 L148,108 Z',
-  coastal:   'M195,88 L228,78 L258,82 L274,108 L280,155 L258,172 L238,178 L218,158 L212,148 L208,118 Z',
-  rayala:    'M178,170 L198,165 L212,148 L218,158 L238,178 L244,215 L222,245 L195,248 L175,228 L168,200 Z',
+// Telangana = tg, Andhra Pradesh = ap (Coastal + Rayalaseema are both within AP)
+// Background south Indian states shown lighter
+const BG_STATES = ['ka', 'tn', 'kl', 'mh', 'or', 'ga', 'ct', 'mp']
+
+type RKey = 'telangana' | 'coastal' | 'rayala'
+
+const REGION_STATE_ID: Record<RKey, string> = {
+  telangana: 'tg',
+  coastal: 'ap',
+  rayala: 'ap',
 }
 
-// Center coords in viewBox space
-const REGIONS = {
-  telangana: { cx: 175, cy: 132, label: 'Telangana' },
-  coastal:   { cx: 242, cy: 132, label: 'Coastal Andhra' },
-  rayala:    { cx: 210, cy: 208, label: 'Rayalaseema' },
-} as const
+const REGION_LABEL: Record<RKey, string> = {
+  telangana: 'Telangana',
+  coastal: 'Coastal Andhra',
+  rayala: 'Rayalaseema',
+}
 
-type RKey = keyof typeof REGIONS
+const SEQ: RKey[] = ['telangana', 'coastal', 'rayala']
 
-// South India center in viewBox ≈ (160, 235) → 53%, 62%
-const ZOOM_ORIGIN = '53% 62%'
-const ZOOM_SCALE = 1.85
+// Approximate center of each region in the 612×696 viewBox
+const PULSE_CENTER: Record<RKey, { cx: number; cy: number }> = {
+  telangana: { cx: 240, cy: 475 },
+  coastal:   { cx: 330, cy: 510 },
+  rayala:    { cx: 270, cy: 545 },
+}
 
 const MOCK: Record<RKey, { initials: string; name: string; age: number; profession: string; district: string; color: string }[]> = {
   telangana: [
@@ -45,13 +48,13 @@ const MOCK: Record<RKey, { initials: string; name: string; age: number; professi
   ],
 }
 
-const REGION_LABEL: Record<RKey, string> = {
-  telangana: 'Telangana',
-  coastal: 'Coastal Andhra',
-  rayala: 'Rayalaseema',
-}
+// South India zoom: center around (220, 560) in 612×696 → ~36%, ~80%
+const ZOOM_ORIGIN = '36% 80%'
+const ZOOM_SCALE = 2.2
 
-const SEQ: RKey[] = ['telangana', 'coastal', 'rayala']
+function getPath(stateId: string) {
+  return IndiaData.locations.find(l => l.id === stateId)?.path ?? ''
+}
 
 export default function MapHero() {
   const [zoomed, setZoomed] = useState(false)
@@ -62,7 +65,6 @@ export default function MapHero() {
   useEffect(() => {
     let cancelled = false
     const timers: ReturnType<typeof setTimeout>[] = []
-
     function s(fn: () => void, ms: number) {
       const t = setTimeout(() => { if (!cancelled) fn() }, ms)
       timers.push(t)
@@ -70,21 +72,17 @@ export default function MapHero() {
 
     function loop() {
       let t = 0
-      // Reset
       setZoomed(false); setHighlighted(null); setPulsing(null); setProfileKey(null)
       t += 700
 
-      // Zoom into South India
-      s(() => setZoomed(true), t); t += 1100
+      s(() => setZoomed(true), t); t += 1200
 
-      // Step through each region
       SEQ.forEach((key, i) => {
-        s(() => setPulsing(key), t); t += 850
+        s(() => setPulsing(key), t); t += 900
         s(() => { setHighlighted(key); setPulsing(null); setProfileKey(key) }, t)
-        t += i < SEQ.length - 1 ? 2300 : 2000
+        t += i < SEQ.length - 1 ? 2400 : 2000
       })
 
-      // Zoom back out and reset
       s(() => { setZoomed(false); setHighlighted(null); setProfileKey(null) }, t); t += 1200
       s(loop, t + 400)
     }
@@ -98,18 +96,24 @@ export default function MapHero() {
     setProfileKey(key)
   }
 
+  // Which state IDs are currently highlighted (active)
+  function isHighlighted(stateId: string): boolean {
+    if (!highlighted) return false
+    return REGION_STATE_ID[highlighted] === stateId
+  }
+
   return (
     <>
       <style>{`
         @keyframes mapPulse {
-          0%   { opacity:.85; transform:scale(1); }
-          100% { opacity:0;   transform:scale(3.8); }
+          0%   { opacity:.8; transform:scale(1); }
+          100% { opacity:0; transform:scale(4); }
         }
         @keyframes profileIn {
           from { opacity:0; transform:translateY(8px); }
           to   { opacity:1; transform:translateY(0); }
         }
-        .map-pulse-ring { animation: mapPulse .9s ease-out infinite; }
+        .map-pulse-ring { animation: mapPulse 1s ease-out infinite; }
         .profile-card-in { animation: profileIn .3s ease-out both; }
       `}</style>
 
@@ -117,62 +121,87 @@ export default function MapHero() {
 
         {/* ── Map ── */}
         <div style={{
-          width: '100%', maxWidth: '260px', flexShrink: 0,
-          aspectRatio: '300 / 380', overflow: 'hidden',
-          borderRadius: '20px', margin: '0 auto',
+          width: '100%', maxWidth: '280px', flexShrink: 0,
+          aspectRatio: '612 / 696', overflow: 'hidden',
+          borderRadius: '16px', margin: '0 auto',
+          background: '#F5F0E8',
         }}>
-          <svg viewBox="0 0 300 380" width="100%" height="100%"
+          <svg
+            viewBox={IndiaData.viewBox}
+            width="100%" height="100%"
             preserveAspectRatio="xMidYMid meet"
             style={{
               display: 'block',
               transform: zoomed ? `scale(${ZOOM_SCALE})` : 'scale(1)',
               transformOrigin: ZOOM_ORIGIN,
-              transition: 'transform 1.15s cubic-bezier(0.4,0,0.2,1)',
-            }}>
+              transition: 'transform 1.2s cubic-bezier(0.4,0,0.2,1)',
+            }}
+          >
+            {/* All states — base layer */}
+            {IndiaData.locations.map(loc => {
+              const isTeluguAP = loc.id === 'ap'
+              const isTeluguTG = loc.id === 'tg'
+              const isBg = BG_STATES.includes(loc.id)
+              const highlighted_ = isHighlighted(loc.id)
 
-            {/* Non-interactive background states */}
-            {(['north','maha','karnataka','tn','kerala'] as const).map(k => (
-              <path key={k} d={PATHS[k]} fill="#E4DDD0" stroke="#CCC4B4" strokeWidth="1" />
-            ))}
+              let fill = '#EAE4D6'      // default: very light tan (most states)
+              let stroke = '#D5CDB8'
+              let strokeW = '0.5'
 
-            {/* Clickable Telugu regions */}
-            {(Object.keys(REGIONS) as RKey[]).map(key => {
-              const on = highlighted === key
+              if (isTeluguAP || isTeluguTG) {
+                fill = highlighted_ ? '#FEF3C7' : '#D6C9AA'
+                stroke = highlighted_ ? '#B45309' : '#9E8E6A'
+                strokeW = highlighted_ ? '2' : '1'
+              } else if (isBg) {
+                fill = '#E4DDD0'
+                stroke = '#CFC8B5'
+              }
+
+              const isClickable = isTeluguAP || isTeluguTG
+
               return (
-                <path key={key}
-                  d={PATHS[key]}
-                  fill={on ? '#FEF3C7' : '#D6CEBC'}
-                  stroke={on ? '#B45309' : '#AEA590'}
-                  strokeWidth={on ? '2.5' : '1'}
-                  style={{ cursor: 'pointer', transition: 'fill .35s, stroke .35s, stroke-width .35s' }}
-                  onClick={() => handleClick(key)}
+                <path
+                  key={loc.id}
+                  d={loc.path}
+                  fill={fill}
+                  stroke={stroke}
+                  strokeWidth={strokeW}
+                  style={{
+                    cursor: isClickable ? 'pointer' : 'default',
+                    transition: 'fill .4s, stroke .4s, stroke-width .4s',
+                  }}
+                  onClick={() => {
+                    if (loc.id === 'tg') handleClick('telangana')
+                    else if (loc.id === 'ap') handleClick('coastal')
+                  }}
                 />
               )
             })}
 
-            {/* Region labels */}
-            {(Object.keys(REGIONS) as RKey[]).map(key => {
-              const m = REGIONS[key]
-              const on = highlighted === key
-              return (
-                <text key={`l-${key}`} x={m.cx} y={m.cy + 1}
-                  textAnchor="middle" fontSize="6.5" fontWeight="700"
-                  fill={on ? '#92400E' : '#7A6F60'}
-                  style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
-                  {m.label}
-                </text>
-              )
-            })}
+            {/* Telangana label */}
+            <text x="230" y="472" textAnchor="middle" fontSize="8" fontWeight="700"
+              fill={highlighted && REGION_STATE_ID[highlighted] === 'tg' ? '#92400E' : '#7A6F5A'}
+              style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
+              Telangana
+            </text>
 
-            {/* Pulsing click indicator */}
+            {/* AP labels */}
+            <text x="320" y="510" textAnchor="middle" fontSize="7" fontWeight="700"
+              fill={highlighted && REGION_STATE_ID[highlighted] === 'ap' ? '#92400E' : '#7A6F5A'}
+              style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
+              Andhra Pradesh
+            </text>
+
+            {/* Pulsing ring */}
             {pulsing && (() => {
-              const m = REGIONS[pulsing]
+              const { cx, cy } = PULSE_CENTER[pulsing]
               return (
-                <circle key={`pulse-${pulsing}`}
-                  cx={m.cx} cy={m.cy} r="10"
-                  fill="none" stroke="#B45309" strokeWidth="2.5"
+                <circle
+                  key={`pulse-${pulsing}`}
+                  cx={cx} cy={cy} r="12"
+                  fill="none" stroke="#B45309" strokeWidth="3"
                   className="map-pulse-ring"
-                  style={{ transformOrigin: `${m.cx}px ${m.cy}px` }}
+                  style={{ transformOrigin: `${cx}px ${cy}px` }}
                 />
               )
             })()}
@@ -202,8 +231,7 @@ export default function MapHero() {
 
               <div className="space-y-2">
                 {MOCK[profileKey].map((p, i) => (
-                  <div key={p.name} className="profile-card-in"
-                    style={{ animationDelay: `${i * 75}ms` }}>
+                  <div key={p.name} className="profile-card-in" style={{ animationDelay: `${i * 75}ms` }}>
                     <div className="flex items-center gap-3 p-3 rounded-xl border"
                       style={{ background: 'white', borderColor: '#EDE8E0' }}>
                       <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
