@@ -72,6 +72,9 @@ export default function EditProfilePage() {
   const [photo, setPhoto] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState('')
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState('')
+  // Additional photos (up to 4 more)
+  const [additionalPhotos, setAdditionalPhotos] = useState<string[]>([])
+  const [uploadingExtra, setUploadingExtra] = useState(false)
 
   const [form, setForm] = useState({
     full_name: '', gender: '', date_of_birth: '', phone: '',
@@ -162,6 +165,10 @@ export default function EditProfilePage() {
     })
     setCurrentPhotoUrl(data.photo_url || '')
     setVerified(data.phone_verified || false)
+    // Load additional photos
+    const { data: extraPhotos } = await supabase
+      .from('profile_photos').select('url').eq('profile_id', id).order('position')
+    setAdditionalPhotos((extraPhotos || []).map(p => p.url))
     setUserEmail(data.email || '')
     setLoading(false)
   }
@@ -246,6 +253,31 @@ export default function EditProfilePage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  async function uploadExtraPhoto(file: File) {
+    if (!profileId || additionalPhotos.length >= 4) return
+    setUploadingExtra(true)
+    try {
+      const ext = file.name.split('.').pop()
+      const position = additionalPhotos.length
+      const path = `${profileId}/extra_${position}_${Date.now()}.${ext}`
+      const { error: upErr } = await supabase.storage.from('profile-photos').upload(path, file, { upsert: false })
+      if (upErr) throw upErr
+      const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(path)
+      const url = urlData.publicUrl
+      await supabase.from('profile_photos').insert({ profile_id: profileId, url, position })
+      setAdditionalPhotos(prev => [...prev, url])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Upload failed')
+    }
+    setUploadingExtra(false)
+  }
+
+  async function removeExtraPhoto(url: string) {
+    if (!profileId) return
+    await supabase.from('profile_photos').delete().eq('profile_id', profileId).eq('url', url)
+    setAdditionalPhotos(prev => prev.filter(u => u !== url))
   }
 
   async function sendEmailOTP() {
@@ -395,6 +427,44 @@ export default function EditProfilePage() {
                 }} />
               </label>
               <p className="text-xs text-stone-400 mt-1">JPG or PNG, max 5MB</p>
+            </div>
+          </div>
+
+          {/* Additional photos */}
+          <div className="mb-5 pt-4 border-t" style={{ borderColor: '#F0EDE8' }}>
+            <p className="form-label mb-2">More photos <span className="font-normal text-stone-400">({additionalPhotos.length}/4 added)</span></p>
+            <p className="text-xs text-stone-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get significantly more interest.</p>
+            <div className="flex flex-wrap gap-2">
+              {additionalPhotos.map((url, idx) => (
+                <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden group">
+                  <img src={url} alt={`Photo ${idx + 2}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removeExtraPhoto(url)}
+                    className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                </div>
+              ))}
+              {additionalPhotos.length < 4 && (
+                <label className="w-20 h-20 rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:border-amber-600 transition-colors"
+                  style={{ borderColor: '#D1C9BF' }}>
+                  {uploadingExtra ? (
+                    <span className="text-xs text-stone-400">Uploading...</span>
+                  ) : (
+                    <>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" strokeWidth="2" strokeLinecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                      </svg>
+                      <span className="text-xs text-stone-400 mt-1">Add</span>
+                    </>
+                  )}
+                  <input type="file" accept="image/*" className="hidden" disabled={uploadingExtra}
+                    onChange={e => { const f = e.target.files?.[0]; if (f) uploadExtraPhoto(f) }} />
+                </label>
+              )}
             </div>
           </div>
 

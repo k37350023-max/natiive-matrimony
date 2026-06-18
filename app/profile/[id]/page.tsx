@@ -115,6 +115,8 @@ export default function ProfilePage() {
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportReason, setReportReason] = useState('')
   const [reportSent, setReportSent] = useState(false)
+  const [extraPhotos, setExtraPhotos] = useState<string[]>([])
+  const [photoIdx, setPhotoIdx] = useState(0)
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
@@ -130,6 +132,10 @@ export default function ProfilePage() {
   async function loadProfile() {
     const { data } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
     setProfile(data)
+    // Load additional photos
+    const { data: photos } = await supabase
+      .from('profile_photos').select('url').eq('profile_id', id).order('position')
+    setExtraPhotos((photos || []).map(p => p.url))
     setLoading(false)
   }
 
@@ -306,13 +312,36 @@ export default function ProfilePage() {
             return (
               <div className="relative py-8 flex flex-col items-center"
                 style={{ background: 'linear-gradient(160deg, #FEF9EC 0%, #FFF7F0 100%)' }}>
-                {showPhoto ? (
-                  <button onClick={() => setPhotoExpanded(true)} className="mb-3 focus:outline-none group relative">
-                    <img src={profile.photo_url} alt={profile.full_name}
-                      className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md transition-transform group-hover:scale-105 cursor-zoom-in" />
-                    <div className="absolute inset-0 rounded-full bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
-                  </button>
-                ) : (
+                {showPhoto ? (() => {
+                  const allPhotos = [profile.photo_url, ...extraPhotos].filter(Boolean) as string[]
+                  return (
+                    <div className="mb-3 flex flex-col items-center gap-2">
+                      <button onClick={() => setPhotoExpanded(true)} className="focus:outline-none group relative">
+                        <img src={allPhotos[photoIdx]} alt={profile.full_name}
+                          className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md transition-transform group-hover:scale-105 cursor-zoom-in" />
+                        <div className="absolute inset-0 rounded-full bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
+                      </button>
+                      {allPhotos.length > 1 && (
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => setPhotoIdx(i => (i - 1 + allPhotos.length) % allPhotos.length)}
+                            className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#F5F0EB' }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                          </button>
+                          {allPhotos.map((_, i) => (
+                            <button key={i} onClick={() => setPhotoIdx(i)}
+                              className="w-1.5 h-1.5 rounded-full transition-all"
+                              style={{ background: i === photoIdx ? '#B45309' : '#D6CFC6' }} />
+                          ))}
+                          <button onClick={() => setPhotoIdx(i => (i + 1) % allPhotos.length)}
+                            className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#F5F0EB' }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                          </button>
+                          <span className="text-xs text-stone-400">{photoIdx + 1}/{allPhotos.length}</span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })() : (
                   <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 ring-4 ring-white shadow-sm"
                     style={{ background: avatarBg(profile.full_name) }}>
                     {initials(profile.full_name)}
@@ -613,11 +642,32 @@ export default function ProfilePage() {
               <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
-          <img
-            src={profile.photo_url}
-            alt={profile.full_name}
-            onClick={e => e.stopPropagation()}
-            className="max-w-[90vw] max-h-[85vh] rounded-2xl object-contain shadow-2xl" />
+          {(() => {
+            const allPhotos = [profile.photo_url, ...extraPhotos].filter(Boolean) as string[]
+            return (
+              <div className="flex flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
+                <img src={allPhotos[photoIdx]} alt={profile.full_name}
+                  className="max-w-[90vw] max-h-[80vh] rounded-2xl object-contain shadow-2xl" />
+                {allPhotos.length > 1 && (
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setPhotoIdx(i => (i - 1 + allPhotos.length) % allPhotos.length)}
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    {allPhotos.map((_, i) => (
+                      <button key={i} onClick={() => setPhotoIdx(i)}
+                        className="w-2 h-2 rounded-full transition-all"
+                        style={{ background: i === photoIdx ? 'white' : 'rgba(255,255,255,0.4)' }} />
+                    ))}
+                    <button onClick={() => setPhotoIdx(i => (i + 1) % allPhotos.length)}
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-white" style={{ background: 'rgba(255,255,255,0.2)' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
         </div>
       )}
 

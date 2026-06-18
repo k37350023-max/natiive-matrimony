@@ -19,6 +19,7 @@ export default function MobileNav() {
   const [profileHref, setProfileHref] = useState('/profile/edit')
   const [pendingInterests, setPendingInterests] = useState(0)
   const [matchCount, setMatchCount] = useState(0)
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   useEffect(() => {
     const id = localStorage.getItem('my_profile_id')
@@ -30,6 +31,17 @@ export default function MobileNav() {
       supabase.from('matches').select('id', { count: 'exact', head: true })
         .or(`user1.eq.${id},user2.eq.${id}`)
         .then(({ count }) => setMatchCount(count || 0))
+      // Load unread message count
+      supabase.from('matches').select('id').or(`user1.eq.${id},user2.eq.${id}`)
+        .then(({ data: matchRows }) => {
+          if (!matchRows?.length) return
+          const matchIds = matchRows.map(m => m.id)
+          supabase.from('messages').select('id', { count: 'exact', head: true })
+            .in('match_id', matchIds)
+            .neq('from_profile_id', id)
+            .eq('read', false)
+            .then(({ count }) => setUnreadMessages(count || 0))
+        })
     } else {
       setProfileHref('/login')
     }
@@ -67,13 +79,13 @@ export default function MobileNav() {
         <Link href="/matches"
           className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
           <div className="relative">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill={path.startsWith('/matches') ? '#B45309' : 'none'}
-              stroke={path.startsWith('/matches') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill={path.startsWith('/matches') || path.startsWith('/chat') ? '#B45309' : 'none'}
+              stroke={path.startsWith('/matches') || path.startsWith('/chat') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            <Badge count={matchCount} />
+            <Badge count={matchCount + unreadMessages} />
           </div>
-          <span className="text-xs font-semibold" style={{ color: path.startsWith('/matches') ? '#B45309' : '#78716C' }}>Matches</span>
+          <span className="text-xs font-semibold" style={{ color: path.startsWith('/matches') || path.startsWith('/chat') ? '#B45309' : '#78716C' }}>Matches</span>
         </Link>
 
         <Link href={profileHref}
