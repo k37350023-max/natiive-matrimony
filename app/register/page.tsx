@@ -68,7 +68,12 @@ export default function RegisterPage() {
     setLoading(true)
     setError('')
     try {
-      const userId = crypto.randomUUID()
+      // Create Supabase auth account
+      const { data: authData, error: authError } = await supabase.auth.signUp({ email: form.email, password: form.password })
+      if (authError) throw authError
+      const userId = authData.user?.id
+      if (!userId) throw new Error('Signup failed — no user ID returned')
+
       let photoUrl = ''
       if (photo) {
         const ext = photo.name.split('.').pop()
@@ -78,17 +83,19 @@ export default function RegisterPage() {
         const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(fileName)
         photoUrl = urlData.publicUrl
       }
-      const { error: profileError } = await supabase.from('profiles').insert({
-        full_name: form.full_name, gender: form.gender, date_of_birth: form.date_of_birth,
+      const { data: profileData, error: profileError } = await supabase.from('profiles').insert({
+        user_id: userId, full_name: form.full_name, gender: form.gender, date_of_birth: form.date_of_birth,
         phone: form.phone, email: form.email, profession: form.profession,
         education: form.education, about: form.about, native_region: form.native_region,
         native_state: form.native_state, native_district: form.native_district,
         current_city: form.current_city, current_state: form.current_state,
         height_cm: form.height_cm ? parseInt(form.height_cm) : null,
         religion: form.religion, caste: form.caste, mother_tongue: form.mother_tongue,
-        family_type: form.family_type, status: 'pending', verified: false,
-      })
+        family_type: form.family_type, photo_url: photoUrl, status: 'pending', verified: false,
+      }).select('id').single()
       if (profileError) throw profileError
+      localStorage.setItem('my_user_id', userId)
+      if (profileData?.id) localStorage.setItem('my_profile_id', profileData.id)
       router.push('/pending')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')

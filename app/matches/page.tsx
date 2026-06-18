@@ -94,7 +94,10 @@ export default function MatchesPage() {
           <Link href="/browse" className="text-sm text-stone-500 hover:text-orange-700">← Browse</Link>
           <Link href="/" className="text-base font-bold text-stone-900">Natiive<span className="text-orange-700">Matrimony</span></Link>
         </div>
-        <span className="text-sm font-semibold text-stone-700">My Matches</span>
+        <div className="flex items-center gap-3">
+          <Link href="/interests" className="text-sm text-stone-600 hover:text-orange-700">Interests</Link>
+          <span className="text-sm font-semibold text-stone-700">Matches</span>
+        </div>
       </div>
     </header>
   )

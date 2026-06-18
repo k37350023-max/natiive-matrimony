@@ -75,7 +75,9 @@ export default function BrowsePage() {
             Natiive<span className="text-orange-700">Matrimony</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link href="/matches" className="text-sm font-medium text-stone-600 hover:text-orange-700 whitespace-nowrap">My Matches</Link>
+            <Link href="/interests" className="text-sm font-medium text-stone-600 hover:text-orange-700 whitespace-nowrap">Interests</Link>
+            <Link href="/matches" className="text-sm font-medium text-stone-600 hover:text-orange-700 whitespace-nowrap">Matches</Link>
+            <Link href="/login" className="text-sm font-medium text-stone-600 hover:text-orange-700 whitespace-nowrap">Login</Link>
             <Link href="/register" className="btn-primary text-sm px-4 py-2 whitespace-nowrap">Register</Link>
           </div>
         </div>
