@@ -88,6 +88,9 @@ export default function RegisterPage() {
     if (err) { setError(err); return }
     setLoading(true)
     setError('')
+    // Clear any previous session before creating a new one
+    localStorage.removeItem('my_profile_id')
+    localStorage.removeItem('my_user_id')
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({ email: form.email, password: form.password })
       if (authError) throw authError
@@ -114,7 +117,7 @@ export default function RegisterPage() {
         religion: form.religion, caste: form.caste, mother_tongue: form.mother_tongue,
         family_type: form.family_type, photo_url: photoUrl,
         status: 'approved', verified: false,
-      }).select('id').single()
+      }).select('id').maybeSingle()
       if (profileError) throw profileError
 
       localStorage.setItem('my_user_id', userId)

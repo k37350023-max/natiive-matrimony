@@ -15,16 +15,19 @@ export default function LoginPage() {
     if (!email.trim() || !password) { setError('Please enter email and password'); return }
     setLoading(true)
     setError('')
+    // Clear any stale session from a previous user before setting new one
+    localStorage.removeItem('my_profile_id')
+    localStorage.removeItem('my_user_id')
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
       if (authError) throw authError
       const userId = data.user.id
-      const { data: profile } = await supabase.from('profiles').select('id').eq('user_id', userId).single()
+      localStorage.setItem('my_user_id', userId)
+      const { data: profile } = await supabase.from('profiles').select('id').eq('user_id', userId).maybeSingle()
       if (profile) {
         localStorage.setItem('my_profile_id', profile.id)
         supabase.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', profile.id)
       }
-      localStorage.setItem('my_user_id', userId)
       router.push('/browse')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed. Check your email and password.')

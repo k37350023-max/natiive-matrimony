@@ -122,10 +122,15 @@ export default function BrowsePage() {
     // Update last active timestamp
     supabase.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', myId).then(() => {})
     Promise.all([
-      supabase.from('profiles').select('gender').eq('id', myId).single(),
+      supabase.from('profiles').select('gender').eq('id', myId).maybeSingle(),
       supabase.from('interests').select('to_user, status').eq('from_user', myId),
       supabase.from('matches').select('user1, user2').or(`user1.eq.${myId},user2.eq.${myId}`),
     ]).then(([{ data: profile }, { data: interests }, { data: matches }]) => {
+      if (!profile) {
+        // Stale profile ID — clear it so the user sees the register gate
+        localStorage.removeItem('my_profile_id')
+        setMyProfileId(null)
+      }
       setMyGender(profile?.gender ?? null)
       const map: Record<string, string> = {}
       interests?.forEach(i => { map[i.to_user] = i.status })

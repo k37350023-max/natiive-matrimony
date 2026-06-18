@@ -33,6 +33,12 @@ function getAge(dob: string) {
   return Math.floor((Date.now() - new Date(dob + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365.25))
 }
 
+function cmToFeet(cm: number): string {
+  const ft = Math.floor(cm / 30.48)
+  const inches = Math.round((cm % 30.48) / 2.54)
+  return `${ft}'${inches}" (${cm} cm)`
+}
+
 function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
@@ -146,7 +152,7 @@ export default function MatchesPage() {
                   ['City', p.current_city],
                   ['Education', p.education || '—'],
                   ['Caste', p.caste || '—'],
-                  ['Height', p.height_cm ? `${p.height_cm} cm` : '—'],
+                  ['Height', p.height_cm ? cmToFeet(p.height_cm) : '—'],
                   ['Family', p.family_type ? p.family_type.charAt(0).toUpperCase() + p.family_type.slice(1) : '—'],
                 ].map(([label, value]) => (
                   <div key={label}>

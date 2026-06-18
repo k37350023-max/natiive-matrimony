@@ -128,7 +128,7 @@ export default function ProfilePage() {
   }, [id])
 
   async function loadProfile() {
-    const { data } = await supabase.from('profiles').select('*').eq('id', id).single()
+    const { data } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
     setProfile(data)
     setLoading(false)
   }
