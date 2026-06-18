@@ -29,7 +29,7 @@ export default function InterestsPage() {
   const [loading, setLoading] = useState(true)
   const myId = typeof window !== 'undefined' ? localStorage.getItem('my_profile_id') : null
 
-  useEffect(() => { if (myId) load() else setLoading(false) }, [])
+  useEffect(() => { if (myId) { load() } else { setLoading(false) } }, [])
 
   async function load() {
     const { data: rows } = await supabase.from('interests').select('*').eq('to_user', myId).eq('status', 'pending').order('created_at', { ascending: false })
