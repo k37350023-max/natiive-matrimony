@@ -152,7 +152,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Quick facts */}
-        <div className="card divide-y" style={{divideColor: '#F0EBE3'}}>
+        <div className="card divide-y divide-[#F0EBE3]">
           {[
             { label: 'Current City', value: `${profile.current_city}${profile.current_state ? ', ' + profile.current_state : ''}` },
             { label: 'Profession', value: profile.profession, sub: profile.education },

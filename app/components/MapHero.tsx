@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import IndiaData from '@svg-maps/india'
+import IndiaData from '../../public/india-map.json'
 
 // Telangana = tg, Andhra Pradesh = ap (Coastal + Rayalaseema are both within AP)
 // Background south Indian states shown lighter

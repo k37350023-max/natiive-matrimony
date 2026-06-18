@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import IndiaData from '@svg-maps/india'
+import IndiaData from '../../public/india-map.json'
 
 const TELUGU_IDS = new Set(['tg', 'ap'])
 
