@@ -188,6 +188,16 @@ export default function BrowsePage() {
           <Link href="/interests" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Interests</Link>
           <Link href="/matches" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Matches</Link>
           <NotificationBell />
+          {sessionChecked && myProfileId && (
+            <Link href={`/profile/${myProfileId}`}
+              className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-white text-xs font-bold shrink-0"
+              style={{ background: '#B45309' }}
+              title="My Profile">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+              </svg>
+            </Link>
+          )}
           {sessionChecked && !myGender && (
             <>
               <Link href="/login" className="text-sm font-medium text-stone-600 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Login</Link>

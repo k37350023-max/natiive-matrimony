@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const NAV = [
   {
@@ -19,8 +20,7 @@ const NAV = [
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
         stroke={active ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 12C20 16.4183 12 21 12 21C12 21 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z"/>
-        <path d="M12 8v4M12 16h.01"/>
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
     ),
   },
@@ -38,6 +38,16 @@ const NAV = [
 
 export default function MobileNav() {
   const path = usePathname()
+  const [profileHref, setProfileHref] = useState('/profile/edit')
+
+  useEffect(() => {
+    const id = localStorage.getItem('my_profile_id')
+    if (id) setProfileHref(`/profile/${id}`)
+    else setProfileHref('/login')
+  }, [])
+
+  const profileActive = path.startsWith('/profile')
+
   return (
     <nav
       className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-50"
@@ -56,6 +66,19 @@ export default function MobileNav() {
             </Link>
           )
         })}
+
+        {/* Profile tab */}
+        <Link href={profileHref}
+          className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+            stroke={profileActive ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span className="text-xs font-semibold" style={{ color: profileActive ? '#B45309' : '#78716C' }}>
+            Profile
+          </span>
+        </Link>
       </div>
     </nav>
   )
