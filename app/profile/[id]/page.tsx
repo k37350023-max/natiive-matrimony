@@ -11,7 +11,12 @@ type Profile = {
   full_name: string
   gender: string
   date_of_birth: string
+  birth_time: string
+  birth_place: string
   profession: string
+  company: string
+  annual_income: string
+  visa_status: string
   education: string
   native_district: string
   native_state: string
@@ -23,6 +28,19 @@ type Profile = {
   caste: string
   mother_tongue: string
   family_type: string
+  father_name: string
+  father_occupation: string
+  mother_name: string
+  mother_occupation: string
+  siblings: string
+  siblings_married: string
+  star: string
+  rashi: string
+  gotra: string
+  manglik: string
+  diet: string
+  smoking: string
+  drinking: string
   about: string
   verified: boolean
   phone_verified: boolean
@@ -175,14 +193,61 @@ export default function ProfilePage() {
     </div>
   )
 
-  const bioRows = [
-    { label: 'Height', value: profile.height_cm ? `${profile.height_cm} cm` : null },
-    { label: 'Religion', value: profile.religion || null },
-    { label: 'Caste', value: profile.caste || null },
-    { label: 'Mother tongue', value: profile.mother_tongue || null },
-    { label: 'Family type', value: profile.family_type ? profile.family_type.charAt(0).toUpperCase() + profile.family_type.slice(1) : null },
-    { label: 'Phone', value: profile.phone || null },
-  ].filter(r => r.value)
+  const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
+
+  const bioSections: { heading: string; rows: { label: string; value: string | null }[] }[] = [
+    {
+      heading: 'Personal',
+      rows: [
+        { label: 'Date of Birth', value: profile.date_of_birth ? new Date(profile.date_of_birth + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) : null },
+        { label: 'Time of Birth', value: profile.birth_time || null },
+        { label: 'Place of Birth', value: profile.birth_place || null },
+        { label: 'Height', value: profile.height_cm ? `${profile.height_cm} cm` : null },
+        { label: 'Religion', value: profile.religion || null },
+        { label: 'Caste', value: profile.caste || null },
+        { label: 'Mother tongue', value: profile.mother_tongue || null },
+        { label: 'Diet', value: profile.diet || null },
+        { label: 'Smoking', value: profile.smoking || null },
+        { label: 'Drinking', value: profile.drinking || null },
+      ],
+    },
+    {
+      heading: 'Professional',
+      rows: [
+        { label: 'Profession', value: profile.profession || null },
+        { label: 'Company', value: profile.company || null },
+        { label: 'Education', value: profile.education || null },
+        { label: 'Annual income', value: profile.annual_income || null },
+        { label: 'Visa / status', value: profile.visa_status || null },
+      ],
+    },
+    {
+      heading: 'Family',
+      rows: [
+        { label: 'Family type', value: profile.family_type ? cap(profile.family_type) : null },
+        { label: 'Father', value: [profile.father_name, profile.father_occupation].filter(Boolean).join(' · ') || null },
+        { label: 'Mother', value: [profile.mother_name, profile.mother_occupation].filter(Boolean).join(' · ') || null },
+        { label: 'Siblings', value: profile.siblings || null },
+        { label: 'Siblings status', value: profile.siblings_married || null },
+      ],
+    },
+    {
+      heading: 'Astrology',
+      rows: [
+        { label: 'Star / Nakshatra', value: profile.star || null },
+        { label: 'Rashi', value: profile.rashi || null },
+        { label: 'Gotra', value: profile.gotra || null },
+        { label: 'Manglik', value: profile.manglik || null },
+      ],
+    },
+    {
+      heading: 'Contact',
+      rows: [
+        { label: 'Phone', value: profile.phone || null },
+        { label: 'Email', value: profile.email || null },
+      ],
+    },
+  ].map(s => ({ ...s, rows: s.rows.filter(r => r.value) })).filter(s => s.rows.length > 0)
 
   return (
     <div className="min-h-screen pb-28" style={{ background: '#FAFAF9' }}>
@@ -323,30 +388,33 @@ export default function ProfilePage() {
         {/* Biodata — unlocked for own profile or mutual match */}
         {(() => {
           const unlocked = myProfileId === profile.id || viewerRelation === 'matched'
+          const biodataContent = (
+            <div className="space-y-0">
+              {bioSections.map((section, si) => (
+                <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F0EBE3' } : {}}>
+                  <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>{section.heading}</p>
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                    {section.rows.map(f => (
+                      <div key={f.label} className={f.label === 'Siblings' || f.label === 'Email' ? 'col-span-2' : ''}>
+                        <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
+                        <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
           return unlocked ? (
             <div className="card px-6 py-5">
               <p className="section-label mb-4">Full biodata</p>
-              <div className="grid grid-cols-2 gap-4">
-                {bioRows.map(f => (
-                  <div key={f.label}>
-                    <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
-                    <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
-                  </div>
-                ))}
-              </div>
+              {biodataContent}
             </div>
           ) : (
             <div className="card overflow-hidden relative">
               <div className="px-6 py-5" style={{ filter: 'blur(6px)', pointerEvents: 'none', userSelect: 'none' }}>
                 <p className="section-label mb-4">Full biodata</p>
-                <div className="grid grid-cols-2 gap-4">
-                  {bioRows.map(f => (
-                    <div key={f.label}>
-                      <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
-                      <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
-                    </div>
-                  ))}
-                </div>
+                {biodataContent}
               </div>
               <div className="absolute inset-0 flex flex-col items-center justify-center"
                 style={{ background: 'rgba(250,250,249,0.82)' }}>

@@ -74,11 +74,18 @@ export default function EditProfilePage() {
 
   const [form, setForm] = useState({
     full_name: '', gender: '', date_of_birth: '', phone: '',
-    profession: '', education: '', about: '',
+    birth_time: '', birth_place: '',
+    profession: '', company: '', annual_income: '', visa_status: '',
+    education: '', about: '',
     native_region: '', native_state: '', native_district: '',
     current_city: '', current_state: '',
     height_cm: '', caste: '', mother_tongue: 'Telugu',
     family_type: '', religion: 'Hindu',
+    father_name: '', father_occupation: '',
+    mother_name: '', mother_occupation: '',
+    siblings: '', siblings_married: '',
+    star: '', rashi: '', gotra: '', manglik: '',
+    diet: '', smoking: '', drinking: '',
     photo_visibility: 'after_match' as PhotoVisibility,
   })
 
@@ -112,7 +119,12 @@ export default function EditProfilePage() {
       phone: rawPhone.startsWith('+') && rawPhone.indexOf(' ') > 0
         ? rawPhone.slice(rawPhone.indexOf(' ') + 1)
         : rawPhone,
+      birth_time: data.birth_time || '',
+      birth_place: data.birth_place || '',
       profession: data.profession || '',
+      company: data.company || '',
+      annual_income: data.annual_income || '',
+      visa_status: data.visa_status || '',
       education: data.education || '',
       about: data.about || '',
       native_region: data.native_region || '',
@@ -125,6 +137,19 @@ export default function EditProfilePage() {
       mother_tongue: data.mother_tongue || 'Telugu',
       family_type: data.family_type || '',
       religion: data.religion || 'Hindu',
+      father_name: data.father_name || '',
+      father_occupation: data.father_occupation || '',
+      mother_name: data.mother_name || '',
+      mother_occupation: data.mother_occupation || '',
+      siblings: data.siblings || '',
+      siblings_married: data.siblings_married || '',
+      star: data.star || '',
+      rashi: data.rashi || '',
+      gotra: data.gotra || '',
+      manglik: data.manglik || '',
+      diet: data.diet || '',
+      smoking: data.smoking || '',
+      drinking: data.drinking || '',
       photo_visibility: (data.photo_visibility as PhotoVisibility) || 'after_match',
     })
     setCurrentPhotoUrl(data.photo_url || '')
@@ -156,7 +181,12 @@ export default function EditProfilePage() {
         gender: form.gender,
         date_of_birth: form.date_of_birth,
         phone: form.phone.trim() ? `${phoneCode} ${form.phone.trim()}` : '',
+        birth_time: form.birth_time.trim(),
+        birth_place: form.birth_place.trim(),
         profession: form.profession.trim(),
+        company: form.company.trim(),
+        annual_income: form.annual_income,
+        visa_status: form.visa_status.trim(),
         education: form.education.trim(),
         about: form.about.trim(),
         native_region: form.native_region,
@@ -169,6 +199,19 @@ export default function EditProfilePage() {
         mother_tongue: form.mother_tongue,
         family_type: form.family_type,
         religion: form.religion.trim(),
+        father_name: form.father_name.trim(),
+        father_occupation: form.father_occupation.trim(),
+        mother_name: form.mother_name.trim(),
+        mother_occupation: form.mother_occupation.trim(),
+        siblings: form.siblings.trim(),
+        siblings_married: form.siblings_married,
+        star: form.star.trim(),
+        rashi: form.rashi.trim(),
+        gotra: form.gotra.trim(),
+        manglik: form.manglik,
+        diet: form.diet,
+        smoking: form.smoking,
+        drinking: form.drinking,
         photo_url: photoUrl,
         photo_visibility: form.photo_visibility,
       }
@@ -337,6 +380,16 @@ export default function EditProfilePage() {
                 <input className="input" type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
               </div>
             </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Time of birth <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <input className="input" placeholder="e.g. 6:45 PM" value={form.birth_time} onChange={e => set('birth_time', e.target.value)} />
+              </div>
+              <div>
+                <Label>Place of birth <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <input className="input" placeholder="e.g. Ramagundam, Karimnagar" value={form.birth_place} onChange={e => set('birth_place', e.target.value)} />
+              </div>
+            </div>
             <div>
               <Label>Mobile number</Label>
               <div className="flex rounded-lg overflow-hidden" style={{border: '1.5px solid var(--border)'}}>
@@ -417,17 +470,78 @@ export default function EditProfilePage() {
           </div>
         </div>
 
-        {/* Career & Family */}
+        {/* Career & Education */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-4 font-serif-display">Career & Family</p>
+          <p className="font-semibold text-stone-800 mb-4 font-serif-display">Career & Education</p>
           <div className="space-y-4">
-            <div>
-              <Label>Profession</Label>
-              <input className="input" placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Profession</Label>
+                <input className="input" placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
+              </div>
+              <div>
+                <Label>Company <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <input className="input" placeholder="e.g. Amazon Web Services" value={form.company} onChange={e => set('company', e.target.value)} />
+              </div>
             </div>
             <div>
               <Label>Education</Label>
               <input className="input" placeholder="e.g. B.Tech, MBA" value={form.education} onChange={e => set('education', e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Annual income <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <select className="input" value={form.annual_income} onChange={e => set('annual_income', e.target.value)}>
+                  <option value="">Prefer not to say</option>
+                  <optgroup label="India (LPA)">
+                    <option value="Below 3 LPA">Below 3 LPA</option>
+                    <option value="3–6 LPA">3–6 LPA</option>
+                    <option value="6–10 LPA">6–10 LPA</option>
+                    <option value="10–15 LPA">10–15 LPA</option>
+                    <option value="15–25 LPA">15–25 LPA</option>
+                    <option value="25–50 LPA">25–50 LPA</option>
+                    <option value="50+ LPA">50+ LPA</option>
+                  </optgroup>
+                  <optgroup label="USA / Canada (USD)">
+                    <option value="USD &lt;50k">USD &lt;50k</option>
+                    <option value="USD 50–80k">USD 50–80k</option>
+                    <option value="USD 80–120k">USD 80–120k</option>
+                    <option value="USD 120–160k">USD 120–160k</option>
+                    <option value="USD 160–200k">USD 160–200k</option>
+                    <option value="USD 200k+">USD 200k+</option>
+                  </optgroup>
+                  <optgroup label="UK (GBP)">
+                    <option value="GBP &lt;30k">GBP &lt;30k</option>
+                    <option value="GBP 30–60k">GBP 30–60k</option>
+                    <option value="GBP 60–100k">GBP 60–100k</option>
+                    <option value="GBP 100k+">GBP 100k+</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div>
+                <Label>Visa / immigration status <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <select className="input" value={form.visa_status} onChange={e => set('visa_status', e.target.value)}>
+                  <option value="">Not applicable</option>
+                  <option value="H1B">H1B</option>
+                  <option value="H1B + i140 processing">H1B + i140 processing</option>
+                  <option value="H1B + Green Card processing">H1B + Green Card processing</option>
+                  <option value="H4 EAD">H4 EAD</option>
+                  <option value="L1">L1</option>
+                  <option value="F1 (Student)">F1 (Student)</option>
+                  <option value="OPT / STEM OPT">OPT / STEM OPT</option>
+                  <option value="Green Card (PR)">Green Card (PR)</option>
+                  <option value="US Citizen">US Citizen</option>
+                  <option value="UK Skilled Worker">UK Skilled Worker</option>
+                  <option value="UK ILR / Settled">UK ILR / Settled</option>
+                  <option value="UK Citizen">UK Citizen</option>
+                  <option value="UAE Resident">UAE Resident</option>
+                  <option value="Singapore EP / PR">Singapore EP / PR</option>
+                  <option value="Australia PR">Australia PR</option>
+                  <option value="Australia Citizen">Australia Citizen</option>
+                  <option value="Canada PR">Canada PR</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -476,6 +590,116 @@ export default function EditProfilePage() {
                 placeholder="A short note about yourself, what you're looking for..."
                 value={form.about} onChange={e => set('about', e.target.value)} />
               <p className="text-xs text-stone-400 text-right mt-0.5">{form.about.length}/400</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Family Background */}
+        <div className="card p-5">
+          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Family Background</p>
+          <p className="text-xs text-stone-400 mb-4">Shown only to mutual matches</p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Father's name</Label>
+                <input className="input" placeholder="e.g. Ravinder Reddy" value={form.father_name} onChange={e => set('father_name', e.target.value)} />
+              </div>
+              <div>
+                <Label>Father's occupation</Label>
+                <input className="input" placeholder="e.g. Business" value={form.father_occupation} onChange={e => set('father_occupation', e.target.value)} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Mother's name</Label>
+                <input className="input" placeholder="e.g. Rathnamala" value={form.mother_name} onChange={e => set('mother_name', e.target.value)} />
+              </div>
+              <div>
+                <Label>Mother's occupation</Label>
+                <input className="input" placeholder="e.g. Home maker" value={form.mother_occupation} onChange={e => set('mother_occupation', e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <Label>Siblings <span className="text-stone-400 font-normal">(optional)</span></Label>
+              <input className="input" placeholder="e.g. Younger brother, studying in US" value={form.siblings} onChange={e => set('siblings', e.target.value)} />
+            </div>
+            <div>
+              <Label>Siblings' marital status</Label>
+              <select className="input" value={form.siblings_married} onChange={e => set('siblings_married', e.target.value)}>
+                <option value="">Select</option>
+                <option value="No siblings">No siblings</option>
+                <option value="All married">All married</option>
+                <option value="All unmarried">All unmarried</option>
+                <option value="Some married, some unmarried">Some married, some unmarried</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Astrology — optional */}
+        <div className="card p-5">
+          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Astrology</p>
+          <p className="text-xs text-stone-400 mb-4">Optional — fill if your family values horoscope matching</p>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Star / Nakshatra</Label>
+                <input className="input" placeholder="e.g. Rohini" value={form.star} onChange={e => set('star', e.target.value)} />
+              </div>
+              <div>
+                <Label>Rashi / Moon sign</Label>
+                <input className="input" placeholder="e.g. Vrishabha" value={form.rashi} onChange={e => set('rashi', e.target.value)} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Gotra</Label>
+                <input className="input" placeholder="e.g. Kasyapa" value={form.gotra} onChange={e => set('gotra', e.target.value)} />
+              </div>
+              <div>
+                <Label>Manglik</Label>
+                <select className="input" value={form.manglik} onChange={e => set('manglik', e.target.value)}>
+                  <option value="">Not specified</option>
+                  <option value="Non-Manglik">Non-Manglik</option>
+                  <option value="Manglik">Manglik</option>
+                  <option value="Anshik Manglik">Anshik Manglik (Partial)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Lifestyle — optional */}
+        <div className="card p-5">
+          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Lifestyle</p>
+          <p className="text-xs text-stone-400 mb-4">Optional — helps find compatible matches</p>
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <Label>Diet</Label>
+              <select className="input" value={form.diet} onChange={e => set('diet', e.target.value)}>
+                <option value="">Not specified</option>
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Non-Vegetarian">Non-Veg</option>
+                <option value="Eggetarian">Eggetarian</option>
+              </select>
+            </div>
+            <div>
+              <Label>Smoking</Label>
+              <select className="input" value={form.smoking} onChange={e => set('smoking', e.target.value)}>
+                <option value="">Not specified</option>
+                <option value="Never">Never</option>
+                <option value="Occasionally">Occasionally</option>
+                <option value="Regularly">Regularly</option>
+              </select>
+            </div>
+            <div>
+              <Label>Drinking</Label>
+              <select className="input" value={form.drinking} onChange={e => set('drinking', e.target.value)}>
+                <option value="">Not specified</option>
+                <option value="Never">Never</option>
+                <option value="Occasionally">Occasionally</option>
+                <option value="Regularly">Regularly</option>
+              </select>
             </div>
           </div>
         </div>
