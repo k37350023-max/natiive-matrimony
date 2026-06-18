@@ -25,7 +25,7 @@ type Profile = {
 }
 
 function getAge(dob: string) {
-  return Math.floor((Date.now() - new Date(dob).getTime()) / (1000 * 60 * 60 * 24 * 365.25))
+  return Math.floor((Date.now() - new Date(dob + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365.25))
 }
 
 export default function MatchesPage() {
@@ -80,12 +80,28 @@ export default function MatchesPage() {
     doc.save(`${p.full_name.replace(/ /g, '_')}_biodata.pdf`)
   }
 
+  const header = (
+    <div className="bg-orange-700 text-white px-6 py-4 flex justify-between items-center">
+      <div className="flex items-center gap-4">
+        <Link href="/browse" className="text-sm underline">← Browse</Link>
+        <span className="text-xl font-bold">My Matches</span>
+      </div>
+      <Link href="/register" className="text-sm bg-white text-orange-700 px-4 py-1 rounded-full font-medium">Register</Link>
+    </div>
+  )
+
   if (!myId) {
     return (
-      <div className="min-h-screen bg-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">Please set your profile ID to view matches.</p>
-          <Link href="/register" className="bg-orange-600 text-white px-6 py-2 rounded-lg">Register</Link>
+      <div className="min-h-screen bg-orange-50">
+        {header}
+        <div className="flex flex-col items-center justify-center py-24 text-center px-4">
+          <p className="text-4xl mb-3">🔐</p>
+          <p className="text-gray-700 font-medium mb-2">You need a profile to view matches</p>
+          <p className="text-gray-500 text-sm mb-6">Register your profile first, then come back here after mutual interest.</p>
+          <div className="flex gap-3">
+            <Link href="/register" className="bg-orange-600 text-white px-6 py-2 rounded-lg">Register</Link>
+            <Link href="/browse" className="border border-orange-600 text-orange-600 px-6 py-2 rounded-lg">Browse Profiles</Link>
+          </div>
         </div>
       </div>
     )
@@ -93,10 +109,7 @@ export default function MatchesPage() {
 
   return (
     <div className="min-h-screen bg-orange-50">
-      <div className="bg-orange-700 text-white px-6 py-4 flex items-center gap-4">
-        <Link href="/browse" className="text-sm underline">← Browse</Link>
-        <span className="text-xl font-bold">My Matches</span>
-      </div>
+      {header}
 
       <div className="max-w-3xl mx-auto px-4 py-6">
         {loading && <p className="text-center text-gray-400 py-10">Loading matches...</p>}

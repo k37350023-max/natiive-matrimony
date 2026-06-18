@@ -23,25 +23,25 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
 
   const [form, setForm] = useState({
-    email: 'test2@natiive.com',
-    password: 'Test@1234',
-    full_name: 'Ravi Kumar',
-    gender: 'male',
-    date_of_birth: '1995-06-15',
-    phone: '9876543210',
-    profession: 'Software Engineer',
-    education: 'B.Tech',
-    about: 'Looking for a life partner from native place.',
-    native_region: 'Coastal Andhra',
-    native_state: 'Andhra Pradesh',
-    native_district: 'Krishna',
-    current_city: 'Hyderabad',
-    current_state: 'Telangana',
-    height_cm: '175',
+    email: '',
+    password: '',
+    full_name: '',
+    gender: '',
+    date_of_birth: '',
+    phone: '',
+    profession: '',
+    education: '',
+    about: '',
+    native_region: '',
+    native_state: '',
+    native_district: '',
+    current_city: '',
+    current_state: '',
+    height_cm: '',
     religion: 'Hindu',
-    caste: 'Kamma',
+    caste: '',
     mother_tongue: 'Telugu',
-    family_type: 'nuclear',
+    family_type: '',
   })
 
   const [photo, setPhoto] = useState<File | null>(null)
@@ -52,7 +52,30 @@ export default function RegisterPage() {
   const availableStates = form.native_region ? Object.keys(REGIONS[form.native_region] || {}) : []
   const availableDistricts = form.native_state ? (REGIONS[form.native_region]?.[form.native_state] || []) : []
 
+  function validateStep(s: number): string {
+    if (s === 1) {
+      if (!form.full_name.trim()) return 'Full name is required'
+      if (!form.email.trim()) return 'Email is required'
+      if (!form.password || form.password.length < 6) return 'Password must be at least 6 characters'
+      if (!form.gender) return 'Please select gender'
+      if (!form.date_of_birth) return 'Date of birth is required'
+    }
+    if (s === 2) {
+      if (!form.native_region) return 'Please select native region'
+      if (!form.native_state) return 'Please select state'
+      if (!form.native_district) return 'Please select district'
+      if (!form.current_city.trim()) return 'Current city is required'
+    }
+    if (s === 3) {
+      if (!form.profession.trim()) return 'Profession is required'
+      if (!photo) return 'Please upload a profile photo'
+    }
+    return ''
+  }
+
   async function handleSubmit() {
+    const err = validateStep(3)
+    if (err) { setError(err); return }
     setLoading(true)
     setError('')
 
@@ -192,7 +215,12 @@ export default function RegisterPage() {
             </button>
           )}
           {step < 3 ? (
-            <button onClick={() => setStep(s => s + 1)} className="ml-auto px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+            <button onClick={() => {
+              const err = validateStep(step)
+              if (err) { setError(err); return }
+              setError('')
+              setStep(s => s + 1)
+            }} className="ml-auto px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
               Next
             </button>
           ) : (

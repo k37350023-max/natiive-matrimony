@@ -31,7 +31,7 @@ type Profile = {
 }
 
 function getAge(dob: string) {
-  const diff = Date.now() - new Date(dob).getTime()
+  const diff = Date.now() - new Date(dob + 'T00:00:00').getTime()
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
 }
 
@@ -67,7 +67,10 @@ export default function BrowsePage() {
       {/* Header */}
       <div className="bg-orange-700 text-white px-6 py-4 flex justify-between items-center">
         <Link href="/" className="text-xl font-bold">NatiiveMatrimony</Link>
-        <Link href="/register" className="text-sm bg-white text-orange-700 px-4 py-1 rounded-full font-medium">Register</Link>
+        <div className="flex items-center gap-3">
+          <Link href="/matches" className="text-sm text-white underline">My Matches</Link>
+          <Link href="/register" className="text-sm bg-white text-orange-700 px-4 py-1 rounded-full font-medium">Register</Link>
+        </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-6">

@@ -29,7 +29,7 @@ type Profile = {
 }
 
 function getAge(dob: string) {
-  const diff = Date.now() - new Date(dob).getTime()
+  const diff = Date.now() - new Date(dob + 'T00:00:00').getTime()
   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
 }
 
@@ -54,11 +54,16 @@ export default function ProfilePage() {
 
   async function expressInterest() {
     setSending(true)
-    // Store in localStorage for demo (real auth will use actual user ID)
     const myId = localStorage.getItem('my_profile_id')
     if (!myId) {
-      alert('Please register first to express interest.')
+      setSending(false)
+      alert('Please register your profile first to express interest.')
       router.push('/register')
+      return
+    }
+    if (myId === id) {
+      setSending(false)
+      alert('This is your own profile!')
       return
     }
     const { error } = await supabase.from('interests').insert({
@@ -79,9 +84,12 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-orange-50">
-      <div className="bg-orange-700 text-white px-6 py-4 flex items-center gap-4">
-        <Link href="/browse" className="text-sm underline">← Browse</Link>
-        <span className="text-xl font-bold">Profile</span>
+      <div className="bg-orange-700 text-white px-6 py-4 flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Link href="/browse" className="text-sm underline">← Browse</Link>
+          <span className="text-xl font-bold">Profile</span>
+        </div>
+        <Link href="/matches" className="text-sm text-white underline">My Matches</Link>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
@@ -139,7 +147,7 @@ export default function ProfilePage() {
               <div><span className="text-gray-400">Religion</span><p className="font-medium">{profile.religion}</p></div>
               <div><span className="text-gray-400">Caste</span><p className="font-medium">{profile.caste}</p></div>
               <div><span className="text-gray-400">Mother Tongue</span><p className="font-medium">{profile.mother_tongue}</p></div>
-              <div><span className="text-gray-400">Family Type</span><p className="font-medium">{profile.family_type}</p></div>
+              <div><span className="text-gray-400">Family Type</span><p className="font-medium capitalize">{profile.family_type}</p></div>
               <div><span className="text-gray-400">Phone</span><p className="font-medium">{profile.phone}</p></div>
               <div className="col-span-2"><span className="text-gray-400">About</span><p className="font-medium">{profile.about}</p></div>
             </div>

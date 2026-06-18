@@ -114,7 +114,7 @@ export default function AdminPage() {
                 <div>
                   <h2 className="text-lg font-bold text-gray-800">{p.full_name}</h2>
                   <p className="text-sm text-gray-500">
-                    {p.gender} · {p.date_of_birth ? new Date(p.date_of_birth).toLocaleDateString('en-IN') : '—'} · {p.profession}
+                    {p.gender} · {p.date_of_birth ? new Date(p.date_of_birth + 'T00:00:00').toLocaleDateString('en-IN') : '—'} · {p.profession}
                   </p>
                   <p className="text-sm text-gray-500 mt-1">
                     Native: {p.native_district}, {p.native_state} · Current: {p.current_city}
