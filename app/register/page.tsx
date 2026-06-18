@@ -57,7 +57,6 @@ export default function RegisterPage() {
     }
     if (s === 3) {
       if (!form.profession.trim()) return 'Profession is required'
-      if (!photo) return 'Please upload a profile photo'
     }
     return ''
   }
