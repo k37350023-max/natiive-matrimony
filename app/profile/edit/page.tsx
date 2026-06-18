@@ -53,6 +53,14 @@ export default function EditProfilePage() {
 
   // OTP / identity verification
   const [verified, setVerified] = useState(false)
+  // Phone OTP
+  const [phoneOtpSent, setPhoneOtpSent] = useState(false)
+  const [phoneOtpToken, setPhoneOtpToken] = useState('')
+  const [phoneOtpCode, setPhoneOtpCode] = useState('')
+  const [phoneOtpLoading, setPhoneOtpLoading] = useState(false)
+  const [phoneOtpError, setPhoneOtpError] = useState('')
+  const [devOtp, setDevOtp] = useState('')
+  // Email OTP (kept as fallback)
   const [otpSent, setOtpSent] = useState(false)
   const [otpCode, setOtpCode] = useState('')
   const [otpLoading, setOtpLoading] = useState(false)
@@ -477,11 +485,9 @@ export default function EditProfilePage() {
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
               <p className="font-semibold text-stone-800 font-serif-display">Identity Verification</p>
-              <p className="text-xs text-stone-400 mt-0.5">Verify your email to get a Verified badge on your profile</p>
+              <p className="text-xs text-stone-400 mt-0.5">Verify your mobile number to get a Verified badge</p>
             </div>
-            {verified && (
-              <span className="badge badge-approved shrink-0 mt-0.5">✓ Verified</span>
-            )}
+            {verified && <span className="badge badge-approved shrink-0 mt-0.5">✓ Verified</span>}
           </div>
 
           {verified ? (
@@ -489,33 +495,110 @@ export default function EditProfilePage() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              Identity verified via {userEmail}
+              Mobile number verified
             </div>
-          ) : !otpSent ? (
+          ) : !phoneOtpSent ? (
             <div>
-              <p className="text-sm text-stone-600 mb-3">
-                We'll send a 6-digit code to <span className="font-medium">{userEmail}</span>
-              </p>
-              <button onClick={sendEmailOTP} disabled={otpLoading}
-                className="btn-primary text-sm px-5 py-2.5">
-                {otpLoading ? 'Sending...' : 'Send verification code'}
-              </button>
+              {form.phone ? (
+                <>
+                  <p className="text-sm text-stone-600 mb-3">
+                    We'll send a 6-digit code to{' '}
+                    <span className="font-medium">{phoneCode} {form.phone}</span>
+                  </p>
+                  <button
+                    onClick={async () => {
+                      setPhoneOtpLoading(true)
+                      setPhoneOtpError('')
+                      setDevOtp('')
+                      const fullPhone = `${phoneCode}${form.phone.trim()}`
+                      const res = await fetch('/api/send-otp', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phone: fullPhone }),
+                      })
+                      const data = await res.json()
+                      setPhoneOtpLoading(false)
+                      if (!res.ok) { setPhoneOtpError(data.error || 'Failed to send'); return }
+                      setPhoneOtpToken(data.token)
+                      setPhoneOtpSent(true)
+                      if (data.dev_otp) setDevOtp(data.dev_otp)
+                    }}
+                    disabled={phoneOtpLoading}
+                    className="btn-primary text-sm px-5 py-2.5">
+                    {phoneOtpLoading ? 'Sending...' : 'Send OTP to mobile'}
+                  </button>
+                  {phoneOtpError && <p className="text-xs text-red-500 mt-2">{phoneOtpError}</p>}
+                </>
+              ) : (
+                <p className="text-sm text-stone-500">Add your mobile number above first, then verify it here.</p>
+              )}
+
+              {/* Email OTP fallback */}
+              {userEmail && (
+                <div className="mt-5 pt-4 border-t" style={{borderColor: '#F0EBE3'}}>
+                  <p className="text-xs text-stone-400 mb-2">Or verify via email instead</p>
+                  {!otpSent ? (
+                    <button onClick={sendEmailOTP} disabled={otpLoading}
+                      className="text-xs font-semibold px-4 py-2 rounded-lg border"
+                      style={{borderColor: '#E8E0D6', color: '#78716C'}}>
+                      {otpLoading ? 'Sending...' : `Send code to ${userEmail}`}
+                    </button>
+                  ) : (
+                    <div className="flex gap-2 items-center">
+                      <input className="input font-mono text-center text-base tracking-widest max-w-[130px]"
+                        placeholder="000000" maxLength={6}
+                        value={otpCode} onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))} />
+                      <button onClick={verifyEmailOTP} disabled={otpLoading || otpCode.length < 6}
+                        className="btn-primary text-sm px-4 py-2">
+                        {otpLoading ? '...' : 'Confirm'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-3">
+              {devOtp && (
+                <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#FEF9EC', color: '#92400E'}}>
+                  Dev mode — OTP: <span className="font-bold font-mono">{devOtp}</span> (SMS not configured)
+                </div>
+              )}
               <p className="text-sm text-stone-600">
-                Enter the 6-digit code sent to <span className="font-medium">{userEmail}</span>
+                Enter the 6-digit code sent to <span className="font-medium">{phoneCode} {form.phone}</span>
               </p>
               <div className="flex gap-2">
                 <input className="input font-mono text-center text-lg tracking-widest max-w-[160px]"
                   placeholder="000000" maxLength={6}
-                  value={otpCode} onChange={e => setOtpCode(e.target.value.replace(/\D/g, ''))} />
-                <button onClick={verifyEmailOTP} disabled={otpLoading || otpCode.length < 6}
+                  value={phoneOtpCode} onChange={e => setPhoneOtpCode(e.target.value.replace(/\D/g, ''))} />
+                <button
+                  disabled={phoneOtpLoading || phoneOtpCode.length < 6}
+                  onClick={async () => {
+                    setPhoneOtpLoading(true)
+                    setPhoneOtpError('')
+                    const fullPhone = `${phoneCode}${form.phone.trim()}`
+                    const res = await fetch('/api/verify-otp', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ otp: phoneOtpCode, token: phoneOtpToken, phone: fullPhone }),
+                    })
+                    const data = await res.json()
+                    setPhoneOtpLoading(false)
+                    if (!res.ok) { setPhoneOtpError(data.error || 'Verification failed'); return }
+                    // Mark verified in DB
+                    if (profileId) {
+                      await supabase.from('profiles').update({ phone_verified: true }).eq('id', profileId)
+                    }
+                    setVerified(true)
+                    setPhoneOtpSent(false)
+                    setPhoneOtpCode('')
+                  }}
                   className="btn-primary text-sm px-5 py-2.5">
-                  {otpLoading ? 'Verifying...' : 'Confirm'}
+                  {phoneOtpLoading ? 'Verifying...' : 'Confirm'}
                 </button>
               </div>
-              <button onClick={() => { setOtpSent(false); setOtpCode('') }}
+              {phoneOtpError && <p className="text-xs text-red-500">{phoneOtpError}</p>}
+              <button onClick={() => { setPhoneOtpSent(false); setPhoneOtpCode(''); setPhoneOtpError('') }}
                 className="text-xs text-stone-400 hover:text-stone-600">
                 Resend code
               </button>
