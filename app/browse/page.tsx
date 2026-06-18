@@ -148,7 +148,7 @@ export default function BrowsePage() {
     let results = data || []
     if (ageRange) {
       const [minA, maxA] = ageRange === '40+' ? [40, 99] : ageRange.split('–').map(Number)
-      results = results.filter(p => { const a = getAge(p.date_of_birth); return a >= minA && a <= maxA })
+      results = results.filter(p => { const a = getAge(p.date_of_birth); return a != null && a >= minA && a <= maxA })
     }
     if (profCat) {
       const kws = PROF_KEYWORDS[profCat] || []
