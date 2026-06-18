@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' })
 
 const EXTRACT_PROMPT = `You are parsing a matrimonial biodata document. Extract every field you can find and return ONLY a valid JSON object — no explanation, no markdown fences.
 
@@ -44,6 +44,9 @@ Fields to extract (use null for anything not found):
 Be liberal in extraction — guess gender from name if not stated. Convert height like "5'8\\"" to cm (172). For date_of_birth parse any format to YYYY-MM-DD.`
 
 export async function POST(req: NextRequest) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: 'Biodata parsing is not configured yet. Please contact support.' }, { status: 503 })
+  }
   try {
     const formData = await req.formData()
     const file = formData.get('file') as File | null
@@ -120,8 +123,12 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ data: extractedData })
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('parse-biodata error:', err)
-    return NextResponse.json({ error: 'Failed to parse biodata. Please try again.' }, { status: 500 })
+    const msg = (err as { error?: { type?: string } })?.error?.type === 'invalid_request_error' &&
+      JSON.stringify(err).includes('credit balance')
+      ? 'AI service is temporarily unavailable. Please fill in your details manually.'
+      : 'Failed to parse biodata. Please try again.'
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 }

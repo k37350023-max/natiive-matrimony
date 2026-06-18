@@ -480,8 +480,8 @@ export default function BrowsePage() {
                   <div className="rounded-2xl overflow-hidden shadow-sm border active:scale-[0.98] transition-transform"
                     style={{ borderColor: '#E8E0D6', background: 'white' }}>
 
-                    {/* Photo — 4:5 portrait ratio */}
-                    <div className="relative" style={{ paddingBottom: '125%' }}>
+                    {/* Photo — square ratio */}
+                    <div className="relative" style={{ paddingBottom: '85%' }}>
                       {p.photo_url && p.photo_visibility === 'public' ? (
                         <img src={p.photo_url} alt={p.full_name}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />

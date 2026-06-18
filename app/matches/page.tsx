@@ -159,11 +159,13 @@ export default function MatchesPage() {
               {revealedIds.has(p.id) ? (
                 <div className="mb-4 pt-3 space-y-3" style={{borderTop: '1px solid #F5F5F4'}}>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                    <div>
-                      <p className="section-label">Phone</p>
-                      <p className="text-sm font-medium text-stone-700 mt-0.5">{p.phone || '—'}</p>
-                    </div>
-                    <div>
+                    {p.phone && (
+                      <div>
+                        <p className="section-label">Phone</p>
+                        <p className="text-sm font-medium text-stone-700 mt-0.5">{p.phone}</p>
+                      </div>
+                    )}
+                    <div className={p.phone ? '' : 'col-span-2'}>
                       <p className="section-label">Email</p>
                       <p className="text-sm font-medium text-stone-700 mt-0.5 break-all">{p.email}</p>
                     </div>
