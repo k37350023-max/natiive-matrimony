@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -49,7 +49,7 @@ const Label = ({ children, required, recommended }: { children: React.ReactNode;
 
 const REQUIRED_FIELDS = ['full_name', 'gender', 'date_of_birth', 'native_region', 'native_state', 'native_district', 'height_cm', 'religion', 'profession', 'education', 'family_type', 'mother_tongue'] as const
 
-export default function EditProfilePage() {
+function EditProfilePageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isNewProfile = searchParams.get('new') === '1'
@@ -1048,5 +1048,13 @@ export default function EditProfilePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function EditProfilePage() {
+  return (
+    <Suspense>
+      <EditProfilePageInner />
+    </Suspense>
   )
 }

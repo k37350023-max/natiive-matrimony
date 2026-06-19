@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
@@ -57,7 +57,7 @@ const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; 
   rejected: { label: 'Declined',          bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' },
 }
 
-export default function InterestsPage() {
+function InterestsPageInner() {
   const searchParams = useSearchParams()
   const initialTab = (searchParams.get('tab') as 'received' | 'accepted' | 'sent') || 'received'
   const [tab, setTab] = useState<'received' | 'accepted' | 'sent'>(initialTab)
@@ -360,5 +360,13 @@ export default function InterestsPage() {
       </div>
       <MobileNav />
     </div>
+  )
+}
+
+export default function InterestsPage() {
+  return (
+    <Suspense>
+      <InterestsPageInner />
+    </Suspense>
   )
 }
