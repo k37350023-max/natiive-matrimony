@@ -31,9 +31,11 @@ export default function LaunchBanner() {
       <div className="px-5 py-5 flex items-center gap-5">
 
         {/* Icon */}
-        <div className="shrink-0 w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+        <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
           style={{ background: 'rgba(255,255,255,0.15)' }}>
-          🎁
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
         </div>
 
         {/* Text */}

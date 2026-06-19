@@ -4,11 +4,14 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 const GOAL = 1000
+const PERKS = ['Unlimited interests', 'Full biodata access', 'Direct chat', 'Priority listing']
 
 export default function FounderTracker() {
   const [count, setCount] = useState<number | null>(null)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('my_profile_id'))
     supabase.from('profiles').select('id', { count: 'exact', head: true })
       .eq('status', 'approved')
       .then(({ count }) => setCount(count ?? 0))
@@ -20,69 +23,66 @@ export default function FounderTracker() {
   const isFull = filled >= GOAL
 
   return (
-    <div className="mx-4 sm:mx-auto sm:max-w-lg rounded-2xl overflow-hidden shadow-sm border" style={{ background: 'white', borderColor: '#E5E7EB' }}>
-      {/* Header strip */}
-      <div className="px-6 pt-5 pb-4" style={{ background: 'linear-gradient(135deg, #7F1D1D 0%, #9B1C1C 100%)' }}>
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-lg">🎁</span>
-          <span className="text-xs font-bold uppercase tracking-widest text-red-200">Founder Member Offer</span>
-        </div>
-        <p className="text-white font-serif-display text-xl font-bold leading-tight">
-          First {GOAL.toLocaleString()} profiles get<br />
-          <span className="text-red-300">1 year free premium</span>
+    <div className="mx-4 sm:mx-auto sm:max-w-lg rounded-2xl overflow-hidden border bg-white"
+      style={{ borderColor: '#E5E7EB', boxShadow: '0 4px 24px rgba(155,28,28,0.10)' }}>
+
+      {/* Header */}
+      <div className="px-6 pt-6 pb-5" style={{ background: 'linear-gradient(135deg, #7F1D1D 0%, #9B1C1C 100%)' }}>
+        <p className="text-xs font-bold uppercase tracking-widest text-red-300 mb-1">Founder Member Offer</p>
+        <p className="text-white font-bold text-xl leading-snug font-serif-display">
+          First 1,000 profiles get<br />
+          <span className="text-red-200">1 year free premium</span>
         </p>
       </div>
 
       {/* Progress */}
-      <div className="px-6 pt-5 pb-2">
-        <div className="flex justify-between items-end mb-2">
-          <div>
-            <span className="text-3xl font-bold font-serif-display text-gray-900">
+      <div className="px-6 pt-5 pb-4">
+        <div className="flex items-end justify-between mb-2">
+          <p className="text-sm text-gray-500">
+            <span className="text-2xl font-bold text-gray-900 font-serif-display mr-1">
               {count === null ? '…' : filled.toLocaleString()}
             </span>
-            <span className="text-gray-400 text-sm ml-1">/ {GOAL.toLocaleString()} joined</span>
-          </div>
-          <span className="text-sm font-semibold" style={{ color: '#9B1C1C' }}>{pct}% full</span>
-        </div>
-
-        {/* Bar */}
-        <div className="h-3 rounded-full overflow-hidden" style={{ background: '#F0EDE8' }}>
-          <div
-            className="h-full rounded-full transition-all duration-700"
-            style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #9B1C1C, #D97706)' }}
-          />
-        </div>
-
-        {!isFull ? (
-          <p className="text-xs text-gray-400 mt-2">
-            Only <span className="font-semibold text-gray-700">{remaining.toLocaleString()} spots left</span> at this price — after that, ₹499/mo
+            / {GOAL.toLocaleString()} joined
           </p>
-        ) : (
-          <p className="text-xs text-gray-500 mt-2">Founder spots are full. <Link href="/pricing" className="underline" style={{ color: '#9B1C1C' }}>See pricing →</Link></p>
-        )}
+          <p className="text-sm font-bold" style={{ color: '#9B1C1C' }}>{pct}% full</p>
+        </div>
+
+        <div className="h-2.5 rounded-full overflow-hidden bg-gray-100">
+          <div className="h-full rounded-full transition-all duration-700"
+            style={{ width: `${Math.max(pct, 2)}%`, background: 'linear-gradient(90deg, #9B1C1C, #DC2626)' }} />
+        </div>
+
+        <p className="text-xs text-gray-500 mt-2">
+          {isFull
+            ? <span>Founder spots are full. <Link href="/pricing" className="font-semibold underline" style={{ color: '#9B1C1C' }}>See pricing →</Link></span>
+            : <>Only <span className="font-semibold text-gray-800">{remaining.toLocaleString()} spots left</span> at this price — after that, ₹499/mo</>
+          }
+        </p>
       </div>
 
       {/* Perks */}
-      <div className="px-6 py-4 border-t mx-2 mb-2" style={{ borderColor: '#F0EDE8' }}>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">What you get free for a year</p>
-        <div className="grid grid-cols-2 gap-2">
-          {[
-            ['✓', 'Unlimited interests'],
-            ['✓', 'Full biodata access'],
-            ['✓', 'Direct chat'],
-            ['✓', 'Priority listing'],
-          ].map(([icon, text]) => (
-            <div key={text} className="flex items-center gap-2">
-              <span className="text-xs font-bold" style={{ color: '#9B1C1C' }}>{icon}</span>
-              <span className="text-xs text-gray-600">{text}</span>
+      <div className="px-6 py-4 border-t" style={{ borderColor: '#F3F4F6' }}>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">What you get free for a year</p>
+        <div className="grid grid-cols-2 gap-y-2.5 gap-x-4">
+          {PERKS.map(perk => (
+            <div key={perk} className="flex items-center gap-2">
+              <span className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
+                style={{ background: '#FEF2F2' }}>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </span>
+              <span className="text-sm text-gray-700">{perk}</span>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="px-6 pb-5">
-        <Link href="/register" className="btn-primary w-full py-3 text-sm text-center block">
-          Claim your free spot →
+      {/* CTA */}
+      <div className="px-6 pb-6 pt-2">
+        <Link href={isLoggedIn ? '/pricing' : '/register'}
+          className="btn-primary w-full py-3 text-sm text-center block rounded-xl font-semibold">
+          {isLoggedIn ? 'View your membership →' : 'Claim your free spot →'}
         </Link>
       </div>
     </div>
