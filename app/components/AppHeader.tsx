@@ -78,11 +78,11 @@ export default function AppHeader() {
   ]
 
   return (
-    <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
+    <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E5E7EB' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Link href={profileId ? '/browse' : '/'} className="text-base font-bold text-stone-900 font-serif-display shrink-0">
-          Natiive<span style={{ color: '#92400E' }}>Matrimony</span>
+        <Link href={profileId ? '/browse' : '/'} className="text-lg font-bold font-serif-display shrink-0 tracking-tight">
+          Natiive<span style={{ color: '#9B1C1C' }}>Matrimony</span>
         </Link>
 
         {/* Nav links — desktop */}
@@ -91,7 +91,7 @@ export default function AppHeader() {
             {navItems.map(item => (
               <Link key={item.href} href={item.href}
                 className="relative flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-                style={{ color: item.active ? '#92400E' : '#78716C', background: item.active ? '#FDF6EC' : 'transparent' }}>
+                style={{ color: item.active ? '#7F1D1D' : '#6B7280', background: item.active ? '#FEF2F2' : 'transparent' }}>
                 {item.label}
                 {(item.badge ?? 0) > 0 && (
                   <span className="min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-white text-[10px] font-bold px-1"
@@ -113,13 +113,13 @@ export default function AppHeader() {
               <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen(o => !o)}
-                  className="flex items-center justify-center w-8 h-8 rounded-full overflow-hidden ring-2 ring-stone-200 shrink-0 transition-all hover:ring-stone-400"
+                  className="flex items-center justify-center w-8 h-8 rounded-full overflow-hidden ring-2 ring-gray-200 shrink-0 transition-all hover:ring-gray-400"
                   style={{ outline: 'none' }}>
                   {photoUrl ? (
                     <img src={photoUrl} alt={profileName} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold"
-                      style={{ background: '#92400E' }}>
+                      style={{ background: '#7F1D1D' }}>
                       {profileName ? initials(profileName) : (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
@@ -131,23 +131,23 @@ export default function AppHeader() {
 
                 {menuOpen && (
                   <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border bg-white shadow-lg overflow-hidden z-50"
-                    style={{ borderColor: '#E8E0D6' }}>
+                    style={{ borderColor: '#E5E7EB' }}>
                     {/* Identity row */}
-                    <div className="px-4 py-3 border-b" style={{ borderColor: '#F0EAE2' }}>
-                      <p className="text-sm font-semibold text-stone-800 truncate">{profileName}</p>
+                    <div className="px-4 py-3 border-b" style={{ borderColor: '#F3F4F6' }}>
+                      <p className="text-sm font-semibold text-gray-800 truncate">{profileName}</p>
                       {isPremium ? (
-                        <p className="text-xs font-medium mt-0.5" style={{ color: '#92400E' }}>
+                        <p className="text-xs font-medium mt-0.5" style={{ color: '#7F1D1D' }}>
                           {memberNumber ? `Founder Member #${memberNumber}` : 'Premium Member'}
                         </p>
                       ) : (
-                        <p className="text-xs text-stone-400 mt-0.5">Free account</p>
+                        <p className="text-xs text-gray-400 mt-0.5">Free account</p>
                       )}
                     </div>
                     {/* Menu items */}
                     <div className="py-1">
                       <Link href={`/profile/${profileId}`}
                         onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50">
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                         </svg>
@@ -155,7 +155,7 @@ export default function AppHeader() {
                       </Link>
                       <Link href="/profile/edit"
                         onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-700 hover:bg-stone-50">
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                         </svg>
@@ -164,8 +164,8 @@ export default function AppHeader() {
                       {!isPremium && (
                         <Link href="/pricing"
                           onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium hover:bg-stone-50"
-                          style={{ color: '#92400E' }}>
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium hover:bg-gray-50"
+                          style={{ color: '#7F1D1D' }}>
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                           </svg>
@@ -173,10 +173,10 @@ export default function AppHeader() {
                         </Link>
                       )}
                     </div>
-                    <div className="border-t py-1" style={{ borderColor: '#F0EAE2' }}>
+                    <div className="border-t py-1" style={{ borderColor: '#F3F4F6' }}>
                       <button
                         onClick={signOut}
-                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-stone-500 hover:bg-stone-50 hover:text-stone-800 transition-colors">
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition-colors">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
                         </svg>
@@ -189,7 +189,7 @@ export default function AppHeader() {
             </>
           ) : ready && (
             <>
-              <Link href="/login" className="text-sm font-medium text-stone-600 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Login</Link>
+              <Link href="/login" className="text-sm font-medium text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 hidden sm:block">Login</Link>
               <Link href="/register" className="btn-primary text-sm px-4 py-1.5">Register Free</Link>
             </>
           )}

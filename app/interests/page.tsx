@@ -37,7 +37,7 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D']
+const COLORS = ['#9B1C1C', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return COLORS[name.charCodeAt(0) % COLORS.length] }
 
 function lastSeenBadge(ts: string | null): string | null {
@@ -52,7 +52,7 @@ function lastSeenBadge(ts: string | null): string | null {
 }
 
 const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; border: string }> = {
-  pending:  { label: 'Awaiting response', bg: '#FEF9EC', color: '#92400E', border: '#F0E4C0' },
+  pending:  { label: 'Awaiting response', bg: '#FEF2F2', color: '#7F1D1D', border: '#FECACA' },
   accepted: { label: 'Accepted ✓',        bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
   rejected: { label: 'Declined',          bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' },
 }
@@ -146,9 +146,9 @@ function InterestsPageInner() {
             to: sender.email,
             subject: 'Your interest was accepted — NatiiveMatrimony',
             html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
-              <h2 style="color:#1C1917">Great news!</h2>
-              <p style="color:#57534E"><strong>${me?.full_name || 'Someone'}</strong> accepted your interest. You now have a mutual match on NatiiveMatrimony.</p>
-              <a href="https://nativematrimony.com/matches" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#B45309;color:white;border-radius:8px;text-decoration:none;font-weight:600">View Matches</a>
+              <h2 style="color:#111827">Great news!</h2>
+              <p style="color:#4B5563"><strong>${me?.full_name || 'Someone'}</strong> accepted your interest. You now have a mutual match on NatiiveMatrimony.</p>
+              <a href="https://nativematrimony.com/matches" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#9B1C1C;color:white;border-radius:8px;text-decoration:none;font-weight:600">View Matches</a>
             </div>`
           })
         }).catch(() => {})
@@ -162,7 +162,7 @@ function InterestsPageInner() {
     <div className="min-h-screen" style={{background: '#FFFBF5'}}>
       <AppHeader />
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-        <p className="font-semibold text-stone-700 mb-2">Login to see interests</p>
+        <p className="font-semibold text-gray-700 mb-2">Login to see interests</p>
         <Link href="/login" className="btn-primary px-6 py-2.5 mt-2">Login</Link>
       </div>
     </div>
@@ -175,7 +175,7 @@ function InterestsPageInner() {
         <div className="flex items-start gap-3">
           {i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
             <img src={i.profile.photo_url} alt={i.profile.full_name}
-              className="w-11 h-11 rounded-full object-cover shrink-0 ring-2 ring-stone-100" />
+              className="w-11 h-11 rounded-full object-cover shrink-0 ring-2 ring-gray-100" />
           ) : (
             <div className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
               style={{background: avatarBg(i.profile.full_name)}}>
@@ -186,17 +186,17 @@ function InterestsPageInner() {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Link href={`/profile/${i.profile.id}`} className="font-bold text-stone-900 hover:text-amber-700 text-sm">{i.profile.full_name}</Link>
+                  <Link href={`/profile/${i.profile.id}`} className="font-bold text-gray-900 hover:text-amber-700 text-sm">{i.profile.full_name}</Link>
                   {i.profile.verified && <span className="badge badge-verified">✓ Verified</span>}
                   {seenLabel && (
                     <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: seenLabel === 'Active now' ? '#ECFDF5' : '#F5F5F4', color: seenLabel === 'Active now' ? '#065F46' : '#78716C' }}>
+                      style={{ background: seenLabel === 'Active now' ? '#ECFDF5' : '#F5F5F4', color: seenLabel === 'Active now' ? '#065F46' : '#6B7280' }}>
                       {seenLabel}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-stone-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
-                <p className="text-xs mt-0.5" style={{color: '#92400E'}}>📍 {i.profile.native_district}, {i.profile.native_state}</p>
+                <p className="text-xs text-gray-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
+                <p className="text-xs mt-0.5" style={{color: '#7F1D1D'}}>📍 {i.profile.native_district}, {i.profile.native_state}</p>
               </div>
               {!showActions && !isAccepted && (() => {
                 const s = STATUS_STYLES[i.status] || STATUS_STYLES.pending
@@ -209,7 +209,7 @@ function InterestsPageInner() {
               })()}
             </div>
             {i.note && (
-              <p className="mt-2 text-xs text-stone-500 italic bg-stone-50 rounded-lg px-3 py-2 border" style={{borderColor: '#E8E0D6'}}>
+              <p className="mt-2 text-xs text-gray-500 italic bg-gray-50 rounded-lg px-3 py-2 border" style={{borderColor: '#E5E7EB'}}>
                 "{i.note}"
               </p>
             )}
@@ -224,7 +224,7 @@ function InterestsPageInner() {
             </button>
             <button onClick={() => respond(i.id, i.from_user, false)}
               className="flex-1 py-2 text-sm font-semibold rounded-lg border"
-              style={{borderColor: '#EDE8E0', color: '#78716C'}}>
+              style={{borderColor: '#EDE8E0', color: '#6B7280'}}>
               Decline
             </button>
           </div>
@@ -233,12 +233,12 @@ function InterestsPageInner() {
           <div className="flex gap-2 mt-4">
             <Link href={`/profile/${i.profile.id}`}
               className="flex-1 py-2 text-center text-sm font-semibold rounded-lg border"
-              style={{borderColor: '#EDE8E0', color: '#57534E'}}>
+              style={{borderColor: '#EDE8E0', color: '#4B5563'}}>
               View Profile
             </Link>
             <Link href={`/matches`}
               className="flex-1 py-2 text-center text-white text-sm font-semibold rounded-lg"
-              style={{background: '#B45309'}}>
+              style={{background: '#9B1C1C'}}>
               Go to Matches
             </Link>
           </div>
@@ -250,7 +250,7 @@ function InterestsPageInner() {
                 await supabase.from('interests').delete().eq('id', i.id)
                 setSent(prev => prev.filter(x => x.id !== i.id))
               }}
-              className="text-xs text-stone-400 hover:text-red-500 transition-colors px-2 py-1">
+              className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1">
               Withdraw interest
             </button>
           </div>
@@ -271,7 +271,7 @@ function InterestsPageInner() {
       <LaunchBanner />
 
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-stone-900 font-serif-display mb-4">Interests</h1>
+        <h1 className="text-2xl font-bold text-gray-900 font-serif-display mb-4">Interests</h1>
 
         {/* Tab bar */}
         <div className="flex rounded-xl p-1 mb-6" style={{background: '#F5F0EB'}}>
@@ -280,14 +280,14 @@ function InterestsPageInner() {
               onClick={() => setTab(key)}
               className="flex-1 py-2 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
               style={tab === key
-                ? {background: 'white', color: '#1C1917', boxShadow: '0 1px 3px rgba(0,0,0,0.08)'}
-                : {color: '#78716C'}}>
+                ? {background: 'white', color: '#111827', boxShadow: '0 1px 3px rgba(0,0,0,0.08)'}
+                : {color: '#6B7280'}}>
               {label}
               {!loading && count > 0 && (
                 <span className="text-xs px-1.5 py-0.5 rounded-full font-bold"
                   style={tab === key
-                    ? {background: '#B45309', color: 'white'}
-                    : {background: '#E8E0D6', color: '#78716C'}}>
+                    ? {background: '#9B1C1C', color: 'white'}
+                    : {background: '#E5E7EB', color: '#6B7280'}}>
                   {count}
                 </span>
               )}
@@ -295,7 +295,7 @@ function InterestsPageInner() {
           ))}
         </div>
 
-        {loading && <p className="text-stone-400 text-sm text-center py-12">Loading...</p>}
+        {loading && <p className="text-gray-400 text-sm text-center py-12">Loading...</p>}
 
         {/* Received tab */}
         {!loading && tab === 'received' && (
@@ -303,12 +303,12 @@ function InterestsPageInner() {
             {received.length === 0 ? (
               <div className="card p-12 text-center">
                 <p className="text-3xl mb-3">💌</p>
-                <p className="font-semibold text-stone-700">No pending interests</p>
-                <p className="text-sm text-stone-400 mt-1">When someone expresses interest in you, it appears here.</p>
+                <p className="font-semibold text-gray-700">No pending interests</p>
+                <p className="text-sm text-gray-400 mt-1">When someone expresses interest in you, it appears here.</p>
               </div>
             ) : (
               <div className="space-y-3">
-                <p className="text-xs text-stone-400 mb-3">Accept to create a mutual match — they can then see your full biodata</p>
+                <p className="text-xs text-gray-400 mb-3">Accept to create a mutual match — they can then see your full biodata</p>
                 {received.map(i => <ProfileCard key={i.id} i={i} showActions />)}
               </div>
             )}
@@ -321,14 +321,14 @@ function InterestsPageInner() {
             {accepted.length === 0 ? (
               <div className="card p-12 text-center">
                 <p className="text-3xl mb-3">✅</p>
-                <p className="font-semibold text-stone-700">No accepted interests yet</p>
-                <p className="text-sm text-stone-400 mt-1">Interests you've accepted will appear here. They become mutual matches.</p>
+                <p className="font-semibold text-gray-700">No accepted interests yet</p>
+                <p className="text-sm text-gray-400 mt-1">Interests you've accepted will appear here. They become mutual matches.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center justify-between py-2.5 px-3 rounded-lg mb-1" style={{ background: '#ECFDF5' }}>
-                  <span className="text-xs font-semibold text-stone-700">{accepted.length} interest{accepted.length !== 1 ? 's' : ''} accepted</span>
-                  <span className="text-xs text-stone-400">These are now mutual matches</span>
+                  <span className="text-xs font-semibold text-gray-700">{accepted.length} interest{accepted.length !== 1 ? 's' : ''} accepted</span>
+                  <span className="text-xs text-gray-400">These are now mutual matches</span>
                 </div>
                 {accepted.map(i => <ProfileCard key={i.id} i={i} isAccepted />)}
               </div>
@@ -342,15 +342,15 @@ function InterestsPageInner() {
             {sent.length === 0 ? (
               <div className="card p-12 text-center">
                 <p className="text-3xl mb-3">🤝</p>
-                <p className="font-semibold text-stone-700">No interests sent yet</p>
-                <p className="text-sm text-stone-400 mt-1 mb-6">Browse profiles and express interest to get started.</p>
+                <p className="font-semibold text-gray-700">No interests sent yet</p>
+                <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and express interest to get started.</p>
                 <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="flex items-center justify-between py-2.5 px-3 rounded-lg mb-1" style={{ background: '#FEF9EC' }}>
-                  <span className="text-xs font-semibold text-stone-700">{sent.length} interest{sent.length !== 1 ? 's' : ''} sent</span>
-                  <span className="text-xs text-stone-400">Status updates when they respond</span>
+                <div className="flex items-center justify-between py-2.5 px-3 rounded-lg mb-1" style={{ background: '#FEF2F2' }}>
+                  <span className="text-xs font-semibold text-gray-700">{sent.length} interest{sent.length !== 1 ? 's' : ''} sent</span>
+                  <span className="text-xs text-gray-400">Status updates when they respond</span>
                 </div>
                 {sent.map(i => <ProfileCard key={i.id} i={i} />)}
               </div>

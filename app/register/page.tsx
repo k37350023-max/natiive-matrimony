@@ -137,13 +137,13 @@ export default function RegisterPage() {
   )
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#FAFAF9' }}>
-      <header className="bg-white border-b" style={{ borderColor: '#E8E0D6' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F9FAFB' }}>
+      <header className="bg-white border-b" style={{ borderColor: '#E5E7EB' }}>
         <div className="max-w-xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">
-            Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
+          <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
+            Natiive<span style={{ color: '#9B1C1C' }}>Matrimony</span>
           </Link>
-          <Link href="/browse" className="text-sm text-stone-500 hover:text-stone-700">Browse profiles</Link>
+          <Link href="/browse" className="text-sm text-gray-500 hover:text-gray-700">Browse profiles</Link>
         </div>
       </header>
 
@@ -181,7 +181,7 @@ export default function RegisterPage() {
               setBiodataParsed(true)
             }} />
             {biodataParsed && (
-              <p className="text-xs text-center text-stone-400 mt-2">
+              <p className="text-xs text-center text-gray-400 mt-2">
                 Fields filled — complete remaining details below then create your account
               </p>
             )}
@@ -194,9 +194,9 @@ export default function RegisterPage() {
                 <div key={s} className="flex items-center flex-1 last:flex-none">
                   <div className="flex items-center gap-2.5">
                     <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
-                      i + 1 < step ? 'text-white' : i + 1 === step ? 'text-white' : 'text-stone-400'
+                      i + 1 < step ? 'text-white' : i + 1 === step ? 'text-white' : 'text-gray-400'
                     }`} style={{
-                      background: i + 1 <= step ? '#B45309' : '#E8E0D6'
+                      background: i + 1 <= step ? '#9B1C1C' : '#E5E7EB'
                     }}>
                       {i + 1 < step ? (
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -204,10 +204,10 @@ export default function RegisterPage() {
                         </svg>
                       ) : i + 1}
                     </div>
-                    <span className={`text-xs font-medium hidden sm:block ${i + 1 === step ? 'text-stone-700' : 'text-stone-400'}`}>{s}</span>
+                    <span className={`text-xs font-medium hidden sm:block ${i + 1 === step ? 'text-gray-700' : 'text-gray-400'}`}>{s}</span>
                   </div>
                   {i < STEPS.length - 1 && (
-                    <div className="flex-1 h-px mx-3" style={{ background: i + 1 < step ? '#B45309' : '#E8E0D6' }} />
+                    <div className="flex-1 h-px mx-3" style={{ background: i + 1 < step ? '#9B1C1C' : '#E5E7EB' }} />
                   )}
                 </div>
               ))}
@@ -216,8 +216,8 @@ export default function RegisterPage() {
 
           <div className="card p-6">
             <div className="mb-5">
-              <h2 className="text-xl font-bold text-stone-900 font-serif-display">{STEPS[step - 1]}</h2>
-              <p className="text-sm text-stone-400 mt-0.5">Step {step} of {STEPS.length}</p>
+              <h2 className="text-xl font-bold text-gray-900 font-serif-display">{STEPS[step - 1]}</h2>
+              <p className="text-sm text-gray-400 mt-0.5">Step {step} of {STEPS.length}</p>
             </div>
 
             {error && (
@@ -252,7 +252,7 @@ export default function RegisterPage() {
                     <select
                       value={phoneCode}
                       onChange={e => setPhoneCode(e.target.value)}
-                      className="bg-stone-50 text-sm font-medium text-stone-700 px-2 py-2.5 border-r outline-none shrink-0"
+                      className="bg-gray-50 text-sm font-medium text-gray-700 px-2 py-2.5 border-r outline-none shrink-0"
                       style={{borderColor: 'var(--border)'}}>
                       {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
                     </select>
@@ -364,20 +364,20 @@ export default function RegisterPage() {
                 <div>
                   <Label>Profile photo</Label>
                   <label className="flex items-center gap-3 px-4 py-3 rounded-lg border-2 border-dashed cursor-pointer transition-colors"
-                    style={{ borderColor: photo ? '#B45309' : '#E8E0D6' }}>
+                    style={{ borderColor: photo ? '#9B1C1C' : '#E5E7EB' }}>
                     {photoPreview
                       ? <img src={photoPreview} alt="Preview" className="w-10 h-10 rounded-full object-cover shrink-0" />
                       : (
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: '#FEF9EC' }}>
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.75">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: '#FEF2F2' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="1.75">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
                           </svg>
                         </div>
                       )
                     }
                     <div>
-                      <p className="text-sm font-medium text-stone-700">{photo ? photo.name : 'Upload a photo'}</p>
-                      <p className="text-xs text-stone-400 mt-0.5">Visible only after a mutual match</p>
+                      <p className="text-sm font-medium text-gray-700">{photo ? photo.name : 'Upload a photo'}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">Visible only after a mutual match</p>
                     </div>
                     <input type="file" accept="image/*" className="hidden" onChange={e => {
                       const file = e.target.files?.[0]
@@ -388,7 +388,7 @@ export default function RegisterPage() {
               </div>
             )}
 
-            <div className="flex justify-between mt-7 pt-5 border-t" style={{ borderColor: '#F0EBE3' }}>
+            <div className="flex justify-between mt-7 pt-5 border-t" style={{ borderColor: '#F3F4F6' }}>
               {step > 1 ? (
                 <button onClick={() => { setError(''); setStep(s => s - 1) }} className="btn-ghost px-5 py-2.5 text-sm">Back</button>
               ) : <div />}
@@ -406,11 +406,11 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <p className="text-center text-xs text-stone-400 mt-5">
+          <p className="text-center text-xs text-gray-400 mt-5">
             Already have an account?{' '}
-            <Link href="/login" className="font-semibold" style={{ color: '#B45309' }}>Sign in</Link>
+            <Link href="/login" className="font-semibold" style={{ color: '#9B1C1C' }}>Sign in</Link>
           </p>
-          <p className="text-center text-xs text-stone-400 mt-2">
+          <p className="text-center text-xs text-gray-400 mt-2">
             Free access to all features until 30 September 2026
           </p>
         </div>

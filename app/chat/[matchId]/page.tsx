@@ -139,7 +139,7 @@ export default function ChatPage() {
   if (error) return (
     <div className="min-h-screen flex items-center justify-center" style={{ background: '#FFFBF5' }}>
       <div className="text-center">
-        <p className="text-stone-600 mb-4">{error}</p>
+        <p className="text-gray-600 mb-4">{error}</p>
         <Link href="/matches" className="btn-primary px-6 py-2.5">Back to Matches</Link>
       </div>
     </div>
@@ -150,7 +150,7 @@ export default function ChatPage() {
       {/* Header */}
       <header className="bg-white border-b shrink-0 z-10" style={{ borderColor: '#EDE8E0' }}>
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
-          <Link href="/matches" className="text-stone-400 hover:text-stone-700 p-1 -ml-1 rounded">
+          <Link href="/matches" className="text-gray-400 hover:text-gray-700 p-1 -ml-1 rounded">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
@@ -159,21 +159,21 @@ export default function ChatPage() {
             <>
               {other.photo_url && other.photo_visibility !== 'hidden' ? (
                 <img src={other.photo_url} alt={other.full_name}
-                  className="w-9 h-9 rounded-full object-cover ring-2 ring-stone-100" />
+                  className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100" />
               ) : (
                 <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm shrink-0">
                   {initials(other.full_name)}
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <Link href={`/profile/${other.id}`} className="font-bold text-stone-900 text-sm hover:text-amber-700 block truncate">
+                <Link href={`/profile/${other.id}`} className="font-bold text-gray-900 text-sm hover:text-amber-700 block truncate">
                   {other.full_name}
                 </Link>
-                <p className="text-xs text-stone-400">{lastSeenLabel(other.last_login_at)}</p>
+                <p className="text-xs text-gray-400">{lastSeenLabel(other.last_login_at)}</p>
               </div>
             </>
           ) : (
-            <div className="h-9 w-40 bg-stone-100 rounded animate-pulse" />
+            <div className="h-9 w-40 bg-gray-100 rounded animate-pulse" />
           )}
         </div>
       </header>
@@ -182,15 +182,15 @@ export default function ChatPage() {
       <div className="flex-1 overflow-y-auto px-4 py-4 max-w-2xl mx-auto w-full">
         {loading && (
           <div className="flex items-center justify-center py-12">
-            <p className="text-stone-400 text-sm">Loading messages...</p>
+            <p className="text-gray-400 text-sm">Loading messages...</p>
           </div>
         )}
         {!loading && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 text-2xl"
-              style={{ background: '#FEF9EC' }}>💬</div>
-            <p className="font-semibold text-stone-700">Start the conversation</p>
-            <p className="text-sm text-stone-400 mt-1">
+              style={{ background: '#FEF2F2' }}>💬</div>
+            <p className="font-semibold text-gray-700">Start the conversation</p>
+            <p className="text-sm text-gray-400 mt-1">
               You and {other?.full_name || 'your match'} are connected. Say hello!
             </p>
           </div>
@@ -205,7 +205,7 @@ export default function ChatPage() {
               <div key={m.id}>
                 {showDate && (
                   <div className="text-center my-4">
-                    <span className="text-xs text-stone-400 bg-stone-100 px-3 py-1 rounded-full">
+                    <span className="text-xs text-gray-400 bg-gray-100 px-3 py-1 rounded-full">
                       {new Date(m.created_at).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
                     </span>
                   </div>
@@ -214,8 +214,8 @@ export default function ChatPage() {
                   <div
                     className="max-w-xs sm:max-w-sm px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
                     style={isMe
-                      ? { background: '#B45309', color: 'white', borderBottomRightRadius: '4px' }
-                      : { background: 'white', color: '#1C1917', border: '1px solid #EDE8E0', borderBottomLeftRadius: '4px' }}>
+                      ? { background: '#9B1C1C', color: 'white', borderBottomRightRadius: '4px' }
+                      : { background: 'white', color: '#111827', border: '1px solid #EDE8E0', borderBottomLeftRadius: '4px' }}>
                     {m.content}
                     <span className="block text-right mt-1 opacity-60" style={{ fontSize: '10px' }}>
                       {formatTime(m.created_at)}
@@ -249,9 +249,9 @@ export default function ChatPage() {
             onClick={send}
             disabled={!text.trim() || sending}
             className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-            style={{ background: text.trim() ? '#B45309' : '#E7E5E4' }}>
+            style={{ background: text.trim() ? '#9B1C1C' : '#E7E5E4' }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke={text.trim() ? 'white' : '#A8A29E'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              stroke={text.trim() ? 'white' : '#9CA3AF'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="22" y1="2" x2="11" y2="13"/>
               <polygon points="22 2 15 22 11 13 2 9 22 2"/>
             </svg>

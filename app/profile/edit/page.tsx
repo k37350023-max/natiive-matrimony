@@ -43,7 +43,7 @@ const Label = ({ children, required, recommended }: { children: React.ReactNode;
   <label className="form-label">
     {children}
     {required && <span className="ml-0.5 font-bold" style={{ color: '#DC2626' }}>*</span>}
-    {recommended && !required && <span className="ml-1 font-normal text-xs" style={{ color: '#B45309' }}>recommended</span>}
+    {recommended && !required && <span className="ml-1 font-normal text-xs" style={{ color: '#9B1C1C' }}>recommended</span>}
   </label>
 )
 
@@ -348,24 +348,24 @@ function EditProfilePageInner() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
-      <p className="text-stone-400 text-sm">Loading profile...</p>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F9FAFB' }}>
+      <p className="text-gray-400 text-sm">Loading profile...</p>
     </div>
   )
 
   return (
-    <div className="min-h-screen pb-20" style={{ background: '#FAFAF9' }}>
+    <div className="min-h-screen pb-20" style={{ background: '#F9FAFB' }}>
       <AppHeader />
 
       <div className="max-w-xl mx-auto px-4 py-6 space-y-4">
         {isNewProfile && (
-          <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#FEF9EC', border: '1px solid #F0E4C0', color: '#92400E' }}>
+          <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#7F1D1D' }}>
             🎉 Welcome! Fill in the fields below — required fields marked <span className="font-bold text-red-600">*</span>. The more you fill, the more interest you'll get.
           </div>
         )}
         <div className="mb-2">
-          <h1 className="text-xl font-bold text-stone-900 font-serif-display">Edit Profile</h1>
-          <p className="text-sm text-stone-400 mt-0.5">Changes are saved to your profile immediately</p>
+          <h1 className="text-xl font-bold text-gray-900 font-serif-display">Edit Profile</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Changes are saved to your profile immediately</p>
         </div>
 
         <BiodataUploader onParsed={data => {
@@ -431,13 +431,13 @@ function EditProfilePageInner() {
 
         {/* Photo */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-4 font-serif-display">Profile Photo</p>
+          <p className="font-semibold text-gray-800 mb-4 font-serif-display">Profile Photo</p>
           <div className="flex items-center gap-4 mb-4">
             {(photoPreview || currentPhotoUrl) ? (
               <img src={photoPreview || currentPhotoUrl} alt="Photo"
-                className="w-16 h-16 rounded-full object-cover ring-2 ring-stone-200" />
+                className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-200" />
             ) : (
-              <div className="w-16 h-16 rounded-full flex items-center justify-center text-stone-400"
+              <div className="w-16 h-16 rounded-full flex items-center justify-center text-gray-400"
                 style={{ background: '#F5F5F4' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
@@ -453,14 +453,14 @@ function EditProfilePageInner() {
                   if (file) { setPhoto(file); setPhotoPreview(URL.createObjectURL(file)) }
                 }} />
               </label>
-              <p className="text-xs text-stone-400 mt-1">JPG or PNG, max 5MB</p>
+              <p className="text-xs text-gray-400 mt-1">JPG or PNG, max 5MB</p>
             </div>
           </div>
 
           {/* Additional photos */}
           <div className="mb-5 pt-4 border-t" style={{ borderColor: '#F0EDE8' }}>
-            <p className="form-label mb-2">More photos <span className="font-normal text-stone-400">({additionalPhotos.length}/4 added)</span></p>
-            <p className="text-xs text-stone-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get significantly more interest.</p>
+            <p className="form-label mb-2">More photos <span className="font-normal text-gray-400">({additionalPhotos.length}/4 added)</span></p>
+            <p className="text-xs text-gray-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get significantly more interest.</p>
             <div className="flex flex-wrap gap-2">
               {additionalPhotos.map((url, idx) => (
                 <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden group">
@@ -479,13 +479,13 @@ function EditProfilePageInner() {
                 <label className="w-20 h-20 rounded-lg border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:border-amber-600 transition-colors"
                   style={{ borderColor: '#D1C9BF' }}>
                   {uploadingExtra ? (
-                    <span className="text-xs text-stone-400">Uploading...</span>
+                    <span className="text-xs text-gray-400">Uploading...</span>
                   ) : (
                     <>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" strokeWidth="2" strokeLinecap="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round">
                         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                       </svg>
-                      <span className="text-xs text-stone-400 mt-1">Add</span>
+                      <span className="text-xs text-gray-400 mt-1">Add</span>
                     </>
                   )}
                   <input type="file" accept="image/*" className="hidden" disabled={uploadingExtra}
@@ -497,7 +497,7 @@ function EditProfilePageInner() {
 
           <div className="pt-4 border-t" style={{ borderColor: '#F0EDE8' }}>
             <p className="form-label mb-1">Privacy — what do you want to hide?</p>
-            <p className="text-xs text-stone-400 mb-3">Hidden fields show as blurred on your profile. Visitors can request to see them — you approve or decline.</p>
+            <p className="text-xs text-gray-400 mb-3">Hidden fields show as blurred on your profile. Visitors can request to see them — you approve or decline.</p>
             <div className="space-y-2">
               {HIDEABLE_FIELDS.map(f => {
                 const checked = hiddenFields.includes(f.key)
@@ -505,8 +505,8 @@ function EditProfilePageInner() {
                   <label key={f.key}
                     className="flex items-start gap-3 px-3.5 py-3 rounded-lg border cursor-pointer transition-colors"
                     style={{
-                      borderColor: checked ? '#B45309' : '#E8E0D6',
-                      background: checked ? '#FEF9EC' : 'white',
+                      borderColor: checked ? '#9B1C1C' : '#E5E7EB',
+                      background: checked ? '#FEF2F2' : 'white',
                     }}>
                     <input type="checkbox" checked={checked}
                       onChange={() => setHiddenFields(prev =>
@@ -514,8 +514,8 @@ function EditProfilePageInner() {
                       )}
                       className="mt-0.5 accent-amber-700" />
                     <div>
-                      <p className="font-semibold text-stone-800 text-sm">{f.label}</p>
-                      <p className="text-xs text-stone-500 mt-0.5">{f.desc}</p>
+                      <p className="font-semibold text-gray-800 text-sm">{f.label}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">{f.desc}</p>
                     </div>
                   </label>
                 )
@@ -526,7 +526,7 @@ function EditProfilePageInner() {
 
         {/* Personal Info */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-4 font-serif-display">Personal Info</p>
+          <p className="font-semibold text-gray-800 mb-4 font-serif-display">Personal Info</p>
           <div className="space-y-4">
             <div>
               <Label required>Full name</Label>
@@ -548,11 +548,11 @@ function EditProfilePageInner() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Time of birth <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <Label>Time of birth <span className="text-gray-400 font-normal">(optional)</span></Label>
                 <input className="input" placeholder="e.g. 6:45 PM" value={form.birth_time} onChange={e => set('birth_time', e.target.value)} />
               </div>
               <div>
-                <Label>Place of birth <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <Label>Place of birth <span className="text-gray-400 font-normal">(optional)</span></Label>
                 <input className="input" placeholder="e.g. Ramagundam, Karimnagar" value={form.birth_place} onChange={e => set('birth_place', e.target.value)} />
               </div>
             </div>
@@ -562,7 +562,7 @@ function EditProfilePageInner() {
                 <select
                   value={phoneCode}
                   onChange={e => setPhoneCode(e.target.value)}
-                  className="bg-stone-50 text-sm font-medium text-stone-700 px-2 py-2.5 border-r outline-none shrink-0"
+                  className="bg-gray-50 text-sm font-medium text-gray-700 px-2 py-2.5 border-r outline-none shrink-0"
                   style={{borderColor: 'var(--border)'}}>
                   {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
                 </select>
@@ -613,7 +613,7 @@ function EditProfilePageInner() {
 
         {/* Location */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-4 font-serif-display">Location</p>
+          <p className="font-semibold text-gray-800 mb-4 font-serif-display">Location</p>
           <div className="space-y-4">
             <div>
               <Label required>Native region</Label>
@@ -658,7 +658,7 @@ function EditProfilePageInner() {
 
         {/* Career & Education */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-4 font-serif-display">Career & Education</p>
+          <p className="font-semibold text-gray-800 mb-4 font-serif-display">Career & Education</p>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -666,7 +666,7 @@ function EditProfilePageInner() {
                 <input className="input" placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
               </div>
               <div>
-                <Label>Company <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <Label>Company <span className="text-gray-400 font-normal">(optional)</span></Label>
                 <input className="input" placeholder="e.g. Amazon Web Services" value={form.company} onChange={e => set('company', e.target.value)} />
               </div>
             </div>
@@ -676,7 +676,7 @@ function EditProfilePageInner() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Annual income <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <Label>Annual income <span className="text-gray-400 font-normal">(optional)</span></Label>
                 <select className="input" value={form.annual_income} onChange={e => set('annual_income', e.target.value)}>
                   <option value="">Prefer not to say</option>
                   <optgroup label="India (LPA)">
@@ -705,7 +705,7 @@ function EditProfilePageInner() {
                 </select>
               </div>
               <div>
-                <Label>Visa / immigration status <span className="text-stone-400 font-normal">(optional)</span></Label>
+                <Label>Visa / immigration status <span className="text-gray-400 font-normal">(optional)</span></Label>
                 <select className="input" value={form.visa_status} onChange={e => set('visa_status', e.target.value)}>
                   <option value="">Not applicable</option>
                   <option value="H1B">H1B</option>
@@ -768,22 +768,22 @@ function EditProfilePageInner() {
                     set('about', templates[Math.floor(Math.random() * templates.length)].slice(0, 400))
                   }}
                   className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors"
-                  style={{background: '#FEF9EC', color: '#B45309'}}>
+                  style={{background: '#FEF2F2', color: '#9B1C1C'}}>
                   ✨ Generate bio
                 </button>
               </div>
               <textarea className="input" rows={3}
                 placeholder="A short note about yourself, what you're looking for..."
                 value={form.about} onChange={e => set('about', e.target.value)} />
-              <p className="text-xs text-stone-400 text-right mt-0.5">{form.about.length}/400</p>
+              <p className="text-xs text-gray-400 text-right mt-0.5">{form.about.length}/400</p>
             </div>
           </div>
         </div>
 
         {/* Family Background */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Family Background</p>
-          <p className="text-xs text-stone-400 mb-4">Shown only to mutual matches</p>
+          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Family Background</p>
+          <p className="text-xs text-gray-400 mb-4">Shown only to mutual matches</p>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -806,7 +806,7 @@ function EditProfilePageInner() {
               </div>
             </div>
             <div>
-              <Label>Siblings <span className="text-stone-400 font-normal">(optional)</span></Label>
+              <Label>Siblings <span className="text-gray-400 font-normal">(optional)</span></Label>
               <div className="grid grid-cols-2 gap-3 mt-1">
                 {[
                   { label: 'Brothers', field: 'brothers' },
@@ -815,7 +815,7 @@ function EditProfilePageInner() {
                   { label: 'Sisters married', field: 'sisters_married' },
                 ].map(({ label, field }) => (
                   <div key={field}>
-                    <p className="text-xs text-stone-500 mb-1">{label}</p>
+                    <p className="text-xs text-gray-500 mb-1">{label}</p>
                     <select className="input" value={(form as Record<string, string>)[field]} onChange={e => set(field, e.target.value)}>
                       <option value="">—</option>
                       {[0,1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
@@ -829,8 +829,8 @@ function EditProfilePageInner() {
 
         {/* Astrology — optional */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Astrology</p>
-          <p className="text-xs text-stone-400 mb-4">Optional — fill if your family values horoscope matching</p>
+          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Astrology</p>
+          <p className="text-xs text-gray-400 mb-4">Optional — fill if your family values horoscope matching</p>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -862,8 +862,8 @@ function EditProfilePageInner() {
 
         {/* Lifestyle — optional */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Lifestyle</p>
-          <p className="text-xs text-stone-400 mb-4">Optional — helps find compatible matches</p>
+          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Lifestyle</p>
+          <p className="text-xs text-gray-400 mb-4">Optional — helps find compatible matches</p>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label recommended>Diet</Label>
@@ -897,18 +897,18 @@ function EditProfilePageInner() {
 
         {/* Partner Preferences */}
         <div className="card p-5">
-          <p className="font-semibold text-stone-800 mb-1 font-serif-display">Partner Preferences</p>
-          <p className="text-xs text-stone-400 mb-4">Helps us surface more compatible matches for you</p>
+          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Partner Preferences</p>
+          <p className="text-xs text-gray-400 mb-4">Helps us surface more compatible matches for you</p>
           <div className="space-y-4">
             <div>
               <Label>Preferred age range (years)</Label>
               <div className="flex items-center gap-2 mt-1">
                 <input className="input text-center w-20" type="number" placeholder="Min" min="18" max="60"
                   value={form.pref_age_min} onChange={e => set('pref_age_min', e.target.value)} />
-                <span className="text-stone-400 text-sm">to</span>
+                <span className="text-gray-400 text-sm">to</span>
                 <input className="input text-center w-20" type="number" placeholder="Max" min="18" max="70"
                   value={form.pref_age_max} onChange={e => set('pref_age_max', e.target.value)} />
-                <span className="text-stone-400 text-sm">yrs</span>
+                <span className="text-gray-400 text-sm">yrs</span>
               </div>
             </div>
           </div>
@@ -918,14 +918,14 @@ function EditProfilePageInner() {
         <div className="card p-5">
           <div className="flex items-start justify-between gap-3 mb-4">
             <div>
-              <p className="font-semibold text-stone-800 font-serif-display">Identity Verification</p>
-              <p className="text-xs text-stone-400 mt-0.5">Verify your mobile number to get a Verified badge</p>
+              <p className="font-semibold text-gray-800 font-serif-display">Identity Verification</p>
+              <p className="text-xs text-gray-400 mt-0.5">Verify your mobile number to get a Verified badge</p>
             </div>
             {verified && <span className="badge badge-approved shrink-0 mt-0.5">✓ Verified</span>}
           </div>
 
           {verified ? (
-            <div className="flex items-center gap-2 text-sm text-stone-600 py-2">
+            <div className="flex items-center gap-2 text-sm text-gray-600 py-2">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
@@ -935,7 +935,7 @@ function EditProfilePageInner() {
             <div>
               {form.phone ? (
                 <>
-                  <p className="text-sm text-stone-600 mb-3">
+                  <p className="text-sm text-gray-600 mb-3">
                     We'll send a 6-digit code to{' '}
                     <span className="font-medium">{phoneCode} {form.phone}</span>
                   </p>
@@ -964,17 +964,17 @@ function EditProfilePageInner() {
                   {phoneOtpError && <p className="text-xs text-red-500 mt-2">{phoneOtpError}</p>}
                 </>
               ) : (
-                <p className="text-sm text-stone-500">Add your mobile number above first, then verify it here.</p>
+                <p className="text-sm text-gray-500">Add your mobile number above first, then verify it here.</p>
               )}
 
               {/* Email OTP fallback */}
               {userEmail && (
-                <div className="mt-5 pt-4 border-t" style={{borderColor: '#F0EBE3'}}>
-                  <p className="text-xs text-stone-400 mb-2">Or verify via email instead</p>
+                <div className="mt-5 pt-4 border-t" style={{borderColor: '#F3F4F6'}}>
+                  <p className="text-xs text-gray-400 mb-2">Or verify via email instead</p>
                   {!otpSent ? (
                     <button onClick={sendEmailOTP} disabled={otpLoading}
                       className="text-xs font-semibold px-4 py-2 rounded-lg border"
-                      style={{borderColor: '#E8E0D6', color: '#78716C'}}>
+                      style={{borderColor: '#E5E7EB', color: '#6B7280'}}>
                       {otpLoading ? 'Sending...' : `Send code to ${userEmail}`}
                     </button>
                   ) : (
@@ -994,11 +994,11 @@ function EditProfilePageInner() {
           ) : (
             <div className="space-y-3">
               {devOtp && (
-                <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#FEF9EC', color: '#92400E'}}>
+                <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#FEF2F2', color: '#7F1D1D'}}>
                   Dev mode — OTP: <span className="font-bold font-mono">{devOtp}</span> (SMS not configured)
                 </div>
               )}
-              <p className="text-sm text-stone-600">
+              <p className="text-sm text-gray-600">
                 Enter the 6-digit code sent to <span className="font-medium">{phoneCode} {form.phone}</span>
               </p>
               <div className="flex gap-2">
@@ -1033,7 +1033,7 @@ function EditProfilePageInner() {
               </div>
               {phoneOtpError && <p className="text-xs text-red-500">{phoneOtpError}</p>}
               <button onClick={() => { setPhoneOtpSent(false); setPhoneOtpCode(''); setPhoneOtpError('') }}
-                className="text-xs text-stone-400 hover:text-stone-600">
+                className="text-xs text-gray-400 hover:text-gray-600">
                 Resend code
               </button>
             </div>

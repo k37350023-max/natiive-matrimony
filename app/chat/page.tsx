@@ -119,10 +119,10 @@ export default function ChatInboxPage() {
           <div className="flex flex-col gap-0">
             {[1,2,3].map(i => (
               <div key={i} className="flex items-center gap-3 px-5 py-4 border-b" style={{ borderColor: '#F0EDE8' }}>
-                <div className="w-12 h-12 rounded-full bg-stone-100 animate-pulse shrink-0" />
+                <div className="w-12 h-12 rounded-full bg-gray-100 animate-pulse shrink-0" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-3.5 bg-stone-100 rounded animate-pulse w-32" />
-                  <div className="h-3 bg-stone-100 rounded animate-pulse w-48" />
+                  <div className="h-3.5 bg-gray-100 rounded animate-pulse w-32" />
+                  <div className="h-3 bg-gray-100 rounded animate-pulse w-48" />
                 </div>
               </div>
             ))}
@@ -131,19 +131,19 @@ export default function ChatInboxPage() {
 
         {!loading && !myId && (
           <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5 text-3xl" style={{ background: '#FEF9EC' }}>💬</div>
-            <p className="font-semibold text-stone-800 text-lg mb-1">Sign in to see your messages</p>
-            <p className="text-sm text-stone-400 mb-6">Messages unlock after a mutual match</p>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5 text-3xl" style={{ background: '#FEF2F2' }}>💬</div>
+            <p className="font-semibold text-gray-800 text-lg mb-1">Sign in to see your messages</p>
+            <p className="text-sm text-gray-400 mb-6">Messages unlock after a mutual match</p>
             <Link href="/login" className="btn-primary px-6 py-2.5">Sign In</Link>
           </div>
         )}
 
         {!loading && myId && threads.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5 text-3xl" style={{ background: '#FEF9EC' }}>💬</div>
-            <p className="font-semibold text-stone-800 text-lg mb-1">No messages yet</p>
-            <p className="text-sm text-stone-400 mb-2">Messages unlock when you and another person both accept each other's interest.</p>
-            <p className="text-sm text-stone-400 mb-6">Browse profiles, send an interest, and once they accept — you can chat here.</p>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5 text-3xl" style={{ background: '#FEF2F2' }}>💬</div>
+            <p className="font-semibold text-gray-800 text-lg mb-1">No messages yet</p>
+            <p className="text-sm text-gray-400 mb-2">Messages unlock when you and another person both accept each other's interest.</p>
+            <p className="text-sm text-gray-400 mb-6">Browse profiles, send an interest, and once they accept — you can chat here.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Profiles</Link>
           </div>
         )}
@@ -155,16 +155,16 @@ export default function ChatInboxPage() {
               const isOnline = seenLabel === 'Online now'
               return (
                 <Link key={t.match_id} href={`/chat/${t.match_id}`}
-                  className="flex items-center gap-3 px-5 py-4 border-b hover:bg-stone-50 transition-colors relative"
+                  className="flex items-center gap-3 px-5 py-4 border-b hover:bg-gray-50 transition-colors relative"
                   style={{ borderColor: '#F0EDE8' }}>
                   {/* Avatar */}
                   <div className="relative shrink-0">
                     {t.photo_url && t.photo_visibility !== 'hidden' ? (
                       <img src={t.photo_url} alt={t.full_name}
-                        className="w-12 h-12 rounded-full object-cover ring-2 ring-stone-100" />
+                        className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100" />
                     ) : (
                       <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                        style={{ background: '#B45309' }}>
+                        style={{ background: '#9B1C1C' }}>
                         {initials(t.full_name)}
                       </div>
                     )}
@@ -177,24 +177,24 @@ export default function ChatInboxPage() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className={`text-sm truncate ${t.unread > 0 ? 'font-bold text-stone-900' : 'font-semibold text-stone-800'}`}>
+                      <span className={`text-sm truncate ${t.unread > 0 ? 'font-bold text-gray-900' : 'font-semibold text-gray-800'}`}>
                         {t.full_name}
                       </span>
                       {t.last_message_at && (
-                        <span className="text-xs shrink-0" style={{ color: t.unread > 0 ? '#B45309' : '#A8A29E' }}>
+                        <span className="text-xs shrink-0" style={{ color: t.unread > 0 ? '#9B1C1C' : '#9CA3AF' }}>
                           {timeLabel(t.last_message_at)}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center justify-between gap-2 mt-0.5">
-                      <p className={`text-xs truncate ${t.unread > 0 ? 'font-medium text-stone-700' : 'text-stone-400'}`}>
+                      <p className={`text-xs truncate ${t.unread > 0 ? 'font-medium text-gray-700' : 'text-gray-400'}`}>
                         {t.last_message ?? (
                           <span className="italic">Say hello 👋</span>
                         )}
                       </p>
                       {t.unread > 0 && (
                         <span className="shrink-0 min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-white text-[10px] font-bold px-1"
-                          style={{ background: '#B45309' }}>
+                          style={{ background: '#9B1C1C' }}>
                           {t.unread}
                         </span>
                       )}

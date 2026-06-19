@@ -13,8 +13,8 @@ export default function HeroCTA() {
 
   if (!ready) return (
     <div className="flex flex-row gap-2 justify-center items-center">
-      <div className="h-9 w-32 rounded-lg bg-stone-200 animate-pulse" />
-      <div className="h-9 w-24 rounded-lg bg-stone-100 animate-pulse" />
+      <div className="h-9 w-32 rounded-lg bg-gray-200 animate-pulse" />
+      <div className="h-9 w-24 rounded-lg bg-gray-100 animate-pulse" />
     </div>
   )
 

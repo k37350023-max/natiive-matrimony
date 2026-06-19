@@ -93,13 +93,13 @@ export default function MatchesPage() {
     <div className="min-h-screen" style={{background: '#FFF7ED'}}>
       <AppHeader />
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
-        <div className="w-14 h-14 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
         </div>
-        <h2 className="text-xl font-bold text-stone-800 mb-2">You need a profile to view matches</h2>
-        <p className="text-stone-500 text-sm mb-8">Register your profile first, express interest on others, and when they accept — your matches appear here.</p>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">You need a profile to view matches</h2>
+        <p className="text-gray-500 text-sm mb-8">Register your profile first, express interest on others, and when they accept — your matches appear here.</p>
         <div className="flex gap-3 justify-center">
           <Link href="/register" className="btn-primary px-6 py-2.5">Register Now</Link>
           <Link href="/browse" className="btn-outline px-6 py-2.5">Browse Profiles</Link>
@@ -114,17 +114,17 @@ export default function MatchesPage() {
       <LaunchBanner />
       <div className="max-w-3xl mx-auto px-4 py-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-stone-900">My Matches</h1>
-          <p className="text-stone-500 text-sm mt-1">Mutual connections — full biodata, contact, and chat unlocked</p>
+          <h1 className="text-2xl font-bold text-gray-900">My Matches</h1>
+          <p className="text-gray-500 text-sm mt-1">Mutual connections — full biodata, contact, and chat unlocked</p>
         </div>
 
-        {loading && <div className="text-center py-12 text-stone-400 text-sm">Loading matches...</div>}
+        {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading matches...</div>}
 
         {!loading && matches.length === 0 && (
           <div className="card p-12 text-center">
             <div className="w-14 h-14 bg-orange-50 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">💌</div>
-            <p className="font-semibold text-stone-700">No mutual matches yet</p>
-            <p className="text-sm text-stone-400 mt-1 mb-6">Express interest on profiles — when they accept, you'll see them here.</p>
+            <p className="font-semibold text-gray-700">No mutual matches yet</p>
+            <p className="text-sm text-gray-400 mt-1 mb-6">Express interest on profiles — when they accept, you'll see them here.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Profiles</Link>
           </div>
         )}
@@ -137,7 +137,7 @@ export default function MatchesPage() {
                 <div className="flex items-start gap-4 mb-4">
                   {p.photo_url && p.photo_visibility !== 'hidden' ? (
                     <img src={p.photo_url} alt={p.full_name}
-                      className="w-14 h-14 rounded-full object-cover shrink-0 ring-2 ring-stone-100" />
+                      className="w-14 h-14 rounded-full object-cover shrink-0 ring-2 ring-gray-100" />
                   ) : (
                     <div className="w-14 h-14 rounded-full bg-orange-100 text-orange-800 flex items-center justify-center font-bold text-lg shrink-0">
                       {initials(p.full_name)}
@@ -145,17 +145,17 @@ export default function MatchesPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h2 className="text-lg font-bold text-stone-900">{p.full_name}</h2>
+                      <h2 className="text-lg font-bold text-gray-900">{p.full_name}</h2>
                       <span className="badge badge-approved">Matched ✓</span>
                       {seenLabel && (
                         <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                          style={{ background: seenLabel === 'Online now' ? '#ECFDF5' : '#F5F5F4', color: seenLabel === 'Online now' ? '#065F46' : '#78716C' }}>
+                          style={{ background: seenLabel === 'Online now' ? '#ECFDF5' : '#F5F5F4', color: seenLabel === 'Online now' ? '#065F46' : '#6B7280' }}>
                           {seenLabel}
                         </span>
                       )}
                     </div>
-                    <p className="text-stone-500 text-sm">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#92400E' }}>📍 {p.native_district}, {p.native_state}</p>
+                    <p className="text-gray-500 text-sm">{getAge(p.date_of_birth)} yrs · {p.profession}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#7F1D1D' }}>📍 {p.native_district}, {p.native_state}</p>
                   </div>
                 </div>
 
@@ -163,12 +163,12 @@ export default function MatchesPage() {
                 <div className="flex gap-2 mb-4">
                   <Link href={`/profile/${p.id}`}
                     className="flex-1 py-2 text-center text-sm font-semibold rounded-lg border transition-all"
-                    style={{ borderColor: '#EDE8E0', color: '#57534E' }}>
+                    style={{ borderColor: '#EDE8E0', color: '#4B5563' }}>
                     View Profile
                   </Link>
                   <Link href={`/chat/${p.match_id}`}
                     className="flex-1 py-2 text-center text-white text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-all"
-                    style={{ background: '#B45309' }}>
+                    style={{ background: '#9B1C1C' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
@@ -187,7 +187,7 @@ export default function MatchesPage() {
                   ].map(([label, value]) => (
                     <div key={label}>
                       <p className="section-label">{label}</p>
-                      <p className="text-sm font-medium text-stone-700 mt-0.5">{value}</p>
+                      <p className="text-sm font-medium text-gray-700 mt-0.5">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -198,12 +198,12 @@ export default function MatchesPage() {
                       {p.phone && (
                         <div>
                           <p className="section-label">Phone</p>
-                          <p className="text-sm font-medium text-stone-700 mt-0.5">{p.phone}</p>
+                          <p className="text-sm font-medium text-gray-700 mt-0.5">{p.phone}</p>
                         </div>
                       )}
                       <div className={p.phone ? '' : 'col-span-2'}>
                         <p className="section-label">Email</p>
-                        <p className="text-sm font-medium text-stone-700 mt-0.5 break-all">{p.email}</p>
+                        <p className="text-sm font-medium text-gray-700 mt-0.5 break-all">{p.email}</p>
                       </div>
                     </div>
                     {p.phone && (
@@ -240,7 +240,7 @@ export default function MatchesPage() {
                 )}
 
                 {p.about && (
-                  <p className="text-sm text-stone-500 italic pt-3" style={{borderTop: '1px solid #F5F5F4'}}>"{p.about}"</p>
+                  <p className="text-sm text-gray-500 italic pt-3" style={{borderTop: '1px solid #F5F5F4'}}>"{p.about}"</p>
                 )}
               </div>
             )
@@ -256,13 +256,13 @@ export default function MatchesPage() {
           onClick={e => e.target === e.currentTarget && setWhatsappModal(null)}>
           <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
             <div className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
-              style={{ background: '#FEF9EC' }}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="2">
+              style={{ background: '#FEF2F2' }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <h3 className="font-bold text-stone-900 font-serif-display mb-0.5">Before you connect</h3>
-            <p className="text-xs text-stone-400 mb-5">A quick community safety reminder</p>
+            <h3 className="font-bold text-gray-900 font-serif-display mb-0.5">Before you connect</h3>
+            <p className="text-xs text-gray-400 mb-5">A quick community safety reminder</p>
             <div className="space-y-4 mb-6">
               {[
                 'Always verify on a video call before meeting in person or sharing any sensitive information.',
@@ -271,8 +271,8 @@ export default function MatchesPage() {
               ].map((tip, i) => (
                 <div key={i} className="flex gap-3">
                   <div className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
-                    style={{ background: '#FEF9EC', color: '#B45309' }}>{i + 1}</div>
-                  <p className="text-sm text-stone-600 leading-relaxed">{tip}</p>
+                    style={{ background: '#FEF2F2', color: '#9B1C1C' }}>{i + 1}</div>
+                  <p className="text-sm text-gray-600 leading-relaxed">{tip}</p>
                 </div>
               ))}
             </div>

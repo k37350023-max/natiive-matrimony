@@ -84,7 +84,7 @@ export default function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={() => { setOpen(o => !o); if (unread > 0) markRead() }}
-        className="relative p-2 rounded-lg hover:bg-stone-50 text-stone-500 hover:text-stone-700 transition-colors"
+        className="relative p-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-gray-700 transition-colors"
         aria-label="Notifications"
       >
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -93,7 +93,7 @@ export default function NotificationBell() {
         </svg>
         {unread > 0 && (
           <span className="absolute -top-0.5 -right-0.5 w-4 h-4 flex items-center justify-center rounded-full text-white"
-            style={{ background: '#B45309', fontSize: '10px', fontWeight: 700 }}>
+            style={{ background: '#9B1C1C', fontSize: '10px', fontWeight: 700 }}>
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -101,27 +101,27 @@ export default function NotificationBell() {
 
       {open && (
         <div className="absolute right-0 top-11 w-80 card shadow-xl z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: '#E8E0D6' }}>
-            <span className="font-semibold text-stone-800 text-sm">Notifications</span>
+          <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: '#E5E7EB' }}>
+            <span className="font-semibold text-gray-800 text-sm">Notifications</span>
             {typeof window !== 'undefined' && 'Notification' in window && Notification.permission !== 'granted' && (
               <button onClick={askPermission}
-                className="text-xs font-semibold hover:underline" style={{ color: '#B45309' }}>
+                className="text-xs font-semibold hover:underline" style={{ color: '#9B1C1C' }}>
                 Enable browser alerts
               </button>
             )}
           </div>
           <div className="max-h-72 overflow-y-auto">
             {notifs.length === 0 ? (
-              <p className="text-center text-sm text-stone-400 py-8">No notifications yet</p>
+              <p className="text-center text-sm text-gray-400 py-8">No notifications yet</p>
             ) : notifs.map(n => (
               <div key={n.id}
                 className="px-4 py-3 border-b flex gap-3"
-                style={{ borderColor: '#F0EBE3', background: n.read ? 'white' : '#FEF9EC' }}>
+                style={{ borderColor: '#F3F4F6', background: n.read ? 'white' : '#FEF2F2' }}>
                 <div className="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
-                  style={{ background: n.read ? '#D4CFC9' : '#B45309' }} />
+                  style={{ background: n.read ? '#D4CFC9' : '#9B1C1C' }} />
                 <div>
-                  <p className="text-sm text-stone-700 leading-relaxed">{n.message}</p>
-                  <p className="text-xs text-stone-400 mt-0.5">{timeAgo(n.created_at)}</p>
+                  <p className="text-sm text-gray-700 leading-relaxed">{n.message}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{timeAgo(n.created_at)}</p>
                 </div>
               </div>
             ))}

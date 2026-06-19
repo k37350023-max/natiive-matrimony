@@ -54,9 +54,9 @@ export default function BiodataUploader({ onParsed }: Props) {
     <div className="card p-5">
       <div className="flex items-center gap-2 mb-1">
         <span className="text-lg">⚡</span>
-        <p className="font-semibold text-stone-800 font-serif-display">Auto-fill from your biodata</p>
+        <p className="font-semibold text-gray-800 font-serif-display">Auto-fill from your biodata</p>
       </div>
-      <p className="text-xs text-stone-400 mb-4">
+      <p className="text-xs text-gray-400 mb-4">
         Upload an existing biodata (PDF, Word, or photo) — we'll read it and fill your profile in seconds
       </p>
 
@@ -77,8 +77,8 @@ export default function BiodataUploader({ onParsed }: Props) {
           onClick={() => state !== 'parsing' && inputRef.current?.click()}
           className="relative flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed cursor-pointer transition-all py-6"
           style={{
-            borderColor: dragging ? '#B45309' : '#E8E0D6',
-            background: dragging ? '#FEF9EC' : '#FAFAF9',
+            borderColor: dragging ? '#9B1C1C' : '#E5E7EB',
+            background: dragging ? '#FEF2F2' : '#F9FAFB',
           }}>
           <input
             ref={inputRef}
@@ -90,19 +90,19 @@ export default function BiodataUploader({ onParsed }: Props) {
           {state === 'parsing' ? (
             <>
               <div className="w-8 h-8 border-2 border-amber-700 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-medium text-stone-600">Reading your biodata…</p>
-              <p className="text-xs text-stone-400">Usually takes 5–10 seconds</p>
+              <p className="text-sm font-medium text-gray-600">Reading your biodata…</p>
+              <p className="text-xs text-gray-400">Usually takes 5–10 seconds</p>
             </>
           ) : (
             <>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              <p className="text-sm font-semibold text-stone-700">Drop your biodata here</p>
-              <p className="text-xs text-stone-400">PDF · Word (.docx) · Photo (JPG / PNG)</p>
-              <p className="text-xs font-medium px-4 py-1.5 rounded-lg mt-1" style={{ background: '#FEF9EC', color: '#B45309' }}>
+              <p className="text-sm font-semibold text-gray-700">Drop your biodata here</p>
+              <p className="text-xs text-gray-400">PDF · Word (.docx) · Photo (JPG / PNG)</p>
+              <p className="text-xs font-medium px-4 py-1.5 rounded-lg mt-1" style={{ background: '#FEF2F2', color: '#9B1C1C' }}>
                 or tap to choose file
               </p>
             </>

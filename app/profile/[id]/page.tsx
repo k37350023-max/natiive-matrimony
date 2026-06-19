@@ -135,7 +135,7 @@ function timeAgo(ts: string): string {
   return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
 
-const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D']
+const AVATAR_COLORS = ['#9B1C1C', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return AVATAR_COLORS[(name?.charCodeAt(0) || 0) % AVATAR_COLORS.length] }
 
 const REQUIRED_FIELD_LABELS = new Set(['Height', 'Religion', 'Profession', 'Education', 'Family type', 'Mother tongue', 'Date of Birth'])
@@ -366,10 +366,10 @@ export default function ProfilePage() {
             to: profile.email,
             subject: 'New Interest — NatiiveMatrimony',
             html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
-              <h2 style="color:#1C1917">You have a new interest!</h2>
-              <p style="color:#57534E"><strong>${me?.full_name || 'Someone'}</strong> sent you an interest on NatiiveMatrimony.</p>
-              ${note?.trim() ? `<blockquote style="border-left:3px solid #B45309;margin:16px 0;padding:8px 16px;color:#57534E;font-style:italic">"${note.trim()}"</blockquote>` : ''}
-              <a href="https://nativematrimony.com/interests" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#B45309;color:white;border-radius:8px;text-decoration:none;font-weight:600">View &amp; Respond</a>
+              <h2 style="color:#111827">You have a new interest!</h2>
+              <p style="color:#4B5563"><strong>${me?.full_name || 'Someone'}</strong> sent you an interest on NatiiveMatrimony.</p>
+              ${note?.trim() ? `<blockquote style="border-left:3px solid #9B1C1C;margin:16px 0;padding:8px 16px;color:#4B5563;font-style:italic">"${note.trim()}"</blockquote>` : ''}
+              <a href="https://nativematrimony.com/interests" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#9B1C1C;color:white;border-radius:8px;text-decoration:none;font-weight:600">View &amp; Respond</a>
             </div>`
           })
         }).catch(() => {})
@@ -382,16 +382,16 @@ export default function ProfilePage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
-      <div className="text-stone-400 text-sm">Loading...</div>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F9FAFB' }}>
+      <div className="text-gray-400 text-sm">Loading...</div>
     </div>
   )
 
   if (!profile) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#FAFAF9' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F9FAFB' }}>
       <div className="text-center">
-        <p className="font-semibold text-stone-700">Profile not found</p>
-        <Link href="/browse" className="text-sm underline mt-2 block" style={{ color: '#B45309' }}>Back to browse</Link>
+        <p className="font-semibold text-gray-700">Profile not found</p>
+        <Link href="/browse" className="text-sm underline mt-2 block" style={{ color: '#9B1C1C' }}>Back to browse</Link>
       </div>
     </div>
   )
@@ -419,7 +419,7 @@ export default function ProfilePage() {
     const showVal = !hidden || isOwnProfile || revealed
 
     if (showVal) {
-      if (value) return <p className="font-semibold text-stone-700 text-sm">{value}</p>
+      if (value) return <p className="font-semibold text-gray-700 text-sm">{value}</p>
       if (isOwnProfile) {
         const isRequired = label ? REQUIRED_FIELD_LABELS.has(label) : false
         const isRecommended = label ? RECOMMENDED_FIELD_LABELS.has(label) : false
@@ -429,23 +429,23 @@ export default function ProfilePage() {
               <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#FEF2F2', color: '#DC2626' }}>Required</span>
             )}
             {isRecommended && !isRequired && (
-              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#FFFBEB', color: '#B45309' }}>Fill in</span>
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#FFFBEB', color: '#9B1C1C' }}>Fill in</span>
             )}
-            <span className="text-sm font-medium flex items-center gap-1" style={{ color: '#B45309' }}>
+            <span className="text-sm font-medium flex items-center gap-1" style={{ color: '#9B1C1C' }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add
             </span>
           </Link>
         )
       }
-      return <p className="text-sm text-stone-300">—</p>
+      return <p className="text-sm text-gray-300">—</p>
     }
 
     // Hidden and not revealed
     const isPending = fieldKey ? fieldIsRequested(fieldKey) : false
     return (
       <div className="space-y-1">
-        <p className="font-semibold text-stone-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>
+        <p className="font-semibold text-gray-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>
           ██████████
         </p>
         {isLoggedIn && !isOwnProfile && (
@@ -455,7 +455,7 @@ export default function ProfilePage() {
             className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
             style={isPending
               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-              : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+              : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
             {isPending ? '✓ Requested' : 'Request'}
           </button>
         )}
@@ -520,14 +520,14 @@ export default function ProfilePage() {
   ]
 
   return (
-    <div className="min-h-screen pb-28" style={{ background: '#FAFAF9' }}>
+    <div className="min-h-screen pb-28" style={{ background: '#F9FAFB' }}>
 
       <AppHeader />
 
       {!isOwnProfile && (
         <div className="max-w-3xl mx-auto px-4 pt-3">
           <button onClick={() => router.back()}
-            className="flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors">
+            className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
             Back
           </button>
@@ -540,7 +540,7 @@ export default function ProfilePage() {
           {(() => {
             return (
               <div className="relative py-8 flex flex-col items-center"
-                style={{ background: 'linear-gradient(160deg, #FEF9EC 0%, #FFF7F0 100%)' }}>
+                style={{ background: 'linear-gradient(160deg, #FEF2F2 0%, #FFF7F0 100%)' }}>
                 {showPhoto ? (() => {
                   const allPhotos = [profile.photo_url, ...extraPhotos].filter(Boolean) as string[]
                   return (
@@ -554,18 +554,18 @@ export default function ProfilePage() {
                         <div className="flex items-center gap-2">
                           <button onClick={() => setPhotoIdx(i => (i - 1 + allPhotos.length) % allPhotos.length)}
                             className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#F5F0EB' }}>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                           </button>
                           {allPhotos.map((_, i) => (
                             <button key={i} onClick={() => setPhotoIdx(i)}
                               className="w-1.5 h-1.5 rounded-full transition-all"
-                              style={{ background: i === photoIdx ? '#B45309' : '#D6CFC6' }} />
+                              style={{ background: i === photoIdx ? '#9B1C1C' : '#D1D5DB' }} />
                           ))}
                           <button onClick={() => setPhotoIdx(i => (i + 1) % allPhotos.length)}
                             className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#F5F0EB' }}>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                           </button>
-                          <span className="text-xs text-stone-400">{photoIdx + 1}/{allPhotos.length}</span>
+                          <span className="text-xs text-gray-400">{photoIdx + 1}/{allPhotos.length}</span>
                         </div>
                       )}
                     </div>
@@ -584,7 +584,7 @@ export default function ProfilePage() {
                           className="text-xs font-semibold px-3 py-1 rounded-full border transition-all shadow-sm"
                           style={fieldIsRequested('photo')
                             ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                            : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+                            : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
                           {fieldIsRequested('photo') ? '✓ Photo requested' : 'Request photo'}
                         </button>
                       </div>
@@ -599,7 +599,7 @@ export default function ProfilePage() {
                     className="mt-3 text-xs font-semibold px-4 py-1.5 rounded-full"
                     style={interestSent
                       ? { background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }
-                      : { background: '#B45309', color: 'white' }}>
+                      : { background: '#9B1C1C', color: 'white' }}>
                     {interestSent ? '✓ Interest Sent' : '+ Send Interest'}
                   </button>
                 )}
@@ -610,8 +610,8 @@ export default function ProfilePage() {
           <div className="px-6 py-5">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-stone-900 font-serif-display tracking-tight">{profile.full_name}</h1>
-                <p className="text-stone-500 mt-0.5 text-sm">
+                <h1 className="text-2xl font-bold text-gray-900 font-serif-display tracking-tight">{profile.full_name}</h1>
+                <p className="text-gray-500 mt-0.5 text-sm">
                   {[
                     getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs` : null,
                     profile.height_cm ? cmToFeet(profile.height_cm).split(' ')[0] : null,
@@ -619,21 +619,21 @@ export default function ProfilePage() {
                   ].filter(Boolean).join(' · ')}
                 </p>
                 {lastSeenLabel(profile.last_login_at) && (
-                  <p className="text-xs text-stone-400 mt-0.5">{lastSeenLabel(profile.last_login_at)}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{lastSeenLabel(profile.last_login_at)}</p>
                 )}
               </div>
               {(profile.verified || profile.phone_verified) ? (
                 <div className="relative group shrink-0 mt-1">
                   <span className="badge badge-verified cursor-default">✓ Verified</span>
                   <div className="absolute bottom-full right-0 mb-2 w-52 px-3 py-2 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed"
-                    style={{ background: '#1C1917' }}>
+                    style={{ background: '#111827' }}>
                     {profile.verified ? 'Verified via phone linkage & manual community review' : 'Email verified'}
-                    <div className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
+                    <div className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#111827' }} />
                   </div>
                 </div>
               ) : myProfileId === profile.id ? (
                 <span className="text-xs px-2.5 py-1 rounded-full font-medium shrink-0 mt-1"
-                  style={{ background: '#FFFBEB', color: '#92400E', border: '1px solid #FDE68A' }}>
+                  style={{ background: '#FFFBEB', color: '#7F1D1D', border: '1px solid #FDE68A' }}>
                   Verification pending · up to 24h
                 </span>
               ) : null}
@@ -649,13 +649,13 @@ export default function ProfilePage() {
                     ? profile.native_state
                     : profile.native_district}
                   {profile.current_city && (
-                    <span className="text-stone-400"> | {profile.current_city}</span>
+                    <span className="text-gray-400"> | {profile.current_city}</span>
                   )}
                 </span>
               </span>
               {isSerious(profile) && (
                 <span className="text-xs px-3 py-1.5 rounded-full font-semibold"
-                  style={{ background: '#FEF9EC', color: '#92400E', border: '1px solid #F0E4C0' }}>
+                  style={{ background: '#FEF2F2', color: '#7F1D1D', border: '1px solid #FECACA' }}>
                   ★ Serious Seeker
                 </span>
               )}
@@ -667,19 +667,19 @@ export default function ProfilePage() {
         {isOwnProfile && profile.member_number && (
           <div className="card px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #92400E, #B45309)' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #7F1D1D, #9B1C1C)' }}>
                 #{profile.member_number}
               </div>
               <div>
-                <p className="text-sm font-semibold text-stone-800">Founder Member #{profile.member_number}</p>
-                <p className="text-xs text-stone-400">
+                <p className="text-sm font-semibold text-gray-800">Founder Member #{profile.member_number}</p>
+                <p className="text-xs text-gray-400">
                   {profile.premium_expires_at
                     ? `Free premium until ${new Date(profile.premium_expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`
                     : 'Free premium active'}
                 </p>
               </div>
             </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: '#B45309' }}>★ Founder</span>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: '#9B1C1C' }}>★ Founder</span>
           </div>
         )}
 
@@ -706,21 +706,21 @@ export default function ProfilePage() {
           return (
             <div className="card px-5 py-4">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-semibold text-stone-800">Profile completeness</p>
-                <span className="text-sm font-bold" style={{ color: pct >= 80 ? '#059669' : '#B45309' }}>{pct}%</span>
+                <p className="text-sm font-semibold text-gray-800">Profile completeness</p>
+                <span className="text-sm font-bold" style={{ color: pct >= 80 ? '#059669' : '#9B1C1C' }}>{pct}%</span>
               </div>
               <div className="w-full rounded-full h-2 mb-3" style={{ background: '#F0EDE8' }}>
-                <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: pct >= 80 ? '#059669' : '#B45309' }} />
+                <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: pct >= 80 ? '#059669' : '#9B1C1C' }} />
               </div>
               {missing.length > 0 && (
                 <div className="flex items-center justify-between">
-                  <p className="text-xs text-stone-400">Missing: {missing.join(', ')}</p>
-                  <Link href="/profile/edit" className="text-xs font-semibold px-3 py-1 rounded-lg" style={{ background: '#FEF9EC', color: '#B45309' }}>
+                  <p className="text-xs text-gray-400">Missing: {missing.join(', ')}</p>
+                  <Link href="/profile/edit" className="text-xs font-semibold px-3 py-1 rounded-lg" style={{ background: '#FEF2F2', color: '#9B1C1C' }}>
                     Complete profile →
                   </Link>
                 </div>
               )}
-              {pct === 100 && <p className="text-xs text-stone-400">Great job — your profile is complete!</p>}
+              {pct === 100 && <p className="text-xs text-gray-400">Great job — your profile is complete!</p>}
             </div>
           )
         })()}
@@ -729,8 +729,8 @@ export default function ProfilePage() {
         {isOwnProfile && viewers.length > 0 && (
           <div className="card px-5 py-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-stone-800">Who viewed your profile</p>
-              <span className="text-xs text-stone-400">{viewers.length} recent</span>
+              <p className="text-sm font-semibold text-gray-800">Who viewed your profile</p>
+              <span className="text-xs text-gray-400">{viewers.length} recent</span>
             </div>
             <div className="space-y-3">
               {viewers.slice(0, 8).map(v => (
@@ -738,7 +738,7 @@ export default function ProfilePage() {
                   className="flex items-center gap-3 group">
                   {v.photo_url && v.photo_visibility === 'public' ? (
                     <img src={v.photo_url} alt={v.full_name}
-                      className="w-9 h-9 rounded-full object-cover ring-2 ring-stone-100 shrink-0" />
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 shrink-0" />
                   ) : (
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                       style={{ background: avatarBg(v.full_name) }}>
@@ -746,10 +746,10 @@ export default function ProfilePage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-stone-800 group-hover:underline truncate">{v.full_name}</p>
-                    <p className="text-xs text-stone-400">{timeAgo(v.viewed_at)}</p>
+                    <p className="text-sm font-semibold text-gray-800 group-hover:underline truncate">{v.full_name}</p>
+                    <p className="text-xs text-gray-400">{timeAgo(v.viewed_at)}</p>
                   </div>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D6CFC6" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </Link>
               ))}
             </div>
@@ -759,7 +759,7 @@ export default function ProfilePage() {
         {/* Incoming field requests — own profile */}
         {isOwnProfile && incomingRequests.length > 0 && (
           <div className="card px-5 py-4">
-            <p className="text-sm font-semibold text-stone-800 mb-3">
+            <p className="text-sm font-semibold text-gray-800 mb-3">
               Info requests
               <span className="ml-2 text-xs font-bold px-1.5 py-0.5 rounded-full text-white" style={{ background: '#DC2626' }}>
                 {incomingRequests.length}
@@ -778,8 +778,8 @@ export default function ProfilePage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-stone-800">{req.full_name}</p>
-                    <p className="text-xs text-stone-400 mt-0.5">
+                    <p className="text-sm font-semibold text-gray-800">{req.full_name}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
                       Wants to see: {req.fields.map(f => HIDEABLE[f] || f).join(', ')}
                     </p>
                     <div className="flex gap-2 mt-2">
@@ -794,7 +794,7 @@ export default function ProfilePage() {
                         onClick={() => respondToRequest(req.id, req.from_user, false)}
                         disabled={approvingReq === req.id}
                         className="text-xs font-semibold px-3 py-1 rounded-full border"
-                        style={{ borderColor: '#E8E0D6', color: '#78716C' }}>
+                        style={{ borderColor: '#E5E7EB', color: '#6B7280' }}>
                         Decline
                       </button>
                     </div>
@@ -820,12 +820,12 @@ export default function ProfilePage() {
           ].map((r, i) => (
             <div key={r.label}
               className={`px-6 py-4 flex items-start gap-4 ${i > 0 ? 'border-t' : ''}`}
-              style={{ borderColor: '#F0EBE3' }}>
+              style={{ borderColor: '#F3F4F6' }}>
               <div className="w-28 section-label shrink-0 pt-0.5">{r.label}</div>
               <div className="flex-1">
                 {r.hidden ? (
                   <div className="space-y-1">
-                    <p className="font-semibold text-stone-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████████</p>
+                    <p className="font-semibold text-gray-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████████</p>
                     {isLoggedIn && !isOwnProfile && (
                       <button
                         onClick={() => requestFields(['current_city'])}
@@ -833,15 +833,15 @@ export default function ProfilePage() {
                         className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
                         style={fieldIsRequested('current_city')
                           ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                          : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+                          : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
                         {fieldIsRequested('current_city') ? '✓ Requested' : 'Request'}
                       </button>
                     )}
                   </div>
                 ) : (
                   <>
-                    <div className="font-semibold text-stone-800 text-sm">{r.value || '—'}</div>
-                    {r.sub && <div className="text-xs text-stone-400 mt-0.5">{r.sub}</div>}
+                    <div className="font-semibold text-gray-800 text-sm">{r.value || '—'}</div>
+                    {r.sub && <div className="text-xs text-gray-400 mt-0.5">{r.sub}</div>}
                   </>
                 )}
               </div>
@@ -854,9 +854,9 @@ export default function ProfilePage() {
           <div className="card px-6 py-5">
             <p className="section-label mb-2.5">About</p>
             {profile.about ? (
-              <p className="text-stone-600 leading-relaxed text-sm">"{profile.about}"</p>
+              <p className="text-gray-600 leading-relaxed text-sm">"{profile.about}"</p>
             ) : (
-              <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#B45309' }}>
+              <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#9B1C1C' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Add a bio — tell people about yourself
               </Link>
@@ -869,12 +869,12 @@ export default function ProfilePage() {
           <p className="section-label mb-4">Full biodata</p>
           <div className="space-y-0">
             {bioSections.map((section, si) => (
-              <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F0EBE3' } : {}}>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>{section.heading}</p>
+              <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F3F4F6' } : {}}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9B1C1C' }}>{section.heading}</p>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                   {section.rows.map(f => (
                     <div key={f.label} className={f.wide ? 'col-span-2' : ''}>
-                      <p className="text-xs text-stone-400 mb-0.5 flex items-center gap-1">
+                      <p className="text-xs text-gray-400 mb-0.5 flex items-center gap-1">
                         {f.label}
                         {isOwnProfile && !f.value && REQUIRED_FIELD_LABELS.has(f.label) && (
                           <span className="font-bold" style={{ color: '#DC2626' }}>*</span>
@@ -896,14 +896,14 @@ export default function ProfilePage() {
           if (!showContact && !profile.phone && !profile.email) return null
           return (
             <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>Contact</p>
+              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9B1C1C' }}>Contact</p>
               <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                 {profile.phone && (
                   <div>
-                    <p className="text-xs text-stone-400 mb-0.5">Phone</p>
+                    <p className="text-xs text-gray-400 mb-0.5">Phone</p>
                     {phoneHidden ? (
                       <div className="space-y-1">
-                        <p className="font-semibold text-stone-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████████</p>
+                        <p className="font-semibold text-gray-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████████</p>
                         {isLoggedIn && !isOwnProfile && (
                           <button
                             onClick={() => requestFields(['phone'])}
@@ -911,27 +911,27 @@ export default function ProfilePage() {
                             className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
                             style={fieldIsRequested('phone')
                               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                              : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+                              : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
                             {fieldIsRequested('phone') ? '✓ Requested' : 'Request'}
                           </button>
                         )}
                       </div>
                     ) : showContact ? (
-                      <p className="font-semibold text-stone-700 text-sm">{profile.phone}</p>
+                      <p className="font-semibold text-gray-700 text-sm">{profile.phone}</p>
                     ) : (
-                      <p className="font-semibold text-stone-300 text-sm">—</p>
+                      <p className="font-semibold text-gray-300 text-sm">—</p>
                     )}
                   </div>
                 )}
                 {profile.email && showContact && (
                   <div className="col-span-2">
-                    <p className="text-xs text-stone-400 mb-0.5">Email</p>
-                    <p className="font-semibold text-stone-700 text-sm">{profile.email}</p>
+                    <p className="text-xs text-gray-400 mb-0.5">Email</p>
+                    <p className="font-semibold text-gray-700 text-sm">{profile.email}</p>
                   </div>
                 )}
               </div>
               {!showContact && !isOwnProfile && (
-                <p className="text-xs text-stone-400 mt-2">Contact details unlock after mutual match</p>
+                <p className="text-xs text-gray-400 mt-2">Contact details unlock after mutual match</p>
               )}
             </div>
           )
@@ -943,7 +943,7 @@ export default function ProfilePage() {
         <div className="flex justify-center pb-2">
           <button
             onClick={() => setShowReportModal(true)}
-            className="text-xs text-stone-300 hover:text-red-400 transition-colors px-4 py-2">
+            className="text-xs text-gray-300 hover:text-red-400 transition-colors px-4 py-2">
             Report / Block profile
           </button>
         </div>
@@ -957,10 +957,10 @@ export default function ProfilePage() {
           <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="font-bold text-stone-900 font-serif-display">Break the ice</h3>
-                <p className="text-xs text-stone-400 mt-0.5">Add a personal note — optional but encouraged</p>
+                <h3 className="font-bold text-gray-900 font-serif-display">Break the ice</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Add a personal note — optional but encouraged</p>
               </div>
-              <button onClick={() => setShowNoteModal(false)} className="text-stone-300 hover:text-stone-500 ml-3 mt-0.5">
+              <button onClick={() => setShowNoteModal(false)} className="text-gray-300 hover:text-gray-500 ml-3 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 6 6 18M6 6l12 12"/>
                 </svg>
@@ -974,7 +974,7 @@ export default function ProfilePage() {
               value={noteText}
               onChange={e => setNoteText(e.target.value)}
             />
-            <p className="text-xs text-stone-400 text-right mt-1">{noteText.length}/200</p>
+            <p className="text-xs text-gray-400 text-right mt-1">{noteText.length}/200</p>
             <div className="flex gap-2.5 mt-4">
               <button
                 onClick={() => expressInterest()}
@@ -999,24 +999,24 @@ export default function ProfilePage() {
           style={{ background: 'rgba(0,0,0,0.45)' }}
           onClick={e => e.target === e.currentTarget && setShowReportModal(false)}>
           <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
-            <h3 className="font-bold text-stone-900 font-serif-display mb-4">Report profile</h3>
+            <h3 className="font-bold text-gray-900 font-serif-display mb-4">Report profile</h3>
             {reportSent ? (
               <div className="text-center py-4">
                 <p className="text-2xl mb-2">✓</p>
-                <p className="font-semibold text-stone-700">Report submitted</p>
-                <p className="text-xs text-stone-400 mt-1">Our team will review this within 24 hours.</p>
+                <p className="font-semibold text-gray-700">Report submitted</p>
+                <p className="text-xs text-gray-400 mt-1">Our team will review this within 24 hours.</p>
                 <button onClick={() => setShowReportModal(false)} className="btn-ghost mt-4 px-6 py-2 text-sm">Close</button>
               </div>
             ) : (
               <>
-                <p className="text-xs text-stone-400 mb-4">Select a reason</p>
+                <p className="text-xs text-gray-400 mb-4">Select a reason</p>
                 <div className="space-y-2 mb-5">
                   {['Fake or scam profile', 'Inappropriate content or photo', 'Harassment or abusive behaviour', 'Married / misleading information', 'Other'].map(r => (
                     <label key={r} className="flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors"
-                      style={{ borderColor: reportReason === r ? '#B45309' : '#E8E0D6', background: reportReason === r ? '#FEF9EC' : 'white' }}>
+                      style={{ borderColor: reportReason === r ? '#9B1C1C' : '#E5E7EB', background: reportReason === r ? '#FEF2F2' : 'white' }}>
                       <input type="radio" name="report_reason" value={r} checked={reportReason === r}
                         onChange={() => setReportReason(r)} className="accent-amber-700" />
-                      <span className="text-sm text-stone-700">{r}</span>
+                      <span className="text-sm text-gray-700">{r}</span>
                     </label>
                   ))}
                 </div>
@@ -1086,7 +1086,7 @@ export default function ProfilePage() {
 
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3.5"
-        style={{ borderColor: '#E8E0D6', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
+        style={{ borderColor: '#E5E7EB', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
         <div className="max-w-3xl mx-auto">
           {myProfileId === profile.id ? (
             <div>
@@ -1096,7 +1096,7 @@ export default function ProfilePage() {
                 </Link>
                 <Link href="/matches"
                   className="flex-1 py-3 rounded-lg font-semibold text-sm border text-center"
-                  style={{ background: 'white', color: '#78716C', borderColor: '#E8E0D6' }}>
+                  style={{ background: 'white', color: '#6B7280', borderColor: '#E5E7EB' }}>
                   My Matches
                 </Link>
               </div>
@@ -1108,7 +1108,7 @@ export default function ProfilePage() {
                     localStorage.removeItem('my_user_id')
                     router.push('/')
                   }}
-                  className="flex items-center gap-1.5 text-xs text-stone-400 hover:text-red-500 transition-colors px-3 py-1.5">
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors px-3 py-1.5">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
                   </svg>
@@ -1130,13 +1130,13 @@ export default function ProfilePage() {
                   onClick={() => setShortlisted(s => !s)}
                   className="px-4 py-3 rounded-lg font-semibold text-sm border transition-all"
                   style={shortlisted
-                    ? { background: '#FEF9EC', color: '#92400E', borderColor: '#E8C99A' }
-                    : { background: 'white', color: '#78716C', borderColor: '#E8E0D6' }}>
+                    ? { background: '#FEF2F2', color: '#7F1D1D', borderColor: '#FECACA' }
+                    : { background: 'white', color: '#6B7280', borderColor: '#E5E7EB' }}>
                   {shortlisted ? '★ Saved' : '☆ Save'}
                 </button>
               </div>
               {!interestSent && (
-                <p className="text-center text-xs text-stone-400 mt-2">Both must accept before contact is shared</p>
+                <p className="text-center text-xs text-gray-400 mt-2">Both must accept before contact is shared</p>
               )}
             </>
           ) : (
@@ -1147,11 +1147,11 @@ export default function ProfilePage() {
                 </Link>
                 <Link href="/login"
                   className="px-4 py-3 rounded-lg font-semibold text-sm border text-center"
-                  style={{ background: 'white', color: '#78716C', borderColor: '#E8E0D6' }}>
+                  style={{ background: 'white', color: '#6B7280', borderColor: '#E5E7EB' }}>
                   Login
                 </Link>
               </div>
-              <p className="text-center text-xs text-stone-400 mt-2">Free until September 2026 · No credit card needed</p>
+              <p className="text-center text-xs text-gray-400 mt-2">Free until September 2026 · No credit card needed</p>
             </>
           )}
         </div>

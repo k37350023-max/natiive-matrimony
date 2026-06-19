@@ -22,11 +22,11 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#FAFAF9' }}>
-      <header className="bg-white border-b" style={{ borderColor: '#E8E0D6' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F9FAFB' }}>
+      <header className="bg-white border-b" style={{ borderColor: '#E5E7EB' }}>
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center">
-          <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">
-            Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
+          <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
+            Natiive<span style={{ color: '#9B1C1C' }}>Matrimony</span>
           </Link>
         </div>
       </header>
@@ -34,8 +34,8 @@ export default function ResetPasswordPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
           <div className="card p-8">
-            <h2 className="text-xl font-bold text-stone-900 font-serif-display mb-1">Set new password</h2>
-            <p className="text-sm text-stone-400 mb-6">Choose a strong password you'll remember.</p>
+            <h2 className="text-xl font-bold text-gray-900 font-serif-display mb-1">Set new password</h2>
+            <p className="text-sm text-gray-400 mb-6">Choose a strong password you'll remember.</p>
 
             {error && (
               <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}>

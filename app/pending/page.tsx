@@ -8,8 +8,8 @@ export default function PendingPage() {
     <div className="min-h-screen flex flex-col" style={{background: '#FFFBF5'}}>
       <header className="bg-white border-b" style={{borderColor: '#EDE8E0'}}>
         <div className="max-w-xl mx-auto px-5 py-4">
-          <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">
-            Natiive<span style={{color: '#B45309'}}>Matrimony</span>
+          <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
+            Natiive<span style={{color: '#9B1C1C'}}>Matrimony</span>
           </Link>
         </div>
       </header>
@@ -24,8 +24,8 @@ export default function PendingPage() {
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-stone-900 mb-2 font-serif-display">Profile Created!</h1>
-            <p className="text-stone-500 leading-relaxed text-sm">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2 font-serif-display">Profile Created!</h1>
+            <p className="text-gray-500 leading-relaxed text-sm">
               Your profile is live and visible to matches. Start browsing now!
             </p>
           </div>
@@ -41,7 +41,7 @@ export default function PendingPage() {
                 { icon: '✓', text: 'Contact details unlock after mutual match' },
                 { icon: '✓', text: 'Biodata PDF download for matches' },
               ].map(f => (
-                <p key={f.text} className="text-sm text-stone-700 flex items-center gap-2">
+                <p key={f.text} className="text-sm text-gray-700 flex items-center gap-2">
                   <span className="font-bold" style={{ color: '#16A34A' }}>{f.icon}</span>
                   {f.text}
                 </p>

@@ -59,7 +59,7 @@ export default function AdminPage() {
         <div className="card p-8 w-80">
           <div className="text-center mb-6">
             <p className="text-sm font-bold text-orange-700 mb-1">NatiiveMatrimony</p>
-            <h1 className="text-xl font-bold text-stone-900">Admin Login</h1>
+            <h1 className="text-xl font-bold text-gray-900">Admin Login</h1>
           </div>
           <div className="space-y-4">
             <div>
@@ -82,37 +82,37 @@ export default function AdminPage() {
       <header style={{background: 'white', borderBottom: '1px solid #E5E7EB'}}>
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
           <div>
-            <Link href="/" className="text-base font-bold text-stone-900">Natiive<span className="text-orange-700">Matrimony</span></Link>
-            <span className="ml-3 text-xs font-semibold text-stone-400 uppercase tracking-wide">Admin</span>
+            <Link href="/" className="text-base font-bold text-gray-900">Natiive<span className="text-orange-700">Matrimony</span></Link>
+            <span className="ml-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Admin</span>
           </div>
-          <button onClick={() => setAuthed(false)} className="text-sm text-stone-500 hover:text-stone-800">Sign out</button>
+          <button onClick={() => setAuthed(false)} className="text-sm text-gray-500 hover:text-gray-800">Sign out</button>
         </div>
       </header>
 
       <div className="max-w-5xl mx-auto px-6 py-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-stone-900">Profile Reviews</h1>
-          <p className="text-stone-500 text-sm mt-1">Approve or reject submitted profiles</p>
+          <h1 className="text-2xl font-bold text-gray-900">Profile Reviews</h1>
+          <p className="text-gray-500 text-sm mt-1">Approve or reject submitted profiles</p>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 mb-6 p-1 bg-white rounded-lg border border-stone-200 w-fit">
+        <div className="flex gap-1 mb-6 p-1 bg-white rounded-lg border border-gray-200 w-fit">
           {tabs.map(t => (
             <button key={t} onClick={() => setFilter(t)}
-              className={`px-5 py-2 rounded-md text-sm font-semibold capitalize transition-all ${filter === t ? 'bg-orange-700 text-white shadow-sm' : 'text-stone-500 hover:text-stone-700'}`}>
+              className={`px-5 py-2 rounded-md text-sm font-semibold capitalize transition-all ${filter === t ? 'bg-orange-700 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
               {t}
             </button>
           ))}
         </div>
 
         {loading && (
-          <div className="text-center py-12 text-stone-400 text-sm">Loading profiles...</div>
+          <div className="text-center py-12 text-gray-400 text-sm">Loading profiles...</div>
         )}
 
         {!loading && profiles.length === 0 && (
           <div className="card p-12 text-center">
-            <p className="font-semibold text-stone-700">No {filter} profiles</p>
-            <p className="text-sm text-stone-400 mt-1">Check back later</p>
+            <p className="font-semibold text-gray-700">No {filter} profiles</p>
+            <p className="text-sm text-gray-400 mt-1">Check back later</p>
           </div>
         )}
 
@@ -127,24 +127,24 @@ export default function AdminPage() {
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold text-stone-900">{p.full_name}</h3>
+                      <h3 className="font-semibold text-gray-900">{p.full_name}</h3>
                       <span className={`badge ${p.status === 'approved' ? 'badge-approved' : p.status === 'rejected' ? 'badge-rejected' : 'badge-pending'}`}>
                         {p.status}
                       </span>
                       {p.verified && <span className="badge badge-verified">Verified</span>}
                     </div>
-                    <p className="text-sm text-stone-500 mt-0.5">
+                    <p className="text-sm text-gray-500 mt-0.5">
                       {p.gender} · {p.date_of_birth ? new Date(p.date_of_birth + 'T00:00:00').toLocaleDateString('en-IN') : '—'} · {p.profession}
                     </p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-2 text-xs text-stone-400">
+                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-2 text-xs text-gray-400">
                       <span>Native: {p.native_district}, {p.native_state}</span>
                       <span>City: {p.current_city}</span>
                       {p.email && <span>{p.email}</span>}
                       {p.phone && <span>{p.phone}</span>}
                     </div>
-                    {p.caste && <p className="text-xs text-stone-400 mt-0.5">Caste: {p.caste} · Education: {p.education}</p>}
-                    {p.about && <p className="text-xs text-stone-500 mt-2 italic">"{p.about}"</p>}
-                    <p className="text-xs text-stone-300 mt-2">Submitted {new Date(p.created_at).toLocaleString('en-IN')}</p>
+                    {p.caste && <p className="text-xs text-gray-400 mt-0.5">Caste: {p.caste} · Education: {p.education}</p>}
+                    {p.about && <p className="text-xs text-gray-500 mt-2 italic">"{p.about}"</p>}
+                    <p className="text-xs text-gray-300 mt-2">Submitted {new Date(p.created_at).toLocaleString('en-IN')}</p>
                   </div>
                 </div>
 

@@ -58,56 +58,56 @@ export default function MobileNav() {
         <Link href="/browse"
           className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-            stroke={path.startsWith('/browse') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            stroke={path.startsWith('/browse') ? '#9B1C1C' : '#6B7280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
-          <span className="text-xs font-semibold" style={{ color: path.startsWith('/browse') ? '#B45309' : '#78716C' }}>Browse</span>
+          <span className="text-xs font-semibold" style={{ color: path.startsWith('/browse') ? '#9B1C1C' : '#6B7280' }}>Browse</span>
         </Link>
 
         <Link href="/interests"
           className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
           <div className="relative">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-              stroke={path.startsWith('/interests') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              stroke={path.startsWith('/interests') ? '#9B1C1C' : '#6B7280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
             <Badge count={pendingInterests} />
           </div>
-          <span className="text-xs font-semibold" style={{ color: path.startsWith('/interests') ? '#B45309' : '#78716C' }}>Interests</span>
+          <span className="text-xs font-semibold" style={{ color: path.startsWith('/interests') ? '#9B1C1C' : '#6B7280' }}>Interests</span>
         </Link>
 
         <Link href="/chat"
           className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
           <div className="relative">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-              stroke={path.startsWith('/chat') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              stroke={path.startsWith('/chat') ? '#9B1C1C' : '#6B7280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
             <Badge count={unreadMessages} />
           </div>
-          <span className="text-xs font-semibold" style={{ color: path.startsWith('/chat') ? '#B45309' : '#78716C' }}>Chat</span>
+          <span className="text-xs font-semibold" style={{ color: path.startsWith('/chat') ? '#9B1C1C' : '#6B7280' }}>Chat</span>
         </Link>
 
         <Link href="/matches"
           className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
           <div className="relative">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill={path.startsWith('/matches') || path.startsWith('/chat') ? '#B45309' : 'none'}
-              stroke={path.startsWith('/matches') ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill={path.startsWith('/matches') || path.startsWith('/chat') ? '#9B1C1C' : 'none'}
+              stroke={path.startsWith('/matches') ? '#9B1C1C' : '#6B7280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
             <Badge count={matchCount} />
           </div>
-          <span className="text-xs font-semibold" style={{ color: path.startsWith('/matches') ? '#B45309' : '#78716C' }}>Matches</span>
+          <span className="text-xs font-semibold" style={{ color: path.startsWith('/matches') ? '#9B1C1C' : '#6B7280' }}>Matches</span>
         </Link>
 
         <Link href={profileHref}
           className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 min-h-[56px]">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
-            stroke={profileActive ? '#B45309' : '#78716C'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            stroke={profileActive ? '#9B1C1C' : '#6B7280'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-          <span className="text-xs font-semibold" style={{ color: profileActive ? '#B45309' : '#78716C' }}>Profile</span>
+          <span className="text-xs font-semibold" style={{ color: profileActive ? '#9B1C1C' : '#6B7280' }}>Profile</span>
         </Link>
       </div>
     </nav>

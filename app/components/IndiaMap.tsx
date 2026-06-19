@@ -101,7 +101,7 @@ export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, com
             let sw = '0.5'
             if (isTelugu) {
               fill = isOn ? '#FEF3C7' : '#D6C9AA'
-              stroke = isOn ? '#B45309' : '#9E8E6A'
+              stroke = isOn ? '#9B1C1C' : '#9E8E6A'
               sw = isOn ? '2.5' : '1'
             }
             return (
@@ -118,17 +118,17 @@ export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, com
 
           {/* State labels */}
           <text x={TG_CX} y={TG_CY} textAnchor="middle" fontSize={compact ? '7' : '9'} fontWeight="700"
-            fill={highlightedId === 'tg' ? '#92400E' : '#7A6F5A'}
+            fill={highlightedId === 'tg' ? '#7F1D1D' : '#7A6F5A'}
             style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
             Telangana
           </text>
           <text x={AP_CX} y={AP_CY} textAnchor="middle" fontSize={compact ? '6' : '8'} fontWeight="700"
-            fill={highlightedId === 'ap' ? '#92400E' : '#7A6F5A'}
+            fill={highlightedId === 'ap' ? '#7F1D1D' : '#7A6F5A'}
             style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
             {apLabel}
           </text>
           {mode === 'filter' && highlightedId === 'ap' && (
-            <text x={AP_CX} y={AP_CY + 10} textAnchor="middle" fontSize="5" fill="#B45309"
+            <text x={AP_CX} y={AP_CY + 10} textAnchor="middle" fontSize="5" fill="#9B1C1C"
               style={{ pointerEvents: 'none', userSelect: 'none' }}>
               tap again to switch
             </text>
@@ -140,7 +140,7 @@ export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, com
             const cy = animHighlight === 'tg' ? TG_CY : AP_CY
             return (
               <circle cx={cx} cy={cy} r="12"
-                fill="none" stroke="#B45309" strokeWidth="2.5"
+                fill="none" stroke="#9B1C1C" strokeWidth="2.5"
                 className="india-map-pulse"
                 style={{ transformOrigin: `${cx}px ${cy}px` }}
               />

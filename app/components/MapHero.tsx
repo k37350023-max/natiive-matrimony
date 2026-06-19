@@ -32,19 +32,19 @@ const PULSE_CENTER: Record<RKey, { cx: number; cy: number }> = {
 
 const MOCK: Record<RKey, { initials: string; name: string; age: number; profession: string; district: string; color: string }[]> = {
   telangana: [
-    { initials: 'PR', name: 'Priya R.', age: 27, profession: 'Software Engineer', district: 'Hyderabad', color: '#B45309' },
+    { initials: 'PR', name: 'Priya R.', age: 27, profession: 'Software Engineer', district: 'Hyderabad', color: '#9B1C1C' },
     { initials: 'SK', name: 'Sai K.', age: 29, profession: 'Doctor', district: 'Warangal', color: '#0369A1' },
     { initials: 'AM', name: 'Anjali M.', age: 26, profession: 'Teacher', district: 'Karimnagar', color: '#047857' },
   ],
   coastal: [
-    { initials: 'RV', name: 'Ravi V.', age: 31, profession: 'Business Owner', district: 'East Godavari', color: '#B45309' },
+    { initials: 'RV', name: 'Ravi V.', age: 31, profession: 'Business Owner', district: 'East Godavari', color: '#9B1C1C' },
     { initials: 'MK', name: 'Meena K.', age: 28, profession: 'Nurse', district: 'Visakhapatnam', color: '#6D28D9' },
     { initials: 'SP', name: 'Srini P.', age: 33, profession: 'Civil Engineer', district: 'Guntur', color: '#BE185D' },
   ],
   rayala: [
     { initials: 'VR', name: 'Vijay R.', age: 30, profession: 'Govt. Officer', district: 'Kurnool', color: '#047857' },
     { initials: 'NK', name: 'Nanda K.', age: 27, profession: 'Software Developer', district: 'Kadapa', color: '#0369A1' },
-    { initials: 'KB', name: 'Kavya B.', age: 25, profession: 'MBA', district: 'Chittoor', color: '#B45309' },
+    { initials: 'KB', name: 'Kavya B.', age: 25, profession: 'MBA', district: 'Chittoor', color: '#9B1C1C' },
   ],
 }
 
@@ -150,7 +150,7 @@ export default function MapHero() {
 
               if (isTeluguAP || isTeluguTG) {
                 fill = highlighted_ ? '#FEF3C7' : '#D6C9AA'
-                stroke = highlighted_ ? '#B45309' : '#9E8E6A'
+                stroke = highlighted_ ? '#9B1C1C' : '#9E8E6A'
                 strokeW = highlighted_ ? '2' : '1'
               } else if (isBg) {
                 fill = '#E4DDD0'
@@ -180,14 +180,14 @@ export default function MapHero() {
 
             {/* Telangana label */}
             <text x="230" y="472" textAnchor="middle" fontSize="8" fontWeight="700"
-              fill={highlighted && REGION_STATE_ID[highlighted] === 'tg' ? '#92400E' : '#7A6F5A'}
+              fill={highlighted && REGION_STATE_ID[highlighted] === 'tg' ? '#7F1D1D' : '#7A6F5A'}
               style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
               Telangana
             </text>
 
             {/* AP labels */}
             <text x="320" y="510" textAnchor="middle" fontSize="7" fontWeight="700"
-              fill={highlighted && REGION_STATE_ID[highlighted] === 'ap' ? '#92400E' : '#7A6F5A'}
+              fill={highlighted && REGION_STATE_ID[highlighted] === 'ap' ? '#7F1D1D' : '#7A6F5A'}
               style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
               Andhra Pradesh
             </text>
@@ -199,7 +199,7 @@ export default function MapHero() {
                 <circle
                   key={`pulse-${pulsing}`}
                   cx={cx} cy={cy} r="12"
-                  fill="none" stroke="#B45309" strokeWidth="3"
+                  fill="none" stroke="#9B1C1C" strokeWidth="3"
                   className="map-pulse-ring"
                   style={{ transformOrigin: `${cx}px ${cy}px` }}
                 />
@@ -213,7 +213,7 @@ export default function MapHero() {
           {!profileKey && (
             <div className="text-center sm:text-left py-6">
               <p className="text-2xl mb-2">🗺️</p>
-              <p className="text-sm text-stone-400 font-medium">
+              <p className="text-sm text-gray-400 font-medium">
                 Click a region on the map<br />to see profiles from there
               </p>
             </div>
@@ -222,9 +222,9 @@ export default function MapHero() {
           {profileKey && (
             <div key={profileKey}>
               <div className="flex items-center gap-2 mb-3 flex-wrap">
-                <span className="text-xs font-bold uppercase tracking-wider text-stone-400">Profiles from</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Profiles from</span>
                 <span className="text-sm font-bold px-3 py-0.5 rounded-full"
-                  style={{ background: '#FEF3C7', color: '#92400E' }}>
+                  style={{ background: '#FEF3C7', color: '#7F1D1D' }}>
                   {REGION_LABEL[profileKey]}
                 </span>
               </div>
@@ -239,11 +239,11 @@ export default function MapHero() {
                         {p.initials}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-stone-800 text-sm">{p.name}</p>
-                        <p className="text-xs text-stone-500 truncate">{p.age} yrs · {p.profession}</p>
+                        <p className="font-semibold text-gray-800 text-sm">{p.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{p.age} yrs · {p.profession}</p>
                       </div>
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
-                        style={{ background: '#FEF3C7', color: '#92400E' }}>
+                        style={{ background: '#FEF3C7', color: '#7F1D1D' }}>
                         {p.district}
                       </span>
                     </div>
@@ -253,7 +253,7 @@ export default function MapHero() {
 
               <Link href="/register"
                 className="mt-4 flex items-center justify-center gap-1.5 font-semibold py-2.5 rounded-xl text-sm"
-                style={{ background: '#B45309', color: 'white' }}>
+                style={{ background: '#9B1C1C', color: 'white' }}>
                 See all {REGION_LABEL[profileKey]} profiles →
               </Link>
             </div>

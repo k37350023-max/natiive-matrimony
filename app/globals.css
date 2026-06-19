@@ -1,17 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --primary: #B45309;
-  --primary-dark: #92400E;
-  --primary-light: #FEF9EC;
-  --primary-ring: rgba(180,83,9,0.12);
-  --border: #E8E0D6;
-  --border-light: #F0EBE3;
-  --bg: #FAFAF9;
+  --primary: #9B1C1C;
+  --primary-dark: #7F1D1D;
+  --primary-hover: #B91C1C;
+  --primary-light: #FEF2F2;
+  --primary-ring: rgba(155,28,28,0.12);
+  --border: #E5E7EB;
+  --border-light: #F3F4F6;
+  --bg: #F9FAFB;
   --surface: #FFFFFF;
-  --text: #1C1917;
-  --text-2: #57534E;
-  --text-3: #A8A29E;
+  --text: #111827;
+  --text-2: #4B5563;
+  --text-3: #9CA3AF;
 }
 
 body {
@@ -41,8 +42,8 @@ body {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-ring);
 }
-.input::placeholder { color: #C4B9AE; }
-.input:disabled { background: #F5F5F4; color: var(--text-3); cursor: not-allowed; }
+.input::placeholder { color: #D1D5DB; }
+.input:disabled { background: #F9FAFB; color: var(--text-3); cursor: not-allowed; }
 
 /* ── Buttons ── */
 .btn-primary {
@@ -62,8 +63,8 @@ body {
   letter-spacing: -0.01em;
 }
 .btn-primary:hover {
-  background: var(--primary-dark);
-  box-shadow: 0 4px 12px rgba(180,83,9,0.25);
+  background: var(--primary-hover);
+  box-shadow: 0 4px 14px rgba(155,28,28,0.3);
 }
 .btn-primary:active { transform: scale(0.98); }
 .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
@@ -84,9 +85,7 @@ body {
   gap: 0.4rem;
   letter-spacing: -0.01em;
 }
-.btn-outline:hover {
-  background: var(--primary-light);
-}
+.btn-outline:hover { background: var(--primary-light); }
 
 .btn-ghost {
   background: transparent;
@@ -102,21 +101,21 @@ body {
   align-items: center;
   justify-content: center;
 }
-.btn-ghost:hover { background: #F5F5F4; border-color: #D4CFC9; }
+.btn-ghost:hover { background: #F3F4F6; border-color: #D1D5DB; }
 
 /* ── Cards ── */
 .card {
   background: var(--surface);
   border-radius: 0.875rem;
   border: 1px solid var(--border-light);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
 }
 .card-hover {
   transition: box-shadow 0.2s, transform 0.18s;
 }
 .card-hover:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.09);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+  transform: translateY(-2px);
 }
 
 /* ── Badges ── */
@@ -131,9 +130,9 @@ body {
   letter-spacing: 0.01em;
 }
 .badge-verified   { background: #ECFDF5; color: #065F46; }
-.badge-pending    { background: #FFFBEB; color: #92400E; }
+.badge-pending    { background: #FEF3C7; color: #92400E; }
 .badge-approved   { background: #ECFDF5; color: #065F46; }
-.badge-native     { background: #FEF9EC; color: #92400E; border: 1px solid #F5E6C3; }
+.badge-native     { background: #FEF2F2; color: #9B1C1C; border: 1px solid #FECACA; }
 
 /* ── Labels ── */
 .section-label {

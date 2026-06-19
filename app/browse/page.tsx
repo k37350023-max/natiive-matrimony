@@ -130,7 +130,7 @@ function avatarBg(_name: string) { return '#DDD5CA' }
 const INTEREST_STATUS: Record<string, { label: string; bg: string; color: string }> = {
   matched:  { label: 'Matched ✓',     bg: '#ECFDF5', color: '#065F46' },
   accepted: { label: 'Accepted ✓',    bg: '#ECFDF5', color: '#065F46' },
-  pending:  { label: 'Interest Sent', bg: '#FEF9EC', color: '#92400E' },
+  pending:  { label: 'Interest Sent', bg: '#FEF2F2', color: '#7F1D1D' },
   rejected: { label: 'Declined',      bg: '#FEF2F2', color: '#991B1B' },
 }
 
@@ -145,8 +145,8 @@ function FilterChips({ options, selected, onToggle }: {
         <button key={o.value} onClick={() => onToggle(o.value)}
           className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
           style={selected === o.value
-            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+            ? { background: '#9B1C1C', color: 'white', borderColor: '#9B1C1C' }
+            : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
           {o.label}
         </button>
       ))}
@@ -165,8 +165,8 @@ function MultiChips({ options, selected, onToggle }: {
         <button key={o} onClick={() => onToggle(o)}
           className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
           style={selected.includes(o)
-            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+            ? { background: '#9B1C1C', color: 'white', borderColor: '#9B1C1C' }
+            : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
           {o}
         </button>
       ))}
@@ -332,21 +332,21 @@ export default function BrowsePage() {
     photoOnly ? 'photo' : '', recentOnly ? 'recent' : '', ...motherTongues].filter(Boolean).length
 
   if (!sessionChecked) return (
-    <div className="min-h-screen" style={{ background: '#FAFAF9' }}><AppHeader />
-      <div className="flex items-center justify-center py-24 text-stone-400 text-sm">Loading...</div>
+    <div className="min-h-screen" style={{ background: '#F9FAFB' }}><AppHeader />
+      <div className="flex items-center justify-center py-24 text-gray-400 text-sm">Loading...</div>
     </div>
   )
 
   if (!myProfileId) return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center gap-6" style={{ background: '#FAFAF9' }}>
-      <div className="w-16 h-16 rounded-full flex items-center justify-center mb-2" style={{ background: '#FEF9EC' }}>
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center gap-6" style={{ background: '#F9FAFB' }}>
+      <div className="w-16 h-16 rounded-full flex items-center justify-center mb-2" style={{ background: '#FEF2F2' }}>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
         </svg>
       </div>
       <div>
-        <h2 className="text-xl font-bold text-stone-900 font-serif-display mb-2">Create your profile first</h2>
-        <p className="text-stone-500 text-sm max-w-xs">You need a complete profile before you can browse and connect with matches.</p>
+        <h2 className="text-xl font-bold text-gray-900 font-serif-display mb-2">Create your profile first</h2>
+        <p className="text-gray-500 text-sm max-w-xs">You need a complete profile before you can browse and connect with matches.</p>
       </div>
       <div className="flex flex-col gap-3 w-full max-w-xs">
         <Link href="/register" className="btn-primary py-3 text-center text-sm">Create Profile</Link>
@@ -379,7 +379,7 @@ export default function BrowsePage() {
           {AGE_RANGES.map(a => (
             <button key={a} onClick={() => setAgeRange(r => r === a ? '' : a)}
               className="text-xs px-2.5 py-1.5 rounded-md border font-medium transition-all"
-              style={ageRange === a ? { background: '#B45309', color: 'white', borderColor: '#B45309' } : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+              style={ageRange === a ? { background: '#9B1C1C', color: 'white', borderColor: '#9B1C1C' } : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
               {a}
             </button>
           ))}
@@ -392,7 +392,7 @@ export default function BrowsePage() {
           {HEIGHT_RANGES.map(h => (
             <button key={h.label} onClick={() => setHeightRange(r => r === h.label ? '' : h.label)}
               className="text-xs px-2.5 py-1.5 rounded-md border font-medium transition-all"
-              style={heightRange === h.label ? { background: '#B45309', color: 'white', borderColor: '#B45309' } : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+              style={heightRange === h.label ? { background: '#9B1C1C', color: 'white', borderColor: '#9B1C1C' } : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
               {h.label}
             </button>
           ))}
@@ -423,11 +423,11 @@ export default function BrowsePage() {
       <div className="space-y-2">
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={photoOnly} onChange={e => setPhotoOnly(e.target.checked)} className="accent-amber-700" />
-          <span className="text-xs text-stone-600 font-medium">With photo only</span>
+          <span className="text-xs text-gray-600 font-medium">With photo only</span>
         </label>
         <label className="flex items-center gap-2 cursor-pointer">
           <input type="checkbox" checked={recentOnly} onChange={e => setRecentOnly(e.target.checked)} className="accent-amber-700" />
-          <span className="text-xs text-stone-600 font-medium">Joined in last 30 days</span>
+          <span className="text-xs text-gray-600 font-medium">Joined in last 30 days</span>
         </label>
       </div>
 
@@ -440,7 +440,7 @@ export default function BrowsePage() {
   )
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FAFAF9' }}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#F9FAFB' }}>
       <AppHeader />
       <LaunchBanner />
 
@@ -448,15 +448,15 @@ export default function BrowsePage() {
 
         {/* Activity summary strip */}
         {activity && myProfileId && (activity.pendingReceived > 0 || activity.totalMatches > 0) && (
-          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl border" style={{ background: 'white', borderColor: '#E8E0D6' }}>
+          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl border" style={{ background: 'white', borderColor: '#E5E7EB' }}>
             {activity.pendingReceived > 0 && (
-              <Link href="/interests" className="flex items-center gap-1.5 text-sm font-semibold hover:underline" style={{ color: '#B45309' }}>
-                <span className="w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-bold" style={{ background: '#B45309' }}>{activity.pendingReceived}</span>
+              <Link href="/interests" className="flex items-center gap-1.5 text-sm font-semibold hover:underline" style={{ color: '#9B1C1C' }}>
+                <span className="w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-bold" style={{ background: '#9B1C1C' }}>{activity.pendingReceived}</span>
                 {activity.pendingReceived === 1 ? 'new interest' : 'new interests'}
               </Link>
             )}
             {activity.pendingReceived > 0 && activity.totalMatches > 0 && (
-              <span className="text-stone-200">·</span>
+              <span className="text-gray-200">·</span>
             )}
             {activity.totalMatches > 0 && (
               <Link href="/matches" className="flex items-center gap-1.5 text-sm font-semibold hover:underline" style={{ color: '#059669' }}>
@@ -469,9 +469,9 @@ export default function BrowsePage() {
 
         {!myGender && (
           <div className="rounded-lg border px-4 py-3 mb-4 flex items-center justify-between gap-4"
-            style={{ background: 'white', borderColor: '#E8E0D6' }}>
-            <p className="text-sm text-stone-600">
-              <span className="font-semibold text-stone-800">Register for better matches.</span>{' '}
+            style={{ background: 'white', borderColor: '#E5E7EB' }}>
+            <p className="text-sm text-gray-600">
+              <span className="font-semibold text-gray-800">Register for better matches.</span>{' '}
               We filter by your native region and show compatible profiles.
             </p>
             <div className="flex gap-2 shrink-0">
@@ -493,8 +493,8 @@ export default function BrowsePage() {
                   <button key={r} onClick={() => handleMapRegion(region === r ? '' : r)}
                     className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
                     style={region === r
-                      ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
-                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                      ? { background: '#FEF2F2', color: '#9B1C1C', borderColor: '#FECACA' }
+                      : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
                     {r}
                   </button>
                 ))}
@@ -516,16 +516,16 @@ export default function BrowsePage() {
                   <button key={r} onClick={() => handleMapRegion(region === r ? '' : r)}
                     className="text-xs px-3 py-2 rounded-lg border font-semibold shrink-0 transition-all"
                     style={region === r
-                      ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
-                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                      ? { background: '#FEF2F2', color: '#9B1C1C', borderColor: '#FECACA' }
+                      : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
                     {r}
                   </button>
                 ))}
                 <button onClick={() => setShowMoreFilters(f => !f)}
                   className="text-xs px-3 py-2 rounded-lg border font-semibold shrink-0 flex items-center gap-1.5"
                   style={activeFilterCount > 0
-                    ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
-                    : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+                    ? { background: '#FEF2F2', color: '#9B1C1C', borderColor: '#FECACA' }
+                    : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
                   </svg>
@@ -542,13 +542,13 @@ export default function BrowsePage() {
 
             {/* Results count */}
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm text-stone-500">
+              <p className="text-sm text-gray-500">
                 {loading ? 'Loading...' : (
-                  <><span className="font-semibold text-stone-800">{profiles.length}</span> {genderLabelPlural} found</>
+                  <><span className="font-semibold text-gray-800">{profiles.length}</span> {genderLabelPlural} found</>
                 )}
               </p>
-              <div className="flex items-center gap-1.5 text-xs text-stone-400">
-                <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#B45309' }} />
+              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#9B1C1C' }} />
                 ✓ Verified profiles marked
               </div>
             </div>
@@ -556,15 +556,15 @@ export default function BrowsePage() {
             {/* Empty state */}
             {!loading && profiles.length === 0 && (
               <div className="card p-8 text-center">
-                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#FEF9EC' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="1.75">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#FEF2F2' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="1.75">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
                   </svg>
                 </div>
                 {(region || state || district) ? (
                   <>
-                    <p className="font-semibold text-stone-800 mb-1">No {genderLabelPlural} from {district || state || region} yet</p>
-                    <p className="text-sm text-stone-500 mb-5 leading-relaxed max-w-xs mx-auto">
+                    <p className="font-semibold text-gray-800 mb-1">No {genderLabelPlural} from {district || state || region} yet</p>
+                    <p className="text-sm text-gray-500 mb-5 leading-relaxed max-w-xs mx-auto">
                       Be the first from your area, or invite friends and family to join.
                     </p>
                     <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
@@ -574,13 +574,13 @@ export default function BrowsePage() {
                           {alertSet ? `✓ Alert set for ${district || state || region}` : 'Notify me when someone joins'}
                         </button>
                       )}
-                      <button onClick={clearAll} className="btn-ghost px-5 py-2.5 text-sm text-stone-400">Show all {genderLabelPlural}</button>
+                      <button onClick={clearAll} className="btn-ghost px-5 py-2.5 text-sm text-gray-400">Show all {genderLabelPlural}</button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-stone-700 mb-1">No profiles match these filters</p>
-                    <p className="text-sm text-stone-400 mb-4">Try removing some filters to see more results.</p>
+                    <p className="font-semibold text-gray-700 mb-1">No profiles match these filters</p>
+                    <p className="text-sm text-gray-400 mb-4">Try removing some filters to see more results.</p>
                     <button onClick={clearAll} className="btn-primary px-5 py-2 text-sm">Clear filters</button>
                   </>
                 )}
@@ -591,57 +591,80 @@ export default function BrowsePage() {
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
               {profiles.map(p => (
                 <button key={p.id} onClick={() => setQuickView(p)} className="block group text-left w-full">
-                  <div className="rounded-2xl overflow-hidden shadow-sm border active:scale-[0.98] transition-transform"
-                    style={{ borderColor: '#E8E0D6', background: 'white' }}>
+                  <div className="rounded-xl overflow-hidden bg-white active:scale-[0.98] transition-all duration-200 hover:shadow-lg"
+                    style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #F3F4F6' }}>
 
-                    <div className="relative" style={{ paddingBottom: '85%' }}>
+                    {/* Photo — 4:5 ratio */}
+                    <div className="relative" style={{ paddingBottom: '125%' }}>
                       {p.photo_url && p.photo_visibility === 'public' ? (
                         <img src={p.photo_url} alt={p.full_name}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                       ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
-                          style={{ background: avatarBg(p.full_name) }}>
-                          <svg width="52" height="52" viewBox="0 0 80 80" fill="none">
-                            <circle cx="40" cy="28" r="16" fill="#B8AA9E"/>
-                            <ellipse cx="40" cy="68" rx="26" ry="18" fill="#B8AA9E"/>
-                          </svg>
-                          <span className="text-xs font-medium" style={{ color: '#8C7D72' }}>{p.full_name.split(' ')[0]}</span>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center"
+                          style={{ background: 'linear-gradient(160deg, #F9FAFB 0%, #F3F4F6 100%)' }}>
+                          <div className="w-16 h-16 rounded-full flex items-center justify-center mb-2"
+                            style={{ background: '#FEF2F2' }}>
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                            </svg>
+                          </div>
+                          <span className="text-xs font-semibold text-gray-500">{p.full_name.split(' ')[0]}</span>
+                          <span className="text-[10px] text-gray-400 mt-0.5">No photo</span>
                         </div>
                       )}
-                      <div className="absolute inset-0 pointer-events-none"
-                        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 40%, transparent 65%)' }} />
+                      {/* Gradient overlay for photo cards */}
+                      {p.photo_url && p.photo_visibility === 'public' && (
+                        <div className="absolute inset-0 pointer-events-none"
+                          style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.15) 45%, transparent 70%)' }} />
+                      )}
+                      {/* Status badges */}
                       {isVerified(p) && (
-                        <div className="absolute top-2 left-2">
-                          <span className="badge badge-verified text-xs shadow-sm">✓ Verified</span>
+                        <div className="absolute top-2.5 left-2.5">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm"
+                            style={{ background: 'rgba(255,255,255,0.95)', color: '#059669' }}>✓ Verified</span>
                         </div>
                       )}
                       {interestMap[p.id] && (
-                        <div className="absolute top-2 right-2">
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shadow"
+                        <div className="absolute top-2.5 right-2.5">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm"
                             style={{
-                              background: interestMap[p.id] === 'rejected' ? '#FEF2F2' : interestMap[p.id] === 'matched' ? '#ECFDF5' : '#FEF9EC',
-                              color: interestMap[p.id] === 'rejected' ? '#991B1B' : interestMap[p.id] === 'matched' ? '#065F46' : '#92400E',
+                              background: 'rgba(255,255,255,0.95)',
+                              color: interestMap[p.id] === 'matched' ? '#059669' : interestMap[p.id] === 'rejected' ? '#DC2626' : '#9B1C1C',
                             }}>
                             {interestMap[p.id] === 'matched' ? 'Matched' : interestMap[p.id] === 'accepted' ? 'Accepted' : interestMap[p.id] === 'rejected' ? 'Declined' : 'Sent'}
                           </span>
                         </div>
                       )}
-                      <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-6">
-                        <p className="text-white font-bold text-sm leading-tight drop-shadow">{p.full_name}</p>
-                        {getAge(p.date_of_birth) != null && (
-                          <p className="text-white/80 text-xs mt-0.5">{getAge(p.date_of_birth)} yrs{p.height_cm ? ` · ${cmToFeet(p.height_cm)}` : ''}</p>
-                        )}
-                      </div>
+                      {/* Name + age on photo */}
+                      {p.photo_url && p.photo_visibility === 'public' && (
+                        <div className="absolute bottom-0 left-0 right-0 px-3 pb-3 pt-8">
+                          <p className="text-white font-bold text-sm leading-tight drop-shadow-md">{p.full_name}</p>
+                          <p className="text-white/80 text-xs mt-0.5 drop-shadow">
+                            {getAge(p.date_of_birth) != null ? `${getAge(p.date_of_birth)} yrs` : ''}
+                            {p.height_cm ? ` · ${cmToFeet(p.height_cm)}` : ''}
+                          </p>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="px-3 py-2.5 space-y-1">
-                      <p className="text-xs font-medium text-stone-700 truncate">{p.profession || <span className="text-stone-300">—</span>}</p>
-                      <p className="text-xs text-stone-400 truncate flex items-center gap-1">
-                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                        Native: {p.native_district}{p.current_city ? ` | ${p.current_city}` : ''}
+                    {/* Info below photo */}
+                    <div className="px-3 pt-2.5 pb-3">
+                      {/* Name + age for no-photo cards */}
+                      {!(p.photo_url && p.photo_visibility === 'public') && (
+                        <p className="font-bold text-gray-900 text-sm leading-tight truncate mb-1">
+                          {p.full_name}
+                          <span className="font-normal text-gray-500 ml-1 text-xs">
+                            {getAge(p.date_of_birth) != null ? `${getAge(p.date_of_birth)} yrs` : ''}
+                            {p.height_cm ? ` · ${cmToFeet(p.height_cm)}` : ''}
+                          </span>
+                        </p>
+                      )}
+                      <p className="text-xs font-medium text-gray-700 truncate">{p.profession || '—'}</p>
+                      <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                        {p.native_district}{p.current_city ? ` · ${p.current_city}` : ''}
                       </p>
-                      <p className="text-xs text-stone-400 truncate">
-                        {lastSeen(p.last_login_at) ?? 'Last active unknown'}
+                      <p className="text-[11px] mt-0.5 truncate" style={{ color: '#9B1C1C' }}>
+                        {lastSeen(p.last_login_at) ?? ''}
                       </p>
                     </div>
                   </div>
@@ -746,17 +769,17 @@ export default function BrowsePage() {
               </div>
 
               {/* Info rows */}
-              <div className="px-5 py-2 divide-y divide-stone-100">
+              <div className="px-5 py-2 divide-y divide-gray-100">
                 {([
-                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#92400E" strokeWidth="1.75" strokeLinecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>, label: `Native: ${p.native_district}${p.current_city ? ` | ${p.current_city}` : ''}` },
-                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>, label: [p.profession, p.education].filter(Boolean).join(' · ') || '—' },
-                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, label: [p.religion, p.caste].filter(Boolean).join(' · ') || '—' },
-                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label: p.family_type ? p.family_type.charAt(0).toUpperCase() + p.family_type.slice(1) + ' family' : '—' },
-                  p.about ? { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: `${p.about.slice(0, 100)}${p.about.length > 100 ? '…' : ''}` } : null,
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7F1D1D" strokeWidth="1.75" strokeLinecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>, label: `Native: ${p.native_district}${p.current_city ? ` | ${p.current_city}` : ''}` },
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.75" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>, label: [p.profession, p.education].filter(Boolean).join(' · ') || '—' },
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.75" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, label: [p.religion, p.caste].filter(Boolean).join(' · ') || '—' },
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.75" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label: p.family_type ? p.family_type.charAt(0).toUpperCase() + p.family_type.slice(1) + ' family' : '—' },
+                  p.about ? { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="1.75" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: `${p.about.slice(0, 100)}${p.about.length > 100 ? '…' : ''}` } : null,
                 ] as ({ svg: React.ReactNode; label: string } | null)[]).filter(Boolean).map((row, i) => (
                   <div key={i} className="flex items-start gap-3 py-2.5">
                     <span className="shrink-0 mt-0.5">{row!.svg}</span>
-                    <p className="text-sm text-stone-600 leading-snug">{row!.label}</p>
+                    <p className="text-sm text-gray-600 leading-snug">{row!.label}</p>
                   </div>
                 ))}
               </div>
@@ -770,7 +793,7 @@ export default function BrowsePage() {
                     className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
                     style={status
                       ? { background: '#ECFDF5', color: '#065F46' }
-                      : { background: '#B45309', color: 'white' }}>
+                      : { background: '#9B1C1C', color: 'white' }}>
                     {status === 'matched' ? '✓ Matched' :
                      status === 'accepted' ? '✓ Accepted' :
                      status === 'pending' ? '✓ Interest Sent' :
@@ -780,7 +803,7 @@ export default function BrowsePage() {
                 )}
                 <Link href={`/profile/${p.id}`}
                   className="w-full py-3 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1.5 transition-all"
-                  style={{ borderColor: '#E8E0D6', color: '#57534E' }}
+                  style={{ borderColor: '#E5E7EB', color: '#4B5563' }}
                   onClick={() => setQuickView(null)}>
                   View full profile
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
