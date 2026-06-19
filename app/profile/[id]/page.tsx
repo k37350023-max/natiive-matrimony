@@ -228,6 +228,8 @@ export default function ProfilePage() {
 
   const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
 
+  const isOwnProfile = myProfileId === profile.id
+
   const bioSections: { heading: string; rows: { label: string; value: string | null }[] }[] = [
     {
       heading: 'Personal',
@@ -275,7 +277,7 @@ export default function ProfilePage() {
         { label: 'Manglik', value: profile.manglik || null },
       ],
     },
-  ].map(s => ({ ...s, rows: s.rows.filter(r => r.value) })).filter(s => s.rows.length > 0)
+  ]
 
   const contactRows = [
     { label: 'Phone', value: profile.phone || null },
@@ -421,6 +423,49 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* Profile completeness — own profile only */}
+        {isOwnProfile && (() => {
+          const fields = [
+            profile.photo_url, profile.about, profile.height_cm, profile.caste,
+            profile.education, profile.profession, profile.family_type,
+            profile.father_name, profile.mother_name, profile.star,
+            profile.diet, profile.birth_time,
+          ]
+          const filled = fields.filter(Boolean).length
+          const pct = Math.round((filled / fields.length) * 100)
+          const missing = [
+            !profile.photo_url && 'Profile photo',
+            !profile.about && 'About me',
+            !profile.height_cm && 'Height',
+            !profile.caste && 'Caste',
+            !profile.education && 'Education',
+            !profile.family_type && 'Family type',
+            !profile.father_name && 'Father\'s name',
+            !profile.star && 'Star / Nakshatra',
+            !profile.diet && 'Diet preference',
+          ].filter(Boolean).slice(0, 3)
+          return (
+            <div className="card px-5 py-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold text-stone-800">Profile completeness</p>
+                <span className="text-sm font-bold" style={{ color: pct >= 80 ? '#059669' : '#B45309' }}>{pct}%</span>
+              </div>
+              <div className="w-full rounded-full h-2 mb-3" style={{ background: '#F0EDE8' }}>
+                <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: pct >= 80 ? '#059669' : '#B45309' }} />
+              </div>
+              {missing.length > 0 && (
+                <div className="flex items-center justify-between">
+                  <p className="text-xs text-stone-400">Missing: {missing.join(', ')}</p>
+                  <Link href="/profile/edit" className="text-xs font-semibold px-3 py-1 rounded-lg" style={{ background: '#FEF9EC', color: '#B45309' }}>
+                    Complete profile →
+                  </Link>
+                </div>
+              )}
+              {pct === 100 && <p className="text-xs text-stone-400">Great job — your profile is complete!</p>}
+            </div>
+          )
+        })()}
+
         {/* Quick facts */}
         <div className="card">
           {[
@@ -440,10 +485,17 @@ export default function ProfilePage() {
         </div>
 
         {/* About */}
-        {profile.about && (
+        {(profile.about || isOwnProfile) && (
           <div className="card px-6 py-5">
             <p className="section-label mb-2.5">About</p>
-            <p className="text-stone-600 leading-relaxed text-sm">"{profile.about}"</p>
+            {profile.about ? (
+              <p className="text-stone-600 leading-relaxed text-sm">"{profile.about}"</p>
+            ) : (
+              <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#B45309' }}>
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add a bio — tell people about yourself
+              </Link>
+            )}
           </div>
         )}
 
@@ -457,9 +509,20 @@ export default function ProfilePage() {
                   <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>{section.heading}</p>
                   <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                     {section.rows.map(f => (
-                      <div key={f.label} className={f.label === 'Siblings' || f.label === 'Email' ? 'col-span-2' : ''}>
+                      <div key={f.label} className={f.label === 'Siblings' || f.label === 'Email' || f.label === 'Father' || f.label === 'Mother' ? 'col-span-2' : ''}>
                         <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
-                        <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
+                        {f.value ? (
+                          <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
+                        ) : isOwnProfile ? (
+                          <Link href="/profile/edit"
+                            className="text-sm font-medium flex items-center gap-1"
+                            style={{ color: '#B45309' }}>
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Add
+                          </Link>
+                        ) : (
+                          <p className="text-sm text-stone-300">—</p>
+                        )}
                       </div>
                     ))}
                   </div>
