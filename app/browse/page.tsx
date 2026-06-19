@@ -89,10 +89,17 @@ function cmToFeet(cm: number): string {
 
 function lastSeen(ts: string | null): string | null {
   if (!ts) return null
-  const days = Math.floor((Date.now() - new Date(ts).getTime()) / (1000 * 60 * 60 * 24))
-  if (days === 0) return 'Active today'
-  if (days <= 7) return `Active ${days}d ago`
-  if (days <= 30) return `Active ${Math.floor(days / 7)}w ago`
+  const mins = Math.floor((Date.now() - new Date(ts).getTime()) / 60000)
+  if (mins < 2) return 'Active just now'
+  if (mins < 60) return `Active ${mins} min ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs === 1) return 'Active 1 hour ago'
+  if (hrs < 5) return 'Active a few hours ago'
+  if (hrs < 24) return `Active ${hrs} hours ago`
+  const days = Math.floor(hrs / 24)
+  if (days === 1) return 'Active yesterday'
+  if (days <= 7) return `Active ${days} days ago`
+  if (days <= 30) return `Active ${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`
   return null
 }
 
@@ -633,7 +640,7 @@ export default function BrowsePage() {
                           {lastSeen(p.last_login_at) || (
                             <>
                               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                              {p.native_district}
+                              Native: {p.native_district}{p.current_city ? ` | ${p.current_city}` : ''}
                             </>
                           )}
                         </span>
@@ -760,8 +767,7 @@ export default function BrowsePage() {
               {/* Info rows */}
               <div className="px-5 py-4 space-y-0 divide-y divide-stone-100">
                 {[
-                  { icon: '📍', label: `${p.native_district}, ${p.native_state}${p.native_region ? ` (${p.native_region})` : ''}` },
-                  { icon: '🏙', label: p.current_city || '—' },
+                  { icon: '📍', label: `Native: ${p.native_district}${p.current_city ? ` | ${p.current_city}` : ''}` },
                   { icon: '💼', label: [p.profession, p.education].filter(Boolean).join(' · ') || '—' },
                   { icon: '🛐', label: [p.religion, p.caste].filter(Boolean).join(' · ') || '—' },
                   { icon: '👨‍👩‍👧', label: p.family_type ? p.family_type.charAt(0).toUpperCase() + p.family_type.slice(1) + ' family' : '—' },

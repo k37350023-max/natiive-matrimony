@@ -107,10 +107,17 @@ function cmToFeet(cm: number): string {
 
 function lastSeenLabel(ts: string | null): string | null {
   if (!ts) return null
-  const days = Math.floor((Date.now() - new Date(ts).getTime()) / (1000 * 60 * 60 * 24))
-  if (days === 0) return 'Active today'
-  if (days <= 7) return `Active ${days}d ago`
-  if (days <= 30) return `Active ${Math.floor(days / 7)}w ago`
+  const mins = Math.floor((Date.now() - new Date(ts).getTime()) / 60000)
+  if (mins < 2) return 'Active just now'
+  if (mins < 60) return `Active ${mins} min ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs === 1) return 'Active 1 hour ago'
+  if (hrs < 5) return `Active a few hours ago`
+  if (hrs < 24) return `Active ${hrs} hours ago`
+  const days = Math.floor(hrs / 24)
+  if (days === 1) return 'Active yesterday'
+  if (days <= 7) return `Active ${days} days ago`
+  if (days <= 30) return `Active ${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`
   return null
 }
 
@@ -593,12 +600,16 @@ export default function ProfilePage() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-bold text-stone-900 font-serif-display tracking-tight">{profile.full_name}</h1>
-                <p className="text-stone-500 mt-0.5 text-sm whitespace-nowrap">
-                  {getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs · ` : ''}{profile.gender === 'male' ? 'Groom' : 'Bride'}
-                  {lastSeenLabel(profile.last_login_at) && (
-                    <span className="ml-2 text-xs text-stone-400">· {lastSeenLabel(profile.last_login_at)}</span>
-                  )}
+                <p className="text-stone-500 mt-0.5 text-sm">
+                  {[
+                    getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs` : null,
+                    profile.height_cm ? cmToFeet(profile.height_cm).split(' ')[0] : null,
+                    profile.gender === 'male' ? 'Groom' : 'Bride',
+                  ].filter(Boolean).join(' · ')}
                 </p>
+                {lastSeenLabel(profile.last_login_at) && (
+                  <p className="text-xs text-stone-400 mt-0.5">{lastSeenLabel(profile.last_login_at)}</p>
+                )}
               </div>
               {(profile.verified || profile.phone_verified) ? (
                 <div className="relative group shrink-0 mt-1">
@@ -617,16 +628,23 @@ export default function ProfilePage() {
               ) : null}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="badge badge-native text-sm px-3 py-1.5">
-                {fieldIsHidden('native_location') && !isOwnProfile && !fieldIsRevealed('native_location')
-                  ? profile.native_state
-                  : `${profile.native_district}, ${profile.native_state}`}
-                {profile.native_region && !fieldIsHidden('native_location') && ` (${profile.native_region})`}
+            <div className="mt-3 flex flex-wrap gap-2 items-center">
+              {/* Native place badge */}
+              <span className="badge badge-native text-sm px-3 py-1.5 flex items-center gap-1.5">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                <span>
+                  Native:{' '}
+                  {fieldIsHidden('native_location') && !isOwnProfile && !fieldIsRevealed('native_location')
+                    ? profile.native_state
+                    : profile.native_district}
+                  {profile.current_city && (
+                    <span className="text-stone-400"> | {profile.current_city}</span>
+                  )}
+                </span>
               </span>
               {isSerious(profile) && (
                 <span className="text-xs px-3 py-1.5 rounded-full font-semibold"
-                  style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
+                  style={{ background: '#FEF9EC', color: '#92400E', border: '1px solid #F0E4C0' }}>
                   ★ Serious Seeker
                 </span>
               )}
