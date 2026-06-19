@@ -637,7 +637,7 @@ export default function ProfilePage() {
           const fields = [
             profile.photo_url, profile.about, profile.height_cm, profile.caste,
             profile.education, profile.profession, profile.family_type,
-            profile.father_name, profile.mother_name, profile.star, profile.diet,
+            profile.mother_tongue, profile.religion,
           ]
           const filled = fields.filter(Boolean).length
           const pct = Math.round((filled / fields.length) * 100)
