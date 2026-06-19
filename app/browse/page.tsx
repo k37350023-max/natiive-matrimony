@@ -616,12 +616,14 @@ export default function BrowsePage() {
                         </div>
                       )}
                       {interestMap[p.id] && (
-                        <div className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center ring-2 ring-white shadow"
-                          style={{ background: interestMap[p.id] === 'rejected' ? '#EF4444' : '#059669' }}>
-                          {interestMap[p.id] === 'rejected'
-                            ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><path d="M18 6 6 18M6 6l12 12"/></svg>
-                            : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
-                          }
+                        <div className="absolute top-2 right-2">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full shadow"
+                            style={{
+                              background: interestMap[p.id] === 'rejected' ? '#FEF2F2' : interestMap[p.id] === 'matched' ? '#ECFDF5' : '#FEF9EC',
+                              color: interestMap[p.id] === 'rejected' ? '#991B1B' : interestMap[p.id] === 'matched' ? '#065F46' : '#92400E',
+                            }}>
+                            {interestMap[p.id] === 'matched' ? 'Matched' : interestMap[p.id] === 'accepted' ? 'Accepted' : interestMap[p.id] === 'rejected' ? 'Declined' : 'Sent'}
+                          </span>
                         </div>
                       )}
                       <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-6">
@@ -632,40 +634,15 @@ export default function BrowsePage() {
                       </div>
                     </div>
 
-                    <div className="px-3 py-2.5">
-                      <div className="flex items-center justify-between gap-1">
-                        <p className="text-xs font-medium text-stone-700 truncate">{p.profession}</p>
-                        {p.mother_tongue && p.mother_tongue !== 'Telugu' && (
-                          <span className="text-xs text-stone-400 shrink-0">{p.mother_tongue}</span>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between mt-1.5 gap-1">
-                        <span className="text-xs text-stone-400 truncate flex items-center gap-1">
-                          {lastSeen(p.last_login_at) ?? (
-                            <>
-                              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-                              Native: {p.native_district}{p.current_city ? ` | ${p.current_city}` : ''}
-                            </>
-                          )}
-                        </span>
-                        {isSerious(p) ? (
-                          <span className="relative group/tip cursor-default shrink-0 text-xs px-1.5 py-0.5 rounded font-semibold"
-                            style={{ background: '#FEF9EC', color: '#92400E' }}>
-                            ★
-                            <span className="absolute bottom-full right-0 mb-1.5 w-48 px-2.5 py-2 rounded-lg text-xs text-white opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed font-normal text-left"
-                              style={{ background: '#1C1917' }}>
-                              <span className="font-semibold block mb-0.5">Serious Seeker</span>
-                              Has photo, education, about, height &amp; caste filled.
-                              <span className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
-                            </span>
-                          </span>
-                        ) : interestMap[p.id] ? (
-                          <span className="text-xs px-1.5 py-0.5 rounded font-semibold shrink-0"
-                            style={{ background: INTEREST_STATUS[interestMap[p.id]]?.bg, color: INTEREST_STATUS[interestMap[p.id]]?.color }}>
-                            {INTEREST_STATUS[interestMap[p.id]]?.label}
-                          </span>
-                        ) : null}
-                      </div>
+                    <div className="px-3 py-2.5 space-y-1">
+                      <p className="text-xs font-medium text-stone-700 truncate">{p.profession || <span className="text-stone-300">—</span>}</p>
+                      <p className="text-xs text-stone-400 truncate flex items-center gap-1">
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+                        Native: {p.native_district}{p.current_city ? ` | ${p.current_city}` : ''}
+                      </p>
+                      <p className="text-xs text-stone-400 truncate">
+                        {lastSeen(p.last_login_at) ?? 'Last active unknown'}
+                      </p>
                     </div>
                   </div>
                 </button>
