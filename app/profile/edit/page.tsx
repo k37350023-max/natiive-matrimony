@@ -18,13 +18,12 @@ const REGIONS: Record<string, Record<string, string[]>> = {
   },
 }
 
-type PhotoVisibility = 'public' | 'after_interest' | 'after_match' | 'hidden'
-
-const VISIBILITY_OPTIONS: { value: PhotoVisibility; label: string; desc: string }[] = [
-  { value: 'public', label: 'Always visible', desc: 'Anyone browsing can see your photo' },
-  { value: 'after_interest', label: 'After interest', desc: 'Visible once an interest is sent or received' },
-  { value: 'after_match', label: 'After match only', desc: 'Visible only after both sides accept (default)' },
-  { value: 'hidden', label: 'Hidden', desc: 'Photo never shown — only initials displayed' },
+const HIDEABLE_FIELDS: { key: string; label: string; desc: string }[] = [
+  { key: 'photo', label: 'Profile photo', desc: 'Others see initials instead; they can request to see your photo' },
+  { key: 'phone', label: 'Phone number', desc: 'Hidden from everyone; they can request it' },
+  { key: 'gotra', label: 'Gotra', desc: 'Blurred on your profile; requestable' },
+  { key: 'native_location', label: 'Native district & region', desc: 'Only your state is shown; district is hidden' },
+  { key: 'current_city', label: 'Current city', desc: 'Blurred on your profile; requestable' },
 ]
 
 const COUNTRY_CODES = [
@@ -76,6 +75,8 @@ export default function EditProfilePage() {
   // Additional photos (up to 4 more)
   const [additionalPhotos, setAdditionalPhotos] = useState<string[]>([])
   const [uploadingExtra, setUploadingExtra] = useState(false)
+  // Per-field privacy
+  const [hiddenFields, setHiddenFields] = useState<string[]>([])
 
   const [form, setForm] = useState({
     full_name: '', gender: '', date_of_birth: '', phone: '',
@@ -94,7 +95,6 @@ export default function EditProfilePage() {
     star: '', rashi: '', gotra: '', manglik: '',
     diet: '', smoking: '', drinking: '',
     pref_age_min: '21', pref_age_max: '35',
-    photo_visibility: 'after_match' as PhotoVisibility,
   })
 
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
@@ -162,8 +162,8 @@ export default function EditProfilePage() {
       profile_created_by: data.profile_created_by || 'self',
       pref_age_min: data.pref_age_min ? String(data.pref_age_min) : '21',
       pref_age_max: data.pref_age_max ? String(data.pref_age_max) : '35',
-      photo_visibility: (data.photo_visibility as PhotoVisibility) || 'after_match',
     })
+    setHiddenFields(data.hidden_fields || [])
     setCurrentPhotoUrl(data.photo_url || '')
     setVerified(data.phone_verified || false)
     // Load additional photos
@@ -233,18 +233,11 @@ export default function EditProfilePage() {
         pref_age_min: form.pref_age_min ? parseInt(form.pref_age_min) : null,
         pref_age_max: form.pref_age_max ? parseInt(form.pref_age_max) : null,
         photo_url: photoUrl,
-        photo_visibility: form.photo_visibility,
+        hidden_fields: hiddenFields,
+        photo_visibility: hiddenFields.includes('photo') ? 'hidden' : 'public',
       }
 
-      let { error: saveErr } = await supabase.from('profiles').update(coreFields).eq('id', profileId)
-
-      // If photo_visibility column doesn't exist yet (migration pending), retry without it
-      if (saveErr?.message?.includes('photo_visibility') || saveErr?.code === '42703') {
-        const { photo_visibility: _pv, ...withoutVisibility } = coreFields
-        const retry = await supabase.from('profiles').update(withoutVisibility).eq('id', profileId)
-        saveErr = retry.error
-      }
-
+      const { error: saveErr } = await supabase.from('profiles').update(coreFields).eq('id', profileId)
       if (saveErr) throw saveErr
       setCurrentPhotoUrl(photoUrl)
       setSuccess('Profile saved!')
@@ -456,25 +449,32 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          <p className="form-label mb-2">Who can see your photo?</p>
-          <div className="space-y-2">
-            {VISIBILITY_OPTIONS.map(opt => (
-              <label key={opt.value}
-                className="flex items-start gap-3 px-3.5 py-3 rounded-lg border cursor-pointer transition-colors"
-                style={{
-                  borderColor: form.photo_visibility === opt.value ? '#B45309' : '#E8E0D6',
-                  background: form.photo_visibility === opt.value ? '#FEF9EC' : 'white',
-                }}>
-                <input type="radio" name="photo_visibility" value={opt.value}
-                  checked={form.photo_visibility === opt.value}
-                  onChange={() => set('photo_visibility', opt.value)}
-                  className="mt-0.5 accent-amber-700" />
-                <div>
-                  <p className="font-semibold text-stone-800 text-sm">{opt.label}</p>
-                  <p className="text-xs text-stone-500 mt-0.5">{opt.desc}</p>
-                </div>
-              </label>
-            ))}
+          <div className="pt-4 border-t" style={{ borderColor: '#F0EDE8' }}>
+            <p className="form-label mb-1">Privacy — what do you want to hide?</p>
+            <p className="text-xs text-stone-400 mb-3">Hidden fields show as blurred on your profile. Visitors can request to see them — you approve or decline.</p>
+            <div className="space-y-2">
+              {HIDEABLE_FIELDS.map(f => {
+                const checked = hiddenFields.includes(f.key)
+                return (
+                  <label key={f.key}
+                    className="flex items-start gap-3 px-3.5 py-3 rounded-lg border cursor-pointer transition-colors"
+                    style={{
+                      borderColor: checked ? '#B45309' : '#E8E0D6',
+                      background: checked ? '#FEF9EC' : 'white',
+                    }}>
+                    <input type="checkbox" checked={checked}
+                      onChange={() => setHiddenFields(prev =>
+                        prev.includes(f.key) ? prev.filter(k => k !== f.key) : [...prev, f.key]
+                      )}
+                      className="mt-0.5 accent-amber-700" />
+                    <div>
+                      <p className="font-semibold text-stone-800 text-sm">{f.label}</p>
+                      <p className="text-xs text-stone-500 mt-0.5">{f.desc}</p>
+                    </div>
+                  </label>
+                )
+              })}
+            </div>
           </div>
         </div>
 

@@ -49,6 +49,7 @@ type Profile = {
   email: string
   photo_url: string
   photo_visibility: string | null
+  hidden_fields: string[] | null
   marital_status: string | null
   profile_created_by: string | null
   last_login_at: string | null
@@ -56,18 +57,34 @@ type Profile = {
   pref_age_max: number | null
 }
 
-function isSerious(p: Profile): boolean {
-  return [p.education, p.about, p.height_cm, p.photo_url, p.caste].filter(Boolean).length >= 3
+type FieldRequest = {
+  id: string
+  from_user: string
+  to_user: string
+  fields: string[]
+  status: string
 }
 
-function canShowPhoto(profile: Profile, relation: string): boolean {
-  if (!profile.photo_url) return false
-  const v = profile.photo_visibility || 'after_match'
-  if (v === 'hidden') return false
-  if (v === 'public') return true
-  if (v === 'after_match') return relation === 'matched'
-  if (v === 'after_interest') return relation === 'matched' || relation === 'interested' || relation === 'received'
-  return false
+type ViewerEntry = {
+  viewer_id: string
+  full_name: string
+  photo_url: string | null
+  photo_visibility: string | null
+  viewed_at: string
+}
+
+type IncomingRequest = {
+  id: string
+  from_user: string
+  fields: string[]
+  status: string
+  full_name: string
+  photo_url: string | null
+  photo_visibility: string | null
+}
+
+function isSerious(p: Profile): boolean {
+  return [p.education, p.about, p.height_cm, p.photo_url, p.caste].filter(Boolean).length >= 3
 }
 
 function getAge(dob: string): number | null {
@@ -95,8 +112,26 @@ function lastSeenLabel(ts: string | null): string | null {
   return null
 }
 
+function timeAgo(ts: string): string {
+  const mins = Math.floor((Date.now() - new Date(ts).getTime()) / 60000)
+  if (mins < 60) return `${mins}m ago`
+  const hrs = Math.floor(mins / 60)
+  if (hrs < 24) return `${hrs}h ago`
+  const days = Math.floor(hrs / 24)
+  if (days <= 7) return `${days}d ago`
+  return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+}
+
 const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D']
-function avatarBg(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length] }
+function avatarBg(name: string) { return AVATAR_COLORS[(name?.charCodeAt(0) || 0) % AVATAR_COLORS.length] }
+
+const HIDEABLE: Record<string, string> = {
+  photo: 'Profile photo',
+  phone: 'Phone number',
+  gotra: 'Gotra',
+  native_location: 'Native district & region',
+  current_city: 'Current city',
+}
 
 export default function ProfilePage() {
   const { id } = useParams()
@@ -112,32 +147,88 @@ export default function ProfilePage() {
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [noteText, setNoteText] = useState('')
   const [photoExpanded, setPhotoExpanded] = useState(false)
-  const [photoRequested, setPhotoRequested] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportReason, setReportReason] = useState('')
   const [reportSent, setReportSent] = useState(false)
   const [extraPhotos, setExtraPhotos] = useState<string[]>([])
   const [photoIdx, setPhotoIdx] = useState(0)
+  // P2
+  const [fieldRequest, setFieldRequest] = useState<FieldRequest | null>(null)
+  const [sendingFieldReq, setSendingFieldReq] = useState(false)
+  const [viewers, setViewers] = useState<ViewerEntry[]>([])
+  const [incomingRequests, setIncomingRequests] = useState<IncomingRequest[]>([])
+  const [approvingReq, setApprovingReq] = useState<string | null>(null)
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
     setIsLoggedIn(!!myId)
     setMyProfileId(myId)
-    loadProfile()
+    loadProfile(myId)
     if (myId) {
       checkInterestStatus(myId)
       checkRelation(myId)
+      if (myId !== (id as string)) {
+        logView(myId)
+        loadFieldRequest(myId)
+      } else {
+        loadViewers()
+        loadIncomingRequests()
+      }
     }
   }, [id])
 
-  async function loadProfile() {
+  async function loadProfile(myId: string | null) {
     const { data } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
     setProfile(data)
-    // Load additional photos
     const { data: photos } = await supabase
       .from('profile_photos').select('url').eq('profile_id', id).order('position')
     setExtraPhotos((photos || []).map(p => p.url))
     setLoading(false)
+  }
+
+  async function logView(myId: string) {
+    await supabase.from('profile_views').insert({ viewer_id: myId, viewed_id: id as string })
+      .then(() => {})
+  }
+
+  async function loadFieldRequest(myId: string) {
+    const { data } = await supabase.from('field_requests')
+      .select('*').eq('from_user', myId).eq('to_user', id as string).maybeSingle()
+    if (data) setFieldRequest(data)
+  }
+
+  async function loadViewers() {
+    const { data: views } = await supabase.from('profile_views')
+      .select('viewer_id, viewed_at')
+      .eq('viewed_id', id as string)
+      .order('viewed_at', { ascending: false })
+      .limit(30)
+    if (!views?.length) return
+    const uniqueIds = [...new Set(views.map(v => v.viewer_id))]
+    const { data: profiles } = await supabase.from('profiles')
+      .select('id, full_name, photo_url, photo_visibility')
+      .in('id', uniqueIds)
+    const merged: ViewerEntry[] = uniqueIds.map(vid => {
+      const p = profiles?.find(p => p.id === vid)
+      const v = views.find(v => v.viewer_id === vid)
+      return { viewer_id: vid, full_name: p?.full_name || 'Someone', photo_url: p?.photo_url || null, photo_visibility: p?.photo_visibility || null, viewed_at: v?.viewed_at || '' }
+    })
+    setViewers(merged)
+  }
+
+  async function loadIncomingRequests() {
+    const { data: reqs } = await supabase.from('field_requests')
+      .select('*').eq('to_user', id as string).eq('status', 'pending')
+    if (!reqs?.length) return
+    const fromIds = reqs.map(r => r.from_user)
+    const { data: profiles } = await supabase.from('profiles')
+      .select('id, full_name, photo_url, photo_visibility')
+      .in('id', fromIds)
+    const merged: IncomingRequest[] = reqs.map(r => {
+      const p = profiles?.find(p => p.id === r.from_user)
+      return { ...r, full_name: p?.full_name || 'Someone', photo_url: p?.photo_url || null, photo_visibility: p?.photo_visibility || null }
+    })
+    setIncomingRequests(merged)
   }
 
   async function checkInterestStatus(myId: string) {
@@ -159,6 +250,70 @@ export default function ProfilePage() {
     if (received) setViewerRelation('received')
   }
 
+  async function requestFields(fields: string[]) {
+    if (!myProfileId || !profile) return
+    setSendingFieldReq(true)
+    if (fieldRequest) {
+      const merged = [...new Set([...fieldRequest.fields, ...fields])]
+      await supabase.from('field_requests').update({ fields: merged, status: 'pending' }).eq('id', fieldRequest.id)
+      setFieldRequest({ ...fieldRequest, fields: merged, status: 'pending' })
+    } else {
+      const { data } = await supabase.from('field_requests')
+        .insert({ from_user: myProfileId, to_user: profile.id, fields })
+        .select().maybeSingle()
+      setFieldRequest(data)
+    }
+    // Notify owner
+    const { data: me } = await supabase.from('profiles').select('full_name').eq('id', myProfileId).maybeSingle()
+    await supabase.from('notifications').insert({
+      user_id: profile.user_id,
+      type: 'field_request',
+      message: `${me?.full_name || 'Someone'} requested to see your ${fields.map(f => HIDEABLE[f] || f).join(', ')}`,
+      from_profile_id: myProfileId,
+      read: false,
+    }).then(() => {})
+    setSendingFieldReq(false)
+  }
+
+  async function respondToRequest(reqId: string, fromUser: string, approve: boolean) {
+    setApprovingReq(reqId)
+    await supabase.from('field_requests').update({ status: approve ? 'approved' : 'declined' }).eq('id', reqId)
+    setIncomingRequests(prev => prev.filter(r => r.id !== reqId))
+    if (approve && profile) {
+      // Notify requester
+      const { data: me } = await supabase.from('profiles').select('full_name, user_id').eq('id', myProfileId!).maybeSingle()
+      const fromProfile = incomingRequests.find(r => r.id === reqId)
+      if (fromProfile) {
+        const { data: fromUser2 } = await supabase.from('profiles').select('user_id').eq('id', fromUser).maybeSingle()
+        if (fromUser2) {
+          await supabase.from('notifications').insert({
+            user_id: fromUser2.user_id,
+            type: 'field_request_approved',
+            message: `${me?.full_name || 'Someone'} approved your request to see their private info`,
+            from_profile_id: myProfileId,
+            read: false,
+          }).then(() => {})
+        }
+      }
+    }
+    setApprovingReq(null)
+  }
+
+  function fieldIsHidden(key: string): boolean {
+    if (!profile) return false
+    return (profile.hidden_fields || []).includes(key)
+  }
+
+  function fieldIsRevealed(key: string): boolean {
+    if (!fieldRequest) return false
+    return fieldRequest.status === 'approved' && fieldRequest.fields.includes(key)
+  }
+
+  function fieldIsRequested(key: string): boolean {
+    if (!fieldRequest) return false
+    return fieldRequest.fields.includes(key)
+  }
+
   function openNoteModal() {
     const myId = localStorage.getItem('my_profile_id')
     if (!myId) { router.push('/register'); return }
@@ -178,7 +333,6 @@ export default function ProfilePage() {
       await supabase.from('interests').insert({ from_user: myId, to_user: id as string, status: 'pending' })
     }
 
-    // Notification + email
     if (profile) {
       const { data: me } = await supabase.from('profiles').select('full_name').eq('id', myId).single()
       const msg = note?.trim()
@@ -227,10 +381,61 @@ export default function ProfilePage() {
   )
 
   const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
-
   const isOwnProfile = myProfileId === profile.id
 
-  const bioSections: { heading: string; rows: { label: string; value: string | null }[] }[] = [
+  // Photo visibility: use hidden_fields first, fall back to old photo_visibility
+  const photoHidden = fieldIsHidden('photo')
+  const photoRevealed = fieldIsRevealed('photo')
+  const showPhoto = !!profile.photo_url && (!photoHidden || isOwnProfile || photoRevealed ||
+    (!fieldIsHidden('photo') && (() => {
+      const v = profile.photo_visibility || 'after_match'
+      if (v === 'hidden') return false
+      if (v === 'public') return true
+      if (v === 'after_match') return viewerRelation === 'matched'
+      if (v === 'after_interest') return viewerRelation === 'matched' || viewerRelation === 'interested' || viewerRelation === 'received'
+      return false
+    })()))
+
+  // Helper: render a potentially-hidden bio row value
+  function renderFieldValue(fieldKey: string | undefined, value: string | null, colSpan = false) {
+    const hidden = fieldKey ? fieldIsHidden(fieldKey) : false
+    const revealed = fieldKey ? fieldIsRevealed(fieldKey) : false
+    const showVal = !hidden || isOwnProfile || revealed
+
+    if (showVal) {
+      if (value) return <p className="font-semibold text-stone-700 text-sm">{value}</p>
+      if (isOwnProfile) return (
+        <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#B45309' }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add
+        </Link>
+      )
+      return <p className="text-sm text-stone-300">—</p>
+    }
+
+    // Hidden and not revealed
+    const isPending = fieldKey ? fieldIsRequested(fieldKey) : false
+    return (
+      <div className="space-y-1">
+        <p className="font-semibold text-stone-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>
+          ██████████
+        </p>
+        {isLoggedIn && !isOwnProfile && (
+          <button
+            onClick={() => fieldKey && requestFields([fieldKey])}
+            disabled={isPending || sendingFieldReq}
+            className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
+            style={isPending
+              ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
+              : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+            {isPending ? '✓ Requested' : '👁 Request'}
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  const bioSections: { heading: string; rows: { label: string; value: string | null; fieldKey?: string; wide?: boolean }[] }[] = [
     {
       heading: 'Personal',
       rows: [
@@ -262,9 +467,9 @@ export default function ProfilePage() {
       heading: 'Family',
       rows: [
         { label: 'Family type', value: profile.family_type ? cap(profile.family_type) : null },
-        { label: 'Father', value: [profile.father_name, profile.father_occupation].filter(Boolean).join(' · ') || null },
-        { label: 'Mother', value: [profile.mother_name, profile.mother_occupation].filter(Boolean).join(' · ') || null },
-        { label: 'Siblings', value: profile.siblings || null },
+        { label: 'Father', value: [profile.father_name, profile.father_occupation].filter(Boolean).join(' · ') || null, wide: true },
+        { label: 'Mother', value: [profile.mother_name, profile.mother_occupation].filter(Boolean).join(' · ') || null, wide: true },
+        { label: 'Siblings', value: profile.siblings || null, wide: true },
         { label: 'Siblings status', value: profile.siblings_married || null },
       ],
     },
@@ -273,16 +478,11 @@ export default function ProfilePage() {
       rows: [
         { label: 'Star / Nakshatra', value: profile.star || null },
         { label: 'Rashi', value: profile.rashi || null },
-        { label: 'Gotra', value: profile.gotra || null },
+        { label: 'Gotra', value: profile.gotra || null, fieldKey: 'gotra' },
         { label: 'Manglik', value: profile.manglik || null },
       ],
     },
   ]
-
-  const contactRows = [
-    { label: 'Phone', value: profile.phone || null },
-    { label: 'Email', value: profile.email || null },
-  ].filter(r => r.value)
 
   return (
     <div className="min-h-screen pb-28" style={{ background: '#FAFAF9' }}>
@@ -294,7 +494,6 @@ export default function ProfilePage() {
         {/* Hero card */}
         <div className="card overflow-hidden">
           {(() => {
-            const showPhoto = canShowPhoto(profile, viewerRelation)
             return (
               <div className="relative py-8 flex flex-col items-center"
                 style={{ background: 'linear-gradient(160deg, #FEF9EC 0%, #FFF7F0 100%)' }}>
@@ -328,43 +527,32 @@ export default function ProfilePage() {
                     </div>
                   )
                 })() : (
-                  <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-3 ring-4 ring-white shadow-sm"
-                    style={{ background: avatarBg(profile.full_name) }}>
-                    {initials(profile.full_name)}
-                  </div>
-                )}
-                {!showPhoto && profile.photo_url && (
-                  <div className="flex flex-col items-center gap-2 mb-1">
-                    <div className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border"
-                      style={{ background: 'white', borderColor: '#E8E0D6', color: '#78716C' }}>
-                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                      </svg>
-                      {profile.photo_visibility === 'after_interest' ? 'Send interest to see photo' : 'Photo visible after mutual match'}
+                  <div className="relative mb-3">
+                    <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold ring-4 ring-white shadow-sm"
+                      style={{ background: avatarBg(profile.full_name) }}>
+                      {initials(profile.full_name)}
                     </div>
-                    {isLoggedIn && myProfileId !== profile.id && profile.photo_visibility !== 'hidden' && (
-                      <button
-                        onClick={async () => {
-                          const myId = localStorage.getItem('my_profile_id')
-                          if (!myId) return
-                          await supabase.from('photo_requests').upsert({ from_user: myId, to_user: id as string }, { onConflict: 'from_user,to_user' }).then(() => {})
-                          setPhotoRequested(true)
-                        }}
-                        disabled={photoRequested}
-                        className="text-xs font-semibold px-4 py-1.5 rounded-full border transition-all"
-                        style={photoRequested
-                          ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                          : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
-                        {photoRequested ? '✓ Photo requested' : '📷 Request photo'}
-                      </button>
+                    {profile.photo_url && photoHidden && !photoRevealed && isLoggedIn && !isOwnProfile && (
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                        <button
+                          onClick={() => requestFields(['photo'])}
+                          disabled={fieldIsRequested('photo') || sendingFieldReq}
+                          className="text-xs font-semibold px-3 py-1 rounded-full border transition-all shadow-sm"
+                          style={fieldIsRequested('photo')
+                            ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
+                            : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+                          {fieldIsRequested('photo') ? '✓ Photo requested' : '📷 Request photo'}
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
+
                 {isLoggedIn && myProfileId !== profile.id && (
                   <button
                     onClick={openNoteModal}
                     disabled={interestSent || sending}
-                    className="mt-1 text-xs font-semibold px-4 py-1.5 rounded-full"
+                    className="mt-3 text-xs font-semibold px-4 py-1.5 rounded-full"
                     style={interestSent
                       ? { background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }
                       : { background: '#B45309', color: 'white' }}>
@@ -405,14 +593,11 @@ export default function ProfilePage() {
 
             <div className="mt-4 flex flex-wrap gap-2">
               <span className="badge badge-native text-sm px-3 py-1.5">
-                {profile.native_district}, {profile.native_state}
+                {fieldIsHidden('native_location') && !isOwnProfile && !fieldIsRevealed('native_location')
+                  ? profile.native_state
+                  : `${profile.native_district}, ${profile.native_state}`}
+                {profile.native_region && !fieldIsHidden('native_location') && ` (${profile.native_region})`}
               </span>
-              {profile.native_region && (
-                <span className="text-xs px-3 py-1.5 rounded-full border font-medium"
-                  style={{ borderColor: '#E8E0D6', color: '#78716C' }}>
-                  {profile.native_region}
-                </span>
-              )}
               {isSerious(profile) && (
                 <span className="text-xs px-3 py-1.5 rounded-full font-semibold"
                   style={{ background: '#EFF6FF', color: '#1D4ED8', border: '1px solid #BFDBFE' }}>
@@ -466,19 +651,125 @@ export default function ProfilePage() {
           )
         })()}
 
+        {/* Who viewed you — own profile */}
+        {isOwnProfile && viewers.length > 0 && (
+          <div className="card px-5 py-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-semibold text-stone-800">Who viewed your profile</p>
+              <span className="text-xs text-stone-400">{viewers.length} recent</span>
+            </div>
+            <div className="space-y-3">
+              {viewers.slice(0, 8).map(v => (
+                <Link key={v.viewer_id} href={`/profile/${v.viewer_id}`}
+                  className="flex items-center gap-3 group">
+                  {v.photo_url && v.photo_visibility === 'public' ? (
+                    <img src={v.photo_url} alt={v.full_name}
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-stone-100 shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+                      style={{ background: avatarBg(v.full_name) }}>
+                      {initials(v.full_name)}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-stone-800 group-hover:underline truncate">{v.full_name}</p>
+                    <p className="text-xs text-stone-400">{timeAgo(v.viewed_at)}</p>
+                  </div>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D6CFC6" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Incoming field requests — own profile */}
+        {isOwnProfile && incomingRequests.length > 0 && (
+          <div className="card px-5 py-4">
+            <p className="text-sm font-semibold text-stone-800 mb-3">
+              Info requests
+              <span className="ml-2 text-xs font-bold px-1.5 py-0.5 rounded-full text-white" style={{ background: '#DC2626' }}>
+                {incomingRequests.length}
+              </span>
+            </p>
+            <div className="space-y-3">
+              {incomingRequests.map(req => (
+                <div key={req.id} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: '#FFFBF5', border: '1px solid #F0EDE8' }}>
+                  {req.photo_url && req.photo_visibility === 'public' ? (
+                    <img src={req.photo_url} alt={req.full_name}
+                      className="w-9 h-9 rounded-full object-cover shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+                      style={{ background: avatarBg(req.full_name) }}>
+                      {initials(req.full_name)}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-stone-800">{req.full_name}</p>
+                    <p className="text-xs text-stone-400 mt-0.5">
+                      Wants to see: {req.fields.map(f => HIDEABLE[f] || f).join(', ')}
+                    </p>
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        onClick={() => respondToRequest(req.id, req.from_user, true)}
+                        disabled={approvingReq === req.id}
+                        className="text-xs font-semibold px-3 py-1 rounded-full"
+                        style={{ background: '#059669', color: 'white' }}>
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => respondToRequest(req.id, req.from_user, false)}
+                        disabled={approvingReq === req.id}
+                        className="text-xs font-semibold px-3 py-1 rounded-full border"
+                        style={{ borderColor: '#E8E0D6', color: '#78716C' }}>
+                        Decline
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Quick facts */}
         <div className="card">
           {[
-            { label: 'Current city', value: `${profile.current_city}${profile.current_state ? ', ' + profile.current_state : ''}` },
-            { label: 'Profession', value: profile.profession, sub: profile.education },
+            {
+              label: 'Current city',
+              fieldKey: 'current_city',
+              value: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city')
+                ? null
+                : `${profile.current_city}${profile.current_state ? ', ' + profile.current_state : ''}`,
+              hidden: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city'),
+            },
+            { label: 'Profession', fieldKey: undefined, value: profile.profession, sub: profile.education, hidden: false },
           ].map((r, i) => (
             <div key={r.label}
               className={`px-6 py-4 flex items-start gap-4 ${i > 0 ? 'border-t' : ''}`}
               style={{ borderColor: '#F0EBE3' }}>
               <div className="w-28 section-label shrink-0 pt-0.5">{r.label}</div>
-              <div>
-                <div className="font-semibold text-stone-800 text-sm">{r.value}</div>
-                {r.sub && <div className="text-xs text-stone-400 mt-0.5">{r.sub}</div>}
+              <div className="flex-1">
+                {r.hidden ? (
+                  <div className="space-y-1">
+                    <p className="font-semibold text-stone-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████████</p>
+                    {isLoggedIn && !isOwnProfile && (
+                      <button
+                        onClick={() => requestFields(['current_city'])}
+                        disabled={fieldIsRequested('current_city') || sendingFieldReq}
+                        className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
+                        style={fieldIsRequested('current_city')
+                          ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
+                          : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+                        {fieldIsRequested('current_city') ? '✓ Requested' : '👁 Request'}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div className="font-semibold text-stone-800 text-sm">{r.value || '—'}</div>
+                    {r.sub && <div className="text-xs text-stone-400 mt-0.5">{r.sub}</div>}
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -499,74 +790,70 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Biodata — unlocked for own profile or mutual match */}
+        {/* Full biodata — always visible, hidden fields blurred */}
+        <div className="card px-6 py-5">
+          <p className="section-label mb-4">Full biodata</p>
+          <div className="space-y-0">
+            {bioSections.map((section, si) => (
+              <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F0EBE3' } : {}}>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>{section.heading}</p>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                  {section.rows.map(f => (
+                    <div key={f.label} className={f.wide ? 'col-span-2' : ''}>
+                      <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
+                      {renderFieldValue(f.fieldKey, f.value)}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Contact — phone hidden by default */}
         {(() => {
-          const unlocked = myProfileId === profile.id || viewerRelation === 'matched'
-          const biodataContent = (
-            <div className="space-y-0">
-              {bioSections.map((section, si) => (
-                <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F0EBE3' } : {}}>
-                  <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>{section.heading}</p>
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                    {section.rows.map(f => (
-                      <div key={f.label} className={f.label === 'Siblings' || f.label === 'Email' || f.label === 'Father' || f.label === 'Mother' ? 'col-span-2' : ''}>
-                        <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
-                        {f.value ? (
-                          <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
-                        ) : isOwnProfile ? (
-                          <Link href="/profile/edit"
-                            className="text-sm font-medium flex items-center gap-1"
-                            style={{ color: '#B45309' }}>
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            Add
-                          </Link>
-                        ) : (
-                          <p className="text-sm text-stone-300">—</p>
+          const phoneHidden = fieldIsHidden('phone') && !isOwnProfile && !fieldIsRevealed('phone')
+          const showContact = isOwnProfile || viewerRelation === 'matched'
+          if (!showContact && !profile.phone && !profile.email) return null
+          return (
+            <div className="card px-6 py-5">
+              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>Contact</p>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                {profile.phone && (
+                  <div>
+                    <p className="text-xs text-stone-400 mb-0.5">Phone</p>
+                    {phoneHidden ? (
+                      <div className="space-y-1">
+                        <p className="font-semibold text-stone-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████████</p>
+                        {isLoggedIn && !isOwnProfile && (
+                          <button
+                            onClick={() => requestFields(['phone'])}
+                            disabled={fieldIsRequested('phone') || sendingFieldReq}
+                            className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
+                            style={fieldIsRequested('phone')
+                              ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
+                              : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
+                            {fieldIsRequested('phone') ? '✓ Requested' : '👁 Request'}
+                          </button>
                         )}
                       </div>
-                    ))}
+                    ) : showContact ? (
+                      <p className="font-semibold text-stone-700 text-sm">{profile.phone}</p>
+                    ) : (
+                      <p className="font-semibold text-stone-300 text-sm">—</p>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
-          )
-          return unlocked ? (
-            <>
-              <div className="card px-6 py-5">
-                <p className="section-label mb-4">Full biodata</p>
-                {biodataContent}
+                )}
+                {profile.email && showContact && (
+                  <div className="col-span-2">
+                    <p className="text-xs text-stone-400 mb-0.5">Email</p>
+                    <p className="font-semibold text-stone-700 text-sm">{profile.email}</p>
+                  </div>
+                )}
               </div>
-              {contactRows.length > 0 && (
-                <div className="card px-6 py-5">
-                  <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#B45309' }}>Contact</p>
-                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                    {contactRows.map(f => (
-                      <div key={f.label} className={f.label === 'Email' ? 'col-span-2' : ''}>
-                        <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
-                        <p className="font-semibold text-stone-700 text-sm">{f.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              {!showContact && !isOwnProfile && (
+                <p className="text-xs text-stone-400 mt-2">Contact details unlock after mutual match</p>
               )}
-            </>
-          ) : (
-            <div className="card overflow-hidden relative">
-              <div className="px-6 py-5" style={{ filter: 'blur(6px)', pointerEvents: 'none', userSelect: 'none' }}>
-                <p className="section-label mb-4">Full biodata</p>
-                {biodataContent}
-              </div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center"
-                style={{ background: 'rgba(250,250,249,0.82)' }}>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center mb-3"
-                  style={{ background: '#FEF9EC' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B45309" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                  </svg>
-                </div>
-                <p className="font-semibold text-stone-800 text-sm">Biodata is private</p>
-                <p className="text-xs text-stone-400 mt-1">Unlocks after a mutual match</p>
-              </div>
             </div>
           )
         })()}
@@ -723,7 +1010,6 @@ export default function ProfilePage() {
         style={{ borderColor: '#E8E0D6', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
         <div className="max-w-3xl mx-auto">
           {myProfileId === profile.id ? (
-            /* Own profile — show edit + matches links */
             <div>
               <div className="flex gap-2.5">
                 <Link href="/profile/edit" className="flex-1 btn-primary py-3 text-sm text-center">

@@ -69,6 +69,8 @@ type Profile = {
   last_login_at: string | null
   mother_tongue: string | null
   created_at: string
+  religion: string | null
+  family_type: string | null
 }
 
 type ActivitySummary = {
@@ -184,6 +186,8 @@ export default function BrowsePage() {
   const [showMoreFilters, setShowMoreFilters] = useState(false)
   const [alertSet, setAlertSet] = useState(false)
   const [interestMap, setInterestMap] = useState<Record<string, string>>({})
+  const [quickView, setQuickView] = useState<Profile | null>(null)
+  const [sendingInterest, setSendingInterest] = useState(false)
 
   const availableStates = region ? Object.keys(REGIONS[region] || {}) : []
   const availableDistricts = state ? (REGIONS[region]?.[state] || []) : []
@@ -576,7 +580,7 @@ export default function BrowsePage() {
             {/* Profile grid */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
               {profiles.map(p => (
-                <Link href={`/profile/${p.id}`} key={p.id} className="block group">
+                <button key={p.id} onClick={() => setQuickView(p)} className="block group text-left w-full">
                   <div className="rounded-2xl overflow-hidden shadow-sm border active:scale-[0.98] transition-transform"
                     style={{ borderColor: '#E8E0D6', background: 'white' }}>
 
@@ -651,7 +655,7 @@ export default function BrowsePage() {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </button>
               ))}
             </div>
           </div>
@@ -659,6 +663,118 @@ export default function BrowsePage() {
       </div>
 
       <MobileNav />
+
+      {/* Quick-view modal */}
+      {quickView && (() => {
+        const p = quickView
+        const status = interestMap[p.id]
+        const showPhoto = p.photo_url && p.photo_visibility === 'public'
+        const age = getAge(p.date_of_birth)
+        const seenLabel = lastSeen(p.last_login_at)
+
+        async function handleInterest() {
+          if (!myProfileId || status) return
+          setSendingInterest(true)
+          await supabase.from('interests').insert({ from_user: myProfileId, to_user: p.id, status: 'pending' })
+          setInterestMap(m => ({ ...m, [p.id]: 'pending' }))
+          setSendingInterest(false)
+        }
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+            style={{ background: 'rgba(0,0,0,0.5)' }}
+            onClick={e => e.target === e.currentTarget && setQuickView(null)}>
+            <div className="w-full max-w-sm mx-0 sm:mx-4 sm:mb-0 rounded-t-3xl sm:rounded-2xl overflow-hidden shadow-2xl"
+              style={{ background: 'white', maxHeight: '90vh', overflowY: 'auto' }}>
+
+              {/* Photo / avatar header */}
+              <div className="relative h-52 shrink-0"
+                style={{ background: showPhoto ? undefined : `linear-gradient(135deg, ${avatarBg(p.full_name)}cc, ${avatarBg(p.full_name)})` }}>
+                {showPhoto ? (
+                  <img src={p.photo_url} alt={p.full_name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                    <span className="text-white text-5xl font-bold">{initials(p.full_name)}</span>
+                    <span className="text-white/60 text-sm">Photo visible after match</span>
+                  </div>
+                )}
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)' }} />
+
+                {/* Close */}
+                <button onClick={() => setQuickView(null)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ background: 'rgba(0,0,0,0.4)' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                </button>
+
+                {/* Name overlay */}
+                <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <h2 className="text-white font-bold text-lg leading-tight drop-shadow">{p.full_name}</h2>
+                      <p className="text-white/80 text-sm">
+                        {age ? `${age} yrs` : ''}{p.height_cm ? ` · ${cmToFeet(p.height_cm)}` : ''}{p.gender ? ` · ${p.gender === 'male' ? 'Groom' : 'Bride'}` : ''}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      {isVerified(p) && <span className="badge badge-verified text-xs">✓ Verified</span>}
+                      {seenLabel && (
+                        <span className="text-xs px-2 py-0.5 rounded-full font-medium"
+                          style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+                          {seenLabel}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Info rows */}
+              <div className="px-5 py-4 space-y-0 divide-y divide-stone-100">
+                {[
+                  { icon: '📍', label: `${p.native_district}, ${p.native_state}${p.native_region ? ` (${p.native_region})` : ''}` },
+                  { icon: '🏙', label: p.current_city || '—' },
+                  { icon: '💼', label: [p.profession, p.education].filter(Boolean).join(' · ') || '—' },
+                  { icon: '🛐', label: [p.religion, p.caste].filter(Boolean).join(' · ') || '—' },
+                  { icon: '👨‍👩‍👧', label: p.family_type ? p.family_type.charAt(0).toUpperCase() + p.family_type.slice(1) + ' family' : '—' },
+                  p.about ? { icon: '💬', label: `"${p.about.slice(0, 100)}${p.about.length > 100 ? '…' : ''}"` } : null,
+                ].filter(Boolean).map((row, i) => (
+                  <div key={i} className="flex items-start gap-3 py-2.5">
+                    <span className="text-base shrink-0 mt-0.5">{row!.icon}</span>
+                    <p className="text-sm text-stone-600 leading-snug">{row!.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Actions */}
+              <div className="px-5 pb-6 pt-2 space-y-2.5">
+                {myProfileId && myProfileId !== p.id && (
+                  <button
+                    onClick={handleInterest}
+                    disabled={!!status || sendingInterest}
+                    className="w-full py-3 rounded-xl text-sm font-semibold transition-all"
+                    style={status
+                      ? { background: '#ECFDF5', color: '#065F46' }
+                      : { background: '#B45309', color: 'white' }}>
+                    {status === 'matched' ? '✓ Matched' :
+                     status === 'accepted' ? '✓ Accepted' :
+                     status === 'pending' ? '✓ Interest Sent' :
+                     status === 'rejected' ? 'Declined' :
+                     sendingInterest ? 'Sending…' : '+ Send Interest'}
+                  </button>
+                )}
+                <Link href={`/profile/${p.id}`}
+                  className="w-full py-3 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1.5 transition-all"
+                  style={{ borderColor: '#E8E0D6', color: '#57534E' }}
+                  onClick={() => setQuickView(null)}>
+                  View full profile
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
     </div>
   )
 }
