@@ -30,11 +30,6 @@ export default function Home() {
           <HeroCTA />
         </div>
 
-        {/* Founder Member Tracker — hero placement */}
-        <div className="pt-2 pb-10 sm:pb-14">
-          <FounderTracker />
-        </div>
-
         {/* Map */}
         <div className="px-4 pb-10 sm:py-10 sm:px-5">
           <div className="max-w-4xl mx-auto">
