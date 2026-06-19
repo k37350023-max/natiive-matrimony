@@ -18,7 +18,11 @@ const REGIONS: Record<string, Record<string, string[]>> = {
   },
 }
 
-const STEPS = ['Basic Info', 'Native Place', 'About You']
+const STEPS = [
+  { title: 'Basic Info',    fields: ['Gender', 'Date of birth', 'Full name', 'Mobile', 'Email', 'Password'] },
+  { title: 'Native Place',  fields: ['Native region & district', 'Current city & state'] },
+  { title: 'Profile Info',  fields: ['Profession', 'Education', 'Height', 'About you', 'Photo'] },
+]
 
 const COUNTRY_CODES = [
   { code: '+91', label: '🇮🇳 +91' },
@@ -188,36 +192,49 @@ export default function RegisterPage() {
           </div>
 
           {/* Step indicator */}
-          <div className="mb-6">
-            <div className="flex items-center">
+          <div className="mb-5">
+            {/* Progress bar */}
+            <div className="flex items-center gap-0 mb-5">
               {STEPS.map((s, i) => (
-                <div key={s} className="flex items-center flex-1 last:flex-none">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-colors ${
-                      i + 1 < step ? 'text-white' : i + 1 === step ? 'text-white' : 'text-gray-400'
-                    }`} style={{
-                      background: i + 1 <= step ? '#9B1C1C' : '#E5E7EB'
-                    }}>
-                      {i + 1 < step ? (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                          <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                      ) : i + 1}
+                <div key={s.title} className="flex items-center flex-1 last:flex-none">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-all"
+                      style={{ background: i + 1 <= step ? '#9B1C1C' : '#E5E7EB', color: i + 1 <= step ? 'white' : '#9CA3AF' }}>
+                      {i + 1 < step
+                        ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        : i + 1}
                     </div>
-                    <span className={`text-xs font-medium hidden sm:block ${i + 1 === step ? 'text-gray-700' : 'text-gray-400'}`}>{s}</span>
+                    <span className={`text-xs font-semibold hidden sm:block ${i + 1 === step ? 'text-gray-800' : i + 1 < step ? 'text-gray-400' : 'text-gray-300'}`}>
+                      {s.title}
+                    </span>
                   </div>
                   {i < STEPS.length - 1 && (
-                    <div className="flex-1 h-px mx-3" style={{ background: i + 1 < step ? '#9B1C1C' : '#E5E7EB' }} />
+                    <div className="flex-1 h-0.5 mx-3 rounded-full transition-all"
+                      style={{ background: i + 1 < step ? '#9B1C1C' : '#E5E7EB' }} />
                   )}
                 </div>
               ))}
+            </div>
+
+            {/* What's asked this step */}
+            <div className="rounded-xl px-4 py-3" style={{ background: '#FEF2F2', border: '1px solid #FECACA' }}>
+              <p className="text-xs font-semibold mb-1.5" style={{ color: '#9B1C1C' }}>
+                Step {step} of {STEPS.length} — {STEPS[step - 1].title}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {STEPS[step - 1].fields.map(f => (
+                  <span key={f} className="text-xs px-2 py-0.5 rounded-full font-medium"
+                    style={{ background: 'white', color: '#374151', border: '1px solid #FECACA' }}>
+                    {f}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
 
           <div className="card p-6">
             <div className="mb-5">
-              <h2 className="text-xl font-bold text-gray-900 font-serif-display">{STEPS[step - 1]}</h2>
-              <p className="text-sm text-gray-400 mt-0.5">Step {step} of {STEPS.length}</p>
+              <h2 className="text-xl font-bold text-gray-900 font-serif-display">{STEPS[step - 1].title}</h2>
             </div>
 
             {error && (
