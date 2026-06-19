@@ -47,7 +47,7 @@ export default function RegisterPage() {
   }, [])
 
   const [form, setForm] = useState({
-    email: '', password: '', full_name: '', gender: '',
+    email: '', password: '', confirmPassword: '', full_name: '', gender: '',
     date_of_birth: '', phone: '', profession: '', education: '',
     about: '', native_region: '', native_state: '', native_district: '',
     current_city: '', current_state: '', height_cm: '',
@@ -68,6 +68,7 @@ export default function RegisterPage() {
       if (!form.full_name.trim()) return 'Full name is required'
       if (!form.email.trim()) return 'Email is required'
       if (!form.password || form.password.length < 6) return 'Password must be at least 6 characters'
+      if (form.password !== form.confirmPassword) return 'Passwords do not match'
       if (!form.gender) return 'Please select gender'
       if (!form.date_of_birth) return 'Date of birth is required'
     }
@@ -122,7 +123,7 @@ export default function RegisterPage() {
 
       localStorage.setItem('my_user_id', userId)
       if (profileData?.id) localStorage.setItem('my_profile_id', profileData.id)
-      router.push('/browse')
+      router.push('/profile/edit?new=1')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -269,6 +270,10 @@ export default function RegisterPage() {
                 <div>
                   <Label>Password</Label>
                   <input className="input" type="password" placeholder="Minimum 6 characters" value={form.password} onChange={e => set('password', e.target.value)} />
+                </div>
+                <div>
+                  <Label>Confirm password <span className="text-red-500">*</span></Label>
+                  <input className="input" type="password" placeholder="Repeat password" value={form.confirmPassword} onChange={e => set('confirmPassword', e.target.value)} />
                 </div>
               </div>
             )}

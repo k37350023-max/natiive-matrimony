@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
@@ -45,12 +46,14 @@ function timeLabel(ts: string | null): string {
 }
 
 export default function ChatInboxPage() {
+  const router = useRouter()
   const [myId, setMyId] = useState<string | null>(null)
   const [threads, setThreads] = useState<ChatThread[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const id = localStorage.getItem('my_profile_id')
+    if (!id) { router.replace('/login'); return }
     setMyId(id)
     if (id) loadThreads(id)
     else setLoading(false)

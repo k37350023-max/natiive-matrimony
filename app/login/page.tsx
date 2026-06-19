@@ -99,7 +99,12 @@ export default function LoginPage() {
                     onKeyDown={e => e.key === 'Enter' && handleLogin()} />
                 </div>
                 <div>
-                  <label className="form-label">Password</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="form-label mb-0">Password</label>
+                    <Link href="/forgot-password" className="text-xs font-medium" style={{ color: '#B45309' }}>
+                      Forgot password?
+                    </Link>
+                  </div>
                   <input className="input" type="password" placeholder="Your password" value={password}
                     onChange={e => setPassword(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleLogin()} />

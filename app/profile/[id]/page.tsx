@@ -504,6 +504,15 @@ export default function ProfilePage() {
 
       <AppHeader />
 
+      {!isOwnProfile && (
+        <div className="max-w-3xl mx-auto px-4 pt-3">
+          <button onClick={() => router.back()}
+            className="flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-stone-800 transition-colors">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </button>
+        </div>
+      )}
       <div className="max-w-3xl mx-auto px-4 py-5 space-y-3">
 
         {/* Hero card */}
@@ -628,8 +637,7 @@ export default function ProfilePage() {
           const fields = [
             profile.photo_url, profile.about, profile.height_cm, profile.caste,
             profile.education, profile.profession, profile.family_type,
-            profile.father_name, profile.mother_name, profile.star,
-            profile.diet, profile.birth_time,
+            profile.father_name, profile.mother_name, profile.star, profile.diet,
           ]
           const filled = fields.filter(Boolean).length
           const pct = Math.round((filled / fields.length) * 100)

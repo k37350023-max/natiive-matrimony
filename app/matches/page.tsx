@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
@@ -67,11 +68,12 @@ export default function MatchesPage() {
   const [revealedIds, setRevealedIds] = useState<Set<string>>(new Set())
   const [whatsappModal, setWhatsappModal] = useState<WhatsAppModal>(null)
 
+  const router = useRouter()
   useEffect(() => {
     const id = localStorage.getItem('my_profile_id')
+    if (!id) { router.replace('/login'); return }
     setMyId(id)
-    if (id) loadMatches(id)
-    else setLoading(false)
+    loadMatches(id)
   }, [])
 
   async function loadMatches(id: string) {

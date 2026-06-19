@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
@@ -57,7 +58,9 @@ const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; 
 }
 
 export default function InterestsPage() {
-  const [tab, setTab] = useState<'received' | 'accepted' | 'sent'>('received')
+  const searchParams = useSearchParams()
+  const initialTab = (searchParams.get('tab') as 'received' | 'accepted' | 'sent') || 'received'
+  const [tab, setTab] = useState<'received' | 'accepted' | 'sent'>(initialTab)
   const [received, setReceived] = useState<Interest[]>([])
   const [accepted, setAccepted] = useState<Interest[]>([])
   const [sent, setSent] = useState<Interest[]>([])
@@ -238,6 +241,18 @@ export default function InterestsPage() {
               style={{background: '#B45309'}}>
               Go to Matches
             </Link>
+          </div>
+        )}
+        {!showActions && !isAccepted && i.status === 'pending' && (
+          <div className="mt-3 flex justify-end">
+            <button
+              onClick={async () => {
+                await supabase.from('interests').delete().eq('id', i.id)
+                setSent(prev => prev.filter(x => x.id !== i.id))
+              }}
+              className="text-xs text-stone-400 hover:text-red-500 transition-colors px-2 py-1">
+              Withdraw interest
+            </button>
           </div>
         )}
       </div>

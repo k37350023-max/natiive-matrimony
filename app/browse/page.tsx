@@ -71,6 +71,8 @@ type Profile = {
   created_at: string
   religion: string | null
   family_type: string | null
+  user_id: string | null
+  hidden_fields: string[] | null
 }
 
 type ActivitySummary = {
@@ -247,10 +249,11 @@ export default function BrowsePage() {
     }
 
     const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
-    let orClause = `last_login_at.gt.${fourteenDaysAgo},last_login_at.is.null`
-    if (myProfileId) orClause += `,id.eq.${myProfileId}`
+    const orClause = `last_login_at.gt.${fourteenDaysAgo},last_login_at.is.null`
 
-    let { data, error } = await buildBase().or(orClause).order('created_at', { ascending: false })
+    let base = buildBase()
+    if (myProfileId) base = base.neq('id', myProfileId)
+    let { data, error } = await base.or(orClause).order('created_at', { ascending: false })
     if (error) {
       const result = await buildBase().order('created_at', { ascending: false })
       data = result.data
@@ -278,7 +281,7 @@ export default function BrowsePage() {
       results = results.filter(p => p.mother_tongue && motherTongues.includes(p.mother_tongue))
     }
     if (photoOnly) {
-      results = results.filter(p => p.photo_url && p.photo_visibility === 'public')
+      results = results.filter(p => !!p.photo_url)
     }
     if (recentOnly) {
       const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
@@ -443,7 +446,7 @@ export default function BrowsePage() {
                 <span className="mt-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#FEF9EC', color: '#B45309' }}>Respond</span>
               )}
             </Link>
-            <Link href="/interests" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors border-r" style={{ borderColor: '#E8E0D6' }}>
+            <Link href="/interests?tab=accepted" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors border-r" style={{ borderColor: '#E8E0D6' }}>
               <span className="text-2xl font-bold text-stone-900">{activity.accepted}</span>
               <span className="text-xs text-stone-400 mt-0.5 text-center leading-tight">Accepted<br/>interests</span>
             </Link>
@@ -677,6 +680,15 @@ export default function BrowsePage() {
           setSendingInterest(true)
           await supabase.from('interests').insert({ from_user: myProfileId, to_user: p.id, status: 'pending' })
           setInterestMap(m => ({ ...m, [p.id]: 'pending' }))
+          // Notify recipient
+          const { data: me } = await supabase.from('profiles').select('full_name, user_id').eq('id', myProfileId).maybeSingle()
+          if (me && p.user_id) {
+            supabase.from('notifications').insert({
+              user_id: p.user_id, type: 'interest_received',
+              message: `${me.full_name || 'Someone'} sent you an interest request`,
+              from_profile_id: myProfileId, read: false,
+            }).then(() => {})
+          }
           setSendingInterest(false)
         }
 
@@ -695,7 +707,20 @@ export default function BrowsePage() {
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                     <span className="text-white text-5xl font-bold">{initials(p.full_name)}</span>
-                    <span className="text-white/60 text-sm">Photo visible after match</span>
+                    {p.photo_url && myProfileId && (
+                      <button
+                        onClick={async () => {
+                          if (!myProfileId) return
+                          const existing = await supabase.from('field_requests').select('id').eq('from_user', myProfileId).eq('to_user', p.id).maybeSingle()
+                          if (!existing.data) {
+                            await supabase.from('field_requests').insert({ from_user: myProfileId, to_user: p.id, fields: ['photo'], status: 'pending' })
+                          }
+                        }}
+                        className="text-xs font-semibold px-3 py-1 rounded-full"
+                        style={{ background: 'rgba(255,255,255,0.2)', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}>
+                        📷 Request photo
+                      </button>
+                    )}
                   </div>
                 )}
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%)' }} />

@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import BiodataUploader from '../../components/BiodataUploader'
 import AppHeader from '../../components/AppHeader'
@@ -51,6 +51,8 @@ const REQUIRED_FIELDS = ['full_name', 'gender', 'date_of_birth', 'native_region'
 
 export default function EditProfilePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const isNewProfile = searchParams.get('new') === '1'
   const [profileId, setProfileId] = useState<string | null>(null)
   const [userEmail, setUserEmail] = useState('')
   const [loading, setLoading] = useState(true)
@@ -340,6 +342,11 @@ export default function EditProfilePage() {
       <AppHeader />
 
       <div className="max-w-xl mx-auto px-4 py-6 space-y-4">
+        {isNewProfile && (
+          <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#FEF9EC', border: '1px solid #F0E4C0', color: '#92400E' }}>
+            🎉 Welcome! Fill in the fields below — required fields marked <span className="font-bold text-red-600">*</span>. The more you fill, the more interest you'll get.
+          </div>
+        )}
         <div className="mb-2">
           <h1 className="text-xl font-bold text-stone-900 font-serif-display">Edit Profile</h1>
           <p className="text-sm text-stone-400 mt-0.5">Changes are saved to your profile immediately</p>
