@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import NotificationBell from './NotificationBell'
-import LaunchBanner from './LaunchBanner'
 
 export default function AppHeader() {
   const path = usePathname()
@@ -56,7 +55,6 @@ export default function AppHeader() {
 
   return (
     <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
-      <LaunchBanner />
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
         {/* Logo */}
         <Link href={profileId ? '/browse' : '/'} className="text-base font-bold text-stone-900 font-serif-display shrink-0">

@@ -114,8 +114,7 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D', '#C2410C', '#0891B2']
-function avatarBg(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length] }
+function avatarBg(_name: string) { return '#DDD5CA' }
 
 const INTEREST_STATUS: Record<string, { label: string; bg: string; color: string }> = {
   matched:  { label: 'Matched ✓',     bg: '#ECFDF5', color: '#065F46' },
@@ -437,26 +436,23 @@ export default function BrowsePage() {
       <div className="max-w-6xl mx-auto px-4 py-5">
 
         {/* Activity summary strip */}
-        {activity && myProfileId && (
-          <div className="grid grid-cols-3 gap-3 mb-5 rounded-xl overflow-hidden border" style={{ borderColor: '#E8E0D6' }}>
-            <Link href="/interests" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors border-r" style={{ borderColor: '#E8E0D6' }}>
-              <span className="text-2xl font-bold text-stone-900">{activity.pendingReceived}</span>
-              <span className="text-xs text-stone-400 mt-0.5 text-center leading-tight">Pending<br/>interests</span>
-              {activity.pendingReceived > 0 && (
-                <span className="mt-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#FEF9EC', color: '#B45309' }}>Respond</span>
-              )}
-            </Link>
-            <Link href="/interests?tab=accepted" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors border-r" style={{ borderColor: '#E8E0D6' }}>
-              <span className="text-2xl font-bold text-stone-900">{activity.accepted}</span>
-              <span className="text-xs text-stone-400 mt-0.5 text-center leading-tight">Accepted<br/>interests</span>
-            </Link>
-            <Link href="/matches" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors">
-              <span className="text-2xl font-bold text-stone-900">{activity.totalMatches}</span>
-              <span className="text-xs text-stone-400 mt-0.5 text-center leading-tight">Mutual<br/>matches</span>
-              {activity.totalMatches > 0 && (
-                <span className="mt-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#ECFDF5', color: '#065F46' }}>Chat</span>
-              )}
-            </Link>
+        {activity && myProfileId && (activity.pendingReceived > 0 || activity.totalMatches > 0) && (
+          <div className="flex items-center gap-2 mb-4 px-4 py-2.5 rounded-xl border" style={{ background: 'white', borderColor: '#E8E0D6' }}>
+            {activity.pendingReceived > 0 && (
+              <Link href="/interests" className="flex items-center gap-1.5 text-sm font-semibold hover:underline" style={{ color: '#B45309' }}>
+                <span className="w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-bold" style={{ background: '#B45309' }}>{activity.pendingReceived}</span>
+                {activity.pendingReceived === 1 ? 'new interest' : 'new interests'}
+              </Link>
+            )}
+            {activity.pendingReceived > 0 && activity.totalMatches > 0 && (
+              <span className="text-stone-200">·</span>
+            )}
+            {activity.totalMatches > 0 && (
+              <Link href="/matches" className="flex items-center gap-1.5 text-sm font-semibold hover:underline" style={{ color: '#059669' }}>
+                <span className="w-5 h-5 rounded-full text-white text-xs flex items-center justify-center font-bold" style={{ background: '#059669' }}>{activity.totalMatches}</span>
+                {activity.totalMatches === 1 ? 'match' : 'matches'} — <span className="font-medium">start chatting</span>
+              </Link>
+            )}
           </div>
         )}
 
@@ -592,10 +588,13 @@ export default function BrowsePage() {
                         <img src={p.photo_url} alt={p.full_name}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                       ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-1"
-                          style={{ background: `linear-gradient(135deg, ${avatarBg(p.full_name)}cc, ${avatarBg(p.full_name)})` }}>
-                          <span className="text-white text-3xl font-bold">{initials(p.full_name)}</span>
-                          <span className="text-white/60 text-xs">No photo yet</span>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+                          style={{ background: avatarBg(p.full_name) }}>
+                          <svg width="52" height="52" viewBox="0 0 80 80" fill="none">
+                            <circle cx="40" cy="28" r="16" fill="#B8AA9E"/>
+                            <ellipse cx="40" cy="68" rx="26" ry="18" fill="#B8AA9E"/>
+                          </svg>
+                          <span className="text-xs font-medium" style={{ color: '#8C7D72' }}>{p.full_name.split(' ')[0]}</span>
                         </div>
                       )}
                       <div className="absolute inset-0 pointer-events-none"
@@ -640,7 +639,7 @@ export default function BrowsePage() {
                         </span>
                         {isSerious(p) ? (
                           <span className="relative group/tip cursor-default shrink-0 text-xs px-1.5 py-0.5 rounded font-semibold"
-                            style={{ background: '#EFF6FF', color: '#1D4ED8' }}>
+                            style={{ background: '#FEF9EC', color: '#92400E' }}>
                             ★
                             <span className="absolute bottom-full right-0 mb-1.5 w-48 px-2.5 py-2 rounded-lg text-xs text-white opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed font-normal text-left"
                               style={{ background: '#1C1917' }}>
@@ -701,12 +700,16 @@ export default function BrowsePage() {
 
               {/* Photo / avatar header */}
               <div className="relative h-52 shrink-0"
-                style={{ background: showPhoto ? undefined : `linear-gradient(135deg, ${avatarBg(p.full_name)}cc, ${avatarBg(p.full_name)})` }}>
+                style={{ background: showPhoto ? undefined : avatarBg(p.full_name) }}>
                 {showPhoto ? (
                   <img src={p.photo_url} alt={p.full_name} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                    <span className="text-white text-5xl font-bold">{initials(p.full_name)}</span>
+                    <svg width="72" height="72" viewBox="0 0 80 80" fill="none">
+                      <circle cx="40" cy="28" r="16" fill="#B8AA9E"/>
+                      <ellipse cx="40" cy="68" rx="26" ry="18" fill="#B8AA9E"/>
+                    </svg>
+                    <span className="text-sm font-medium" style={{ color: '#8C7D72' }}>{p.full_name.split(' ')[0]}</span>
                     {p.photo_url && myProfileId && (
                       <button
                         onClick={async () => {
