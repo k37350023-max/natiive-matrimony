@@ -112,13 +112,17 @@ function lastSeenLabel(ts: string | null): string | null {
   if (mins < 60) return `Active ${mins} min ago`
   const hrs = Math.floor(mins / 60)
   if (hrs === 1) return 'Active 1 hour ago'
-  if (hrs < 5) return `Active a few hours ago`
+  if (hrs < 5) return 'Active a few hours ago'
   if (hrs < 24) return `Active ${hrs} hours ago`
   const days = Math.floor(hrs / 24)
   if (days === 1) return 'Active yesterday'
-  if (days <= 7) return `Active ${days} days ago`
-  if (days <= 30) return `Active ${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`
-  return null
+  if (days <= 6) return `Active ${days} days ago`
+  const weeks = Math.floor(days / 7)
+  if (weeks === 1) return 'Active a week ago'
+  if (weeks < 4) return `Active ${weeks} weeks ago`
+  const months = Math.floor(days / 30)
+  if (months === 1) return 'Active a month ago'
+  return `Active ${months} months ago`
 }
 
 function timeAgo(ts: string): string {

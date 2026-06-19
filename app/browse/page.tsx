@@ -98,9 +98,13 @@ function lastSeen(ts: string | null): string | null {
   if (hrs < 24) return `Active ${hrs} hours ago`
   const days = Math.floor(hrs / 24)
   if (days === 1) return 'Active yesterday'
-  if (days <= 7) return `Active ${days} days ago`
-  if (days <= 30) return `Active ${Math.floor(days / 7)} week${Math.floor(days / 7) > 1 ? 's' : ''} ago`
-  return null
+  if (days <= 6) return `Active ${days} days ago`
+  const weeks = Math.floor(days / 7)
+  if (weeks === 1) return 'Active a week ago'
+  if (weeks < 4) return `Active ${weeks} weeks ago`
+  const months = Math.floor(days / 30)
+  if (months === 1) return 'Active a month ago'
+  return `Active ${months} months ago`
 }
 
 function isVerified(p: Pick<Profile, 'verified' | 'phone_verified'>): boolean {
@@ -637,7 +641,7 @@ export default function BrowsePage() {
                       </div>
                       <div className="flex items-center justify-between mt-1.5 gap-1">
                         <span className="text-xs text-stone-400 truncate flex items-center gap-1">
-                          {lastSeen(p.last_login_at) || (
+                          {lastSeen(p.last_login_at) ?? (
                             <>
                               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
                               Native: {p.native_district}{p.current_city ? ` | ${p.current_city}` : ''}
