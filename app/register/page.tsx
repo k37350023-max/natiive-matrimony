@@ -118,6 +118,7 @@ export default function RegisterPage() {
         religion: form.religion, caste: form.caste, mother_tongue: form.mother_tongue,
         family_type: form.family_type, photo_url: photoUrl,
         status: 'approved', verified: false,
+        premium_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       }).select('id').maybeSingle()
       if (profileError) throw profileError
 

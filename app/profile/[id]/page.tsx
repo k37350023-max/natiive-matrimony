@@ -55,6 +55,8 @@ type Profile = {
   last_login_at: string | null
   pref_age_min: number | null
   pref_age_max: number | null
+  member_number: number | null
+  premium_expires_at: string | null
 }
 
 type FieldRequest = {
@@ -631,6 +633,26 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Founder member badge — own profile only */}
+        {isOwnProfile && profile.member_number && (
+          <div className="card px-5 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #92400E, #B45309)' }}>
+                #{profile.member_number}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-stone-800">Founder Member #{profile.member_number}</p>
+                <p className="text-xs text-stone-400">
+                  {profile.premium_expires_at
+                    ? `Free premium until ${new Date(profile.premium_expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                    : 'Free premium active'}
+                </p>
+              </div>
+            </div>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: '#B45309' }}>★ Founder</span>
+          </div>
+        )}
 
         {/* Profile completeness — own profile only */}
         {isOwnProfile && (() => {
