@@ -456,7 +456,7 @@ export default function ProfilePage() {
             style={isPending
               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
               : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
-            {isPending ? '✓ Requested' : '👁 Request'}
+            {isPending ? '✓ Requested' : 'Request'}
           </button>
         )}
       </div>
@@ -585,7 +585,7 @@ export default function ProfilePage() {
                           style={fieldIsRequested('photo')
                             ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
                             : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
-                          {fieldIsRequested('photo') ? '✓ Photo requested' : '📷 Request photo'}
+                          {fieldIsRequested('photo') ? '✓ Photo requested' : 'Request photo'}
                         </button>
                       </div>
                     )}
@@ -834,7 +834,7 @@ export default function ProfilePage() {
                         style={fieldIsRequested('current_city')
                           ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
                           : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
-                        {fieldIsRequested('current_city') ? '✓ Requested' : '👁 Request'}
+                        {fieldIsRequested('current_city') ? '✓ Requested' : 'Request'}
                       </button>
                     )}
                   </div>
@@ -912,7 +912,7 @@ export default function ProfilePage() {
                             style={fieldIsRequested('phone')
                               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
                               : { background: 'white', color: '#B45309', borderColor: '#E8C99A' }}>
-                            {fieldIsRequested('phone') ? '✓ Requested' : '👁 Request'}
+                            {fieldIsRequested('phone') ? '✓ Requested' : 'Request'}
                           </button>
                         )}
                       </div>

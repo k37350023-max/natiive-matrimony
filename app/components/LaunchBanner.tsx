@@ -34,7 +34,7 @@ export default function LaunchBanner() {
       <div className="max-w-5xl mx-auto flex items-center gap-3">
 
         {/* Left: label */}
-        <span className="text-xs font-bold text-amber-200 shrink-0 hidden sm:block">🎁 Founder Offer</span>
+        <span className="text-xs font-bold text-amber-200 shrink-0 hidden sm:block">Founder Offer</span>
         <span className="text-amber-500 text-xs shrink-0 hidden sm:block">·</span>
 
         {/* Middle: text + mini progress bar */}

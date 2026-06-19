@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import IndiaMap from '../components/IndiaMap'
@@ -746,16 +746,16 @@ export default function BrowsePage() {
               </div>
 
               {/* Info rows */}
-              <div className="px-5 py-4 space-y-0 divide-y divide-stone-100">
-                {[
-                  { icon: '📍', label: `Native: ${p.native_district}${p.current_city ? ` | ${p.current_city}` : ''}` },
-                  { icon: '💼', label: [p.profession, p.education].filter(Boolean).join(' · ') || '—' },
-                  { icon: '🛐', label: [p.religion, p.caste].filter(Boolean).join(' · ') || '—' },
-                  { icon: '👨‍👩‍👧', label: p.family_type ? p.family_type.charAt(0).toUpperCase() + p.family_type.slice(1) + ' family' : '—' },
-                  p.about ? { icon: '💬', label: `"${p.about.slice(0, 100)}${p.about.length > 100 ? '…' : ''}"` } : null,
-                ].filter(Boolean).map((row, i) => (
+              <div className="px-5 py-2 divide-y divide-stone-100">
+                {([
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#92400E" strokeWidth="1.75" strokeLinecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>, label: `Native: ${p.native_district}${p.current_city ? ` | ${p.current_city}` : ''}` },
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>, label: [p.profession, p.education].filter(Boolean).join(' · ') || '—' },
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, label: [p.religion, p.caste].filter(Boolean).join(' · ') || '—' },
+                  { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>, label: p.family_type ? p.family_type.charAt(0).toUpperCase() + p.family_type.slice(1) + ' family' : '—' },
+                  p.about ? { svg: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#78716C" strokeWidth="1.75" strokeLinecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>, label: `${p.about.slice(0, 100)}${p.about.length > 100 ? '…' : ''}` } : null,
+                ] as ({ svg: React.ReactNode; label: string } | null)[]).filter(Boolean).map((row, i) => (
                   <div key={i} className="flex items-start gap-3 py-2.5">
-                    <span className="text-base shrink-0 mt-0.5">{row!.icon}</span>
+                    <span className="shrink-0 mt-0.5">{row!.svg}</span>
                     <p className="text-sm text-stone-600 leading-snug">{row!.label}</p>
                   </div>
                 ))}
