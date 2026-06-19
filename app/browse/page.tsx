@@ -6,7 +6,7 @@ import Link from 'next/link'
 import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import LaunchBanner from '../components/LaunchBanner'
-import NotificationBell from '../components/NotificationBell'
+import AppHeader from '../components/AppHeader'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -314,38 +314,8 @@ export default function BrowsePage() {
   const activeFilterCount = [region, state, district, ageRange, profCat, maritalFilter, heightRange, casteFilter,
     photoOnly ? 'photo' : '', recentOnly ? 'recent' : '', ...motherTongues].filter(Boolean).length
 
-  const header = (
-    <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-3">
-        <Link href="/" className="text-base font-bold text-stone-900 font-serif-display shrink-0">
-          Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
-        </Link>
-        <div className="flex items-center gap-2 shrink-0">
-          <Link href="/interests" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Interests</Link>
-          <Link href="/matches" className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Matches</Link>
-          <NotificationBell />
-          {sessionChecked && myProfileId && (
-            <Link href={`/profile/${myProfileId}`}
-              className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-white text-xs font-bold shrink-0"
-              style={{ background: '#B45309' }} title="My Profile">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-              </svg>
-            </Link>
-          )}
-          {sessionChecked && !myGender && (
-            <>
-              <Link href="/login" className="text-sm font-medium text-stone-600 px-3 py-1.5 rounded-lg hover:bg-stone-50 hidden sm:block">Login</Link>
-              <Link href="/register" className="btn-primary text-xs px-3 py-1.5">Register Free</Link>
-            </>
-          )}
-        </div>
-      </div>
-    </header>
-  )
-
   if (!sessionChecked) return (
-    <div className="min-h-screen" style={{ background: '#FAFAF9' }}>{header}
+    <div className="min-h-screen" style={{ background: '#FAFAF9' }}><AppHeader />
       <div className="flex items-center justify-center py-24 text-stone-400 text-sm">Loading...</div>
     </div>
   )
@@ -454,7 +424,7 @@ export default function BrowsePage() {
 
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FAFAF9' }}>
-      {header}
+      <AppHeader />
       <LaunchBanner />
 
       <div className="max-w-6xl mx-auto px-4 py-5">

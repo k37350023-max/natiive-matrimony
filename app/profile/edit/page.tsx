@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import BiodataUploader from '../../components/BiodataUploader'
+import AppHeader from '../../components/AppHeader'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -320,20 +321,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen pb-20" style={{ background: '#FAFAF9' }}>
-      <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
-        <div className="max-w-xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/browse" className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-700">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-            Back
-          </Link>
-          <span className="text-base font-bold text-stone-900 font-serif-display">
-            Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
-          </span>
-          <div className="w-16" />
-        </div>
-      </header>
+      <AppHeader />
 
       <div className="max-w-xl mx-auto px-4 py-6 space-y-4">
         <div className="mb-2">

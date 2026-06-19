@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import AppHeader from '../../components/AppHeader'
 
 type Profile = {
   id: string
@@ -284,24 +285,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen pb-28" style={{ background: '#FAFAF9' }}>
 
-      {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
-        <div className="max-w-3xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/browse" className="flex items-center gap-1.5 text-sm text-stone-500 hover:text-stone-700">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="m15 18-6-6 6-6"/>
-            </svg>
-            Browse
-          </Link>
-          <Link href="/" className="text-base font-bold text-stone-900 font-serif-display">
-            Natiive<span style={{ color: '#B45309' }}>Matrimony</span>
-          </Link>
-          {myProfileId === profile?.id
-            ? <Link href="/profile/edit" className="text-sm font-medium px-3 py-1.5 rounded-lg" style={{ color: '#B45309', background: '#FEF9EC' }}>Edit</Link>
-            : <Link href="/matches" className="text-sm font-medium text-stone-500 hover:text-stone-700">Matches</Link>
-          }
-        </div>
-      </header>
+      <AppHeader />
 
       <div className="max-w-3xl mx-auto px-4 py-5 space-y-3">
 

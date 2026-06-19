@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
 import LaunchBanner from '../components/LaunchBanner'
-import NotificationBell from '../components/NotificationBell'
+import AppHeader from '../components/AppHeader'
 
 type Profile = {
   id: string
@@ -87,25 +87,9 @@ export default function MatchesPage() {
     setLoading(false)
   }
 
-  const header = (
-    <header style={{background: 'white', borderBottom: '1px solid #E7E5E4'}}>
-      <div className="max-w-3xl mx-auto px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Link href="/browse" className="text-sm text-stone-500 hover:text-orange-700">← Browse</Link>
-          <Link href="/" className="text-base font-bold text-stone-900">Natiive<span className="text-orange-700">Matrimony</span></Link>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/interests" className="text-sm text-stone-600 hover:text-orange-700">Interests</Link>
-          <span className="text-sm font-semibold text-stone-700">Matches</span>
-          <NotificationBell />
-        </div>
-      </div>
-    </header>
-  )
-
   if (!myId) return (
     <div className="min-h-screen" style={{background: '#FFF7ED'}}>
-      {header}
+      <AppHeader />
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
         <div className="w-14 h-14 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A8A29E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -124,7 +108,7 @@ export default function MatchesPage() {
 
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{background: '#FFF7ED'}}>
-      {header}
+      <AppHeader />
       <LaunchBanner />
       <div className="max-w-3xl mx-auto px-4 py-6">
         <div className="mb-6">
