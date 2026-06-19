@@ -99,7 +99,7 @@ function EditProfilePageInner() {
     profile_created_by: 'self',
     father_name: '', father_occupation: '',
     mother_name: '', mother_occupation: '',
-    siblings: '', siblings_married: '',
+    brothers: '', sisters: '', brothers_married: '', sisters_married: '',
     star: '', rashi: '', gotra: '', manglik: '',
     diet: '', smoking: '', drinking: '',
     pref_age_min: '21', pref_age_max: '35',
@@ -157,8 +157,10 @@ function EditProfilePageInner() {
       father_occupation: data.father_occupation || '',
       mother_name: data.mother_name || '',
       mother_occupation: data.mother_occupation || '',
-      siblings: data.siblings || '',
-      siblings_married: data.siblings_married || '',
+      brothers: (() => { try { return String(JSON.parse(data.siblings || '{}').brothers ?? '') } catch { return '' } })(),
+      sisters: (() => { try { return String(JSON.parse(data.siblings || '{}').sisters ?? '') } catch { return '' } })(),
+      brothers_married: (() => { try { return String(JSON.parse(data.siblings || '{}').brothers_married ?? '') } catch { return '' } })(),
+      sisters_married: (() => { try { return String(JSON.parse(data.siblings || '{}').sisters_married ?? '') } catch { return '' } })(),
       star: data.star || '',
       rashi: data.rashi || '',
       gotra: data.gotra || '',
@@ -244,8 +246,22 @@ function EditProfilePageInner() {
         father_occupation: form.father_occupation.trim(),
         mother_name: form.mother_name.trim(),
         mother_occupation: form.mother_occupation.trim(),
-        siblings: form.siblings.trim(),
-        siblings_married: form.siblings_married,
+        siblings: JSON.stringify({
+          brothers: form.brothers !== '' ? parseInt(form.brothers) : null,
+          sisters: form.sisters !== '' ? parseInt(form.sisters) : null,
+          brothers_married: form.brothers_married !== '' ? parseInt(form.brothers_married) : null,
+          sisters_married: form.sisters_married !== '' ? parseInt(form.sisters_married) : null,
+        }),
+        siblings_married: (() => {
+          const b = parseInt(form.brothers) || 0
+          const s = parseInt(form.sisters) || 0
+          const bm = parseInt(form.brothers_married) || 0
+          const sm = parseInt(form.sisters_married) || 0
+          if (b + s === 0) return 'No siblings'
+          if (bm + sm === b + s) return 'All married'
+          if (bm + sm === 0) return 'All unmarried'
+          return 'Some married, some unmarried'
+        })(),
         star: form.star.trim(),
         rashi: form.rashi.trim(),
         gotra: form.gotra.trim(),
@@ -791,17 +807,22 @@ function EditProfilePageInner() {
             </div>
             <div>
               <Label>Siblings <span className="text-stone-400 font-normal">(optional)</span></Label>
-              <input className="input" placeholder="e.g. Younger brother, studying in US" value={form.siblings} onChange={e => set('siblings', e.target.value)} />
-            </div>
-            <div>
-              <Label>Siblings' marital status</Label>
-              <select className="input" value={form.siblings_married} onChange={e => set('siblings_married', e.target.value)}>
-                <option value="">Select</option>
-                <option value="No siblings">No siblings</option>
-                <option value="All married">All married</option>
-                <option value="All unmarried">All unmarried</option>
-                <option value="Some married, some unmarried">Some married, some unmarried</option>
-              </select>
+              <div className="grid grid-cols-2 gap-3 mt-1">
+                {[
+                  { label: 'Brothers', field: 'brothers' },
+                  { label: 'Sisters', field: 'sisters' },
+                  { label: 'Brothers married', field: 'brothers_married' },
+                  { label: 'Sisters married', field: 'sisters_married' },
+                ].map(({ label, field }) => (
+                  <div key={field}>
+                    <p className="text-xs text-stone-500 mb-1">{label}</p>
+                    <select className="input" value={(form as Record<string, string>)[field]} onChange={e => set(field, e.target.value)}>
+                      <option value="">—</option>
+                      {[0,1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+                    </select>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

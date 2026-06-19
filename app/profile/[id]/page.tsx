@@ -497,8 +497,15 @@ export default function ProfilePage() {
         { label: 'Family type', value: profile.family_type ? cap(profile.family_type) : null },
         { label: 'Father', value: [profile.father_name, profile.father_occupation].filter(Boolean).join(' · ') || null, wide: true },
         { label: 'Mother', value: [profile.mother_name, profile.mother_occupation].filter(Boolean).join(' · ') || null, wide: true },
-        { label: 'Siblings', value: profile.siblings || null, wide: true },
-        { label: 'Siblings status', value: profile.siblings_married || null },
+        { label: 'Siblings', value: (() => {
+          try {
+            const s = JSON.parse(profile.siblings || '{}')
+            const parts: string[] = []
+            if (s.brothers != null) parts.push(`${s.brothers} brother${s.brothers !== 1 ? 's' : ''}${s.brothers_married != null ? ` (${s.brothers_married} married)` : ''}`)
+            if (s.sisters != null) parts.push(`${s.sisters} sister${s.sisters !== 1 ? 's' : ''}${s.sisters_married != null ? ` (${s.sisters_married} married)` : ''}`)
+            return parts.length ? parts.join(', ') : profile.siblings || null
+          } catch { return profile.siblings || null }
+        })(), wide: true },
       ],
     },
     {
