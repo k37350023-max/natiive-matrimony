@@ -125,6 +125,9 @@ function timeAgo(ts: string): string {
 const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return AVATAR_COLORS[(name?.charCodeAt(0) || 0) % AVATAR_COLORS.length] }
 
+const REQUIRED_FIELD_LABELS = new Set(['Height', 'Religion', 'Profession', 'Education', 'Family type', 'Mother tongue', 'Date of Birth'])
+const RECOMMENDED_FIELD_LABELS = new Set(['Caste', 'Star / Nakshatra', 'Rashi', 'Diet', 'Father', 'Mother', 'About'])
+
 const HIDEABLE: Record<string, string> = {
   photo: 'Profile photo',
   phone: 'Phone number',
@@ -397,19 +400,31 @@ export default function ProfilePage() {
     })()))
 
   // Helper: render a potentially-hidden bio row value
-  function renderFieldValue(fieldKey: string | undefined, value: string | null, colSpan = false) {
+  function renderFieldValue(fieldKey: string | undefined, value: string | null, label?: string) {
     const hidden = fieldKey ? fieldIsHidden(fieldKey) : false
     const revealed = fieldKey ? fieldIsRevealed(fieldKey) : false
     const showVal = !hidden || isOwnProfile || revealed
 
     if (showVal) {
       if (value) return <p className="font-semibold text-stone-700 text-sm">{value}</p>
-      if (isOwnProfile) return (
-        <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#B45309' }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add
-        </Link>
-      )
+      if (isOwnProfile) {
+        const isRequired = label ? REQUIRED_FIELD_LABELS.has(label) : false
+        const isRecommended = label ? RECOMMENDED_FIELD_LABELS.has(label) : false
+        return (
+          <Link href="/profile/edit" className="inline-flex items-center gap-1.5">
+            {isRequired && (
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#FEF2F2', color: '#DC2626' }}>Required</span>
+            )}
+            {isRecommended && !isRequired && (
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#FFFBEB', color: '#B45309' }}>Fill in</span>
+            )}
+            <span className="text-sm font-medium flex items-center gap-1" style={{ color: '#B45309' }}>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add
+            </span>
+          </Link>
+        )
+      }
       return <p className="text-sm text-stone-300">—</p>
     }
 
@@ -800,8 +815,13 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                   {section.rows.map(f => (
                     <div key={f.label} className={f.wide ? 'col-span-2' : ''}>
-                      <p className="text-xs text-stone-400 mb-0.5">{f.label}</p>
-                      {renderFieldValue(f.fieldKey, f.value)}
+                      <p className="text-xs text-stone-400 mb-0.5 flex items-center gap-1">
+                        {f.label}
+                        {isOwnProfile && !f.value && REQUIRED_FIELD_LABELS.has(f.label) && (
+                          <span className="font-bold" style={{ color: '#DC2626' }}>*</span>
+                        )}
+                      </p>
+                      {renderFieldValue(f.fieldKey, f.value, f.label)}
                     </div>
                   ))}
                 </div>

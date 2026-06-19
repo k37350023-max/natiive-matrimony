@@ -39,9 +39,15 @@ const COUNTRY_CODES = [
   { code: '+968', label: '🇴🇲 +968' },
 ]
 
-const Label = ({ children }: { children: React.ReactNode }) => (
-  <label className="form-label">{children}</label>
+const Label = ({ children, required, recommended }: { children: React.ReactNode; required?: boolean; recommended?: boolean }) => (
+  <label className="form-label">
+    {children}
+    {required && <span className="ml-0.5 font-bold" style={{ color: '#DC2626' }}>*</span>}
+    {recommended && !required && <span className="ml-1 font-normal text-xs" style={{ color: '#B45309' }}>recommended</span>}
+  </label>
 )
+
+const REQUIRED_FIELDS = ['full_name', 'gender', 'date_of_birth', 'native_region', 'native_state', 'native_district', 'height_cm', 'religion', 'profession', 'education', 'family_type', 'mother_tongue'] as const
 
 export default function EditProfilePage() {
   const router = useRouter()
@@ -177,7 +183,24 @@ export default function EditProfilePage() {
 
   async function handleSave() {
     if (!profileId) return
-    if (!form.full_name.trim()) { setError('Full name is required'); return }
+    const missing = [
+      !form.full_name.trim() && 'Full name',
+      !form.gender && 'Gender',
+      !form.date_of_birth && 'Date of birth',
+      !form.native_region && 'Native region',
+      !form.native_state && 'Native state',
+      !form.native_district && 'Native district',
+      !form.height_cm && 'Height',
+      !form.religion.trim() && 'Religion',
+      !form.profession.trim() && 'Profession',
+      !form.education.trim() && 'Education',
+      !form.family_type && 'Family type',
+    ].filter(Boolean)
+    if (missing.length) {
+      setError(`Please fill required fields: ${missing.join(', ')}`)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return
+    }
     setSaving(true)
     setError('')
     setSuccess('')
@@ -483,12 +506,12 @@ export default function EditProfilePage() {
           <p className="font-semibold text-stone-800 mb-4 font-serif-display">Personal Info</p>
           <div className="space-y-4">
             <div>
-              <Label>Full name</Label>
+              <Label required>Full name</Label>
               <input className="input" value={form.full_name} onChange={e => set('full_name', e.target.value)} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Gender</Label>
+                <Label required>Gender</Label>
                 <select className="input" value={form.gender} onChange={e => set('gender', e.target.value)}>
                   <option value="">Select</option>
                   <option value="male">Male (Groom)</option>
@@ -496,7 +519,7 @@ export default function EditProfilePage() {
                 </select>
               </div>
               <div>
-                <Label>Date of birth</Label>
+                <Label required>Date of birth</Label>
                 <input className="input" type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
               </div>
             </div>
@@ -511,7 +534,7 @@ export default function EditProfilePage() {
               </div>
             </div>
             <div>
-              <Label>Mobile number</Label>
+              <Label required>Mobile number</Label>
               <div className="flex rounded-lg overflow-hidden" style={{border: '1.5px solid var(--border)'}}>
                 <select
                   value={phoneCode}
@@ -530,17 +553,17 @@ export default function EditProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Height (cm)</Label>
+                <Label required>Height (cm)</Label>
                 <input className="input" type="number" placeholder="e.g. 170" value={form.height_cm} onChange={e => set('height_cm', e.target.value)} />
               </div>
               <div>
-                <Label>Religion</Label>
+                <Label required>Religion</Label>
                 <input className="input" placeholder="e.g. Hindu" value={form.religion} onChange={e => set('religion', e.target.value)} />
               </div>
             </div>
             <div>
-              <Label>Caste</Label>
-              <input className="input" placeholder="Optional" value={form.caste} onChange={e => set('caste', e.target.value)} />
+              <Label recommended>Caste</Label>
+              <input className="input" placeholder="e.g. Kamma, Reddy, Brahmin" value={form.caste} onChange={e => set('caste', e.target.value)} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -570,7 +593,7 @@ export default function EditProfilePage() {
           <p className="font-semibold text-stone-800 mb-4 font-serif-display">Location</p>
           <div className="space-y-4">
             <div>
-              <Label>Native region</Label>
+              <Label required>Native region</Label>
               <select className="input" value={form.native_region}
                 onChange={e => { set('native_region', e.target.value); set('native_state', ''); set('native_district', '') }}>
                 <option value="">Select region</option>
@@ -579,7 +602,7 @@ export default function EditProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Native state</Label>
+                <Label required>Native state</Label>
                 <select className="input" value={form.native_state}
                   onChange={e => { set('native_state', e.target.value); set('native_district', '') }}
                   disabled={!form.native_region}>
@@ -588,7 +611,7 @@ export default function EditProfilePage() {
                 </select>
               </div>
               <div>
-                <Label>Native district</Label>
+                <Label required>Native district</Label>
                 <select className="input" value={form.native_district}
                   onChange={e => set('native_district', e.target.value)}
                   disabled={!form.native_state}>
@@ -599,7 +622,7 @@ export default function EditProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Current city</Label>
+                <Label required>Current city</Label>
                 <input className="input" placeholder="e.g. Hyderabad" value={form.current_city} onChange={e => set('current_city', e.target.value)} />
               </div>
               <div>
@@ -616,7 +639,7 @@ export default function EditProfilePage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Profession</Label>
+                <Label required>Profession</Label>
                 <input className="input" placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
               </div>
               <div>
@@ -625,7 +648,7 @@ export default function EditProfilePage() {
               </div>
             </div>
             <div>
-              <Label>Education</Label>
+              <Label required>Education</Label>
               <input className="input" placeholder="e.g. B.Tech, MBA" value={form.education} onChange={e => set('education', e.target.value)} />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -685,7 +708,7 @@ export default function EditProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Mother tongue</Label>
+                <Label required>Mother tongue</Label>
                 <select className="input" value={form.mother_tongue} onChange={e => set('mother_tongue', e.target.value)}>
                   <option value="Telugu">Telugu</option>
                   <option value="Tamil">Tamil</option>
@@ -695,7 +718,7 @@ export default function EditProfilePage() {
                 </select>
               </div>
               <div>
-                <Label>Family type</Label>
+                <Label required>Family type</Label>
                 <select className="input" value={form.family_type} onChange={e => set('family_type', e.target.value)}>
                   <option value="">Select</option>
                   <option value="nuclear">Nuclear</option>
@@ -705,7 +728,7 @@ export default function EditProfilePage() {
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <Label>About yourself</Label>
+                <Label recommended>About yourself</Label>
                 <button
                   type="button"
                   onClick={() => {
@@ -741,11 +764,11 @@ export default function EditProfilePage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Father's name</Label>
+                <Label recommended>Father's name</Label>
                 <input className="input" placeholder="e.g. Ravinder Reddy" value={form.father_name} onChange={e => set('father_name', e.target.value)} />
               </div>
               <div>
-                <Label>Father's occupation</Label>
+                <Label recommended>Father's occupation</Label>
                 <input className="input" placeholder="e.g. Business" value={form.father_occupation} onChange={e => set('father_occupation', e.target.value)} />
               </div>
             </div>
@@ -783,11 +806,11 @@ export default function EditProfilePage() {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Star / Nakshatra</Label>
+                <Label recommended>Star / Nakshatra</Label>
                 <input className="input" placeholder="e.g. Rohini" value={form.star} onChange={e => set('star', e.target.value)} />
               </div>
               <div>
-                <Label>Rashi / Moon sign</Label>
+                <Label recommended>Rashi / Moon sign</Label>
                 <input className="input" placeholder="e.g. Vrishabha" value={form.rashi} onChange={e => set('rashi', e.target.value)} />
               </div>
             </div>
@@ -815,7 +838,7 @@ export default function EditProfilePage() {
           <p className="text-xs text-stone-400 mb-4">Optional — helps find compatible matches</p>
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <Label>Diet</Label>
+              <Label recommended>Diet</Label>
               <select className="input" value={form.diet} onChange={e => set('diet', e.target.value)}>
                 <option value="">Not specified</option>
                 <option value="Vegetarian">Vegetarian</option>
