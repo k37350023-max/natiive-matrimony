@@ -29,6 +29,23 @@ const PROF_KEYWORDS: Record<string, string[]> = {
   'Healthcare': ['doctor', 'nurse', 'physician', 'medical', 'pharma'],
   'Education': ['teacher', 'professor', 'lecturer', 'faculty'],
 }
+const MOTHER_TONGUES = ['Telugu', 'Hindi', 'Tamil', 'Kannada', 'Malayalam', 'Marathi', 'English']
+const CASTES = ['Reddy', 'Kamma', 'Kapu', 'Brahmin', 'Velama', 'Yadav', 'SC/ST', 'OBC']
+
+// Height presets in cm
+const HEIGHT_RANGES: { label: string; min: number; max: number }[] = [
+  { label: 'Below 5\'2"', min: 0,   max: 157 },
+  { label: '5\'2"–5\'5"', min: 157, max: 165 },
+  { label: '5\'5"–5\'8"', min: 165, max: 173 },
+  { label: '5\'8"–5\'11"',min: 173, max: 181 },
+  { label: 'Above 5\'11"',min: 181, max: 999 },
+]
+
+const MARITAL_OPTIONS = [
+  { value: 'never_married', label: 'Never married' },
+  { value: 'divorced',      label: 'Divorced' },
+  { value: 'widowed',       label: 'Widowed' },
+]
 
 type Profile = {
   id: string
@@ -50,6 +67,14 @@ type Profile = {
   phone_verified: boolean
   marital_status: string | null
   last_login_at: string | null
+  mother_tongue: string | null
+  created_at: string
+}
+
+type ActivitySummary = {
+  pendingReceived: number
+  accepted: number
+  totalMatches: number
 }
 
 function cmToFeet(cm: number): string {
@@ -89,10 +114,50 @@ const AVATAR_COLORS = ['#B45309', '#0369A1', '#047857', '#6D28D9', '#BE185D', '#
 function avatarBg(name: string) { return AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length] }
 
 const INTEREST_STATUS: Record<string, { label: string; bg: string; color: string }> = {
-  matched:  { label: 'Matched ✓',      bg: '#ECFDF5', color: '#065F46' },
-  accepted: { label: 'Accepted ✓',     bg: '#ECFDF5', color: '#065F46' },
-  pending:  { label: 'Interest Sent',  bg: '#FEF9EC', color: '#92400E' },
-  rejected: { label: 'Declined',       bg: '#FEF2F2', color: '#991B1B' },
+  matched:  { label: 'Matched ✓',     bg: '#ECFDF5', color: '#065F46' },
+  accepted: { label: 'Accepted ✓',    bg: '#ECFDF5', color: '#065F46' },
+  pending:  { label: 'Interest Sent', bg: '#FEF9EC', color: '#92400E' },
+  rejected: { label: 'Declined',      bg: '#FEF2F2', color: '#991B1B' },
+}
+
+function FilterChips({ options, selected, onToggle }: {
+  options: { value: string; label: string }[]
+  selected: string
+  onToggle: (v: string) => void
+}) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {options.map(o => (
+        <button key={o.value} onClick={() => onToggle(o.value)}
+          className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
+          style={selected === o.value
+            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
+            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function MultiChips({ options, selected, onToggle }: {
+  options: string[]
+  selected: string[]
+  onToggle: (v: string) => void
+}) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {options.map(o => (
+        <button key={o} onClick={() => onToggle(o)}
+          className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
+          style={selected.includes(o)
+            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
+            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+          {o}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 export default function BrowsePage() {
@@ -101,14 +166,23 @@ export default function BrowsePage() {
   const [myProfileId, setMyProfileId] = useState<string | null>(null)
   const [profiles, setProfiles] = useState<Profile[]>([])
   const [loading, setLoading] = useState(false)
+  const [activity, setActivity] = useState<ActivitySummary | null>(null)
+
+  // Filters
   const [region, setRegion] = useState('')
   const [state, setState] = useState('')
   const [district, setDistrict] = useState('')
   const [ageRange, setAgeRange] = useState('')
   const [profCat, setProfCat] = useState('')
+  const [maritalFilter, setMaritalFilter] = useState('')
+  const [heightRange, setHeightRange] = useState('')
+  const [motherTongues, setMotherTongues] = useState<string[]>([])
+  const [casteFilter, setCasteFilter] = useState('')
+  const [photoOnly, setPhotoOnly] = useState(false)
+  const [recentOnly, setRecentOnly] = useState(false)
+
   const [showMoreFilters, setShowMoreFilters] = useState(false)
   const [alertSet, setAlertSet] = useState(false)
-  const [maritalFilter, setMaritalFilter] = useState('')
   const [interestMap, setInterestMap] = useState<Record<string, string>>({})
 
   const availableStates = region ? Object.keys(REGIONS[region] || {}) : []
@@ -119,15 +193,17 @@ export default function BrowsePage() {
     const myId = localStorage.getItem('my_profile_id')
     setMyProfileId(myId)
     if (!myId) { setSessionChecked(true); return }
-    // Update last active timestamp
     supabase.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', myId).then(() => {})
     Promise.all([
       supabase.from('profiles').select('gender').eq('id', myId).maybeSingle(),
       supabase.from('interests').select('to_user, status').eq('from_user', myId),
       supabase.from('matches').select('user1, user2').or(`user1.eq.${myId},user2.eq.${myId}`),
-    ]).then(([{ data: profile }, { data: interests }, { data: matches }]) => {
+      // Activity summary
+      supabase.from('interests').select('id', { count: 'exact', head: true }).eq('to_user', myId).eq('status', 'pending'),
+      supabase.from('interests').select('id', { count: 'exact', head: true }).eq('to_user', myId).eq('status', 'accepted'),
+      supabase.from('matches').select('id', { count: 'exact', head: true }).or(`user1.eq.${myId},user2.eq.${myId}`),
+    ]).then(([{ data: profile }, { data: interests }, { data: matches }, pendingRes, acceptedRes, matchesRes]) => {
       if (!profile) {
-        // Stale profile ID — clear it so the user sees the register gate
         localStorage.removeItem('my_profile_id')
         setMyProfileId(null)
       }
@@ -139,13 +215,19 @@ export default function BrowsePage() {
         map[other] = 'matched'
       })
       setInterestMap(map)
+      setActivity({
+        pendingReceived: pendingRes.count || 0,
+        accepted: acceptedRes.count || 0,
+        totalMatches: matchesRes.count || 0,
+      })
       setSessionChecked(true)
     })
   }, [])
 
   useEffect(() => {
     if (sessionChecked) loadProfiles()
-  }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat, maritalFilter, myProfileId])
+  }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat, maritalFilter,
+      heightRange, motherTongues, casteFilter, photoOnly, recentOnly, myProfileId])
 
   async function loadProfiles() {
     setLoading(true)
@@ -156,6 +238,7 @@ export default function BrowsePage() {
       if (region) q = q.eq('native_region', region)
       if (state) q = q.eq('native_state', state)
       if (district) q = q.eq('native_district', district)
+      if (casteFilter) q = q.ilike('caste', `%${casteFilter}%`)
       return q
     }
 
@@ -165,12 +248,13 @@ export default function BrowsePage() {
 
     let { data, error } = await buildBase().or(orClause).order('created_at', { ascending: false })
     if (error) {
-      // Column doesn't exist yet — fall back to unfiltered
       const result = await buildBase().order('created_at', { ascending: false })
       data = result.data
     }
 
     let results = data || []
+
+    // Client-side filters
     if (ageRange) {
       const [minA, maxA] = ageRange === '40+' ? [40, 99] : ageRange.split('–').map(Number)
       results = results.filter(p => { const a = getAge(p.date_of_birth); return a != null && a >= minA && a <= maxA })
@@ -182,20 +266,41 @@ export default function BrowsePage() {
     if (maritalFilter) {
       results = results.filter(p => (p.marital_status || 'never_married') === maritalFilter)
     }
+    if (heightRange) {
+      const hr = HEIGHT_RANGES.find(h => h.label === heightRange)
+      if (hr) results = results.filter(p => p.height_cm && p.height_cm >= hr.min && p.height_cm < hr.max)
+    }
+    if (motherTongues.length > 0) {
+      results = results.filter(p => p.mother_tongue && motherTongues.includes(p.mother_tongue))
+    }
+    if (photoOnly) {
+      results = results.filter(p => p.photo_url && p.photo_visibility === 'public')
+    }
+    if (recentOnly) {
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      results = results.filter(p => new Date(p.created_at) >= thirtyDaysAgo)
+    }
+
     setProfiles(results)
     setLoading(false)
   }
 
   function handleMapRegion(r: string) { setRegion(r); setState(''); setDistrict(''); setAlertSet(false) }
-  function clearAll() { setRegion(''); setState(''); setDistrict(''); setAgeRange(''); setProfCat(''); setMaritalFilter(''); setAlertSet(false) }
+  function clearAll() {
+    setRegion(''); setState(''); setDistrict(''); setAgeRange(''); setProfCat('')
+    setMaritalFilter(''); setHeightRange(''); setMotherTongues([]); setCasteFilter('')
+    setPhotoOnly(false); setRecentOnly(false); setAlertSet(false)
+  }
+
+  function toggleMotherTongue(mt: string) {
+    setMotherTongues(prev => prev.includes(mt) ? prev.filter(x => x !== mt) : [...prev, mt])
+  }
 
   function handleSetAlert() {
     const key = district || state || region
     if (!key) return
     const existing: string[] = JSON.parse(localStorage.getItem('region_alerts') || '[]')
-    if (!existing.includes(key)) {
-      localStorage.setItem('region_alerts', JSON.stringify([...existing, key]))
-    }
+    if (!existing.includes(key)) localStorage.setItem('region_alerts', JSON.stringify([...existing, key]))
     setAlertSet(true)
   }
 
@@ -206,13 +311,8 @@ export default function BrowsePage() {
     setAlertSet(existing.includes(key))
   }, [region, state, district])
 
-  const activeFilterCount = [region, state, district, ageRange, profCat, maritalFilter].filter(Boolean).length
-
-  const MARITAL_OPTIONS = [
-    { value: 'never_married', label: 'Never married' },
-    { value: 'divorced', label: 'Divorced' },
-    { value: 'widowed', label: 'Widowed' },
-  ]
+  const activeFilterCount = [region, state, district, ageRange, profCat, maritalFilter, heightRange, casteFilter,
+    photoOnly ? 'photo' : '', recentOnly ? 'recent' : '', ...motherTongues].filter(Boolean).length
 
   const header = (
     <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8E0D6' }}>
@@ -227,8 +327,7 @@ export default function BrowsePage() {
           {sessionChecked && myProfileId && (
             <Link href={`/profile/${myProfileId}`}
               className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-white text-xs font-bold shrink-0"
-              style={{ background: '#B45309' }}
-              title="My Profile">
+              style={{ background: '#B45309' }} title="My Profile">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
               </svg>
@@ -251,7 +350,6 @@ export default function BrowsePage() {
     </div>
   )
 
-  // Gate: must have a created profile to browse
   if (!myProfileId) return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center gap-6" style={{ background: '#FAFAF9' }}>
       <div className="w-16 h-16 rounded-full flex items-center justify-center mb-2" style={{ background: '#FEF9EC' }}>
@@ -272,6 +370,88 @@ export default function BrowsePage() {
 
   const genderLabelPlural = oppositeGender === 'female' ? 'brides' : oppositeGender === 'male' ? 'grooms' : 'profiles'
 
+  // Sidebar filter sections reused in both desktop and mobile
+  const FilterSections = ({ compact }: { compact?: boolean }) => (
+    <div className={compact ? 'space-y-4' : 'space-y-4'}>
+      {region && (
+        <div className={compact ? 'grid grid-cols-2 gap-2' : 'space-y-2'}>
+          <select className="input text-sm" value={state} onChange={e => { setState(e.target.value); setDistrict('') }}>
+            <option value="">All states</option>
+            {availableStates.map(s => <option key={s}>{s}</option>)}
+          </select>
+          <select className="input text-sm" value={district} onChange={e => setDistrict(e.target.value)} disabled={!state}>
+            <option value="">All districts</option>
+            {availableDistricts.map(d => <option key={d}>{d}</option>)}
+          </select>
+        </div>
+      )}
+
+      <div>
+        <p className="section-label mb-2">Age</p>
+        <div className="flex gap-1.5 flex-wrap">
+          {AGE_RANGES.map(a => (
+            <button key={a} onClick={() => setAgeRange(r => r === a ? '' : a)}
+              className="text-xs px-2.5 py-1.5 rounded-md border font-medium transition-all"
+              style={ageRange === a ? { background: '#B45309', color: 'white', borderColor: '#B45309' } : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+              {a}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="section-label mb-2">Height</p>
+        <div className="flex gap-1.5 flex-wrap">
+          {HEIGHT_RANGES.map(h => (
+            <button key={h.label} onClick={() => setHeightRange(r => r === h.label ? '' : h.label)}
+              className="text-xs px-2.5 py-1.5 rounded-md border font-medium transition-all"
+              style={heightRange === h.label ? { background: '#B45309', color: 'white', borderColor: '#B45309' } : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
+              {h.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="section-label mb-2">Mother tongue</p>
+        <MultiChips options={MOTHER_TONGUES} selected={motherTongues} onToggle={toggleMotherTongue} />
+      </div>
+
+      <div>
+        <p className="section-label mb-2">Community / Caste</p>
+        <MultiChips options={CASTES} selected={casteFilter ? [casteFilter] : []}
+          onToggle={v => setCasteFilter(c => c === v ? '' : v)} />
+      </div>
+
+      <div>
+        <p className="section-label mb-2">Marital status</p>
+        <FilterChips options={MARITAL_OPTIONS} selected={maritalFilter} onToggle={v => setMaritalFilter(f => f === v ? '' : v)} />
+      </div>
+
+      <div>
+        <p className="section-label mb-2">Profession</p>
+        <FilterChips options={PROFESSIONS.map(p => ({ value: p, label: p }))} selected={profCat} onToggle={v => setProfCat(c => c === v ? '' : v)} />
+      </div>
+
+      <div className="space-y-2">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" checked={photoOnly} onChange={e => setPhotoOnly(e.target.checked)} className="accent-amber-700" />
+          <span className="text-xs text-stone-600 font-medium">With photo only</span>
+        </label>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" checked={recentOnly} onChange={e => setRecentOnly(e.target.checked)} className="accent-amber-700" />
+          <span className="text-xs text-stone-600 font-medium">Joined in last 30 days</span>
+        </label>
+      </div>
+
+      {activeFilterCount > 0 && (
+        <button onClick={clearAll} className="text-xs text-red-400 hover:text-red-600 font-medium">
+          Clear all filters ({activeFilterCount})
+        </button>
+      )}
+    </div>
+  )
+
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FAFAF9' }}>
       {header}
@@ -279,7 +459,30 @@ export default function BrowsePage() {
 
       <div className="max-w-6xl mx-auto px-4 py-5">
 
-        {/* Guest nudge — slim, non-intrusive */}
+        {/* Activity summary strip */}
+        {activity && myProfileId && (
+          <div className="grid grid-cols-3 gap-3 mb-5 rounded-xl overflow-hidden border" style={{ borderColor: '#E8E0D6' }}>
+            <Link href="/interests" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors border-r" style={{ borderColor: '#E8E0D6' }}>
+              <span className="text-2xl font-bold text-stone-900">{activity.pendingReceived}</span>
+              <span className="text-xs text-stone-400 mt-0.5 text-center leading-tight">Pending<br/>interests</span>
+              {activity.pendingReceived > 0 && (
+                <span className="mt-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#FEF9EC', color: '#B45309' }}>Respond</span>
+              )}
+            </Link>
+            <Link href="/interests" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors border-r" style={{ borderColor: '#E8E0D6' }}>
+              <span className="text-2xl font-bold text-stone-900">{activity.accepted}</span>
+              <span className="text-xs text-stone-400 mt-0.5 text-center leading-tight">Accepted<br/>interests</span>
+            </Link>
+            <Link href="/matches" className="bg-white flex flex-col items-center py-3 px-2 hover:bg-stone-50 transition-colors">
+              <span className="text-2xl font-bold text-stone-900">{activity.totalMatches}</span>
+              <span className="text-xs text-stone-400 mt-0.5 text-center leading-tight">Mutual<br/>matches</span>
+              {activity.totalMatches > 0 && (
+                <span className="mt-1 text-xs font-semibold px-2 py-0.5 rounded-full" style={{ background: '#ECFDF5', color: '#065F46' }}>Chat</span>
+              )}
+            </Link>
+          </div>
+        )}
+
         {!myGender && (
           <div className="rounded-lg border px-4 py-3 mb-4 flex items-center justify-between gap-4"
             style={{ background: 'white', borderColor: '#E8E0D6' }}>
@@ -296,15 +499,14 @@ export default function BrowsePage() {
 
         <div className="flex gap-5">
 
-          {/* Desktop sidebar: map + filters */}
-          <aside className="hidden sm:flex flex-col gap-4 w-56 shrink-0">
+          {/* Desktop sidebar */}
+          <aside className="hidden sm:flex flex-col gap-4 w-60 shrink-0">
             <div className="card p-4">
               <p className="section-label mb-3">Filter by region</p>
               <IndiaMap mode="filter" selectedRegion={region} onRegionClick={handleMapRegion} compact />
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {['Telangana', 'Coastal Andhra', 'Rayalaseema'].map(r => (
-                  <button key={r}
-                    onClick={() => handleMapRegion(region === r ? '' : r)}
+                  <button key={r} onClick={() => handleMapRegion(region === r ? '' : r)}
                     className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
                     style={region === r
                       ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
@@ -315,72 +517,9 @@ export default function BrowsePage() {
               </div>
             </div>
 
-            {region && (
-              <div className="card p-4 space-y-3">
-                <select className="input text-sm" value={state}
-                  onChange={e => { setState(e.target.value); setDistrict('') }}>
-                  <option value="">All states</option>
-                  {availableStates.map(s => <option key={s}>{s}</option>)}
-                </select>
-                <select className="input text-sm" value={district}
-                  onChange={e => setDistrict(e.target.value)}
-                  disabled={!state}>
-                  <option value="">All districts</option>
-                  {availableDistricts.map(d => <option key={d}>{d}</option>)}
-                </select>
-              </div>
-            )}
-
             <div className="card p-4">
-              <p className="section-label mb-3">Age range</p>
-              <div className="flex flex-wrap gap-1.5">
-                {AGE_RANGES.map(a => (
-                  <button key={a} onClick={() => setAgeRange(r => r === a ? '' : a)}
-                    className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
-                    style={ageRange === a
-                      ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
-                    {a}
-                  </button>
-                ))}
-              </div>
+              <FilterSections />
             </div>
-
-            <div className="card p-4">
-              <p className="section-label mb-3">Profession</p>
-              <div className="flex flex-wrap gap-1.5">
-                {PROFESSIONS.map(p => (
-                  <button key={p} onClick={() => setProfCat(c => c === p ? '' : p)}
-                    className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
-                    style={profCat === p
-                      ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
-                    {p}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="card p-4">
-              <p className="section-label mb-3">Marital status</p>
-              <div className="flex flex-wrap gap-1.5">
-                {MARITAL_OPTIONS.map(o => (
-                  <button key={o.value} onClick={() => setMaritalFilter(f => f === o.value ? '' : o.value)}
-                    className="text-xs px-2.5 py-1 rounded-md border font-medium transition-all"
-                    style={maritalFilter === o.value
-                      ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                      : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
-                    {o.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {activeFilterCount > 0 && (
-              <button onClick={clearAll} className="text-xs text-stone-400 hover:text-red-500 font-medium text-left">
-                Clear all filters ({activeFilterCount})
-              </button>
-            )}
           </aside>
 
           {/* Main content */}
@@ -390,8 +529,7 @@ export default function BrowsePage() {
             <div className="sm:hidden mb-4">
               <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
                 {['Telangana', 'Coastal Andhra', 'Rayalaseema'].map(r => (
-                  <button key={r}
-                    onClick={() => handleMapRegion(region === r ? '' : r)}
+                  <button key={r} onClick={() => handleMapRegion(region === r ? '' : r)}
                     className="text-xs px-3 py-2 rounded-lg border font-semibold shrink-0 transition-all"
                     style={region === r
                       ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
@@ -399,8 +537,7 @@ export default function BrowsePage() {
                     {r}
                   </button>
                 ))}
-                <button
-                  onClick={() => setShowMoreFilters(f => !f)}
+                <button onClick={() => setShowMoreFilters(f => !f)}
                   className="text-xs px-3 py-2 rounded-lg border font-semibold shrink-0 flex items-center gap-1.5"
                   style={activeFilterCount > 0
                     ? { background: '#FEF9EC', color: '#B45309', borderColor: '#E8C99A' }
@@ -413,67 +550,8 @@ export default function BrowsePage() {
               </div>
 
               {showMoreFilters && (
-                <div className="card p-4 mt-3 space-y-4">
-                  {region && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <select className="input text-sm" value={state}
-                        onChange={e => { setState(e.target.value); setDistrict('') }}>
-                        <option value="">State</option>
-                        {availableStates.map(s => <option key={s}>{s}</option>)}
-                      </select>
-                      <select className="input text-sm" value={district}
-                        onChange={e => setDistrict(e.target.value)}
-                        disabled={!state}>
-                        <option value="">District</option>
-                        {availableDistricts.map(d => <option key={d}>{d}</option>)}
-                      </select>
-                    </div>
-                  )}
-                  <div>
-                    <p className="section-label mb-2">Age</p>
-                    <div className="flex gap-1.5 flex-wrap">
-                      {AGE_RANGES.map(a => (
-                        <button key={a} onClick={() => setAgeRange(r => r === a ? '' : a)}
-                          className="text-xs px-2.5 py-1.5 rounded-md border font-medium"
-                          style={ageRange === a
-                            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
-                          {a}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="section-label mb-2">Profession</p>
-                    <div className="flex gap-1.5 flex-wrap">
-                      {PROFESSIONS.map(p => (
-                        <button key={p} onClick={() => setProfCat(c => c === p ? '' : p)}
-                          className="text-xs px-2.5 py-1.5 rounded-md border font-medium"
-                          style={profCat === p
-                            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
-                          {p}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="section-label mb-2">Marital status</p>
-                    <div className="flex gap-1.5 flex-wrap">
-                      {MARITAL_OPTIONS.map(o => (
-                        <button key={o.value} onClick={() => setMaritalFilter(f => f === o.value ? '' : o.value)}
-                          className="text-xs px-2.5 py-1.5 rounded-md border font-medium"
-                          style={maritalFilter === o.value
-                            ? { background: '#B45309', color: 'white', borderColor: '#B45309' }
-                            : { borderColor: '#E8E0D6', color: '#78716C', background: 'white' }}>
-                          {o.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {activeFilterCount > 0 && (
-                    <button onClick={clearAll} className="text-xs text-stone-400 hover:text-red-500 font-medium">Clear all</button>
-                  )}
+                <div className="card p-4 mt-3">
+                  <FilterSections compact />
                 </div>
               )}
             </div>
@@ -501,49 +579,37 @@ export default function BrowsePage() {
                 </div>
                 {(region || state || district) ? (
                   <>
-                    <p className="font-semibold text-stone-800 mb-1">
-                      No {genderLabelPlural} from {district || state || region} yet
-                    </p>
+                    <p className="font-semibold text-stone-800 mb-1">No {genderLabelPlural} from {district || state || region} yet</p>
                     <p className="text-sm text-stone-500 mb-5 leading-relaxed max-w-xs mx-auto">
                       Be the first from your area, or invite friends and family to join.
-                      {myProfileId ? ' We\'ll alert you when someone from here registers.' : ''}
                     </p>
                     <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
-                      {myProfileId ? (
-                        <button
-                          onClick={handleSetAlert}
-                          disabled={alertSet}
+                      {myProfileId && (
+                        <button onClick={handleSetAlert} disabled={alertSet}
                           className={alertSet ? 'btn-ghost px-5 py-2.5 text-sm' : 'btn-primary px-5 py-2.5 text-sm'}>
                           {alertSet ? `✓ Alert set for ${district || state || region}` : 'Notify me when someone joins'}
                         </button>
-                      ) : (
-                        <Link href="/register" className="btn-primary px-5 py-2.5 text-sm">
-                          Create Your Profile
-                        </Link>
                       )}
-                      <button onClick={clearAll} className="btn-ghost px-5 py-2.5 text-sm text-stone-400">
-                        Show all {genderLabelPlural}
-                      </button>
+                      <button onClick={clearAll} className="btn-ghost px-5 py-2.5 text-sm text-stone-400">Show all {genderLabelPlural}</button>
                     </div>
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-stone-700 mb-1">No profiles found</p>
-                    <p className="text-sm text-stone-400 mb-4">Be the first from your region — register your profile!</p>
-                    <Link href="/register" className="btn-primary px-5 py-2 text-sm inline-flex">Register Free</Link>
+                    <p className="font-semibold text-stone-700 mb-1">No profiles match these filters</p>
+                    <p className="text-sm text-stone-400 mb-4">Try removing some filters to see more results.</p>
+                    <button onClick={clearAll} className="btn-primary px-5 py-2 text-sm">Clear filters</button>
                   </>
                 )}
               </div>
             )}
 
-            {/* Profile grid — photo-first, 2 cols mobile / 3 cols desktop */}
+            {/* Profile grid */}
             <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
               {profiles.map(p => (
                 <Link href={`/profile/${p.id}`} key={p.id} className="block group">
                   <div className="rounded-2xl overflow-hidden shadow-sm border active:scale-[0.98] transition-transform"
                     style={{ borderColor: '#E8E0D6', background: 'white' }}>
 
-                    {/* Photo — square ratio */}
                     <div className="relative" style={{ paddingBottom: '85%' }}>
                       {p.photo_url && p.photo_visibility === 'public' ? (
                         <img src={p.photo_url} alt={p.full_name}
@@ -555,19 +621,13 @@ export default function BrowsePage() {
                           <span className="text-white/60 text-xs">No photo yet</span>
                         </div>
                       )}
-
-                      {/* Gradient overlay for readability */}
                       <div className="absolute inset-0 pointer-events-none"
                         style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 40%, transparent 65%)' }} />
-
-                      {/* Top-left: verified badge */}
                       {isVerified(p) && (
                         <div className="absolute top-2 left-2">
                           <span className="badge badge-verified text-xs shadow-sm">✓ Verified</span>
                         </div>
                       )}
-
-                      {/* Top-right: interest status dot */}
                       {interestMap[p.id] && (
                         <div className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center ring-2 ring-white shadow"
                           style={{ background: interestMap[p.id] === 'rejected' ? '#EF4444' : '#059669' }}>
@@ -577,21 +637,20 @@ export default function BrowsePage() {
                           }
                         </div>
                       )}
-
-                      {/* Bottom overlay: name + age */}
                       <div className="absolute bottom-0 left-0 right-0 px-3 pb-2.5 pt-6">
                         <p className="text-white font-bold text-sm leading-tight drop-shadow">{p.full_name}</p>
                         {getAge(p.date_of_birth) != null && (
-                          <p className="text-white/80 text-xs mt-0.5">{getAge(p.date_of_birth)} yrs</p>
+                          <p className="text-white/80 text-xs mt-0.5">{getAge(p.date_of_birth)} yrs{p.height_cm ? ` · ${cmToFeet(p.height_cm)}` : ''}</p>
                         )}
                       </div>
                     </div>
 
-                    {/* Card footer */}
                     <div className="px-3 py-2.5">
                       <div className="flex items-center justify-between gap-1">
                         <p className="text-xs font-medium text-stone-700 truncate">{p.profession}</p>
-                        {p.height_cm ? <span className="text-xs text-stone-400 shrink-0">{cmToFeet(p.height_cm)}</span> : null}
+                        {p.mother_tongue && p.mother_tongue !== 'Telugu' && (
+                          <span className="text-xs text-stone-400 shrink-0">{p.mother_tongue}</span>
+                        )}
                       </div>
                       <div className="flex items-center justify-between mt-1.5 gap-1">
                         <span className="text-xs text-stone-400 truncate flex items-center gap-1">
@@ -609,7 +668,7 @@ export default function BrowsePage() {
                             <span className="absolute bottom-full right-0 mb-1.5 w-48 px-2.5 py-2 rounded-lg text-xs text-white opacity-0 group-hover/tip:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed font-normal text-left"
                               style={{ background: '#1C1917' }}>
                               <span className="font-semibold block mb-0.5">Serious Seeker</span>
-                              Has photo, education, about, height &amp; caste filled — a genuine, complete profile.
+                              Has photo, education, about, height &amp; caste filled.
                               <span className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#1C1917' }} />
                             </span>
                           </span>
