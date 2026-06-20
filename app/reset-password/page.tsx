@@ -26,7 +26,7 @@ export default function ResetPasswordPage() {
       <header className="bg-white border-b" style={{ borderColor: '#E5E7EB' }}>
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center">
           <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Natiive<span style={{ color: '#9B1C1C' }}>Matrimony</span>
+            Native<span style={{ color: '#9B1C1C' }}>Matrimony</span>
           </Link>
         </div>
       </header>

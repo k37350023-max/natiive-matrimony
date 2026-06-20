@@ -9,16 +9,51 @@ export default function LaunchBanner() {
   const [dismissed, setDismissed] = useState(false)
   const [count, setCount] = useState<number | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isPremium, setIsPremium] = useState(false)
+  const [premiumExpiry, setPremiumExpiry] = useState<string | null>(null)
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem('my_profile_id'))
+    const id = localStorage.getItem('my_profile_id')
+    setIsLoggedIn(!!id)
     if (sessionStorage.getItem('banner_dismissed')) setDismissed(true)
     supabase.from('profiles').select('id', { count: 'exact', head: true })
       .eq('status', 'approved')
       .then(({ count }) => setCount(count ?? 0))
+    if (id) {
+      supabase.from('profiles').select('premium_expires_at').eq('id', id).maybeSingle()
+        .then(({ data }) => {
+          if (data?.premium_expires_at && new Date(data.premium_expires_at) > new Date()) {
+            setIsPremium(true)
+            setPremiumExpiry(data.premium_expires_at)
+          }
+        })
+    }
   }, [])
 
   if (dismissed) return null
+
+  // Show "Offer Already Applied" minimized banner for premium users
+  if (isPremium && premiumExpiry) {
+    const expiry = new Date(premiumExpiry)
+    const formatted = expiry.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
+    return (
+      <div className="mx-4 my-3 rounded-xl px-4 py-2.5 flex items-center justify-between"
+        style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+        <div className="flex items-center gap-2.5">
+          <span className="text-base">✅</span>
+          <div>
+            <p className="text-xs font-semibold text-green-800">Offer Already Applied</p>
+            <p className="text-[11px] text-green-600">Premium active until {formatted}</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setDismissed(true)}
+          className="text-green-400 hover:text-green-600 transition-colors ml-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    )
+  }
 
   const filled = count ?? 0
   const remaining = Math.max(GOAL - filled, 0)

@@ -12,28 +12,39 @@ export default function HomeHeader() {
     const id = localStorage.getItem('my_profile_id')
     setProfileId(id)
     setReady(true)
-    // Redirect logged-in users away from marketing homepage
     if (id) router.replace('/browse')
   }, [])
 
   return (
-    <header className="bg-white border-b sticky top-0 z-50" style={{ borderColor: '#E5E7EB' }}>
-      <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-        <span className="text-lg font-bold tracking-tight text-gray-900 font-serif-display">
-          Natiive<span style={{ color: '#9B1C1C' }}>Matrimony</span>
+    <header style={{
+      background: '#FFFFFF',
+      borderBottom: '1px solid #E8E8E8',
+      position: 'sticky', top: 0, zIndex: 50,
+    }}>
+      <div style={{
+        maxWidth: '1120px', margin: '0 auto', padding: '0 20px',
+        height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-inter), sans-serif',
+          fontSize: '18px', fontWeight: 800,
+          letterSpacing: '-0.04em', color: '#111111', lineHeight: 1,
+        }}>
+          Native<span style={{ color: '#7F1D1D' }}>Matrimony</span>
         </span>
-        <div className="flex items-center gap-1">
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           {ready && profileId ? (
             <>
-              <Link href="/browse" className="text-sm font-medium text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-50 hidden sm:block">Browse</Link>
-              <Link href="/interests" className="text-sm font-medium text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-50 hidden sm:block">Interests</Link>
-              <Link href="/matches" className="text-sm font-medium text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-50 hidden sm:block">Matches</Link>
-              <Link href={`/profile/${profileId}`} className="btn-primary text-sm px-4 py-1.5 ml-1">My Profile</Link>
+              <Link href="/browse" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Browse</Link>
+              <Link href="/interests" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Interests</Link>
+              <Link href="/matches" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Matches</Link>
+              <Link href={`/profile/${profileId}`} className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px', marginLeft: '4px' }}>My Profile</Link>
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-50">Login</Link>
-              <Link href="/register" className="btn-primary text-sm px-4 py-1.5 ml-1">Register Free</Link>
+              <Link href="/login" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Login</Link>
+              <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px', marginLeft: '4px' }}>Register Free</Link>
             </>
           )}
         </div>

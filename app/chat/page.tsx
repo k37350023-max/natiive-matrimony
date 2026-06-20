@@ -160,7 +160,7 @@ export default function ChatInboxPage() {
                   {/* Avatar */}
                   <div className="relative shrink-0">
                     {t.photo_url && t.photo_visibility !== 'hidden' ? (
-                      <img src={t.photo_url} alt={t.full_name}
+                      <img loading="lazy" src={t.photo_url} alt={t.full_name}
                         className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-100" />
                     ) : (
                       <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-sm font-bold"

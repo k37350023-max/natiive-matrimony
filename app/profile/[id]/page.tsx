@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import AppHeader from '../../components/AppHeader'
 
@@ -152,6 +152,8 @@ const HIDEABLE: Record<string, string> = {
 export default function ProfilePage() {
   const { id } = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const previewMode = searchParams.get('preview') === '1'
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [interestSent, setInterestSent] = useState(false)
@@ -160,6 +162,7 @@ export default function ProfilePage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [myProfileId, setMyProfileId] = useState<string | null>(null)
   const [viewerRelation, setViewerRelation] = useState<'matched' | 'interested' | 'received' | 'none'>('none')
+  const [chatMatchId, setChatMatchId] = useState<string | null>(null)
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [noteText, setNoteText] = useState('')
   const [photoExpanded, setPhotoExpanded] = useState(false)
@@ -168,6 +171,9 @@ export default function ProfilePage() {
   const [reportSent, setReportSent] = useState(false)
   const [extraPhotos, setExtraPhotos] = useState<string[]>([])
   const [photoIdx, setPhotoIdx] = useState(0)
+  const [toast, setToast] = useState<string | null>(null)
+  const [verifiedOpen, setVerifiedOpen] = useState(false)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
   // P2
   const [fieldRequest, setFieldRequest] = useState<FieldRequest | null>(null)
   const [sendingFieldReq, setSendingFieldReq] = useState(false)
@@ -203,8 +209,29 @@ export default function ProfilePage() {
   }
 
   async function logView(myId: string) {
-    await supabase.from('profile_views').insert({ viewer_id: myId, viewed_id: id as string })
-      .then(() => {})
+    await supabase.from('profile_views').insert({ viewer_id: myId, viewed_id: id as string }).then(() => {})
+    // Notify the profile owner (throttle: only once per 12h per viewer)
+    const { data: existingView } = await supabase.from('profile_views')
+      .select('viewed_at').eq('viewer_id', myId).eq('viewed_id', id as string)
+      .gte('viewed_at', new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString())
+      .limit(1)
+    const isFirstViewRecently = !existingView || existingView.length <= 1
+    if (isFirstViewRecently) {
+      const [{ data: viewer }, { data: owner }] = await Promise.all([
+        supabase.from('profiles').select('full_name').eq('id', myId).maybeSingle(),
+        supabase.from('profiles').select('user_id').eq('id', id as string).maybeSingle(),
+      ])
+      if (owner?.user_id && viewer?.full_name) {
+        supabase.from('notifications').insert({
+          user_id: owner.user_id,
+          type: 'profile_view',
+          message: `${viewer.full_name} viewed your profile`,
+          from_profile_id: myId,
+          read: false,
+          link: `/profile/${myId}`,
+        }).then(() => {})
+      }
+    }
   }
 
   async function loadFieldRequest(myId: string) {
@@ -257,10 +284,19 @@ export default function ProfilePage() {
     const { data: match } = await supabase.from('matches').select('id')
       .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
       .maybeSingle()
-    if (match) { setViewerRelation('matched'); return }
+    if (match) { setViewerRelation('matched'); setChatMatchId(match.id); return }
     const { data: sent } = await supabase.from('interests').select('id')
       .eq('from_user', myId).eq('to_user', id as string).maybeSingle()
-    if (sent) { setViewerRelation('interested'); return }
+    if (sent) {
+      setViewerRelation('interested')
+      setInterestSent(true)
+      // Look up match created when interest was sent
+      const { data: m } = await supabase.from('matches').select('id')
+        .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
+        .maybeSingle()
+      if (m) setChatMatchId(m.id)
+      return
+    }
     const { data: received } = await supabase.from('interests').select('id')
       .eq('from_user', id as string).eq('to_user', myId).maybeSingle()
     if (received) setViewerRelation('received')
@@ -341,6 +377,26 @@ export default function ProfilePage() {
     const myId = localStorage.getItem('my_profile_id')
     if (!myId) { router.push('/register'); return }
     if (myId === id) return
+
+    // Block if no photo
+    if (!profile?.photo_url) {
+      setToast('Add a profile photo before expressing interest')
+      setTimeout(() => setToast(null), 3500)
+      return
+    }
+
+    // Rate limit: max 10 interests per hour
+    const key = 'interest_timestamps'
+    const now = Date.now()
+    const stored: number[] = JSON.parse(localStorage.getItem(key) || '[]')
+    const recent = stored.filter(t => now - t < 60 * 60 * 1000)
+    if (recent.length >= 10) {
+      setToast("You're sending too many interests. Please wait before sending more.")
+      setTimeout(() => setToast(null), 4000)
+      return
+    }
+    localStorage.setItem(key, JSON.stringify([...recent, now]))
+
     setSending(true)
     const payload: Record<string, unknown> = { from_user: myId, to_user: id as string, status: 'pending' }
     if (note?.trim()) payload.note = note.trim()
@@ -364,10 +420,10 @@ export default function ProfilePage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             to: profile.email,
-            subject: 'New Interest — NatiiveMatrimony',
+            subject: 'New Interest — NativeMatrimony',
             html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
               <h2 style="color:#111827">You have a new interest!</h2>
-              <p style="color:#4B5563"><strong>${me?.full_name || 'Someone'}</strong> sent you an interest on NatiiveMatrimony.</p>
+              <p style="color:#4B5563"><strong>${me?.full_name || 'Someone'}</strong> sent you an interest on NativeMatrimony.</p>
               ${note?.trim() ? `<blockquote style="border-left:3px solid #9B1C1C;margin:16px 0;padding:8px 16px;color:#4B5563;font-style:italic">"${note.trim()}"</blockquote>` : ''}
               <a href="https://nativematrimony.com/interests" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#9B1C1C;color:white;border-radius:8px;text-decoration:none;font-weight:600">View &amp; Respond</a>
             </div>`
@@ -379,6 +435,12 @@ export default function ProfilePage() {
     setInterestSent(true)
     setSending(false)
     setShowNoteModal(false)
+    showToast(`Interest sent to ${profile?.full_name || 'them'}. You'll be notified when they respond.`)
+  }
+
+  function showToast(msg: string) {
+    setToast(msg)
+    setTimeout(() => setToast(null), 4000)
   }
 
   if (loading) return (
@@ -397,7 +459,7 @@ export default function ProfilePage() {
   )
 
   const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
-  const isOwnProfile = myProfileId === profile.id
+  const isOwnProfile = !previewMode && myProfileId === profile.id
 
   // Photo visibility: use hidden_fields first, fall back to old photo_visibility
   const photoHidden = fieldIsHidden('photo')
@@ -498,13 +560,20 @@ export default function ProfilePage() {
         { label: 'Father', value: [profile.father_name, profile.father_occupation].filter(Boolean).join(' · ') || null, wide: true },
         { label: 'Mother', value: [profile.mother_name, profile.mother_occupation].filter(Boolean).join(' · ') || null, wide: true },
         { label: 'Siblings', value: (() => {
+          if (!profile.siblings) return null
           try {
-            const s = JSON.parse(profile.siblings || '{}')
+            const s = JSON.parse(profile.siblings)
+            if (Array.isArray(s) && s.length > 0) {
+              return s.map((sib: { name?: string; relation?: string; married?: boolean }) =>
+                [sib.name, sib.relation, sib.married ? 'Married' : 'Unmarried'].filter(Boolean).join(' · ')
+              ).join('\n')
+            }
+            // legacy {brothers, sisters} format
             const parts: string[] = []
-            if (s.brothers != null) parts.push(`${s.brothers} brother${s.brothers !== 1 ? 's' : ''}${s.brothers_married != null ? ` (${s.brothers_married} married)` : ''}`)
-            if (s.sisters != null) parts.push(`${s.sisters} sister${s.sisters !== 1 ? 's' : ''}${s.sisters_married != null ? ` (${s.sisters_married} married)` : ''}`)
-            return parts.length ? parts.join(', ') : profile.siblings || null
-          } catch { return profile.siblings || null }
+            if (s.brothers != null) parts.push(`${s.brothers} brother${s.brothers !== 1 ? 's' : ''}`)
+            if (s.sisters != null) parts.push(`${s.sisters} sister${s.sisters !== 1 ? 's' : ''}`)
+            return parts.length ? parts.join(', ') : null
+          } catch { return profile.siblings }
         })(), wide: true },
       ],
     },
@@ -524,13 +593,35 @@ export default function ProfilePage() {
 
       <AppHeader />
 
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed top-16 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm max-w-sm w-full pointer-events-auto"
+            style={{ background: '#111827', color: 'white' }}>
+            <span className="text-lg">✓</span>
+            <p className="flex-1 text-xs">{toast}</p>
+            <button onClick={() => setToast(null)} className="text-gray-400 hover:text-white ml-1">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {!isOwnProfile && (
-        <div className="max-w-3xl mx-auto px-4 pt-3">
+        <div className="max-w-3xl mx-auto px-4 pt-3 flex items-center justify-between">
           <button onClick={() => router.back()}
             className="flex items-center gap-1.5 text-sm font-medium text-gray-500 hover:text-gray-800 transition-colors">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
             Back
           </button>
+          {isLoggedIn && (
+            <button onClick={() => setShowReportModal(true)}
+              className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-red-50"
+              style={{ color: '#DC2626', borderColor: '#FECACA' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Report
+            </button>
+          )}
         </div>
       )}
       <div className="max-w-3xl mx-auto px-4 py-5 space-y-3">
@@ -539,43 +630,67 @@ export default function ProfilePage() {
         <div className="card overflow-hidden">
           {(() => {
             return (
-              <div className="relative py-8 flex flex-col items-center"
-                style={{ background: 'linear-gradient(160deg, #FEF2F2 0%, #FFF7F0 100%)' }}>
+              <div className="relative">
                 {showPhoto ? (() => {
                   const allPhotos = [profile.photo_url, ...extraPhotos].filter(Boolean) as string[]
                   return (
-                    <div className="mb-3 flex flex-col items-center gap-2">
-                      <button onClick={() => setPhotoExpanded(true)} className="focus:outline-none group relative">
-                        <img src={allPhotos[photoIdx]} alt={profile.full_name}
-                          className="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md transition-transform group-hover:scale-105 cursor-zoom-in" />
-                        <div className="absolute inset-0 rounded-full bg-black opacity-0 group-hover:opacity-10 transition-opacity" />
+                    <div className="relative" style={{ paddingBottom: '110%' }}>
+                      <button onClick={() => setPhotoExpanded(true)} className="focus:outline-none absolute inset-0 w-full h-full group">
+                        <img loading="lazy" src={allPhotos[photoIdx]} alt={profile.full_name}
+                          className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] cursor-zoom-in" />
+                        <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity" />
                       </button>
+                      <div className="absolute inset-0 pointer-events-none"
+                        style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.05) 40%, transparent 65%)' }} />
                       {allPhotos.length > 1 && (
-                        <div className="flex items-center gap-2">
+                        <div className="absolute bottom-20 left-0 right-0 flex items-center justify-center gap-2 pointer-events-auto">
                           <button onClick={() => setPhotoIdx(i => (i - 1 + allPhotos.length) % allPhotos.length)}
-                            className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#F5F0EB' }}>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                            className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.25)' }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                           </button>
                           {allPhotos.map((_, i) => (
                             <button key={i} onClick={() => setPhotoIdx(i)}
                               className="w-1.5 h-1.5 rounded-full transition-all"
-                              style={{ background: i === photoIdx ? '#9B1C1C' : '#D1D5DB' }} />
+                              style={{ background: i === photoIdx ? 'white' : 'rgba(255,255,255,0.5)' }} />
                           ))}
                           <button onClick={() => setPhotoIdx(i => (i + 1) % allPhotos.length)}
-                            className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: '#F5F0EB' }}>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6B7280" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                            className="w-7 h-7 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.25)' }}>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                           </button>
-                          <span className="text-xs text-gray-400">{photoIdx + 1}/{allPhotos.length}</span>
                         </div>
                       )}
                     </div>
                   )
                 })() : (
-                  <div className="relative mb-3">
-                    <div className="w-24 h-24 rounded-full flex items-center justify-center text-white text-2xl font-bold ring-4 ring-white shadow-sm"
+                  <div className="relative" style={{ background: 'linear-gradient(160deg, #FEF2F2 0%, #FFF7F0 100%)', paddingBottom: '80%' }}>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <div className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
                       style={{ background: avatarBg(profile.full_name) }}>
                       {initials(profile.full_name)}
                     </div>
+                    {isOwnProfile && !profile.photo_url && (
+                      <label className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap cursor-pointer">
+                        <span className="text-xs font-semibold px-3 py-1 rounded-full border shadow-sm flex items-center gap-1"
+                          style={{ background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
+                          {uploadingPhoto ? 'Uploading…' : '+ Add photo'}
+                        </span>
+                        <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                          const file = e.target.files?.[0]
+                          const myId = localStorage.getItem('my_profile_id')
+                          if (!file || !myId) return
+                          setUploadingPhoto(true)
+                          const ext = file.name.split('.').pop()
+                          const fileName = `${myId}/main.${ext}`
+                          const { error: upErr } = await supabase.storage.from('profile-photos').upload(fileName, file, { upsert: true })
+                          if (!upErr) {
+                            const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(fileName)
+                            await supabase.from('profiles').update({ photo_url: urlData.publicUrl }).eq('id', myId)
+                            window.location.reload()
+                          }
+                          setUploadingPhoto(false)
+                        }} />
+                      </label>
+                    )}
                     {profile.photo_url && photoHidden && !photoRevealed && isLoggedIn && !isOwnProfile && (
                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap">
                         <button
@@ -590,24 +705,14 @@ export default function ProfilePage() {
                       </div>
                     )}
                   </div>
+                  </div>
                 )}
 
-                {isLoggedIn && myProfileId !== profile.id && (
-                  <button
-                    onClick={openNoteModal}
-                    disabled={interestSent || sending}
-                    className="mt-3 text-xs font-semibold px-4 py-1.5 rounded-full"
-                    style={interestSent
-                      ? { background: '#ECFDF5', color: '#065F46', border: '1px solid #A7F3D0' }
-                      : { background: '#9B1C1C', color: 'white' }}>
-                    {interestSent ? '✓ Interest Sent' : '+ Send Interest'}
-                  </button>
-                )}
               </div>
             )
           })()}
 
-          <div className="px-6 py-5">
+          <div className="px-5 py-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 font-serif-display tracking-tight">{profile.full_name}</h1>
@@ -623,13 +728,17 @@ export default function ProfilePage() {
                 )}
               </div>
               {(profile.verified || profile.phone_verified) ? (
-                <div className="relative group shrink-0 mt-1">
-                  <span className="badge badge-verified cursor-default">✓ Verified</span>
-                  <div className="absolute bottom-full right-0 mb-2 w-52 px-3 py-2 rounded-lg text-xs text-white opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50 leading-relaxed"
-                    style={{ background: '#111827' }}>
-                    {profile.verified ? 'Verified via phone linkage & manual community review' : 'Email verified'}
-                    <div className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#111827' }} />
-                  </div>
+                <div className="relative shrink-0 mt-1">
+                  <button onClick={() => setVerifiedOpen(v => !v)}
+                    className="badge badge-verified cursor-pointer select-none">✓ Verified</button>
+                  {verifiedOpen && (
+                    <div className="absolute bottom-full right-0 mb-2 w-56 px-3 py-2.5 rounded-lg text-xs text-white z-50 leading-relaxed shadow-xl"
+                      style={{ background: '#111827' }}>
+                      <p className="font-semibold mb-0.5">What does Verified mean?</p>
+                      <p className="text-gray-300">{profile.verified ? 'Phone number confirmed + community review completed.' : 'Phone number confirmed.'}</p>
+                      <div className="absolute top-full right-3 border-4 border-transparent" style={{ borderTopColor: '#111827' }} />
+                    </div>
+                  )}
                 </div>
               ) : myProfileId === profile.id ? (
                 <span className="text-xs px-2.5 py-1 rounded-full font-medium shrink-0 mt-1"
@@ -683,26 +792,56 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* Who viewed you — own profile */}
+        {isOwnProfile && viewers.length > 0 && (
+          <div className="card px-5 py-4">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-semibold text-gray-800">Who viewed your profile</p>
+              <span className="text-xs text-gray-400">{viewers.length} recent</span>
+            </div>
+            <div className="space-y-3">
+              {viewers.slice(0, 8).map(v => (
+                <Link key={v.viewer_id} href={`/profile/${v.viewer_id}`}
+                  className="flex items-center gap-3 group">
+                  {v.photo_url && v.photo_visibility === 'public' ? (
+                    <img loading="lazy" src={v.photo_url} alt={v.full_name}
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
+                      style={{ background: avatarBg(v.full_name) }}>
+                      {initials(v.full_name)}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 group-hover:underline truncate">{v.full_name}</p>
+                    <p className="text-xs text-gray-400">{timeAgo(v.viewed_at)}</p>
+                  </div>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Profile completeness — own profile only */}
         {isOwnProfile && (() => {
-          const fields = [
-            profile.photo_url, profile.about, profile.height_cm, profile.caste,
-            profile.education, profile.profession, profile.family_type,
-            profile.mother_tongue, profile.religion,
+          const coreFields: [boolean, string][] = [
+            [!!profile.photo_url, 'Profile photo'],
+            [!!profile.about, 'About me'],
+            [!!profile.height_cm, 'Height'],
+            [!!profile.caste, 'Caste'],
+            [!!profile.education, 'Education'],
+            [!!profile.profession, 'Profession'],
+            [!!profile.family_type, 'Family type'],
+            [!!profile.mother_tongue, 'Mother tongue'],
+            [!!profile.religion, 'Religion'],
+            [!!profile.native_district, 'Native district'],
+            [!!profile.gotra, 'Gotram'],
+            [!!(profile.pref_age_min || profile.pref_age_max), 'Partner preferences'],
           ]
-          const filled = fields.filter(Boolean).length
-          const pct = Math.round((filled / fields.length) * 100)
-          const missing = [
-            !profile.photo_url && 'Profile photo',
-            !profile.about && 'About me',
-            !profile.height_cm && 'Height',
-            !profile.caste && 'Caste',
-            !profile.education && 'Education',
-            !profile.family_type && 'Family type',
-            !profile.father_name && 'Father\'s name',
-            !profile.star && 'Star / Nakshatra',
-            !profile.diet && 'Diet preference',
-          ].filter(Boolean).slice(0, 3)
+          const filled = coreFields.filter(([v]) => v).length
+          const pct = Math.round((filled / coreFields.length) * 100)
+          const missing = coreFields.filter(([v]) => !v).map(([, label]) => label).slice(0, 3)
           return (
             <div className="card px-5 py-4">
               <div className="flex items-center justify-between mb-2">
@@ -725,37 +864,6 @@ export default function ProfilePage() {
           )
         })()}
 
-        {/* Who viewed you — own profile */}
-        {isOwnProfile && viewers.length > 0 && (
-          <div className="card px-5 py-4">
-            <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-semibold text-gray-800">Who viewed your profile</p>
-              <span className="text-xs text-gray-400">{viewers.length} recent</span>
-            </div>
-            <div className="space-y-3">
-              {viewers.slice(0, 8).map(v => (
-                <Link key={v.viewer_id} href={`/profile/${v.viewer_id}`}
-                  className="flex items-center gap-3 group">
-                  {v.photo_url && v.photo_visibility === 'public' ? (
-                    <img src={v.photo_url} alt={v.full_name}
-                      className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 shrink-0" />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
-                      style={{ background: avatarBg(v.full_name) }}>
-                      {initials(v.full_name)}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 group-hover:underline truncate">{v.full_name}</p>
-                    <p className="text-xs text-gray-400">{timeAgo(v.viewed_at)}</p>
-                  </div>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Incoming field requests — own profile */}
         {isOwnProfile && incomingRequests.length > 0 && (
           <div className="card px-5 py-4">
@@ -769,7 +877,7 @@ export default function ProfilePage() {
               {incomingRequests.map(req => (
                 <div key={req.id} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: '#FFFBF5', border: '1px solid #F0EDE8' }}>
                   {req.photo_url && req.photo_visibility === 'public' ? (
-                    <img src={req.photo_url} alt={req.full_name}
+                    <img loading="lazy" src={req.photo_url} alt={req.full_name}
                       className="w-9 h-9 rounded-full object-cover shrink-0" />
                   ) : (
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
@@ -806,7 +914,9 @@ export default function ProfilePage() {
         )}
 
         {/* Quick facts */}
-        <div className="card">
+        <div className="card" style={{ padding: '20px 24px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 16px' }}>Quick facts</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px 12px' }}>
           {[
             {
               label: 'Current city',
@@ -817,42 +927,39 @@ export default function ProfilePage() {
               hidden: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city'),
             },
             { label: 'Profession', fieldKey: undefined, value: profile.profession, sub: profile.education, hidden: false },
-          ].map((r, i) => (
-            <div key={r.label}
-              className={`px-6 py-4 flex items-start gap-4 ${i > 0 ? 'border-t' : ''}`}
-              style={{ borderColor: '#F3F4F6' }}>
-              <div className="w-28 section-label shrink-0 pt-0.5">{r.label}</div>
-              <div className="flex-1">
-                {r.hidden ? (
-                  <div className="space-y-1">
-                    <p className="font-semibold text-gray-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████████</p>
-                    {isLoggedIn && !isOwnProfile && (
-                      <button
-                        onClick={() => requestFields(['current_city'])}
-                        disabled={fieldIsRequested('current_city') || sendingFieldReq}
-                        className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
-                        style={fieldIsRequested('current_city')
-                          ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                          : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
-                        {fieldIsRequested('current_city') ? '✓ Requested' : 'Request'}
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <div className="font-semibold text-gray-800 text-sm">{r.value || '—'}</div>
-                    {r.sub && <div className="text-xs text-gray-400 mt-0.5">{r.sub}</div>}
-                  </>
-                )}
-              </div>
+          ].map((r) => (
+            <div key={r.label} style={{ minWidth: 0 }}>
+              <p style={{ fontSize: '10.5px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: '#B0B7C3', margin: '0 0 4px' }}>{r.label}</p>
+              {r.hidden ? (
+                <div>
+                  <p className="font-semibold text-gray-300 text-sm select-none" style={{ filter: 'blur(5px)', userSelect: 'none' }}>██████</p>
+                  {isLoggedIn && !isOwnProfile && (
+                    <button
+                      onClick={() => requestFields(['current_city'])}
+                      disabled={fieldIsRequested('current_city') || sendingFieldReq}
+                      className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
+                      style={fieldIsRequested('current_city')
+                        ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
+                        : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
+                      {fieldIsRequested('current_city') ? '✓ Requested' : 'Request'}
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <>
+                  <div style={{ fontWeight: 600, color: '#1F2937', fontSize: '13.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.value || '—'}</div>
+                  {r.sub && <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>{r.sub}</div>}
+                </>
+              )}
             </div>
           ))}
+          </div>
         </div>
 
         {/* About */}
         {(profile.about || isOwnProfile) && (
           <div className="card px-6 py-5">
-            <p className="section-label mb-2.5">About</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 10px' }}>About</p>
             {profile.about ? (
               <p className="text-gray-600 leading-relaxed text-sm">"{profile.about}"</p>
             ) : (
@@ -864,17 +971,43 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* Looking for / Partner preferences */}
+        {(() => {
+          const hasPrefs = profile.pref_age_min || profile.pref_age_max
+          if (!hasPrefs && !isOwnProfile) return null
+          return (
+            <div className="card px-6 py-5">
+              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 12px' }}>Looking for</p>
+              {hasPrefs ? (
+                <div className="flex flex-wrap gap-2">
+                  {(profile.pref_age_min || profile.pref_age_max) && (
+                    <span className="text-xs font-medium px-3 py-1.5 rounded-full"
+                      style={{ background: '#FEF2F2', color: '#7F1D1D' }}>
+                      Age {profile.pref_age_min || '—'}–{profile.pref_age_max || '—'} yrs
+                    </span>
+                  )}
+                </div>
+              ) : isOwnProfile ? (
+                <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#9B1C1C' }}>
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Add partner preferences so matches know you're a fit
+                </Link>
+              ) : null}
+            </div>
+          )
+        })()}
+
         {/* Full biodata — always visible, hidden fields blurred */}
         <div className="card px-6 py-5">
-          <p className="section-label mb-4">Full biodata</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 16px' }}>Full biodata</p>
           <div className="space-y-0">
             {bioSections.map((section, si) => (
               <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F3F4F6' } : {}}>
-                <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9B1C1C' }}>{section.heading}</p>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-3">
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 12px' }}>{section.heading}</p>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                   {section.rows.map(f => (
                     <div key={f.label} className={f.wide ? 'col-span-2' : ''}>
-                      <p className="text-xs text-gray-400 mb-0.5 flex items-center gap-1">
+                      <p style={{ fontSize: '10.5px', color: '#B0B7C3', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
                         {f.label}
                         {isOwnProfile && !f.value && REQUIRED_FIELD_LABELS.has(f.label) && (
                           <span className="font-bold" style={{ color: '#DC2626' }}>*</span>
@@ -896,7 +1029,7 @@ export default function ProfilePage() {
           if (!showContact && !profile.phone && !profile.email) return null
           return (
             <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#9B1C1C' }}>Contact</p>
+              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 12px' }}>Contact</p>
               <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                 {profile.phone && (
                   <div>
@@ -938,16 +1071,7 @@ export default function ProfilePage() {
         })()}
       </div>
 
-      {/* Report link */}
-      {isLoggedIn && myProfileId !== profile.id && (
-        <div className="flex justify-center pb-2">
-          <button
-            onClick={() => setShowReportModal(true)}
-            className="text-xs text-gray-300 hover:text-red-400 transition-colors px-4 py-2">
-            Report / Block profile
-          </button>
-        </div>
-      )}
+      {/* Report modal trigger is now in header bar */}
 
       {/* Personalized Note Modal */}
       {showNoteModal && (
@@ -980,7 +1104,7 @@ export default function ProfilePage() {
                 onClick={() => expressInterest()}
                 disabled={sending}
                 className="flex-1 btn-ghost py-2.5 text-sm">
-                Skip &amp; Send
+                Send without note
               </button>
               <button
                 onClick={() => expressInterest(noteText)}
@@ -1027,7 +1151,15 @@ export default function ProfilePage() {
                     onClick={async () => {
                       const myId = localStorage.getItem('my_profile_id')
                       if (!myId || !reportReason) return
+                      const reportCount = parseInt(sessionStorage.getItem('report_count') || '0')
+                      if (reportCount >= 3) {
+                        setShowReportModal(false)
+                        setToast('You have reached the report limit for this session.')
+                        setTimeout(() => setToast(null), 3500)
+                        return
+                      }
                       await supabase.from('reports').insert({ reporter: myId, reported: id as string, reason: reportReason }).then(() => {})
+                      sessionStorage.setItem('report_count', String(reportCount + 1))
                       setReportSent(true)
                     }}
                     className="flex-1 btn-primary py-2.5 text-sm"
@@ -1059,7 +1191,7 @@ export default function ProfilePage() {
             const allPhotos = [profile.photo_url, ...extraPhotos].filter(Boolean) as string[]
             return (
               <div className="flex flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
-                <img src={allPhotos[photoIdx]} alt={profile.full_name}
+                <img loading="lazy" src={allPhotos[photoIdx]} alt={profile.full_name}
                   className="max-w-[90vw] max-h-[80vh] rounded-2xl object-contain shadow-2xl" />
                 {allPhotos.length > 1 && (
                   <div className="flex items-center gap-3">
@@ -1089,28 +1221,61 @@ export default function ProfilePage() {
         style={{ borderColor: '#E5E7EB', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
         <div className="max-w-3xl mx-auto">
           {myProfileId === profile.id ? (
-            <div>
-              <div className="flex gap-2.5">
-                <Link href="/profile/edit" className="flex-1 btn-primary py-3 text-sm text-center">
-                  Edit Profile
-                </Link>
-                <Link href="/matches"
-                  className="flex-1 py-3 rounded-lg font-semibold text-sm border text-center"
-                  style={{ background: 'white', color: '#6B7280', borderColor: '#E5E7EB' }}>
-                  My Matches
-                </Link>
-              </div>
+            <div className="flex items-center justify-around py-1">
+              <Link href="/browse" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#6B7280' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <span className="text-[10px] font-medium">Home</span>
+              </Link>
+              <Link href="/profile/edit" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#9B1C1C' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <span className="text-[10px] font-medium">Edit</span>
+              </Link>
+              <Link href="/profile/edit?section=privacy" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#6B7280' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span className="text-[10px] font-medium">Privacy</span>
+              </Link>
+              <a href={`/profile/${profile.id}?preview=1`} target="_blank" rel="noopener"
+                className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#6B7280' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span className="text-[10px] font-medium">Preview</span>
+              </a>
             </div>
           ) : isLoggedIn ? (
             <>
               <div className="flex gap-2.5">
-                <button
-                  onClick={openNoteModal}
-                  disabled={interestSent || sending}
-                  className="flex-1 btn-primary py-3 text-sm"
-                >
-                  {interestSent ? '✓ Interest Sent' : sending ? 'Sending...' : 'Express Interest'}
-                </button>
+                {chatMatchId ? (
+                  <Link href={`/chat/${chatMatchId}`} className="flex-1 btn-primary py-3 text-sm text-center">
+                    Message
+                  </Link>
+                ) : interestSent ? (
+                  <button
+                    onClick={async () => {
+                      const myId = localStorage.getItem('my_profile_id')
+                      if (!myId) return
+                      const { data: existing } = await supabase.from('matches').select('id')
+                        .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
+                        .maybeSingle()
+                      let mId = existing?.id
+                      if (!mId) {
+                        const { data: created } = await supabase.from('matches')
+                          .insert({ user1: myId, user2: id as string }).select('id').single()
+                        mId = created?.id
+                      }
+                      if (mId) router.push(`/chat/${mId}`)
+                    }}
+                    className="flex-1 btn-primary py-3 text-sm"
+                  >
+                    Message
+                  </button>
+                ) : (
+                  <button
+                    onClick={openNoteModal}
+                    disabled={sending}
+                    className="flex-1 btn-primary py-3 text-sm"
+                  >
+                    {sending ? 'Sending...' : 'Express Interest'}
+                  </button>
+                )}
                 <button
                   onClick={() => setShortlisted(s => !s)}
                   className="px-4 py-3 rounded-lg font-semibold text-sm border transition-all"
@@ -1120,8 +1285,14 @@ export default function ProfilePage() {
                   {shortlisted ? '★ Saved' : '☆ Save'}
                 </button>
               </div>
-              {!interestSent && (
-                <p className="text-center text-xs text-gray-400 mt-2">Both must accept before contact is shared</p>
+              {!interestSent && !chatMatchId && (
+                <div className="flex justify-center mt-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
+                    style={{ background: '#FEF2F2', color: '#7F1D1D' }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Sending interest opens a chat instantly
+                  </span>
+                </div>
               )}
             </>
           ) : (

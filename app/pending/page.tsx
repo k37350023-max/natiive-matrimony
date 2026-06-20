@@ -9,7 +9,7 @@ export default function PendingPage() {
       <header className="bg-white border-b" style={{borderColor: '#EDE8E0'}}>
         <div className="max-w-xl mx-auto px-5 py-4">
           <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Natiive<span style={{color: '#9B1C1C'}}>Matrimony</span>
+            Native<span style={{color: '#9B1C1C'}}>Matrimony</span>
           </Link>
         </div>
       </header>

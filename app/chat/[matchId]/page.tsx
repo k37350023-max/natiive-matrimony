@@ -56,6 +56,7 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [sendError, setSendError] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -123,14 +124,29 @@ export default function ChatPage() {
     setSending(true)
     const content = text.trim()
     setText('')
-    const { error: err } = await supabase.from('messages').insert({
+    // Optimistically show message immediately
+    const tempMsg: Message = {
+      id: `temp-${Date.now()}`,
       match_id: matchId,
       from_profile_id: myProfileId,
       content,
-    })
+      created_at: new Date().toISOString(),
+      read: false,
+    }
+    setMessages(prev => [...prev, tempMsg])
+    const { data: inserted, error: err } = await supabase.from('messages').insert({
+      match_id: matchId,
+      from_profile_id: myProfileId,
+      content,
+    }).select().single()
     if (err) {
-      setError('Failed to send message')
+      setMessages(prev => prev.filter(m => m.id !== tempMsg.id))
+      setSendError('Failed to send. Tap to retry.')
       setText(content)
+      setTimeout(() => setSendError(''), 4000)
+    } else if (inserted) {
+      // Replace temp with real message (has correct id)
+      setMessages(prev => prev.map(m => m.id === tempMsg.id ? inserted : m))
     }
     setSending(false)
     inputRef.current?.focus()
@@ -158,10 +174,11 @@ export default function ChatPage() {
           {other ? (
             <>
               {other.photo_url && other.photo_visibility !== 'hidden' ? (
-                <img src={other.photo_url} alt={other.full_name}
+                <img loading="lazy" src={other.photo_url} alt={other.full_name}
                   className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100" />
               ) : (
-                <div className="w-9 h-9 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm shrink-0">
+                <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0 text-white"
+                  style={{ background: '#9B1C1C' }}>
                   {initials(other.full_name)}
                 </div>
               )}
@@ -186,13 +203,27 @@ export default function ChatPage() {
           </div>
         )}
         {!loading && messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 text-2xl"
               style={{ background: '#FEF2F2' }}>💬</div>
             <p className="font-semibold text-gray-700">Start the conversation</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-gray-400 mt-1 mb-5">
               You and {other?.full_name || 'your match'} are connected. Say hello!
             </p>
+            <div className="flex flex-col gap-2 w-full max-w-xs">
+              {[
+                'Hi, I came across your profile and would love to connect.',
+                `Your background caught my attention — would love to chat.`,
+                'Hello! Looking forward to getting to know you.',
+              ].map(starter => (
+                <button key={starter}
+                  onClick={() => setText(starter)}
+                  className="text-xs px-4 py-2.5 rounded-xl border text-left transition-colors hover:bg-red-50"
+                  style={{ borderColor: '#FECACA', color: '#7F1D1D', background: '#FEF2F2' }}>
+                  "{starter}"
+                </button>
+              ))}
+            </div>
           </div>
         )}
         <div className="space-y-2">
@@ -230,6 +261,13 @@ export default function ChatPage() {
         <div ref={bottomRef} />
       </div>
 
+      {/* Send error toast */}
+      {sendError && (
+        <div className="shrink-0 px-4 py-2 text-center text-xs font-medium" style={{ background: '#FEF2F2', color: '#9B1C1C' }}>
+          {sendError}
+        </div>
+      )}
+
       {/* Input */}
       <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#EDE8E0' }}>
         <div className="max-w-2xl mx-auto flex items-end gap-2">
@@ -240,7 +278,7 @@ export default function ChatPage() {
             onKeyDown={e => {
               if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
             }}
-            placeholder="Type a message…"
+            placeholder={`Say something to ${other?.full_name?.split(' ')[0] || 'them'}…`}
             rows={1}
             style={{ resize: 'none', maxHeight: '120px', overflowY: 'auto' }}
             className="flex-1 input py-2.5 text-sm"

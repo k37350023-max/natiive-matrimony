@@ -44,7 +44,7 @@ export default function PricingPage() {
             Free now. Affordable always.
           </h1>
           <p className="text-sm text-gray-500 leading-relaxed">
-            NatiiveMatrimony is completely free for our founding members.
+            NativeMatrimony is completely free for our founding members.
             After the first 1,000 profiles, a small monthly fee keeps the platform running — and the community spam-free.
           </p>
         </div>

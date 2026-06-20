@@ -1,0 +1,13 @@
+{
+  "name": "NativeMatrimony",
+  "short_name": "NativeMatrimony",
+  "description": "Telugu matrimony by native place",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFBF5",
+  "theme_color": "#7F1D1D",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }
+  ]
+}

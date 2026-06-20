@@ -234,9 +234,15 @@ export default function MapHero() {
                   <div key={p.name} className="profile-card-in" style={{ animationDelay: `${i * 75}ms` }}>
                     <div className="flex items-center gap-3 p-3 rounded-xl border"
                       style={{ background: 'white', borderColor: '#EDE8E0' }}>
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold shrink-0"
-                        style={{ background: p.color }}>
-                        {p.initials}
+                      {/* Geometric avatar */}
+                      <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm">
+                        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                          <rect width="40" height="40" fill={p.color + '33'}/>
+                          <rect x="20" y="0" width="20" height="20" fill={p.color + '55'}/>
+                          <rect x="0" y="20" width="20" height="20" fill={p.color + '44'}/>
+                          <circle cx="20" cy="20" r="13" fill={p.color + '66'}/>
+                          <circle cx="20" cy="20" r="7" fill={p.color + '44'}/>
+                        </svg>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-gray-800 text-sm">{p.name}</p>

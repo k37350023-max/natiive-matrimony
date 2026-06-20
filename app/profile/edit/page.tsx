@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, Suspense } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -107,6 +107,9 @@ function EditProfilePageInner() {
 
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
 
+  type Sibling = { name: string; relation: string; married: boolean }
+  const [siblings, setSiblings] = React.useState<Sibling[]>([])
+
   const availableStates = form.native_region ? Object.keys(REGIONS[form.native_region] || {}) : []
   const availableDistricts = form.native_state ? (REGIONS[form.native_region]?.[form.native_state] || []) : []
 
@@ -157,10 +160,7 @@ function EditProfilePageInner() {
       father_occupation: data.father_occupation || '',
       mother_name: data.mother_name || '',
       mother_occupation: data.mother_occupation || '',
-      brothers: (() => { try { return String(JSON.parse(data.siblings || '{}').brothers ?? '') } catch { return '' } })(),
-      sisters: (() => { try { return String(JSON.parse(data.siblings || '{}').sisters ?? '') } catch { return '' } })(),
-      brothers_married: (() => { try { return String(JSON.parse(data.siblings || '{}').brothers_married ?? '') } catch { return '' } })(),
-      sisters_married: (() => { try { return String(JSON.parse(data.siblings || '{}').sisters_married ?? '') } catch { return '' } })(),
+      brothers: '', sisters: '', brothers_married: '', sisters_married: '',
       star: data.star || '',
       rashi: data.rashi || '',
       gotra: data.gotra || '',
@@ -173,6 +173,10 @@ function EditProfilePageInner() {
       pref_age_min: data.pref_age_min ? String(data.pref_age_min) : '21',
       pref_age_max: data.pref_age_max ? String(data.pref_age_max) : '35',
     })
+    try {
+      const s = JSON.parse(data.siblings || '[]')
+      if (Array.isArray(s)) setSiblings(s)
+    } catch { /* ignore */ }
     setHiddenFields(data.hidden_fields || [])
     setCurrentPhotoUrl(data.photo_url || '')
     setVerified(data.phone_verified || false)
@@ -246,20 +250,12 @@ function EditProfilePageInner() {
         father_occupation: form.father_occupation.trim(),
         mother_name: form.mother_name.trim(),
         mother_occupation: form.mother_occupation.trim(),
-        siblings: JSON.stringify({
-          brothers: form.brothers !== '' ? parseInt(form.brothers) : null,
-          sisters: form.sisters !== '' ? parseInt(form.sisters) : null,
-          brothers_married: form.brothers_married !== '' ? parseInt(form.brothers_married) : null,
-          sisters_married: form.sisters_married !== '' ? parseInt(form.sisters_married) : null,
-        }),
+        siblings: siblings.length ? JSON.stringify(siblings) : null,
         siblings_married: (() => {
-          const b = parseInt(form.brothers) || 0
-          const s = parseInt(form.sisters) || 0
-          const bm = parseInt(form.brothers_married) || 0
-          const sm = parseInt(form.sisters_married) || 0
-          if (b + s === 0) return 'No siblings'
-          if (bm + sm === b + s) return 'All married'
-          if (bm + sm === 0) return 'All unmarried'
+          if (!siblings.length) return 'No siblings'
+          const married = siblings.filter(s => s.married).length
+          if (married === siblings.length) return 'All married'
+          if (married === 0) return 'All unmarried'
           return 'Some married, some unmarried'
         })(),
         star: form.star.trim(),
@@ -403,8 +399,14 @@ function EditProfilePageInner() {
             ...(data.father_occupation ? { father_occupation: String(data.father_occupation) } : {}),
             ...(data.mother_name ? { mother_name: String(data.mother_name) } : {}),
             ...(data.mother_occupation ? { mother_occupation: String(data.mother_occupation) } : {}),
-            ...(data.siblings ? { siblings: String(data.siblings) } : {}),
-            ...(data.siblings_married ? { siblings_married: String(data.siblings_married) } : {}),
+            ...(() => {
+              if (!data.siblings) return {}
+              try {
+                const s = typeof data.siblings === 'string' ? JSON.parse(data.siblings) : data.siblings
+                if (Array.isArray(s)) { setSiblings(s); return {} }
+              } catch { return {} }
+              return {}
+            })(),
             ...(data.star ? { star: String(data.star) } : {}),
             ...(data.rashi ? { rashi: String(data.rashi) } : {}),
             ...(data.gotra ? { gotra: String(data.gotra) } : {}),
@@ -434,7 +436,7 @@ function EditProfilePageInner() {
           <p className="font-semibold text-gray-800 mb-4 font-serif-display">Profile Photo</p>
           <div className="flex items-center gap-4 mb-4">
             {(photoPreview || currentPhotoUrl) ? (
-              <img src={photoPreview || currentPhotoUrl} alt="Photo"
+              <img loading="lazy" src={photoPreview || currentPhotoUrl} alt="Photo"
                 className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-200" />
             ) : (
               <div className="w-16 h-16 rounded-full flex items-center justify-center text-gray-400"
@@ -464,7 +466,7 @@ function EditProfilePageInner() {
             <div className="flex flex-wrap gap-2">
               {additionalPhotos.map((url, idx) => (
                 <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden group">
-                  <img src={url} alt={`Photo ${idx + 2}`} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={url} alt={`Photo ${idx + 2}`} className="w-full h-full object-cover" />
                   <button
                     type="button"
                     onClick={() => removeExtraPhoto(url)}
@@ -807,21 +809,39 @@ function EditProfilePageInner() {
             </div>
             <div>
               <Label>Siblings <span className="text-gray-400 font-normal">(optional)</span></Label>
-              <div className="grid grid-cols-2 gap-3 mt-1">
-                {[
-                  { label: 'Brothers', field: 'brothers' },
-                  { label: 'Sisters', field: 'sisters' },
-                  { label: 'Brothers married', field: 'brothers_married' },
-                  { label: 'Sisters married', field: 'sisters_married' },
-                ].map(({ label, field }) => (
-                  <div key={field}>
-                    <p className="text-xs text-gray-500 mb-1">{label}</p>
-                    <select className="input" value={(form as Record<string, string>)[field]} onChange={e => set(field, e.target.value)}>
-                      <option value="">—</option>
-                      {[0,1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
+              <div className="space-y-2 mt-1">
+                {siblings.map((sib, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <input
+                      className="input flex-1"
+                      placeholder="Name"
+                      value={sib.name}
+                      onChange={e => setSiblings(prev => prev.map((s, j) => j === i ? { ...s, name: e.target.value } : s))}
+                    />
+                    <select
+                      className="input w-32"
+                      value={sib.relation}
+                      onChange={e => setSiblings(prev => prev.map((s, j) => j === i ? { ...s, relation: e.target.value } : s))}>
+                      <option value="Brother">Brother</option>
+                      <option value="Sister">Sister</option>
                     </select>
+                    <select
+                      className="input w-32"
+                      value={sib.married ? 'married' : 'unmarried'}
+                      onChange={e => setSiblings(prev => prev.map((s, j) => j === i ? { ...s, married: e.target.value === 'married' } : s))}>
+                      <option value="unmarried">Unmarried</option>
+                      <option value="married">Married</option>
+                    </select>
+                    <button type="button" onClick={() => setSiblings(prev => prev.filter((_, j) => j !== i))}
+                      className="text-gray-400 hover:text-red-500 shrink-0 text-lg leading-none">×</button>
                   </div>
                 ))}
+                <button type="button"
+                  onClick={() => setSiblings(prev => [...prev, { name: '', relation: 'Brother', married: false }])}
+                  className="text-sm font-medium px-3 py-1.5 rounded-lg border"
+                  style={{ borderColor: '#E5E7EB', color: '#9B1C1C' }}>
+                  + Add sibling
+                </button>
               </div>
             </div>
           </div>

@@ -29,12 +29,16 @@ export default function AppHeader() {
       .select('full_name, photo_url, photo_visibility, premium_expires_at, member_number')
       .eq('id', id).maybeSingle()
       .then(({ data }) => {
-        if (data) {
-          setProfileName(data.full_name || '')
-          setPhotoUrl(data.photo_visibility === 'public' ? data.photo_url : null)
-          setMemberNumber(data.member_number ?? null)
-          setIsPremium(!!data.premium_expires_at && new Date(data.premium_expires_at) > new Date())
+        if (!data) {
+          localStorage.removeItem('my_profile_id')
+          localStorage.removeItem('my_user_id')
+          router.replace('/login')
+          return
         }
+        setProfileName(data.full_name || '')
+        setPhotoUrl(data.photo_visibility === 'public' ? data.photo_url : null)
+        setMemberNumber(data.member_number ?? null)
+        setIsPremium(!!data.premium_expires_at && new Date(data.premium_expires_at) > new Date())
       })
 
     supabase.from('interests').select('id', { count: 'exact', head: true })
@@ -51,7 +55,6 @@ export default function AppHeader() {
       })
   }, [])
 
-  // Close menu on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
@@ -67,35 +70,63 @@ export default function AppHeader() {
   function signOut() {
     localStorage.removeItem('my_profile_id')
     localStorage.removeItem('my_user_id')
-    router.push('/login')
+    router.push('/')
   }
 
   const navItems = [
-    { href: '/browse',    label: 'Browse',    active: path.startsWith('/browse') },
+    { href: '/browse',    label: 'Home',      active: path.startsWith('/browse') },
+    { href: '/search',    label: 'Search',    active: path.startsWith('/search') },
     { href: '/interests', label: 'Interests', active: path.startsWith('/interests'), badge: pendingInterests },
     { href: '/chat',      label: 'Chat',      active: path.startsWith('/chat'), badge: unreadMessages },
     { href: '/matches',   label: 'Matches',   active: path.startsWith('/matches') },
   ]
 
   return (
-    <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E5E7EB' }}>
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-        {/* Logo */}
-        <Link href={profileId ? '/browse' : '/'} className="text-lg font-bold font-serif-display shrink-0 tracking-tight">
-          Natiive<span style={{ color: '#9B1C1C' }}>Matrimony</span>
+    <header style={{
+      background: '#FFFFFF',
+      borderBottom: '1px solid #E8E8E8',
+      position: 'sticky', top: 0, zIndex: 40,
+    }}>
+      <div style={{
+        maxWidth: '1120px', margin: '0 auto', padding: '0 20px',
+        height: '60px', display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', gap: '16px',
+      }}>
+
+        {/* Wordmark */}
+        <Link href={profileId ? '/browse' : '/'} style={{ flexShrink: 0, textDecoration: 'none' }}>
+          <span style={{
+            fontFamily: 'var(--font-inter), sans-serif',
+            fontSize: '18px', fontWeight: 800,
+            letterSpacing: '-0.04em', color: '#111111',
+            lineHeight: 1,
+          }}>
+            Native<span style={{ color: '#7F1D1D' }}>Matrimony</span>
+          </span>
         </Link>
 
         {/* Nav links — desktop */}
         {ready && profileId && (
-          <nav className="hidden sm:flex items-center gap-1">
+          <nav style={{ display: 'none', alignItems: 'center', gap: '0px' }} className="hdr-nav">
+            <style>{`.hdr-nav { display: none; } @media(min-width:640px){.hdr-nav{display:flex;}}`}</style>
             {navItems.map(item => (
               <Link key={item.href} href={item.href}
-                className="relative flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-                style={{ color: item.active ? '#7F1D1D' : '#6B7280', background: item.active ? '#FEF2F2' : 'transparent' }}>
+                style={{
+                  position: 'relative', display: 'flex', alignItems: 'center', gap: '5px',
+                  fontSize: '13.5px', fontWeight: item.active ? 700 : 500,
+                  padding: '8px 14px', textDecoration: 'none',
+                  color: item.active ? '#7F1D1D' : '#555555',
+                  borderBottom: item.active ? '2.5px solid #7F1D1D' : '2.5px solid transparent',
+                  marginBottom: '-1px',
+                  transition: 'color 0.15s',
+                }}>
                 {item.label}
                 {(item.badge ?? 0) > 0 && (
-                  <span className="min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-white text-[10px] font-bold px-1"
-                    style={{ background: '#DC2626' }}>
+                  <span style={{
+                    minWidth: '16px', height: '16px', borderRadius: '99px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: '#DC2626', color: 'white', fontSize: '9.5px', fontWeight: 700, padding: '0 4px',
+                  }}>
                     {(item.badge ?? 0) > 9 ? '9+' : item.badge}
                   </span>
                 )}
@@ -105,67 +136,67 @@ export default function AppHeader() {
         )}
 
         {/* Right side */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
           {ready && profileId ? (
             <>
               <NotificationBell />
-              {/* Profile avatar + dropdown */}
-              <div className="relative" ref={menuRef}>
+              <div style={{ position: 'relative' }} ref={menuRef}>
                 <button
                   onClick={() => setMenuOpen(o => !o)}
-                  className="flex items-center justify-center w-8 h-8 rounded-full overflow-hidden ring-2 ring-gray-200 shrink-0 transition-all hover:ring-gray-400"
-                  style={{ outline: 'none' }}>
+                  style={{
+                    width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden',
+                    border: menuOpen ? '2px solid #7F1D1D' : '2px solid #E0E0E0',
+                    cursor: 'pointer', background: 'none', padding: 0,
+                    transition: 'border-color 0.15s',
+                  }}>
                   {photoUrl ? (
-                    <img src={photoUrl} alt={profileName} className="w-full h-full object-cover" />
+                    <img loading="lazy" src={photoUrl} alt={profileName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white text-xs font-bold"
-                      style={{ background: '#7F1D1D' }}>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#7F1D1D', color: 'white', fontSize: '12px', fontWeight: 700 }}>
                       {profileName ? initials(profileName) : (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                        </svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                       )}
                     </div>
                   )}
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-52 rounded-xl border bg-white shadow-lg overflow-hidden z-50"
-                    style={{ borderColor: '#E5E7EB' }}>
-                    {/* Identity row */}
-                    <div className="px-4 py-3 border-b" style={{ borderColor: '#F3F4F6' }}>
-                      <p className="text-sm font-semibold text-gray-800 truncate">{profileName}</p>
+                  <div style={{
+                    position: 'absolute', right: 0, top: 'calc(100% + 8px)',
+                    width: '224px', borderRadius: '12px',
+                    background: 'white', border: '1px solid #E8E8E8',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)', overflow: 'hidden', zIndex: 50,
+                  }}>
+                    <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0F0F0' }}>
+                      <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#111', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileName}</p>
                       {isPremium ? (
-                        <p className="text-xs font-medium mt-0.5" style={{ color: '#7F1D1D' }}>
-                          {memberNumber ? `Founder Member #${memberNumber}` : 'Premium Member'}
+                        <p style={{ fontSize: '11.5px', fontWeight: 600, color: '#7F1D1D', margin: '2px 0 0' }}>
+                          {memberNumber ? `Founder #${memberNumber}` : 'Premium Member'}
                         </p>
                       ) : (
-                        <p className="text-xs text-gray-400 mt-0.5">Free account</p>
+                        <p style={{ fontSize: '11.5px', color: '#999', margin: '2px 0 0' }}>Free account</p>
                       )}
                     </div>
-                    {/* Menu items */}
-                    <div className="py-1">
-                      <Link href={`/profile/${profileId}`}
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        View Profile
-                      </Link>
-                      <Link href="/profile/edit"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                        Edit Profile
-                      </Link>
+                    <div style={{ padding: '6px' }}>
+                      {[
+                        { href: `/profile/${profileId}`, label: 'View Profile', icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4' },
+                        { href: '/profile/edit', label: 'Edit Profile', icon: 'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z' },
+                      ].map(item => (
+                        <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', textDecoration: 'none', color: '#333', fontSize: '13.5px', transition: 'background 0.1s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#F5F5F3')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                            <path d={item.icon} />
+                          </svg>
+                          {item.label}
+                        </Link>
+                      ))}
                       {!isPremium && (
-                        <Link href="/pricing"
-                          onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium hover:bg-gray-50"
-                          style={{ color: '#7F1D1D' }}>
+                        <Link href="/pricing" onClick={() => setMenuOpen(false)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', textDecoration: 'none', color: '#7F1D1D', fontSize: '13.5px', fontWeight: 600, transition: 'background 0.1s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                           </svg>
@@ -173,10 +204,11 @@ export default function AppHeader() {
                         </Link>
                       )}
                     </div>
-                    <div className="border-t py-1" style={{ borderColor: '#F3F4F6' }}>
-                      <button
-                        onClick={signOut}
-                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition-colors">
+                    <div style={{ borderTop: '1px solid #F0F0F0', padding: '6px' }}>
+                      <button onClick={signOut}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer', color: '#999', fontSize: '13.5px', transition: 'all 0.1s', textAlign: 'left' }}
+                        onMouseEnter={e => { (e.currentTarget.style.background = '#F5F5F3'); (e.currentTarget.style.color = '#333') }}
+                        onMouseLeave={e => { (e.currentTarget.style.background = 'transparent'); (e.currentTarget.style.color = '#999') }}>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
                         </svg>
@@ -189,8 +221,14 @@ export default function AppHeader() {
             </>
           ) : ready && (
             <>
-              <Link href="/login" className="text-sm font-medium text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50 hidden sm:block">Login</Link>
-              <Link href="/register" className="btn-primary text-sm px-4 py-1.5">Register Free</Link>
+              <Link href="/login"
+                style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none', transition: 'color 0.15s' }}
+                className="hidden sm:block">
+                Login
+              </Link>
+              <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px' }}>
+                Register Free
+              </Link>
             </>
           )}
         </div>
