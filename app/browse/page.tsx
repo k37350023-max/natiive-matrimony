@@ -475,6 +475,7 @@ export default function BrowsePage() {
   const [sessionChecked, setSessionChecked] = useState(false)
   const [myGender, setMyGender]       = useState<string|null>(null)
   const [myProfileId, setMyProfileId] = useState<string|null>(null)
+  const [aiPicks, setAiPicks]         = useState<{ id: string; full_name: string; photo_url: string | null; photo_visibility: string; profession: string; date_of_birth: string; native_district: string; score: number; reason: string }[]>([])
   const [profiles, setProfiles]       = useState<Profile[]>([])
   const [loading, setLoading]         = useState(false)
   const [stats, setStats]             = useState<Stats|null>(null)
@@ -539,7 +540,8 @@ export default function BrowsePage() {
       supabase.from('matches').select('id',{count:'exact',head:true}).or(`user1.eq.${myId},user2.eq.${myId}`),
       supabase.from('profile_views').select('id',{count:'exact',head:true}).eq('viewed_id',myId),
       supabase.from('shortlists').select('profile_id').eq('by_profile_id',myId),
-    ]).then(([{data:prof},{data:ints},{data:matchRows},sentRes,receivedRes,matchRes,viewsRes,{data:sls}])=>{
+      supabase.from('ai_picks').select('score,reason,suggested_profile_id,profiles!ai_picks_suggested_profile_id_fkey(id,full_name,photo_url,photo_visibility,profession,date_of_birth,native_district)').eq('for_profile_id',myId).order('score',{ascending:false}).limit(6),
+    ]).then(([{data:prof},{data:ints},{data:matchRows},sentRes,receivedRes,matchRes,viewsRes,{data:sls},{data:picksRaw}])=>{
       if (!prof) { localStorage.removeItem('my_profile_id'); setMyProfileId(null) }
       setMyGender(prof?.gender ?? null)
       setMyName(prof?.full_name ?? '')
@@ -565,6 +567,13 @@ export default function BrowsePage() {
       })
 
       setShortlists(new Set((sls||[]).map(s=>s.profile_id)))
+      // Parse ai_picks with joined profile data
+      if (picksRaw) {
+        const picks = picksRaw
+          .filter((r: any) => r.profiles)
+          .map((r: any) => ({ ...r.profiles, score: r.score, reason: r.reason }))
+        setAiPicks(picks)
+      }
       setSessionChecked(true)
     })
   }, [])
@@ -908,6 +917,65 @@ export default function BrowsePage() {
                 {alertSet ? '🔔 Alert set' : '+ Save search'}
               </button>
             </div>
+            {/* ── AI Top Picks ─────────────────────────────── */}
+            {aiPicks.length > 0 && (
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span style={{ fontSize: '16px' }}>✨</span>
+                  <span className="text-sm font-bold text-gray-900">Top Picks for You</span>
+                  <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', background: '#FEF2F2', color: '#7F1D1D', border: '1px solid #FECACA' }}>
+                    AI matched
+                  </span>
+                </div>
+                <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}>
+                  {aiPicks.map(pick => (
+                    <Link key={pick.id} href={`/profile/${pick.id}`}
+                      style={{ textDecoration: 'none', flexShrink: 0, width: '140px' }}>
+                      <div style={{
+                        borderRadius: '16px', overflow: 'hidden',
+                        border: '1px solid #F0EDEA', background: 'white',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                      }}>
+                        {/* Photo */}
+                        <div style={{ position: 'relative', height: '160px', background: '#FEF2F2' }}>
+                          {pick.photo_url && pick.photo_visibility !== 'hidden' ? (
+                            <img src={pick.photo_url} alt={pick.full_name}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ) : (
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px' }}>
+                              👤
+                            </div>
+                          )}
+                          {/* Score badge */}
+                          <div style={{
+                            position: 'absolute', top: '8px', right: '8px',
+                            background: 'rgba(127,29,29,0.90)', backdropFilter: 'blur(4px)',
+                            color: 'white', fontSize: '10px', fontWeight: 800,
+                            padding: '3px 7px', borderRadius: '99px',
+                          }}>
+                            {Math.min(pick.score, 99)}% match
+                          </div>
+                        </div>
+                        {/* Info */}
+                        <div style={{ padding: '10px 10px 12px' }}>
+                          <p style={{ fontSize: '12px', fontWeight: 700, color: '#111827', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {pick.full_name.split(' ')[0]}
+                          </p>
+                          <p style={{ fontSize: '11px', color: '#6B7280', margin: 0 }}>
+                            {pick.profession?.split(' ').slice(0,2).join(' ')}
+                          </p>
+                          <p style={{ fontSize: '10px', color: '#9CA3AF', margin: '2px 0 0' }}>
+                            📍 {pick.native_district}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <hr className="mt-4 mb-1 border-gray-100" />
+              </div>
+            )}
+
             {/* New Arrivals */}
             {newArrivals.length > 0 && (
               <div className="mb-5">
