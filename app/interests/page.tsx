@@ -212,15 +212,14 @@ function InterestsPageInner() {
   const ProfileCard = ({ i, showActions, isMatched }: { i: Interest; showActions?: boolean; isMatched?: boolean }) => {
     const seenLabel = lastSeenBadge(i.profile.last_login_at)
     return (
-      <div className="card p-4">
+      <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #F0EDEA', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
         <div className="flex items-start gap-3">
           <Link href={`/profile/${i.profile.id}`} className="shrink-0">
             {i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
               <img loading="lazy" src={i.profile.photo_url} alt={i.profile.full_name}
-                className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100" />
+                style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #F0EDEA' }} />
             ) : (
-              <div className="w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                style={{ background: avatarBg(i.profile.full_name) }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '15px', fontWeight: 700, background: avatarBg(i.profile.full_name) }}>
                 {initials(i.profile.full_name)}
               </div>
             )}
@@ -270,13 +269,11 @@ function InterestsPageInner() {
               View Profile
             </Link>
             <button onClick={() => respond(i.id, i.from_user, true)}
-              className="flex-1 py-2 text-white text-sm font-semibold rounded-lg"
-              style={{ background: '#059669' }}>
+              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#059669', color: 'white' }}>
               Accept
             </button>
             <button onClick={() => respond(i.id, i.from_user, false)}
-              className="flex-1 py-2 text-sm font-semibold rounded-lg border"
-              style={{ borderColor: '#EDE8E0', color: '#6B7280' }}>
+              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #E5E7EB', cursor: 'pointer', background: 'white', color: '#6B7280' }}>
               Decline
             </button>
           </div>
@@ -320,8 +317,7 @@ function InterestsPageInner() {
                 View Profile
               </Link>
               <Link href="/matches"
-                className="flex-1 py-2 text-center text-white text-sm font-semibold rounded-lg"
-                style={{ background: '#9B1C1C' }}>
+                style={{ flex: 1, padding: '9px', textAlign: 'center', fontSize: '13px', fontWeight: 700, borderRadius: '12px', background: '#7F1D1D', color: 'white', textDecoration: 'none', display: 'block' }}>
                 Open Chat
               </Link>
             </div>

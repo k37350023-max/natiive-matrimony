@@ -221,14 +221,14 @@ function ProfileCard({
     <div
       onClick={onClick}
       style={{
-        position: 'relative', borderRadius: '12px', overflow: 'hidden',
+        position: 'relative', borderRadius: '14px', overflow: 'hidden',
         background: 'white', cursor: 'pointer',
-        border: '1px solid #E8E8E8',
-        boxShadow: '0 1px 4px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)',
-        transition: 'box-shadow 0.2s, transform 0.2s',
+        border: '1px solid #F0EDEA',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.06), 0 0 0 0 transparent',
+        transition: 'box-shadow 0.2s, transform 0.18s',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 6px 24px rgba(0,0,0,0.10)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 4px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 8px 28px rgba(0,0,0,0.13)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-3px)' }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 2px 8px rgba(0,0,0,0.06)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
       {/* Photo / placeholder */}
       <div style={{ position: 'relative', paddingBottom: '118%', overflow: 'hidden' }}>
@@ -300,36 +300,36 @@ function ProfileCard({
       </div>
 
       {/* Info */}
-      <div style={{ padding: '12px 13px 14px' }}>
+      <div style={{ padding: '11px 12px 13px' }}>
         {!showPhoto && (
-          <p style={{ fontWeight: 700, color: '#0F0F0F', fontSize: '14px', lineHeight: 1.3, margin: '0 0 3px' }}>
+          <p style={{ fontWeight: 700, color: '#111827', fontSize: '14px', lineHeight: 1.3, margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {p.full_name.split(' ').slice(0,2).join(' ')}
             <span style={{ fontWeight: 400, color: '#9CA3AF', fontSize: '12px', marginLeft: '5px' }}>
-              {age ? `${age} yrs` : ''}{p.height_cm ? ` · ${cmToFeet(p.height_cm)}` : ''}
+              {age ? `${age}` : ''}{p.height_cm ? ` · ${cmToFeet(p.height_cm)}` : ''}
             </span>
           </p>
         )}
-        <p style={{ fontSize: '12.5px', fontWeight: 600, color: '#374151', margin: '0 0 4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <p style={{ fontSize: '12px', fontWeight: 500, color: '#4B5563', margin: '0 0 5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {p.profession || '—'}
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#C4C4C4" strokeWidth="2.5" strokeLinecap="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-          </svg>
-          <p style={{ fontSize: '11px', color: '#9CA3AF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {[p.native_district, p.current_city].filter(Boolean).join(' · ')}
-          </p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
-          {seenLabel && (
-            <p style={{ fontSize: '10.5px', fontWeight: 600, color: '#7F1D1D', margin: 0 }}>{seenLabel}</p>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '3px', minWidth: 0 }}>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2.5" strokeLinecap="round" style={{ flexShrink: 0 }}>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <p style={{ fontSize: '10.5px', color: '#9CA3AF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {p.native_district || p.current_city || '—'}
+            </p>
+          </div>
           {p.profile_created_by === 'parent' && (
-            <span style={{ fontSize: '9.5px', fontWeight: 700, padding: '2px 6px', borderRadius: '99px', background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A', marginLeft: 'auto' }}>
+            <span style={{ fontSize: '9px', fontWeight: 700, padding: '2px 5px', borderRadius: '99px', background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A', flexShrink: 0, marginLeft: '4px' }}>
               By Parent
             </span>
           )}
         </div>
+        {seenLabel && (
+          <p style={{ fontSize: '10px', fontWeight: 600, margin: '4px 0 0', color: seenLabel === 'Active now' ? '#059669' : seenLabel.includes('m ago') || seenLabel.includes('h ago') ? '#0369A1' : '#9CA3AF' }}>{seenLabel}</p>
+        )}
       </div>
     </div>
   )
@@ -914,7 +914,7 @@ export default function BrowsePage() {
                 <div className="flex items-center gap-2 mb-2.5">
                   <span className="text-sm font-bold text-gray-900">New this week</span>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {newArrivals.map((p, idx) => (
                     <ProfileCard key={p.id} p={p} status={interestMap[p.id]}
                       shortlisted={shortlists.has(p.id)}

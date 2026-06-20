@@ -93,16 +93,16 @@ function MiniAvatar({ p, size = 40 }: { p: ViewerProfile; size?: number }) {
 /* ─── Stat card ──────────────────────────────────────────────── */
 function StatCard({ value, label, sub, color, icon, href }: { value: number | string; label: string; sub?: string; color: string; icon: React.ReactNode; href?: string }) {
   const inner = (
-    <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', padding: '16px', display: 'flex', gap: '14px', alignItems: 'center', transition: 'box-shadow 0.15s' }}
-      onMouseEnter={e => href && (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)')}
-      onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}>
-      <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: color + '18', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+    <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #F0EDEA', padding: '18px 16px', display: 'flex', gap: '14px', alignItems: 'center', transition: 'box-shadow 0.18s, transform 0.18s', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
+      onMouseEnter={e => href && ((e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.10)'), (e.currentTarget.style.transform = 'translateY(-1px)'))}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'none' }}>
+      <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: `1px solid ${color}25` }}>
         {icon}
       </div>
-      <div>
-        <p style={{ fontSize: '24px', fontWeight: 800, color: '#111', margin: 0, lineHeight: 1 }}>{value}</p>
-        <p style={{ fontSize: '12px', fontWeight: 600, color: '#555', margin: '3px 0 0' }}>{label}</p>
-        {sub && <p style={{ fontSize: '11px', color: '#9CA3AF', margin: '1px 0 0' }}>{sub}</p>}
+      <div style={{ minWidth: 0 }}>
+        <p style={{ fontSize: '26px', fontWeight: 800, color: '#0F0F0F', margin: 0, lineHeight: 1, letterSpacing: '-0.02em' }}>{value}</p>
+        <p style={{ fontSize: '12px', fontWeight: 600, color: '#374151', margin: '3px 0 0', whiteSpace: 'nowrap' }}>{label}</p>
+        {sub && <p style={{ fontSize: '10.5px', color: '#9CA3AF', margin: '2px 0 0' }}>{sub}</p>}
       </div>
     </div>
   )

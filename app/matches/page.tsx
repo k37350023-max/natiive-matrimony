@@ -142,14 +142,14 @@ export default function MatchesPage() {
         {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}
 
         {!loading && matches.length === 0 && (
-          <div className="card p-12 text-center">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#FEF2F2' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #F0EDEA', padding: '56px 24px', textAlign: 'center' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </div>
-            <p className="font-semibold text-gray-700">No conversations yet</p>
-            <p className="text-sm text-gray-400 mt-1 mb-6">Express interest on a profile to start chatting immediately.</p>
+            <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No conversations yet</p>
+            <p style={{ fontSize: '13px', color: '#9CA3AF', marginBottom: '24px' }}>Express interest on a profile to start chatting immediately.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Profiles</Link>
           </div>
         )}
@@ -158,85 +158,107 @@ export default function MatchesPage() {
           {matches.map(p => {
             const seenLabel = lastSeenLabel(p.last_login_at)
             return (
-              <div key={p.id} className="card p-4">
-                <div className="flex items-center gap-3">
+              <div key={p.id} style={{
+                background: 'white', borderRadius: '16px',
+                border: '1px solid #F0EDEA',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                padding: '16px',
+                transition: 'box-shadow 0.15s',
+              }}>
+                <div className="flex items-center gap-4">
                   {/* Avatar */}
-                  {p.photo_url && p.photo_visibility !== 'hidden' ? (
-                    <img loading="lazy" src={p.photo_url} alt={p.full_name}
-                      className="w-12 h-12 rounded-full object-cover shrink-0 ring-2 ring-gray-100" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-base shrink-0"
-                      style={{ background: '#FEF2F2', color: '#9B1C1C' }}>
-                      {initials(p.full_name)}
-                    </div>
-                  )}
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    {p.photo_url && p.photo_visibility !== 'hidden' ? (
+                      <img loading="lazy" src={p.photo_url} alt={p.full_name}
+                        style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #F0EDEA' }} />
+                    ) : (
+                      <div style={{
+                        width: '52px', height: '52px', borderRadius: '50%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontWeight: 700, fontSize: '16px',
+                        background: 'linear-gradient(135deg, #7F1D1D, #9B1C1C)',
+                        color: 'white',
+                      }}>
+                        {initials(p.full_name)}
+                      </div>
+                    )}
+                    {p.is_mutual && (
+                      <div style={{
+                        position: 'absolute', bottom: 0, right: -2,
+                        width: '16px', height: '16px', borderRadius: '50%',
+                        background: '#059669', border: '2px solid white',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Name + preview */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="font-bold text-gray-900 text-sm truncate">{p.full_name}</span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${p.is_mutual ? 'text-green-700' : 'text-gray-500'}`}
-                          style={{ background: p.is_mutual ? '#ECFDF5' : '#F3F4F6' }}>
-                          {p.is_mutual ? 'Matched ✓' : 'Interested'}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+                        <span style={{ fontWeight: 700, fontSize: '14px', color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.full_name}</span>
+                        <span style={{
+                          fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', flexShrink: 0,
+                          background: p.is_mutual ? '#ECFDF5' : '#F3F4F6',
+                          color: p.is_mutual ? '#065F46' : '#6B7280',
+                        }}>
+                          {p.is_mutual ? 'Matched' : 'Interested'}
                         </span>
                       </div>
                       {p.last_message_at && (
-                        <span className="text-[11px] text-gray-400 shrink-0">{msgTimestamp(p.last_message_at)}</span>
+                        <span style={{ fontSize: '11px', color: '#9CA3AF', flexShrink: 0 }}>{msgTimestamp(p.last_message_at)}</span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p style={{ fontSize: '12px', color: '#6B7280', marginTop: '3px' }}>
                       {getAge(p.date_of_birth)} yrs · {p.profession || p.native_district}
                     </p>
                     {p.last_message ? (
-                      <p className="text-xs text-gray-400 mt-0.5 truncate">{p.last_message}</p>
+                      <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.last_message}</p>
+                    ) : p.is_mutual ? (
+                      <p style={{ fontSize: '12px', color: '#059669', fontWeight: 500, marginTop: '3px' }}>Say hello — you're connected!</p>
                     ) : (
-                      <p className="text-xs mt-0.5" style={{ color: '#9B1C1C' }}>
-                        {seenLabel || `Native: ${p.native_district}`}
-                      </p>
+                      <p style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '3px' }}>{seenLabel || `Native: ${p.native_district}`}</p>
                     )}
                   </div>
                 </div>
 
                 {p.pending_interest_id && (
-                  <div className="mt-3 flex gap-2">
+                  <div style={{ marginTop: '14px', display: 'flex', gap: '10px' }}>
                     <button
                       onClick={() => respond(p.pending_interest_id!, true, p.match_id)}
                       disabled={responding === p.pending_interest_id}
-                      className="flex-1 py-2 text-sm font-bold rounded-xl text-white transition-all"
-                      style={{ background: '#16A34A' }}>
+                      style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#059669', color: 'white', transition: 'opacity 0.15s' }}>
                       Accept
                     </button>
                     <button
                       onClick={() => respond(p.pending_interest_id!, false, p.match_id)}
                       disabled={responding === p.pending_interest_id}
-                      className="flex-1 py-2 text-sm font-bold rounded-xl border transition-all"
-                      style={{ borderColor: '#FCA5A5', color: '#DC2626' }}>
+                      style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #FCA5A5', cursor: 'pointer', background: 'white', color: '#DC2626', transition: 'opacity 0.15s' }}>
                       Decline
                     </button>
                   </div>
                 )}
 
-                {!p.pending_interest_id && !p.last_message && p.is_mutual && (
-                  <p className="text-xs mt-2 font-medium" style={{ color: '#059669' }}>
-                    You're connected — say hello in chat 👋
-                  </p>
-                )}
-
                 {/* Action buttons */}
-                {!p.pending_interest_id && <div className="flex gap-2 mt-3">
-                  <Link href={`/profile/${p.id}`}
-                    style={{ padding: '7px 14px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', border: '1px solid #E5E7EB', color: '#6B7280', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                    View Profile
-                  </Link>
-                  <Link href={`/chat/${p.match_id}`}
-                    style={{ padding: '7px 16px', fontSize: '12px', fontWeight: 600, borderRadius: '9999px', background: '#7F1D1D', color: 'white', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                    </svg>
-                    Message
-                  </Link>
-                </div>}
+                {!p.pending_interest_id && (
+                  <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
+                    <Link href={`/profile/${p.id}`}
+                      style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600, borderRadius: '99px', border: '1px solid #E5E7EB', color: '#374151', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+                      View Profile
+                    </Link>
+                    <Link href={`/chat/${p.match_id}`}
+                      style={{ padding: '8px 18px', fontSize: '12px', fontWeight: 700, borderRadius: '99px', background: '#7F1D1D', color: 'white', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                      </svg>
+                      Message
+                    </Link>
+                  </div>
+                )}
               </div>
             )
           })}
