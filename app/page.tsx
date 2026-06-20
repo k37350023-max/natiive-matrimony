@@ -3,6 +3,9 @@ import HomeHeader from './components/HomeHeader'
 import HeroCTA from './components/HeroCTA'
 import FounderTracker from './components/FounderTracker'
 import LaunchBanner from './components/LaunchBanner'
+import LiveCounters from './components/LiveCounters'
+import HowItWorks from './components/HowItWorks'
+import FAQSection from './components/FAQSection'
 import Link from 'next/link'
 
 export default function Home() {
@@ -43,29 +46,9 @@ export default function Home() {
           <LaunchBanner />
         </div>
 
-        {/* ── Trust stats ──────────────────────────────────── */}
+        {/* ── Live counters ─────────────────────────────────── */}
         <div style={{ maxWidth: '560px', margin: '32px auto', padding: '0 20px' }}>
-          <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3,1fr)',
-            background: 'white', borderRadius: '16px',
-            border: '1px solid rgba(0,0,0,0.06)',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
-            overflow: 'hidden',
-          }}>
-            {[
-              { n: '1,000', label: 'Free premium spots' },
-              { n: 'Private', label: 'Photos until match' },
-              { n: 'Telugu', label: 'Families only' },
-            ].map(({ n, label }, i) => (
-              <div key={n} style={{
-                textAlign: 'center', padding: '20px 12px',
-                borderRight: i < 2 ? '1px solid #F3F4F6' : 'none',
-              }}>
-                <p className="font-serif-display" style={{ fontWeight: 700, color: '#0F0F0F', fontSize: '20px', margin: '0 0 2px' }}>{n}</p>
-                <p style={{ fontSize: '11.5px', color: '#9CA3AF', margin: 0 }}>{label}</p>
-              </div>
-            ))}
-          </div>
+          <LiveCounters />
         </div>
 
         {/* ── Map section ──────────────────────────────────── */}
@@ -102,6 +85,9 @@ export default function Home() {
             </Link>
           </div>
         </div>
+
+        {/* ── How it works ─────────────────────────────────── */}
+        <HowItWorks />
 
         {/* ── Feature cards ────────────────────────────────── */}
         <section style={{ maxWidth: '900px', margin: '0 auto 80px', padding: '0 20px' }}>
@@ -153,6 +139,9 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* ── FAQ ──────────────────────────────────────────── */}
+        <FAQSection />
 
         {/* ── Bottom CTA ───────────────────────────────────── */}
         <section style={{ padding: '0 20px 80px' }}>
