@@ -6,6 +6,7 @@ import Link from 'next/link'
 import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
+import AppFooter from '../components/AppFooter'
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const REGIONS: Record<string, Record<string, string[]>> = {
@@ -1014,6 +1015,7 @@ export default function BrowsePage() {
         </div>
       </div>
 
+      <AppFooter />
       <MobileNav />
 
       {/* ── Quick-view modal ─────────────────────────────────── */}

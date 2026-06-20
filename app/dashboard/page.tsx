@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import AppHeader from '../components/AppHeader'
 import MobileNav from '../components/MobileNav'
+import AppFooter from '../components/AppFooter'
 
 type Profile = {
   id: string; full_name: string; gender: string; date_of_birth: string | null
@@ -392,6 +393,7 @@ export default function DashboardPage() {
         </div>
 
       </div>
+      <AppFooter />
       <MobileNav />
     </div>
   )

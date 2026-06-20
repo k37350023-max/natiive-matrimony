@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import HomeHeader from '../components/HomeHeader'
+import AppFooter from '../components/AppFooter'
 
 const GOAL = 1000
 
@@ -213,6 +214,7 @@ export default function PricingPage() {
         </div>
 
       </div>
+      <AppFooter />
     </div>
   )
 }

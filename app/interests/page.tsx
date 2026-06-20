@@ -6,6 +6,7 @@ import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
 import LaunchBanner from '../components/LaunchBanner'
 import AppHeader from '../components/AppHeader'
+import AppFooter from '../components/AppFooter'
 
 type Interest = {
   id: string
@@ -505,6 +506,7 @@ function InterestsPageInner() {
           )
         )}
       </div>
+      <AppFooter />
       <MobileNav />
     </div>
   )
