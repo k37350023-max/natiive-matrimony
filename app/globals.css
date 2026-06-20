@@ -7,7 +7,7 @@
   --primary-light: #FEF2F2;
   --primary-ring: rgba(127,29,29,0.15);
 
-  --border: #E8E8E8;
+  --border: #F0EDEA;
   --border-light: #F0F0F0;
   --bg: #F5F3F0;
   --surface: #FFFFFF;
@@ -70,23 +70,25 @@ select.input {
   background: var(--primary);
   color: white;
   padding: 0.68rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-weight: 700;
   font-size: 0.9375rem;
   font-family: var(--font-inter), sans-serif;
   border: none;
   cursor: pointer;
-  transition: background 0.15s, box-shadow 0.15s;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  letter-spacing: 0;
+  letter-spacing: -0.01em;
   text-decoration: none;
+  box-shadow: 0 1px 3px rgba(127,29,29,0.2);
 }
 .btn-primary:hover {
   background: var(--primary-hover);
-  box-shadow: 0 4px 14px rgba(127,29,29,0.28);
+  box-shadow: 0 6px 18px rgba(127,29,29,0.32);
+  transform: translateY(-1px);
 }
 .btn-primary:active { opacity: 0.92; }
 .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
@@ -131,16 +133,16 @@ select.input {
 /* ── Cards ── */
 .card {
   background: var(--surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.04);
+  border-radius: 16px;
+  border: 1px solid #F0EDEA;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
 }
 .card-hover {
   transition: box-shadow 0.2s, transform 0.2s;
 }
 .card-hover:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.10);
-  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+  transform: translateY(-1px);
 }
 
 /* ── Badges ── */
