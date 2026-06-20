@@ -282,18 +282,49 @@ function InterestsPageInner() {
         )}
 
         {isMatched && (
-          <div className="flex gap-2 mt-3">
-            <Link href={`/profile/${i.profile.id}`}
-              className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
-              style={{ borderColor: '#E5E7EB', color: '#4B5563' }}>
-              View Profile
-            </Link>
-            <Link href="/matches"
-              className="flex-1 py-2 text-center text-white text-sm font-semibold rounded-lg"
-              style={{ background: '#9B1C1C' }}>
-              Open Chat
-            </Link>
-          </div>
+          <>
+            {/* Contact info unlock on match */}
+            {((i.profile as any).phone || (i.profile as any).email) && (
+              <div className="mt-3 px-3 py-2.5 rounded-xl flex flex-wrap gap-3"
+                style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
+                <span className="text-xs font-semibold text-green-700">Contact unlocked</span>
+                {(i.profile as any).phone && (
+                  <a href={`tel:${(i.profile as any).phone}`}
+                    className="text-xs font-semibold flex items-center gap-1"
+                    style={{ color: '#065F46', textDecoration: 'none' }}>
+                    📞 {(i.profile as any).phone}
+                  </a>
+                )}
+                {(i.profile as any).phone && (
+                  <a href={`https://wa.me/91${(i.profile as any).phone?.replace(/\D/g,'')}`}
+                    target="_blank" rel="noopener noreferrer"
+                    className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                    style={{ background: '#25D366', color: 'white', textDecoration: 'none' }}>
+                    WhatsApp
+                  </a>
+                )}
+                {(i.profile as any).email && (
+                  <a href={`mailto:${(i.profile as any).email}`}
+                    className="text-xs font-semibold"
+                    style={{ color: '#065F46', textDecoration: 'none' }}>
+                    ✉️ {(i.profile as any).email}
+                  </a>
+                )}
+              </div>
+            )}
+            <div className="flex gap-2 mt-3">
+              <Link href={`/profile/${i.profile.id}`}
+                className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
+                style={{ borderColor: '#E5E7EB', color: '#4B5563' }}>
+                View Profile
+              </Link>
+              <Link href="/matches"
+                className="flex-1 py-2 text-center text-white text-sm font-semibold rounded-lg"
+                style={{ background: '#9B1C1C' }}>
+                Open Chat
+              </Link>
+            </div>
+          </>
         )}
 
         {!showActions && !isMatched && i.status === 'pending' && (

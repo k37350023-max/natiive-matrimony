@@ -180,6 +180,10 @@ export default function ProfilePage() {
   const [viewers, setViewers] = useState<ViewerEntry[]>([])
   const [incomingRequests, setIncomingRequests] = useState<IncomingRequest[]>([])
   const [approvingReq, setApprovingReq] = useState<string | null>(null)
+  // Similar profiles & compatibility
+  const [similarProfiles, setSimilarProfiles] = useState<{id:string;full_name:string;profession:string;native_district:string;date_of_birth:string;photo_url:string|null;photo_visibility:string|null}[]>([])
+  const [myAge, setMyAge] = useState<number|null>(null)
+  const [compatScore, setCompatScore] = useState<{match:number;total:number}|null>(null)
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
@@ -192,6 +196,9 @@ export default function ProfilePage() {
       if (myId !== (id as string)) {
         logView(myId)
         loadFieldRequest(myId)
+        // Fetch my age for compat check
+        supabase.from('profiles').select('date_of_birth').eq('id', myId).maybeSingle()
+          .then(({data}) => { if (data?.date_of_birth) setMyAge(getAge(data.date_of_birth)) })
       } else {
         loadViewers()
         loadIncomingRequests()
@@ -206,6 +213,38 @@ export default function ProfilePage() {
       .from('profile_photos').select('url').eq('profile_id', id).order('position')
     setExtraPhotos((photos || []).map(p => p.url))
     setLoading(false)
+
+    // Similar profiles: same district or profession, different person
+    if (data) {
+      const { data: similar } = await supabase.from('profiles')
+        .select('id,full_name,profession,native_district,date_of_birth,photo_url,photo_visibility')
+        .eq('status', 'approved')
+        .eq('gender', data.gender)
+        .or(`native_district.eq.${data.native_district},profession.ilike.%${(data.profession||'').split(' ')[0]}%`)
+        .neq('id', id as string)
+        .limit(6)
+      setSimilarProfiles((similar || []).filter(p => p.id !== myId).slice(0, 4))
+    }
+
+    // Compatibility score: how many of viewer's prefs does this profile match
+    if (myId && data) {
+      const { data: me } = await supabase.from('profiles')
+        .select('date_of_birth,pref_age_min,pref_age_max,religion,caste,mother_tongue,native_district')
+        .eq('id', myId).maybeSingle()
+      if (me) {
+        let match = 0; let total = 0
+        const profileAge = getAge(data.date_of_birth)
+        if (me.pref_age_min || me.pref_age_max) {
+          total++
+          if (profileAge && profileAge >= (me.pref_age_min || 0) && profileAge <= (me.pref_age_max || 99)) match++
+        }
+        if (me.religion) { total++; if (data.religion?.toLowerCase() === me.religion?.toLowerCase()) match++ }
+        if (me.caste) { total++; if (data.caste?.toLowerCase() === me.caste?.toLowerCase()) match++ }
+        if (me.mother_tongue) { total++; if (data.mother_tongue?.toLowerCase() === me.mother_tongue?.toLowerCase()) match++ }
+        if (me.native_district) { total++; if (data.native_district === me.native_district) match++ }
+        if (total > 0) setCompatScore({ match, total })
+      }
+    }
   }
 
   async function logView(myId: string) {
@@ -997,6 +1036,24 @@ export default function ProfilePage() {
           )
         })()}
 
+        {/* Compatibility bar — only shown to non-owners who are logged in */}
+        {compatScore && !isOwnProfile && myProfileId && (
+          <div className="card px-6 py-4">
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 10px' }}>Compatibility</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ flex: 1, height: '8px', borderRadius: '99px', background: '#F3F4F6', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${Math.round((compatScore.match / compatScore.total) * 100)}%`, borderRadius: '99px', background: compatScore.match >= compatScore.total * 0.7 ? '#16A34A' : compatScore.match >= compatScore.total * 0.4 ? '#D97706' : '#9B1C1C', transition: 'width 0.8s ease' }} />
+              </div>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F0F0F', whiteSpace: 'nowrap' }}>
+                {compatScore.match}/{compatScore.total} match
+              </span>
+            </div>
+            <p style={{ fontSize: '11.5px', color: '#9CA3AF', margin: '6px 0 0' }}>
+              Based on age, religion, caste, mother tongue, and native place
+            </p>
+          </div>
+        )}
+
         {/* Full biodata — always visible, hidden fields blurred */}
         <div className="card px-6 py-5">
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 16px' }}>Full biodata</p>
@@ -1070,6 +1127,42 @@ export default function ProfilePage() {
           )
         })()}
       </div>
+
+      {/* Similar profiles row */}
+      {similarProfiles.length > 0 && (
+        <div className="card px-6 py-5">
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 14px' }}>Similar profiles</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+            {similarProfiles.map(p => {
+              const age = getAge(p.date_of_birth)
+              const showPhoto = !!(p.photo_url && p.photo_visibility === 'public')
+              return (
+                <Link key={p.id} href={`/profile/${p.id}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '10px', border: '1px solid #F3F4F6', textDecoration: 'none', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = '#FAFAFA'}
+                  onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
+                    {showPhoto ? (
+                      <img loading="lazy" src={p.photo_url!} alt={p.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#9B1C1C', color: 'white', fontSize: '14px', fontWeight: 700 }}>
+                        {p.full_name.slice(0,2).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <div style={{ minWidth: 0 }}>
+                    <p style={{ fontSize: '13px', fontWeight: 700, color: '#0F0F0F', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {p.full_name.split(' ')[0]}{age ? `, ${age}` : ''}
+                    </p>
+                    <p style={{ fontSize: '11px', color: '#9CA3AF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {p.native_district || p.profession || '—'}
+                    </p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Report modal trigger is now in header bar */}
 

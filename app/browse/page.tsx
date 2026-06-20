@@ -45,6 +45,13 @@ const MARITAL_OPTIONS = [
   { value: 'divorced',      label: 'Divorced' },
   { value: 'widowed',       label: 'Widowed' },
 ]
+const ACTIVE_WITHIN_OPTS = [
+  { label: '24h', hours: 24 },
+  { label: '7 days', hours: 168 },
+  { label: '30 days', hours: 720 },
+]
+const INCOME_RANGES = ['Below ₹3L','₹3L–6L','₹6L–10L','₹10L–20L','₹20L–50L','₹50L+']
+const PAGE_SIZE = 18
 
 /* ─── Types ──────────────────────────────────────────────────── */
 type Profile = {
@@ -56,7 +63,7 @@ type Profile = {
   marital_status: string | null; last_login_at: string | null
   mother_tongue: string | null; created_at: string; religion: string | null
   family_type: string | null; user_id: string | null; hidden_fields: string[] | null
-  member_number: number | null
+  member_number: number | null; profile_by: string | null; annual_income: string | null
 }
 
 type Stats = { interestsSent: number; interestsReceived: number; matches: number; profileViews: number }
@@ -312,9 +319,16 @@ function ProfileCard({
             {[p.native_district, p.current_city].filter(Boolean).join(' · ')}
           </p>
         </div>
-        {seenLabel && (
-          <p style={{ fontSize: '10.5px', fontWeight: 600, color: '#7F1D1D', margin: '4px 0 0' }}>{seenLabel}</p>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '4px' }}>
+          {seenLabel && (
+            <p style={{ fontSize: '10.5px', fontWeight: 600, color: '#7F1D1D', margin: 0 }}>{seenLabel}</p>
+          )}
+          {p.profile_by === 'parent' && (
+            <span style={{ fontSize: '9.5px', fontWeight: 700, padding: '2px 6px', borderRadius: '99px', background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A', marginLeft: 'auto' }}>
+              By Parent
+            </span>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -329,6 +343,8 @@ function Filters({
   setHeightRange, toggleMotherTongue, setCasteFilter, setReligionFilter,
   setEducationFilter, setPhotoOnly, setRecentOnly, setShowViewed, setIgnorePrefs, clearAll,
   availableStates, availableDistricts, handleMapRegion,
+  activeWithin, setActiveWithin, verifiedOnly, setVerifiedOnly,
+  profileByFilter, setProfileByFilter, incomeFilter, setIncomeFilter,
 }: {
   region: string; state: string; district: string; ageRange: string; profCat: string
   maritalFilter: string; heightRange: string; motherTongues: string[]; casteFilter: string
@@ -342,6 +358,10 @@ function Filters({
   setShowViewed: (v:boolean)=>void; setIgnorePrefs: (v:boolean)=>void; clearAll: ()=>void
   availableStates: string[]; availableDistricts: string[]
   handleMapRegion: (r:string)=>void
+  activeWithin: string; setActiveWithin: (v:string)=>void
+  verifiedOnly: boolean; setVerifiedOnly: (v:boolean)=>void
+  profileByFilter: string; setProfileByFilter: (v:string)=>void
+  incomeFilter: string; setIncomeFilter: (v:string)=>void
 }) {
   const chip = (active: boolean, onClick: ()=>void, label: string) =>
     <Chip key={label} active={active} onClick={onClick} label={label} />
@@ -406,10 +426,26 @@ function Filters({
         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Education</p>
         <div className="flex flex-wrap gap-1">{EDUCATION_LEVELS.map(e=>chip(educationFilter===e,()=>setEducationFilter(educationFilter===e?'':e),e))}</div>
       </div>
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Annual Income</p>
+        <div className="flex flex-wrap gap-1">{INCOME_RANGES.map(r=>chip(incomeFilter===r,()=>setIncomeFilter(incomeFilter===r?'':r),r))}</div>
+      </div>
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Active within</p>
+        <div className="flex flex-wrap gap-1">{ACTIVE_WITHIN_OPTS.map(o=>chip(activeWithin===o.label,()=>setActiveWithin(activeWithin===o.label?'':o.label),o.label))}</div>
+      </div>
+      <div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Profile by</p>
+        <div className="flex flex-wrap gap-1">
+          {chip(profileByFilter==='self',()=>setProfileByFilter(profileByFilter==='self'?'':'self'),'Self')}
+          {chip(profileByFilter==='parent',()=>setProfileByFilter(profileByFilter==='parent'?'':'parent'),'Parent')}
+        </div>
+      </div>
 
       <div className="pt-1 space-y-2 border-t" style={{ borderColor: '#F3F4F6' }}>
         {[
           [photoOnly, setPhotoOnly, 'With photo only'],
+          [verifiedOnly, setVerifiedOnly, 'Verified only'],
           [recentOnly, setRecentOnly, 'Joined last 30 days'],
           [showViewed, setShowViewed, 'Hide profiles I\'ve viewed'],
           [ignorePrefs, setIgnorePrefs, 'Ignore age/height prefs'],
@@ -463,6 +499,12 @@ export default function BrowsePage() {
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const [ignorePrefs,     setIgnorePrefs]     = useState(false)
   const [viewedIds,       setViewedIds]       = useState<Set<string>>(new Set())
+  const [activeWithin,    setActiveWithin]    = useState('')
+  const [verifiedOnly,    setVerifiedOnly]    = useState(false)
+  const [profileByFilter, setProfileByFilter] = useState('')
+  const [incomeFilter,    setIncomeFilter]    = useState('')
+  const [sortBy,          setSortBy]          = useState<'newest'|'last_active'|'best_match'>('newest')
+  const [page,            setPage]            = useState(1)
 
   const [showSidebar,     setShowSidebar]     = useState(false)
   const [alertSet,        setAlertSet]        = useState(false)
@@ -556,10 +598,11 @@ export default function BrowsePage() {
   }, [myProfileId, oppositeGender, myNativeDistrict])
 
   useEffect(() => {
-    if (sessionChecked) loadProfiles()
+    if (sessionChecked) { setPage(1); loadProfiles() }
   }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat, maritalFilter,
       heightRange, motherTongues, casteFilter, religionFilter, educationFilter, photoOnly,
-      recentOnly, showViewed, ignorePrefs, myProfileId])
+      recentOnly, showViewed, ignorePrefs, myProfileId,
+      activeWithin, verifiedOnly, profileByFilter, incomeFilter, sortBy])
 
   async function loadProfiles() {
     setLoading(true)
@@ -596,6 +639,37 @@ export default function BrowsePage() {
     if (educationFilter && educationFilter!=='Any') results = results.filter(p=>p.education?.toLowerCase().includes(educationFilter.toLowerCase()))
     if (photoOnly)  results = results.filter(p=>!!p.photo_url)
     if (recentOnly) { const t=new Date(Date.now()-30*24*60*60*1000); results=results.filter(p=>new Date(p.created_at)>=t) }
+    if (verifiedOnly) results = results.filter(p=>isVerified(p))
+    if (profileByFilter) results = results.filter(p=>(p.profile_by||'self')===profileByFilter)
+    if (incomeFilter) results = results.filter(p=>p.annual_income===incomeFilter)
+    if (activeWithin) {
+      const opt = ACTIVE_WITHIN_OPTS.find(o=>o.label===activeWithin)
+      if (opt) {
+        const cutoff = new Date(Date.now() - opt.hours*60*60*1000)
+        results = results.filter(p=>p.last_login_at && new Date(p.last_login_at) >= cutoff)
+      }
+    }
+
+    // Sort
+    if (sortBy === 'last_active') {
+      results = results.sort((a,b) => {
+        const ta = a.last_login_at ? new Date(a.last_login_at).getTime() : 0
+        const tb = b.last_login_at ? new Date(b.last_login_at).getTime() : 0
+        return tb - ta
+      })
+    } else if (sortBy === 'best_match') {
+      // Score: same district +3, same state +2, same religion +1, same caste +1
+      const myProf = { native_district: myNativeDistrict }
+      results = results.sort((a,b) => {
+        const score = (p: typeof results[0]) => {
+          let s = 0
+          if (p.native_district === myProf.native_district) s += 3
+          return s
+        }
+        return score(b) - score(a)
+      })
+    }
+    // newest is default (already ordered by created_at desc from DB)
 
     setProfiles(results)
     setLoading(false)
@@ -608,6 +682,8 @@ export default function BrowsePage() {
     setMaritalFilter(''); setHeightRange(''); setMotherTongues([]); setCasteFilter('')
     setReligionFilter(''); setEducationFilter(''); setPhotoOnly(false)
     setRecentOnly(false); setShowViewed(false); setIgnorePrefs(false); setAlertSet(false)
+    setActiveWithin(''); setVerifiedOnly(false); setProfileByFilter(''); setIncomeFilter('')
+    setPage(1)
   }
 
   function toggleMotherTongue(mt: string) {
@@ -674,7 +750,8 @@ export default function BrowsePage() {
 
   const activeFilterCount = [region,state,district,ageRange,profCat,maritalFilter,heightRange,casteFilter,
     religionFilter,educationFilter,...motherTongues,
-    photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':''].filter(Boolean).length
+    photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':'',
+    activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter].filter(Boolean).length
 
   const genderLabel = oppositeGender === 'female' ? 'brides' : oppositeGender === 'male' ? 'grooms' : 'profiles'
 
@@ -779,7 +856,7 @@ export default function BrowsePage() {
         {/* Mobile filter drawer */}
         {showSidebar && (
           <div className="sm:hidden card p-4 mb-4">
-            <Filters {...{ region,state,district,ageRange,profCat,maritalFilter,heightRange,motherTongues,casteFilter,religionFilter,educationFilter,photoOnly,recentOnly,showViewed,ignorePrefs,activeFilterCount,setRegion,setState,setDistrict,setAgeRange,setProfCat,setMaritalFilter,setHeightRange,toggleMotherTongue,setCasteFilter,setReligionFilter,setEducationFilter,setPhotoOnly,setRecentOnly,setShowViewed,setIgnorePrefs,clearAll,availableStates,availableDistricts,handleMapRegion }} />
+            <Filters {...{ region,state,district,ageRange,profCat,maritalFilter,heightRange,motherTongues,casteFilter,religionFilter,educationFilter,photoOnly,recentOnly,showViewed,ignorePrefs,activeFilterCount,setRegion,setState,setDistrict,setAgeRange,setProfCat,setMaritalFilter,setHeightRange,toggleMotherTongue,setCasteFilter,setReligionFilter,setEducationFilter,setPhotoOnly,setRecentOnly,setShowViewed,setIgnorePrefs,clearAll,availableStates,availableDistricts,handleMapRegion,activeWithin,setActiveWithin,verifiedOnly,setVerifiedOnly,profileByFilter,setProfileByFilter,incomeFilter,setIncomeFilter }} />
           </div>
         )}
 
@@ -788,7 +865,7 @@ export default function BrowsePage() {
           {/* ── Desktop sidebar ─── */}
           <aside className="hidden sm:block w-56 shrink-0">
             <div className="card p-4 sticky top-20">
-              <Filters {...{ region,state,district,ageRange,profCat,maritalFilter,heightRange,motherTongues,casteFilter,religionFilter,educationFilter,photoOnly,recentOnly,showViewed,ignorePrefs,activeFilterCount,setRegion,setState,setDistrict,setAgeRange,setProfCat,setMaritalFilter,setHeightRange,toggleMotherTongue,setCasteFilter,setReligionFilter,setEducationFilter,setPhotoOnly,setRecentOnly,setShowViewed,setIgnorePrefs,clearAll,availableStates,availableDistricts,handleMapRegion }} />
+              <Filters {...{ region,state,district,ageRange,profCat,maritalFilter,heightRange,motherTongues,casteFilter,religionFilter,educationFilter,photoOnly,recentOnly,showViewed,ignorePrefs,activeFilterCount,setRegion,setState,setDistrict,setAgeRange,setProfCat,setMaritalFilter,setHeightRange,toggleMotherTongue,setCasteFilter,setReligionFilter,setEducationFilter,setPhotoOnly,setRecentOnly,setShowViewed,setIgnorePrefs,clearAll,availableStates,availableDistricts,handleMapRegion,activeWithin,setActiveWithin,verifiedOnly,setVerifiedOnly,profileByFilter,setProfileByFilter,incomeFilter,setIncomeFilter }} />
             </div>
           </aside>
 
@@ -796,16 +873,33 @@ export default function BrowsePage() {
           <div className="flex-1 min-w-0">
 
             {/* Results header */}
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm text-gray-500">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <p className="text-sm text-gray-500 flex-1">
                 {loading ? 'Loading…' : (
-                  <><span className="font-semibold text-gray-800">{profiles.length}</span> {genderLabel} found</>
+                  <>
+                    <span className="font-semibold text-gray-800">
+                      {Math.min(page * PAGE_SIZE, profiles.length)} of {profiles.length}
+                    </span> {genderLabel}
+                  </>
                 )}
               </p>
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                <span className="w-2 h-2 rounded-full bg-green-500 inline-block" />
-                Verified profiles marked
-              </div>
+              <select
+                value={sortBy}
+                onChange={e => setSortBy(e.target.value as 'newest'|'last_active'|'best_match')}
+                className="text-xs border rounded-lg px-2 py-1.5 text-gray-600"
+                style={{ borderColor: '#E5E7EB', background: 'white', outline: 'none' }}>
+                <option value="newest">Newest first</option>
+                <option value="last_active">Last active</option>
+                <option value="best_match">Best match</option>
+              </select>
+              <button
+                onClick={() => setAlertSet(a => !a)}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
+                style={alertSet
+                  ? { background: '#FEF2F2', color: '#7F1D1D', borderColor: '#FECACA' }
+                  : { borderColor: '#E5E7EB', color: '#6B7280', background: 'white' }}>
+                {alertSet ? '🔔 Alert set' : '+ Save search'}
+              </button>
             </div>
             {/* New Arrivals */}
             {newArrivals.length > 0 && (
@@ -884,18 +978,37 @@ export default function BrowsePage() {
             )}
 
             {/* Profile grid — 2 cols on mobile, 3 on desktop */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
-              {profiles.map((p, idx) => (
-                <ProfileCard
-                  key={p.id}
-                  p={p}
-                  status={interestMap[p.id]}
-                  shortlisted={shortlists.has(p.id)}
-                  onToggleShortlist={() => toggleShortlist(p.id)}
-                  onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                />
-              ))}
-            </div>
+            {(() => {
+              const paged = profiles.slice(0, page * PAGE_SIZE)
+              return (
+                <>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+                    {paged.map((p, idx) => (
+                      <ProfileCard
+                        key={p.id}
+                        p={p}
+                        status={interestMap[p.id]}
+                        shortlisted={shortlists.has(p.id)}
+                        onToggleShortlist={() => toggleShortlist(p.id)}
+                        onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
+                      />
+                    ))}
+                  </div>
+                  {profiles.length > page * PAGE_SIZE && (
+                    <div className="mt-6 text-center">
+                      <button
+                        onClick={() => setPage(p => p + 1)}
+                        className="px-6 py-2.5 text-sm font-semibold rounded-xl border transition-all"
+                        style={{ borderColor: '#7F1D1D', color: '#7F1D1D', background: 'white' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#FEF2F2' }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'white' }}>
+                        Load more ({profiles.length - page * PAGE_SIZE} remaining)
+                      </button>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
 
           </div>
         </div>

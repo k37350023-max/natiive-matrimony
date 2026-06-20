@@ -268,6 +268,27 @@ export default function ChatPage() {
         </div>
       )}
 
+      {/* Icebreaker suggestions — shown when conversation just started */}
+      {!loading && messages.filter(m => m.from_profile_id === myProfileId).length === 0 && (
+        <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#F3F4F6' }}>
+          <p className="text-xs text-gray-400 mb-2 font-medium">Quick starters</p>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              `Hi ${other?.full_name?.split(' ')[0] || 'there'}, I noticed we share the same native place!`,
+              'Would love to know more about you and your family.',
+              'Your profile caught my attention. Can we connect?',
+            ].map(msg => (
+              <button key={msg}
+                onClick={() => setText(msg)}
+                className="text-xs px-3 py-1.5 rounded-full border transition-all"
+                style={{ borderColor: '#FECACA', color: '#7F1D1D', background: '#FEF2F2' }}>
+                {msg.length > 45 ? msg.slice(0, 45) + '…' : msg}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Input */}
       <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#EDE8E0' }}>
         <div className="max-w-2xl mx-auto flex items-end gap-2">

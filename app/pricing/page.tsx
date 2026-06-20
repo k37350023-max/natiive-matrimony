@@ -6,15 +6,67 @@ import HomeHeader from '../components/HomeHeader'
 
 const GOAL = 1000
 
-const FEATURES = [
-  'Browse all profiles',
-  'Send unlimited interests',
-  'Read full biodata',
-  'Direct chat after match',
-  'Per-field privacy controls',
-  'Who viewed your profile',
-  'Priority listing in search',
-  'Biodata PDF auto-fill',
+const TIERS = [
+  {
+    name: 'Basic',
+    price: '₹0',
+    period: 'forever',
+    subtitle: 'Browse & discover',
+    highlight: false,
+    features: [
+      { text: 'Browse approved profiles', included: true },
+      { text: 'Receive interest requests', included: true },
+      { text: 'Basic profile (no photo privacy)', included: true },
+      { text: 'Send interests', included: false },
+      { text: 'Direct chat', included: false },
+      { text: 'Full biodata access', included: false },
+      { text: 'Who viewed your profile', included: false },
+      { text: 'Priority listing in search', included: false },
+    ],
+    cta: 'Create free account',
+    ctaHref: '/register',
+    ctaStyle: 'ghost' as const,
+  },
+  {
+    name: 'Premium',
+    price: '₹999',
+    period: 'per month',
+    subtitle: 'Everything, unlimited',
+    highlight: false,
+    features: [
+      { text: 'Browse approved profiles', included: true },
+      { text: 'Receive interest requests', included: true },
+      { text: 'Per-field privacy controls', included: true },
+      { text: 'Send unlimited interests', included: true },
+      { text: 'Direct chat after match', included: true },
+      { text: 'Full biodata & contact access', included: true },
+      { text: 'Who viewed your profile', included: true },
+      { text: 'Priority listing in search', included: true },
+    ],
+    cta: 'Coming soon',
+    ctaHref: null,
+    ctaStyle: 'disabled' as const,
+  },
+  {
+    name: 'Founder',
+    price: '₹0',
+    period: '/ 1 year',
+    subtitle: 'First 1,000 members only',
+    highlight: true,
+    features: [
+      { text: 'Browse approved profiles', included: true },
+      { text: 'Receive interest requests', included: true },
+      { text: 'Per-field privacy controls', included: true },
+      { text: 'Send unlimited interests', included: true },
+      { text: 'Direct chat after match', included: true },
+      { text: 'Full biodata & contact access', included: true },
+      { text: 'Who viewed your profile', included: true },
+      { text: 'Founder badge on profile ★', included: true },
+    ],
+    cta: 'Claim your spot →',
+    ctaHref: '/register',
+    ctaStyle: 'primary' as const,
+  },
 ]
 
 export default function PricingPage() {
@@ -74,77 +126,60 @@ export default function PricingPage() {
           </div>
         )}
 
-        {/* Plans side by side */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-
-          {/* Founder — free */}
-          <div className="rounded-2xl border-2 p-6 relative" style={{ borderColor: '#9B1C1C', background: 'white' }}>
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-              <span className="text-xs font-bold px-3 py-1 rounded-full text-white" style={{ background: '#9B1C1C' }}>
-                {isFull ? 'Closed' : 'Open now'}
-              </span>
-            </div>
-            <p className="font-serif-display font-bold text-gray-900 text-lg mb-1">Founder Member</p>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-bold font-serif-display text-gray-900">₹0</span>
-              <span className="text-gray-400 text-sm mb-1">/ year</span>
-            </div>
-            <p className="text-xs text-gray-500 mb-5">First 1,000 profiles only</p>
-            <ul className="space-y-2 mb-6">
-              {FEATURES.map(f => (
-                <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="font-bold mt-0.5" style={{ color: '#9B1C1C' }}>✓</span>
-                  {f}
-                </li>
-              ))}
-              <li className="flex items-start gap-2 text-sm font-semibold" style={{ color: '#9B1C1C' }}>
-                <span className="mt-0.5">★</span>
-                Founder badge on profile
-              </li>
-            </ul>
-            {!isFull ? (
-              <Link href="/register" className="btn-primary w-full py-3 text-sm text-center block">
-                Claim free spot →
-              </Link>
-            ) : (
-              <button disabled className="w-full py-3 text-sm rounded-xl text-gray-400 cursor-not-allowed" style={{ background: '#F0EDE8' }}>
-                All spots taken
-              </button>
-            )}
-          </div>
-
-          {/* Premium — paid */}
-          <div className="rounded-2xl border p-6" style={{ borderColor: '#E5E7EB', background: 'white' }}>
-            <p className="font-serif-display font-bold text-gray-900 text-lg mb-1">Premium</p>
-            <div className="flex items-end gap-1 mb-1">
-              <span className="text-4xl font-bold font-serif-display text-gray-900">$5</span>
-              <span className="text-gray-400 text-sm mb-1">/ month</span>
-            </div>
-            <p className="text-xs text-gray-500 mb-5">
-              {isFull ? 'Available now' : `Available after ${GOAL.toLocaleString()} members`}
-            </p>
-            <ul className="space-y-2 mb-6">
-              {FEATURES.map(f => (
-                <li key={f} className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="font-bold mt-0.5 text-gray-400">✓</span>
-                  {f}
-                </li>
-              ))}
-              <li className="flex items-start gap-2 text-sm text-gray-400">
-                <span className="mt-0.5">—</span>
-                No founder badge
-              </li>
-            </ul>
-            {isFull ? (
-              <Link href="/register" className="btn-primary w-full py-3 text-sm text-center block">
-                Get started →
-              </Link>
-            ) : (
-              <div className="w-full py-3 text-sm text-center rounded-xl font-medium text-gray-400" style={{ background: '#F0EDE8' }}>
-                Available after {GOAL.toLocaleString()} members
+        {/* 3-tier comparison */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+          {TIERS.map(tier => {
+            const isFounder = tier.name === 'Founder'
+            const disabled = isFounder && isFull
+            return (
+              <div key={tier.name}
+                className="rounded-2xl p-6 relative flex flex-col"
+                style={{
+                  border: tier.highlight ? '2px solid #9B1C1C' : '1px solid #E5E7EB',
+                  background: 'white',
+                  boxShadow: tier.highlight ? '0 8px 32px rgba(127,29,29,0.12)' : 'none',
+                }}>
+                {tier.highlight && !isFull && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full text-white" style={{ background: '#9B1C1C' }}>
+                      {remaining.toLocaleString()} spots left
+                    </span>
+                  </div>
+                )}
+                {disabled && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full text-white bg-gray-400">Closed</span>
+                  </div>
+                )}
+                <p className="font-serif-display font-bold text-gray-900 text-lg mb-0.5">{tier.name}</p>
+                <p className="text-xs text-gray-400 mb-3">{tier.subtitle}</p>
+                <div className="flex items-end gap-1 mb-4">
+                  <span className="text-3xl font-bold font-serif-display text-gray-900">{tier.price}</span>
+                  <span className="text-gray-400 text-xs mb-1">{tier.period}</span>
+                </div>
+                <ul className="space-y-2 mb-6 flex-1">
+                  {tier.features.map(f => (
+                    <li key={f.text} className="flex items-start gap-2 text-xs"
+                      style={{ color: f.included ? '#374151' : '#D1D5DB' }}>
+                      <span className="mt-0.5 font-bold shrink-0" style={{ color: f.included ? '#9B1C1C' : '#D1D5DB' }}>
+                        {f.included ? '✓' : '—'}
+                      </span>
+                      {f.text}
+                    </li>
+                  ))}
+                </ul>
+                {tier.ctaStyle === 'primary' && !disabled && tier.ctaHref ? (
+                  <Link href={tier.ctaHref} className="btn-primary w-full py-3 text-sm text-center block">{tier.cta}</Link>
+                ) : tier.ctaStyle === 'ghost' && tier.ctaHref ? (
+                  <Link href={tier.ctaHref} className="btn-ghost w-full py-3 text-sm text-center block">{tier.cta}</Link>
+                ) : (
+                  <div className="w-full py-3 text-sm text-center rounded-xl font-medium text-gray-400 cursor-not-allowed" style={{ background: '#F0EDE8' }}>
+                    {disabled ? 'All spots taken' : tier.cta}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            )
+          })}
         </div>
 
         {/* FAQ */}
