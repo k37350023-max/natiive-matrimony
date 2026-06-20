@@ -136,7 +136,7 @@ export default function AppHeader() {
         )}
 
         {/* Right side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
           {ready && profileId ? (
             <>
               <NotificationBell />

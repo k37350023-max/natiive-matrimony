@@ -509,6 +509,7 @@ export default function BrowsePage() {
 
   const [showSidebar,     setShowSidebar]     = useState(false)
   const [alertSet,        setAlertSet]        = useState(false)
+  const [browseToast,     setBrowseToast]     = useState<string|null>(null)
   const [interestMap,     setInterestMap]     = useState<Record<string,string>>({})
   const [shortlists,      setShortlists]      = useState<Set<string>>(new Set())
   const [quickView,       setQuickView]       = useState<Profile|null>(null)
@@ -894,7 +895,12 @@ export default function BrowsePage() {
                 <option value="best_match">Best match</option>
               </select>
               <button
-                onClick={() => setAlertSet(a => !a)}
+                onClick={() => {
+                  const next = !alertSet
+                  setAlertSet(next)
+                  setBrowseToast(next ? '🔔 Alert saved — we\'ll notify you when new matches appear' : 'Alert removed')
+                  setTimeout(() => setBrowseToast(null), 3500)
+                }}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
                 style={alertSet
                   ? { background: '#FEF2F2', color: '#7F1D1D', borderColor: '#FECACA' }
@@ -1181,6 +1187,17 @@ export default function BrowsePage() {
           </div>
         )
       })()}
+
+      {/* Save-search toast */}
+      {browseToast && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
+          style={{ animation: 'fadeInUp 0.25s ease' }}>
+          <div className="px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white whitespace-nowrap"
+            style={{ background: '#1F2937' }}>
+            {browseToast}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

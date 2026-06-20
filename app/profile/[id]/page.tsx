@@ -1383,7 +1383,7 @@ export default function ProfilePage() {
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
                     style={{ background: '#FEF2F2', color: '#7F1D1D' }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Sending interest opens a chat instantly
+                    Chat unlocks when they accept your interest
                   </span>
                 </div>
               )}
