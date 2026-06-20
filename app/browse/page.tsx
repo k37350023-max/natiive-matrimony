@@ -64,7 +64,7 @@ type Profile = {
   marital_status: string | null; last_login_at: string | null
   mother_tongue: string | null; created_at: string; religion: string | null
   family_type: string | null; user_id: string | null; hidden_fields: string[] | null
-  member_number: number | null; profile_by: string | null; annual_income: string | null
+  member_number: number | null; profile_created_by: string | null; annual_income: string | null
 }
 
 type Stats = { interestsSent: number; interestsReceived: number; matches: number; profileViews: number }
@@ -324,7 +324,7 @@ function ProfileCard({
           {seenLabel && (
             <p style={{ fontSize: '10.5px', fontWeight: 600, color: '#7F1D1D', margin: 0 }}>{seenLabel}</p>
           )}
-          {p.profile_by === 'parent' && (
+          {p.profile_created_by === 'parent' && (
             <span style={{ fontSize: '9.5px', fontWeight: 700, padding: '2px 6px', borderRadius: '99px', background: '#FEF3C7', color: '#92400E', border: '1px solid #FDE68A', marginLeft: 'auto' }}>
               By Parent
             </span>
@@ -641,7 +641,7 @@ export default function BrowsePage() {
     if (photoOnly)  results = results.filter(p=>!!p.photo_url)
     if (recentOnly) { const t=new Date(Date.now()-30*24*60*60*1000); results=results.filter(p=>new Date(p.created_at)>=t) }
     if (verifiedOnly) results = results.filter(p=>isVerified(p))
-    if (profileByFilter) results = results.filter(p=>(p.profile_by||'self')===profileByFilter)
+    if (profileByFilter) results = results.filter(p=>(p.profile_created_by||'self')===profileByFilter)
     if (incomeFilter) results = results.filter(p=>p.annual_income===incomeFilter)
     if (activeWithin) {
       const opt = ACTIVE_WITHIN_OPTS.find(o=>o.label===activeWithin)
