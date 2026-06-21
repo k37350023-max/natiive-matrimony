@@ -211,8 +211,8 @@ export default function MapHero() {
         {/* ── Profiles panel ── */}
         <div className="flex-1 w-full min-w-0">
           {!profileKey && (
-            <div className="text-center sm:text-left py-6">
-              <p className="text-2xl mb-2">🗺️</p>
+            <div className="text-center sm:text-left py-6 flex flex-col items-center sm:items-start">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: 8 }}><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
               <p className="text-sm text-gray-400 font-medium">
                 Click a region on the map<br />to see profiles from there
               </p>

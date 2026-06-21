@@ -26,6 +26,7 @@ type ViewerProfile = {
   id: string; full_name: string; profession: string | null
   native_district: string | null; photo_url: string | null; photo_visibility: string | null
   date_of_birth: string | null
+  viewCount?: number; lastViewedAt?: string
 }
 
 type ShortlistProfile = ViewerProfile
@@ -165,13 +166,22 @@ export default function DashboardPage() {
     const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     const viewsWeek = (viewRows || []).filter(v => new Date(v.viewed_at) > weekAgo).length
 
-    // Load viewer profiles
-    const viewerIds = [...new Set((viewRows || []).map(v => v.viewer_id))].slice(0, 10)
+    // Group views per viewer → count + last viewed (most-interested first).
+    const stat: Record<string, { count: number; last: string }> = {}
+    ;(viewRows || []).forEach(v => {
+      const s = stat[v.viewer_id] || { count: 0, last: v.viewed_at }
+      s.count += 1
+      if (new Date(v.viewed_at) > new Date(s.last)) s.last = v.viewed_at
+      stat[v.viewer_id] = s
+    })
+    const viewerIds = Object.keys(stat).slice(0, 10)
     if (viewerIds.length > 0) {
       const { data: vProfiles } = await supabase.from('profiles')
         .select('id, full_name, profession, native_district, photo_url, photo_visibility, date_of_birth')
         .in('id', viewerIds)
-      setViewers(vProfiles || [])
+      const merged = (vProfiles || []).map(p => ({ ...p, viewCount: stat[p.id]?.count || 1, lastViewedAt: stat[p.id]?.last }))
+      merged.sort((a, b) => (b.viewCount - a.viewCount) || (new Date(b.lastViewedAt || 0).getTime() - new Date(a.lastViewedAt || 0).getTime()))
+      setViewers(merged)
     }
 
     // Shortlists of me
@@ -328,9 +338,17 @@ export default function DashboardPage() {
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   <MiniAvatar p={v} />
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#111', margin: 0 }}>{v.full_name}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#111', margin: 0 }}>{v.full_name}</p>
+                      {(v.viewCount || 0) > 1 && (
+                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: '#EAF8FE', color: '#0B132B', flexShrink: 0 }}>
+                          viewed {v.viewCount}×
+                        </span>
+                      )}
+                    </div>
                     <p style={{ fontSize: '11.5px', color: '#94A3B8', margin: '2px 0 0' }}>
-                      {[getAge(v.date_of_birth) ? `${getAge(v.date_of_birth)} yrs` : null, v.profession, v.native_district].filter(Boolean).join(' · ')}
+                      {(v.viewCount || 0) > 1 && v.lastViewedAt ? `Last viewed ${timeAgo(v.lastViewedAt)} · ` : ''}
+                      {[v.profession, v.native_district].filter(Boolean).join(' · ')}
                     </p>
                   </div>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCC" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>

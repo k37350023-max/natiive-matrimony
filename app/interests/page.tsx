@@ -259,8 +259,9 @@ function InterestsPageInner() {
                 {(i.profile as any).phone && (
                   <a href={`tel:${(i.profile as any).phone}`}
                     className="text-xs font-semibold flex items-center gap-1"
-                    style={{ color: '#065F46', textDecoration: 'none' }}>
-                    📞 {(i.profile as any).phone}
+                    style={{ color: '#057A5B', textDecoration: 'none' }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    {(i.profile as any).phone}
                   </a>
                 )}
                 {(i.profile as any).phone && (
@@ -273,9 +274,10 @@ function InterestsPageInner() {
                 )}
                 {(i.profile as any).email && (
                   <a href={`mailto:${(i.profile as any).email}`}
-                    className="text-xs font-semibold"
-                    style={{ color: '#065F46', textDecoration: 'none' }}>
-                    ✉️ {(i.profile as any).email}
+                    className="text-xs font-semibold flex items-center gap-1"
+                    style={{ color: '#057A5B', textDecoration: 'none' }}>
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    {(i.profile as any).email}
                   </a>
                 )}
               </div>
@@ -402,8 +404,10 @@ function InterestsPageInner() {
 
         {!loading && tab === 'sent' && (
           sent.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-3xl mb-3">🤝</p>
+            <div className="card p-12 text-center flex flex-col items-center">
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EAF8FE', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              </span>
               <p className="font-semibold text-gray-700">No interests sent yet</p>
               <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and express interest to get started.</p>
               <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>
@@ -434,8 +438,10 @@ function InterestsPageInner() {
 
         {!loading && tab === 'saved' && (
           saved.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-3xl mb-3">🔖</p>
+            <div className="card p-12 text-center flex flex-col items-center">
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EAF8FE', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </span>
               <p className="font-semibold text-gray-700">No saved profiles</p>
               <p className="text-sm text-gray-400 mt-1 mb-6">Tap the heart on any profile to save them here.</p>
               <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>

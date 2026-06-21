@@ -74,6 +74,7 @@ type ViewerEntry = {
   photo_url: string | null
   photo_visibility: string | null
   viewed_at: string
+  count: number
 }
 
 type IncomingRequest = {
@@ -295,9 +296,18 @@ export default function ProfilePage() {
       .in('id', uniqueIds)
     const merged: ViewerEntry[] = uniqueIds.map(vid => {
       const p = profiles?.find(p => p.id === vid)
-      const v = views.find(v => v.viewer_id === vid)
-      return { viewer_id: vid, full_name: p?.full_name || 'Someone', photo_url: p?.photo_url || null, photo_visibility: p?.photo_visibility || null, viewed_at: v?.viewed_at || '' }
+      const mine = views.filter(v => v.viewer_id === vid)  // views are desc, so [0] is latest
+      return {
+        viewer_id: vid,
+        full_name: p?.full_name || 'Someone',
+        photo_url: p?.photo_url || null,
+        photo_visibility: p?.photo_visibility || null,
+        viewed_at: mine[0]?.viewed_at || '',
+        count: mine.length,
+      }
     })
+    // Most-interested first: repeat viewers, then most recent.
+    merged.sort((a, b) => b.count - a.count || new Date(b.viewed_at).getTime() - new Date(a.viewed_at).getTime())
     setViewers(merged)
   }
 
@@ -839,7 +849,7 @@ export default function ProfilePage() {
           <div className="card px-5 py-4">
             <div className="flex items-center justify-between mb-3">
               <p className="text-sm font-semibold text-gray-800">Who viewed your profile</p>
-              <span className="text-xs text-gray-400">{viewers.length} recent</span>
+              <span className="text-xs text-gray-400">{viewers.length} {viewers.length === 1 ? 'person' : 'people'}</span>
             </div>
             <div className="space-y-3">
               {viewers.slice(0, 8).map(v => (
@@ -855,8 +865,17 @@ export default function ProfilePage() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 group-hover:underline truncate">{v.full_name}</p>
-                    <p className="text-xs text-gray-400">{timeAgo(v.viewed_at)}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-semibold text-gray-800 group-hover:underline truncate">{v.full_name}</p>
+                      {v.count > 1 && (
+                        <span className="shrink-0 text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: '#EAF8FE', color: '#0B132B' }}>
+                          viewed {v.count}×
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-400">
+                      {v.count > 1 ? `Last viewed ${timeAgo(v.viewed_at)}` : timeAgo(v.viewed_at)}
+                    </p>
                   </div>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>
                 </Link>
