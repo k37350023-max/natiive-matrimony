@@ -38,7 +38,7 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const COLORS = ['#9B1C1C', '#0369A1', '#047857', '#6D28D9', '#BE185D']
+const COLORS = ['#0B132B', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return COLORS[name.charCodeAt(0) % COLORS.length] }
 
 function lastSeenBadge(ts: string | null): string | null {
@@ -53,9 +53,9 @@ function lastSeenBadge(ts: string | null): string | null {
 }
 
 const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; border: string }> = {
-  pending:  { label: 'Awaiting response', bg: '#FEF2F2', color: '#7F1D1D', border: '#FECACA' },
+  pending:  { label: 'Awaiting response', bg: '#EAF8FE', color: '#0B132B', border: '#BDE9F7' },
   accepted: { label: 'Accepted ✓',        bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
-  rejected: { label: 'Declined',          bg: '#FEF2F2', color: '#991B1B', border: '#FECACA' },
+  rejected: { label: 'Declined',          bg: '#EAF8FE', color: '#0B132B', border: '#BDE9F7' },
 }
 
 type SavedProfile = {
@@ -154,53 +154,23 @@ function InterestsPageInner() {
   const [acceptedMatch, setAcceptedMatch] = useState<{ name: string; matchId: string } | null>(null)
 
   async function respond(interestId: string, fromUser: string, accept: boolean) {
-    await supabase.from('interests').update({ status: accept ? 'accepted' : 'rejected' }).eq('id', interestId)
-    if (accept) {
-      const { data: existing } = await supabase.from('matches').select('id')
-        .or(`and(user1.eq.${myId},user2.eq.${fromUser}),and(user1.eq.${fromUser},user2.eq.${myId})`)
-        .maybeSingle()
-      let matchId = existing?.id
-      if (!existing) {
-        const { data: created } = await supabase.from('matches').insert({ user1: fromUser, user2: myId }).select('id').single()
-        matchId = created?.id
-      }
-      const senderName = received.find(r => r.id === interestId)?.profile?.full_name
-      if (matchId && senderName) setAcceptedMatch({ name: senderName, matchId })
-      const [{ data: sender }, { data: me }] = await Promise.all([
-        supabase.from('profiles').select('user_id, email').eq('id', fromUser).single(),
-        supabase.from('profiles').select('full_name').eq('id', myId).single(),
-      ])
-      if (sender?.user_id) {
-        supabase.from('notifications').insert({
-          user_id: sender.user_id,
-          type: 'interest_accepted',
-          message: `${me?.full_name || 'Someone'} accepted your interest!`,
-          from_profile_id: myId,
-          read: false
-        })
-      }
-      if (sender?.email) {
-        fetch('/api/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: sender.email,
-            subject: 'Your interest was accepted — NativeMatrimony',
-            html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
-              <h2 style="color:#111827">Great news!</h2>
-              <p style="color:#4B5563"><strong>${me?.full_name || 'Someone'}</strong> accepted your interest. Go say hello!</p>
-              <a href="https://nativematrimony.com/matches" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#9B1C1C;color:white;border-radius:8px;text-decoration:none;font-weight:600">Open Chat</a>
-            </div>`
-          })
-        }).catch(() => {})
-      }
+    // Secured: only the recipient (session) can respond; match created server-side.
+    const res = await fetch('/api/interests/respond', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ interestId, accept }),
+    })
+    if (!res.ok) return
+    const data = await res.json()
+    if (accept && data.matchId) {
+      const senderName = data.senderName || received.find(r => r.id === interestId)?.profile?.full_name
+      if (senderName) setAcceptedMatch({ name: senderName, matchId: data.matchId })
     }
     setReceived(i => i.filter(r => r.id !== interestId))
     if (accept) loadMatched()
   }
 
   if (!myId) return (
-    <div className="min-h-screen" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
       <AppHeader />
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
         <p className="font-semibold text-gray-700 mb-2">Login to see interests</p>
@@ -212,12 +182,12 @@ function InterestsPageInner() {
   const ProfileCard = ({ i, showActions, isMatched }: { i: Interest; showActions?: boolean; isMatched?: boolean }) => {
     const seenLabel = lastSeenBadge(i.profile.last_login_at)
     return (
-      <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #F0EDEA', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
+      <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8EDF3', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
         <div className="flex items-start gap-3">
           <Link href={`/profile/${i.profile.id}`} className="shrink-0">
             {i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
               <img loading="lazy" src={i.profile.photo_url} alt={i.profile.full_name}
-                style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #F0EDEA' }} />
+                style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E8EDF3' }} />
             ) : (
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '15px', fontWeight: 700, background: avatarBg(i.profile.full_name) }}>
                 {initials(i.profile.full_name)}
@@ -232,13 +202,13 @@ function InterestsPageInner() {
                   {i.profile.verified && <span className="badge badge-verified">✓ Verified</span>}
                   {seenLabel && (
                     <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: seenLabel === 'Active now' ? '#ECFDF5' : '#F5F5F4', color: seenLabel === 'Active now' ? '#065F46' : '#6B7280' }}>
+                      style={{ background: seenLabel === 'Active now' ? '#ECFDF5' : '#EEF2F7', color: seenLabel === 'Active now' ? '#065F46' : '#5B6478' }}>
                       {seenLabel}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-gray-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
-                <p className="text-xs mt-0.5" style={{ color: '#7F1D1D' }}>📍 {i.profile.native_district}, {i.profile.native_state}</p>
+                <p className="text-xs mt-0.5" style={{ color: '#0B132B' }}>📍 {i.profile.native_district}, {i.profile.native_state}</p>
               </div>
               {!showActions && !isMatched && (() => {
                 const s = STATUS_STYLES[i.status] || STATUS_STYLES.pending
@@ -254,7 +224,7 @@ function InterestsPageInner() {
             {/* First message preview */}
             {i.firstMessage && showActions && (
               <div className="mt-2 px-3 py-2 rounded-lg text-xs text-gray-600 italic"
-                style={{ background: '#FEF2F2', borderLeft: '3px solid #9B1C1C' }}>
+                style={{ background: '#EAF8FE', borderLeft: '3px solid #0B132B' }}>
                 "{i.firstMessage.slice(0, 120)}{i.firstMessage.length > 120 ? '…' : ''}"
               </div>
             )}
@@ -265,15 +235,15 @@ function InterestsPageInner() {
           <div className="flex gap-2 mt-3">
             <Link href={`/profile/${i.profile.id}`}
               className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
-              style={{ borderColor: '#E5E7EB', color: '#4B5563' }}>
+              style={{ borderColor: '#E8EDF3', color: '#4B5563' }}>
               View Profile
             </Link>
             <button onClick={() => respond(i.id, i.from_user, true)}
-              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#059669', color: 'white' }}>
+              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#06D6A0', color: 'white' }}>
               Accept
             </button>
             <button onClick={() => respond(i.id, i.from_user, false)}
-              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #E5E7EB', cursor: 'pointer', background: 'white', color: '#6B7280' }}>
+              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #E8EDF3', cursor: 'pointer', background: 'white', color: '#5B6478' }}>
               Decline
             </button>
           </div>
@@ -313,11 +283,11 @@ function InterestsPageInner() {
             <div className="flex gap-2 mt-3">
               <Link href={`/profile/${i.profile.id}`}
                 className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
-                style={{ borderColor: '#E5E7EB', color: '#4B5563' }}>
+                style={{ borderColor: '#E8EDF3', color: '#4B5563' }}>
                 View Profile
               </Link>
               <Link href="/matches"
-                style={{ flex: 1, padding: '9px', textAlign: 'center', fontSize: '13px', fontWeight: 700, borderRadius: '12px', background: '#7F1D1D', color: 'white', textDecoration: 'none', display: 'block' }}>
+                style={{ flex: 1, padding: '9px', textAlign: 'center', fontSize: '13px', fontWeight: 700, borderRadius: '12px', background: '#0B132B', color: 'white', textDecoration: 'none', display: 'block' }}>
                 Open Chat
               </Link>
             </div>
@@ -348,7 +318,7 @@ function InterestsPageInner() {
   ]
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#F8FAFC' }}>
       <AppHeader />
       <LaunchBanner />
 
@@ -364,7 +334,7 @@ function InterestsPageInner() {
             </div>
             <Link href={`/chat/${acceptedMatch.matchId}`}
               className="text-xs font-bold px-3 py-2 rounded-xl text-white shrink-0"
-              style={{ background: '#059669' }}>
+              style={{ background: '#06D6A0' }}>
               Start chat →
             </Link>
             <button onClick={() => setAcceptedMatch(null)} className="text-green-400 hover:text-green-600 ml-1">
@@ -384,11 +354,11 @@ function InterestsPageInner() {
               className="flex-1 py-2 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
               style={tab === key
                 ? { background: 'white', color: '#111827', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
-                : { color: '#6B7280' }}>
+                : { color: '#5B6478' }}>
               {label}
               {!loading && count > 0 && (
                 <span className="text-xs px-1.5 py-0.5 rounded-full font-bold"
-                  style={tab === key ? { background: '#9B1C1C', color: 'white' } : { background: '#E5E7EB', color: '#6B7280' }}>
+                  style={tab === key ? { background: '#0B132B', color: 'white' } : { background: '#E8EDF3', color: '#5B6478' }}>
                   {count}
                 </span>
               )}

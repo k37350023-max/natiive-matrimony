@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { computeCompleteness } from '@/lib/completeness'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import AppHeader from '../../components/AppHeader'
@@ -135,7 +136,7 @@ function timeAgo(ts: string): string {
   return new Date(ts).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
 
-const AVATAR_COLORS = ['#9B1C1C', '#0369A1', '#047857', '#6D28D9', '#BE185D']
+const AVATAR_COLORS = ['#0B132B', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return AVATAR_COLORS[(name?.charCodeAt(0) || 0) % AVATAR_COLORS.length] }
 
 const REQUIRED_FIELD_LABELS = new Set(['Height', 'Religion', 'Profession', 'Education', 'Family type', 'Mother tongue', 'Date of Birth'])
@@ -166,6 +167,7 @@ export default function ProfilePage() {
   const [showNoteModal, setShowNoteModal] = useState(false)
   const [noteText, setNoteText] = useState('')
   const [photoExpanded, setPhotoExpanded] = useState(false)
+  const [bioExpanded, setBioExpanded] = useState(false)
   const [showReportModal, setShowReportModal] = useState(false)
   const [reportReason, setReportReason] = useState('')
   const [reportSent, setReportSent] = useState(false)
@@ -207,7 +209,8 @@ export default function ProfilePage() {
   }, [id])
 
   async function loadProfile(myId: string | null) {
-    const { data } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
+    // Secured read: phone/email redacted for non-owners (identity from session cookie).
+    const data = await fetch(`/api/profiles/${id}`).then(r => r.ok ? r.json() : { profile: null }).then(j => j.profile)
     setProfile(data)
     const { data: photos } = await supabase
       .from('profile_photos').select('url').eq('profile_id', id).order('position')
@@ -463,8 +466,8 @@ export default function ProfilePage() {
             html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
               <h2 style="color:#111827">You have a new interest!</h2>
               <p style="color:#4B5563"><strong>${me?.full_name || 'Someone'}</strong> sent you an interest on NativeMatrimony.</p>
-              ${note?.trim() ? `<blockquote style="border-left:3px solid #9B1C1C;margin:16px 0;padding:8px 16px;color:#4B5563;font-style:italic">"${note.trim()}"</blockquote>` : ''}
-              <a href="https://nativematrimony.com/interests" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#9B1C1C;color:white;border-radius:8px;text-decoration:none;font-weight:600">View &amp; Respond</a>
+              ${note?.trim() ? `<blockquote style="border-left:3px solid #0B132B;margin:16px 0;padding:8px 16px;color:#4B5563;font-style:italic">"${note.trim()}"</blockquote>` : ''}
+              <a href="https://nativematrimony.com/interests" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#0B132B;color:white;border-radius:8px;text-decoration:none;font-weight:600">View &amp; Respond</a>
             </div>`
           })
         }).catch(() => {})
@@ -483,16 +486,16 @@ export default function ProfilePage() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
       <div className="text-gray-400 text-sm">Loading...</div>
     </div>
   )
 
   if (!profile) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
       <div className="text-center">
         <p className="font-semibold text-gray-700">Profile not found</p>
-        <Link href="/browse" className="text-sm underline mt-2 block" style={{ color: '#9B1C1C' }}>Back to browse</Link>
+        <Link href="/browse" className="text-sm underline mt-2 block" style={{ color: '#0B132B' }}>Back to browse</Link>
       </div>
     </div>
   )
@@ -527,12 +530,12 @@ export default function ProfilePage() {
         return (
           <Link href="/profile/edit" className="inline-flex items-center gap-1.5">
             {isRequired && (
-              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#FEF2F2', color: '#DC2626' }}>Required</span>
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#EAF8FE', color: '#DC2626' }}>Required</span>
             )}
             {isRecommended && !isRequired && (
-              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#FFFBEB', color: '#9B1C1C' }}>Fill in</span>
+              <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ background: '#F8FAFC', color: '#0B132B' }}>Fill in</span>
             )}
-            <span className="text-sm font-medium flex items-center gap-1" style={{ color: '#9B1C1C' }}>
+            <span className="text-sm font-medium flex items-center gap-1" style={{ color: '#0B132B' }}>
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Add
             </span>
@@ -556,7 +559,7 @@ export default function ProfilePage() {
             className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
             style={isPending
               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-              : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
+              : { background: 'white', color: '#0B132B', borderColor: '#BDE9F7' }}>
             {isPending ? '✓ Requested' : 'Request'}
           </button>
         )}
@@ -628,7 +631,7 @@ export default function ProfilePage() {
   ]
 
   return (
-    <div className="min-h-screen pb-28" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen pb-28" style={{ background: '#F8FAFC' }}>
 
       <AppHeader />
 
@@ -656,7 +659,7 @@ export default function ProfilePage() {
           {isLoggedIn && (
             <button onClick={() => setShowReportModal(true)}
               className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-red-50"
-              style={{ color: '#DC2626', borderColor: '#FECACA' }}>
+              style={{ color: '#DC2626', borderColor: '#BDE9F7' }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               Report
             </button>
@@ -701,7 +704,7 @@ export default function ProfilePage() {
                     </div>
                   )
                 })() : (
-                  <div className="relative" style={{ background: 'linear-gradient(160deg, #FEF2F2 0%, #FFF7F0 100%)', paddingBottom: '80%' }}>
+                  <div className="relative" style={{ background: 'linear-gradient(160deg, #EAF8FE 0%, #FFF7F0 100%)', paddingBottom: '80%' }}>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <div className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
                       style={{ background: avatarBg(profile.full_name) }}>
@@ -710,7 +713,7 @@ export default function ProfilePage() {
                     {isOwnProfile && !profile.photo_url && (
                       <label className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap cursor-pointer">
                         <span className="text-xs font-semibold px-3 py-1 rounded-full border shadow-sm flex items-center gap-1"
-                          style={{ background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
+                          style={{ background: 'white', color: '#0B132B', borderColor: '#BDE9F7' }}>
                           {uploadingPhoto ? 'Uploading…' : '+ Add photo'}
                         </span>
                         <input type="file" accept="image/*" className="hidden" onChange={async e => {
@@ -738,7 +741,7 @@ export default function ProfilePage() {
                           className="text-xs font-semibold px-3 py-1 rounded-full border transition-all shadow-sm"
                           style={fieldIsRequested('photo')
                             ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                            : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
+                            : { background: 'white', color: '#0B132B', borderColor: '#BDE9F7' }}>
                           {fieldIsRequested('photo') ? '✓ Photo requested' : 'Request photo'}
                         </button>
                       </div>
@@ -781,7 +784,7 @@ export default function ProfilePage() {
                 </div>
               ) : myProfileId === profile.id ? (
                 <span className="text-xs px-2.5 py-1 rounded-full font-medium shrink-0 mt-1"
-                  style={{ background: '#FFFBEB', color: '#7F1D1D', border: '1px solid #FDE68A' }}>
+                  style={{ background: '#F8FAFC', color: '#0B132B', border: '1px solid #BDE9F7' }}>
                   Verification pending · up to 24h
                 </span>
               ) : null}
@@ -803,7 +806,7 @@ export default function ProfilePage() {
               </span>
               {isSerious(profile) && (
                 <span className="text-xs px-3 py-1.5 rounded-full font-semibold"
-                  style={{ background: '#FEF2F2', color: '#7F1D1D', border: '1px solid #FECACA' }}>
+                  style={{ background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
                   ★ Serious Seeker
                 </span>
               )}
@@ -815,7 +818,7 @@ export default function ProfilePage() {
         {isOwnProfile && profile.member_number && (
           <div className="card px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #7F1D1D, #9B1C1C)' }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #0B132B, #0B132B)' }}>
                 #{profile.member_number}
               </div>
               <div>
@@ -827,7 +830,7 @@ export default function ProfilePage() {
                 </p>
               </div>
             </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: '#9B1C1C' }}>★ Founder</span>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: '#0B132B' }}>★ Founder</span>
           </div>
         )}
 
@@ -864,36 +867,22 @@ export default function ProfilePage() {
 
         {/* Profile completeness — own profile only */}
         {isOwnProfile && (() => {
-          const coreFields: [boolean, string][] = [
-            [!!profile.photo_url, 'Profile photo'],
-            [!!profile.about, 'About me'],
-            [!!profile.height_cm, 'Height'],
-            [!!profile.caste, 'Caste'],
-            [!!profile.education, 'Education'],
-            [!!profile.profession, 'Profession'],
-            [!!profile.family_type, 'Family type'],
-            [!!profile.mother_tongue, 'Mother tongue'],
-            [!!profile.religion, 'Religion'],
-            [!!profile.native_district, 'Native district'],
-            [!!profile.gotra, 'Gotram'],
-            [!!(profile.pref_age_min || profile.pref_age_max), 'Partner preferences'],
-          ]
-          const filled = coreFields.filter(([v]) => v).length
-          const pct = Math.round((filled / coreFields.length) * 100)
-          const missing = coreFields.filter(([v]) => !v).map(([, label]) => label).slice(0, 3)
+          // Shared single-source completeness (matches header ring + browse banner)
+          const { percent: pct, missing: missingFields } = computeCompleteness(profile)
+          const missing = missingFields.map(m => m.label).slice(0, 3)
           return (
             <div className="card px-5 py-4">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-sm font-semibold text-gray-800">Profile completeness</p>
-                <span className="text-sm font-bold" style={{ color: pct >= 80 ? '#059669' : '#9B1C1C' }}>{pct}%</span>
+                <span className="text-sm font-bold" style={{ color: pct >= 80 ? '#06D6A0' : '#0B132B' }}>{pct}%</span>
               </div>
-              <div className="w-full rounded-full h-2 mb-3" style={{ background: '#F0EDE8' }}>
-                <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: pct >= 80 ? '#059669' : '#9B1C1C' }} />
+              <div className="w-full rounded-full h-2 mb-3" style={{ background: '#E8EDF3' }}>
+                <div className="h-2 rounded-full transition-all" style={{ width: `${pct}%`, background: pct >= 80 ? '#06D6A0' : '#0B132B' }} />
               </div>
               {missing.length > 0 && (
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-gray-400">Missing: {missing.join(', ')}</p>
-                  <Link href="/profile/edit" className="text-xs font-semibold px-3 py-1 rounded-lg" style={{ background: '#FEF2F2', color: '#9B1C1C' }}>
+                  <Link href="/profile/edit" className="text-xs font-semibold px-3 py-1 rounded-lg" style={{ background: '#EAF8FE', color: '#0B132B' }}>
                     Complete profile →
                   </Link>
                 </div>
@@ -914,7 +903,7 @@ export default function ProfilePage() {
             </p>
             <div className="space-y-3">
               {incomingRequests.map(req => (
-                <div key={req.id} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: '#FFFBF5', border: '1px solid #F0EDE8' }}>
+                <div key={req.id} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: '#F8FAFC', border: '1px solid #E8EDF3' }}>
                   {req.photo_url && req.photo_visibility === 'public' ? (
                     <img loading="lazy" src={req.photo_url} alt={req.full_name}
                       className="w-9 h-9 rounded-full object-cover shrink-0" />
@@ -934,14 +923,14 @@ export default function ProfilePage() {
                         onClick={() => respondToRequest(req.id, req.from_user, true)}
                         disabled={approvingReq === req.id}
                         className="text-xs font-semibold px-3 py-1 rounded-full"
-                        style={{ background: '#059669', color: 'white' }}>
+                        style={{ background: '#06D6A0', color: 'white' }}>
                         Approve
                       </button>
                       <button
                         onClick={() => respondToRequest(req.id, req.from_user, false)}
                         disabled={approvingReq === req.id}
                         className="text-xs font-semibold px-3 py-1 rounded-full border"
-                        style={{ borderColor: '#E5E7EB', color: '#6B7280' }}>
+                        style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
                         Decline
                       </button>
                     </div>
@@ -954,7 +943,7 @@ export default function ProfilePage() {
 
         {/* Quick facts */}
         <div className="card" style={{ padding: '20px 24px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 16px' }}>Quick facts</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 16px' }}>Quick facts</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px 12px' }}>
           {[
             {
@@ -979,15 +968,15 @@ export default function ProfilePage() {
                       className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
                       style={fieldIsRequested('current_city')
                         ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                        : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
+                        : { background: 'white', color: '#0B132B', borderColor: '#BDE9F7' }}>
                       {fieldIsRequested('current_city') ? '✓ Requested' : 'Request'}
                     </button>
                   )}
                 </div>
               ) : (
                 <>
-                  <div style={{ fontWeight: 600, color: '#1F2937', fontSize: '13.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.value || '—'}</div>
-                  {r.sub && <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>{r.sub}</div>}
+                  <div style={{ fontWeight: 600, color: '#0B132B', fontSize: '13.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.value || '—'}</div>
+                  {r.sub && <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>{r.sub}</div>}
                 </>
               )}
             </div>
@@ -998,11 +987,11 @@ export default function ProfilePage() {
         {/* About */}
         {(profile.about || isOwnProfile) && (
           <div className="card px-6 py-5">
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 10px' }}>About</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 10px' }}>About</p>
             {profile.about ? (
               <p className="text-gray-600 leading-relaxed text-sm">"{profile.about}"</p>
             ) : (
-              <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#9B1C1C' }}>
+              <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#0B132B' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 Add a bio — tell people about yourself
               </Link>
@@ -1016,18 +1005,18 @@ export default function ProfilePage() {
           if (!hasPrefs && !isOwnProfile) return null
           return (
             <div className="card px-6 py-5">
-              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 12px' }}>Looking for</p>
+              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 12px' }}>Looking for</p>
               {hasPrefs ? (
                 <div className="flex flex-wrap gap-2">
                   {(profile.pref_age_min || profile.pref_age_max) && (
                     <span className="text-xs font-medium px-3 py-1.5 rounded-full"
-                      style={{ background: '#FEF2F2', color: '#7F1D1D' }}>
+                      style={{ background: '#EAF8FE', color: '#0B132B' }}>
                       Age {profile.pref_age_min || '—'}–{profile.pref_age_max || '—'} yrs
                     </span>
                   )}
                 </div>
               ) : isOwnProfile ? (
-                <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#9B1C1C' }}>
+                <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#0B132B' }}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Add partner preferences so matches know you're a fit
                 </Link>
@@ -1039,16 +1028,16 @@ export default function ProfilePage() {
         {/* Compatibility bar — only shown to non-owners who are logged in */}
         {compatScore && !isOwnProfile && myProfileId && (
           <div className="card px-6 py-4">
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 10px' }}>Compatibility</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 10px' }}>Compatibility</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ flex: 1, height: '8px', borderRadius: '99px', background: '#F3F4F6', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.round((compatScore.match / compatScore.total) * 100)}%`, borderRadius: '99px', background: compatScore.match >= compatScore.total * 0.7 ? '#16A34A' : compatScore.match >= compatScore.total * 0.4 ? '#D97706' : '#9B1C1C', transition: 'width 0.8s ease' }} />
+                <div style={{ height: '100%', width: `${Math.round((compatScore.match / compatScore.total) * 100)}%`, borderRadius: '99px', background: compatScore.match >= compatScore.total * 0.7 ? '#06D6A0' : compatScore.match >= compatScore.total * 0.4 ? '#D97706' : '#0B132B', transition: 'width 0.8s ease' }} />
               </div>
               <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F0F0F', whiteSpace: 'nowrap' }}>
                 {compatScore.match}/{compatScore.total} match
               </span>
             </div>
-            <p style={{ fontSize: '11.5px', color: '#9CA3AF', margin: '6px 0 0' }}>
+            <p style={{ fontSize: '11.5px', color: '#94A3B8', margin: '6px 0 0' }}>
               Based on age, religion, caste, mother tongue, and native place
             </p>
           </div>
@@ -1056,11 +1045,11 @@ export default function ProfilePage() {
 
         {/* Full biodata — always visible, hidden fields blurred */}
         <div className="card px-6 py-5">
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 16px' }}>Full biodata</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 16px' }}>Full biodata</p>
           <div className="space-y-0">
-            {bioSections.map((section, si) => (
+            {(bioExpanded ? bioSections : bioSections.slice(0, 1)).map((section, si) => (
               <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F3F4F6' } : {}}>
-                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 12px' }}>{section.heading}</p>
+                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 12px' }}>{section.heading}</p>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                   {section.rows.map(f => (
                     <div key={f.label} className={f.wide ? 'col-span-2' : ''}>
@@ -1077,6 +1066,20 @@ export default function ProfilePage() {
               </div>
             ))}
           </div>
+          {bioSections.length > 1 && (
+            <button
+              onClick={() => setBioExpanded(v => !v)}
+              className="mt-4 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-colors hover:bg-gray-50"
+              style={{ color: '#0B132B', border: '1px solid #E8EDF3' }}>
+              {bioExpanded
+                ? 'Show less'
+                : `Show more — ${bioSections.slice(1).map(s => s.heading).join(', ')}`}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                style={{ transform: bioExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Contact — phone hidden by default */}
@@ -1086,7 +1089,7 @@ export default function ProfilePage() {
           if (!showContact && !profile.phone && !profile.email) return null
           return (
             <div className="card px-6 py-5">
-              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 12px' }}>Contact</p>
+              <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 12px' }}>Contact</p>
               <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                 {profile.phone && (
                   <div>
@@ -1101,7 +1104,7 @@ export default function ProfilePage() {
                             className="text-xs font-semibold px-2.5 py-0.5 rounded-full border transition-all"
                             style={fieldIsRequested('phone')
                               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
-                              : { background: 'white', color: '#9B1C1C', borderColor: '#FECACA' }}>
+                              : { background: 'white', color: '#0B132B', borderColor: '#BDE9F7' }}>
                             {fieldIsRequested('phone') ? '✓ Requested' : 'Request'}
                           </button>
                         )}
@@ -1131,20 +1134,20 @@ export default function ProfilePage() {
       {/* Similar profiles row */}
       {similarProfiles.length > 0 && (
         <div className="card px-6 py-5">
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9B1C1C', margin: '0 0 14px' }}>Similar profiles</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 14px' }}>Similar profiles</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
             {similarProfiles.map(p => {
               const age = getAge(p.date_of_birth)
               const showPhoto = !!(p.photo_url && p.photo_visibility === 'public')
               return (
                 <Link key={p.id} href={`/profile/${p.id}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '10px', border: '1px solid #F3F4F6', textDecoration: 'none', transition: 'background 0.15s' }}
-                  onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = '#FAFAFA'}
+                  onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = '#F8FAFC'}
                   onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
                     {showPhoto ? (
                       <img loading="lazy" src={p.photo_url!} alt={p.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
-                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#9B1C1C', color: 'white', fontSize: '14px', fontWeight: 700 }}>
+                      <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0B132B', color: 'white', fontSize: '14px', fontWeight: 700 }}>
                         {p.full_name.slice(0,2).toUpperCase()}
                       </div>
                     )}
@@ -1153,7 +1156,7 @@ export default function ProfilePage() {
                     <p style={{ fontSize: '13px', fontWeight: 700, color: '#0F0F0F', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.full_name.split(' ')[0]}{age ? `, ${age}` : ''}
                     </p>
-                    <p style={{ fontSize: '11px', color: '#9CA3AF', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <p style={{ fontSize: '11px', color: '#94A3B8', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.native_district || p.profession || '—'}
                     </p>
                   </div>
@@ -1230,7 +1233,7 @@ export default function ProfilePage() {
                 <div className="space-y-2 mb-5">
                   {['Fake or scam profile', 'Inappropriate content or photo', 'Harassment or abusive behaviour', 'Married / misleading information', 'Other'].map(r => (
                     <label key={r} className="flex items-center gap-3 px-3 py-2.5 rounded-lg border cursor-pointer transition-colors"
-                      style={{ borderColor: reportReason === r ? '#9B1C1C' : '#E5E7EB', background: reportReason === r ? '#FEF2F2' : 'white' }}>
+                      style={{ borderColor: reportReason === r ? '#0B132B' : '#E8EDF3', background: reportReason === r ? '#EAF8FE' : 'white' }}>
                       <input type="radio" name="report_reason" value={r} checked={reportReason === r}
                         onChange={() => setReportReason(r)} className="accent-amber-700" />
                       <span className="text-sm text-gray-700">{r}</span>
@@ -1311,24 +1314,24 @@ export default function ProfilePage() {
 
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3.5"
-        style={{ borderColor: '#E5E7EB', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
+        style={{ borderColor: '#E8EDF3', boxShadow: '0 -4px 20px rgba(0,0,0,0.07)' }}>
         <div className="max-w-3xl mx-auto">
           {myProfileId === profile.id ? (
             <div className="flex items-center justify-around py-1">
-              <Link href="/browse" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#6B7280' }}>
+              <Link href="/browse" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#5B6478' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 <span className="text-[10px] font-medium">Home</span>
               </Link>
-              <Link href="/profile/edit" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#9B1C1C' }}>
+              <Link href="/profile/edit" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#0B132B' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 <span className="text-[10px] font-medium">Edit</span>
               </Link>
-              <Link href="/profile/edit?section=privacy" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#6B7280' }}>
+              <Link href="/profile/edit?section=privacy" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#5B6478' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <span className="text-[10px] font-medium">Privacy</span>
               </Link>
               <a href={`/profile/${profile.id}?preview=1`} target="_blank" rel="noopener"
-                className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#6B7280' }}>
+                className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#5B6478' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 <span className="text-[10px] font-medium">Preview</span>
               </a>
@@ -1373,15 +1376,15 @@ export default function ProfilePage() {
                   onClick={() => setShortlisted(s => !s)}
                   className="px-4 py-3 rounded-lg font-semibold text-sm border transition-all"
                   style={shortlisted
-                    ? { background: '#FEF2F2', color: '#7F1D1D', borderColor: '#FECACA' }
-                    : { background: 'white', color: '#6B7280', borderColor: '#E5E7EB' }}>
+                    ? { background: '#EAF8FE', color: '#0B132B', borderColor: '#BDE9F7' }
+                    : { background: 'white', color: '#5B6478', borderColor: '#E8EDF3' }}>
                   {shortlisted ? '★ Saved' : '☆ Save'}
                 </button>
               </div>
               {!interestSent && !chatMatchId && (
                 <div className="flex justify-center mt-2">
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
-                    style={{ background: '#FEF2F2', color: '#7F1D1D' }}>
+                    style={{ background: '#EAF8FE', color: '#0B132B' }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     Chat unlocks when they accept your interest
                   </span>
@@ -1396,7 +1399,7 @@ export default function ProfilePage() {
                 </Link>
                 <Link href="/login"
                   className="px-4 py-3 rounded-lg font-semibold text-sm border text-center"
-                  style={{ background: 'white', color: '#6B7280', borderColor: '#E5E7EB' }}>
+                  style={{ background: 'white', color: '#5B6478', borderColor: '#E8EDF3' }}>
                   Login
                 </Link>
               </div>

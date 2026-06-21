@@ -43,11 +43,36 @@ const Label = ({ children, required, recommended }: { children: React.ReactNode;
   <label className="form-label">
     {children}
     {required && <span className="ml-0.5 font-bold" style={{ color: '#DC2626' }}>*</span>}
-    {recommended && !required && <span className="ml-1 font-normal text-xs" style={{ color: '#9B1C1C' }}>recommended</span>}
+    {recommended && !required && <span className="ml-1 font-normal text-xs" style={{ color: '#0B132B' }}>recommended</span>}
   </label>
 )
 
 const REQUIRED_FIELDS = ['full_name', 'gender', 'date_of_birth', 'native_region', 'native_state', 'native_district', 'height_cm', 'religion', 'profession', 'education', 'family_type', 'mother_tongue'] as const
+
+function CollapsibleCard({ title, subtitle, badge, defaultOpen = false, children }: {
+  title: string; subtitle?: string; badge?: string; defaultOpen?: boolean; children: React.ReactNode
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className="card p-5">
+      <button type="button" onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between text-left">
+        <div>
+          <p className="font-semibold text-gray-800 font-serif-display">
+            {title}
+            {badge && <span className="ml-2 align-middle text-xs font-normal px-2 py-0.5 rounded-full" style={{ background: '#EAF8FE', color: '#0B132B' }}>{badge}</span>}
+          </p>
+          {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="2.5"
+          style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+          <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && <div className="mt-4">{children}</div>}
+    </div>
+  )
+}
 
 function EditProfilePageInner() {
   const router = useRouter()
@@ -274,8 +299,12 @@ function EditProfilePageInner() {
         photo_visibility: hiddenFields.includes('photo') ? 'hidden' : 'public',
       }
 
-      const { error: saveErr } = await supabase.from('profiles').update(coreFields).eq('id', profileId)
-      if (saveErr) throw saveErr
+      // Secured: updates only the signed-in user's own profile (id from session cookie).
+      const res = await fetch('/api/profiles/update', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fields: coreFields }),
+      })
+      if (!res.ok) throw new Error((await res.json()).error || 'Save failed')
       setCurrentPhotoUrl(photoUrl)
       setSuccess('Profile saved!')
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -344,18 +373,18 @@ function EditProfilePageInner() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
       <p className="text-gray-400 text-sm">Loading profile...</p>
     </div>
   )
 
   return (
-    <div className="min-h-screen pb-20" style={{ background: '#F9FAFB' }}>
+    <div className="min-h-screen pb-20" style={{ background: '#F8FAFC' }}>
       <AppHeader />
 
       <div className="max-w-xl mx-auto px-4 py-6 space-y-4">
         {isNewProfile && (
-          <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#7F1D1D' }}>
+          <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EAF8FE', border: '1px solid #BDE9F7', color: '#0B132B' }}>
             🎉 Welcome! Fill in the fields below — required fields marked <span className="font-bold text-red-600">*</span>. The more you fill, the more interest you'll get.
           </div>
         )}
@@ -421,7 +450,7 @@ function EditProfilePageInner() {
         }} />
 
         {error && (
-          <div className="px-4 py-3 rounded-lg text-sm" style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}>
+          <div className="px-4 py-3 rounded-lg text-sm" style={{ background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
             {error}
           </div>
         )}
@@ -440,7 +469,7 @@ function EditProfilePageInner() {
                 className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-200" />
             ) : (
               <div className="w-16 h-16 rounded-full flex items-center justify-center text-gray-400"
-                style={{ background: '#F5F5F4' }}>
+                style={{ background: '#EEF2F7' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
@@ -460,7 +489,7 @@ function EditProfilePageInner() {
           </div>
 
           {/* Additional photos */}
-          <div className="mb-5 pt-4 border-t" style={{ borderColor: '#F0EDE8' }}>
+          <div className="mb-5 pt-4 border-t" style={{ borderColor: '#E8EDF3' }}>
             <p className="form-label mb-2">More photos <span className="font-normal text-gray-400">({additionalPhotos.length}/4 added)</span></p>
             <p className="text-xs text-gray-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get significantly more interest.</p>
             <div className="flex flex-wrap gap-2">
@@ -484,7 +513,7 @@ function EditProfilePageInner() {
                     <span className="text-xs text-gray-400">Uploading...</span>
                   ) : (
                     <>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round">
                         <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                       </svg>
                       <span className="text-xs text-gray-400 mt-1">Add</span>
@@ -497,7 +526,7 @@ function EditProfilePageInner() {
             </div>
           </div>
 
-          <div className="pt-4 border-t" style={{ borderColor: '#F0EDE8' }}>
+          <div className="pt-4 border-t" style={{ borderColor: '#E8EDF3' }}>
             <p className="form-label mb-1">Privacy — what do you want to hide?</p>
             <p className="text-xs text-gray-400 mb-3">Hidden fields show as blurred on your profile. Visitors can request to see them — you approve or decline.</p>
             <div className="space-y-2">
@@ -507,8 +536,8 @@ function EditProfilePageInner() {
                   <label key={f.key}
                     className="flex items-start gap-3 px-3.5 py-3 rounded-lg border cursor-pointer transition-colors"
                     style={{
-                      borderColor: checked ? '#9B1C1C' : '#E5E7EB',
-                      background: checked ? '#FEF2F2' : 'white',
+                      borderColor: checked ? '#0B132B' : '#E8EDF3',
+                      background: checked ? '#EAF8FE' : 'white',
                     }}>
                     <input type="checkbox" checked={checked}
                       onChange={() => setHiddenFields(prev =>
@@ -770,7 +799,7 @@ function EditProfilePageInner() {
                     set('about', templates[Math.floor(Math.random() * templates.length)].slice(0, 400))
                   }}
                   className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors"
-                  style={{background: '#FEF2F2', color: '#9B1C1C'}}>
+                  style={{background: '#EAF8FE', color: '#0B132B'}}>
                   ✨ Generate bio
                 </button>
               </div>
@@ -783,9 +812,7 @@ function EditProfilePageInner() {
         </div>
 
         {/* Family Background */}
-        <div className="card p-5">
-          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Family Background</p>
-          <p className="text-xs text-gray-400 mb-4">Shown only to mutual matches</p>
+        <CollapsibleCard title="Family Background" subtitle="Shown only to mutual matches">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -839,18 +866,16 @@ function EditProfilePageInner() {
                 <button type="button"
                   onClick={() => setSiblings(prev => [...prev, { name: '', relation: 'Brother', married: false }])}
                   className="text-sm font-medium px-3 py-1.5 rounded-lg border"
-                  style={{ borderColor: '#E5E7EB', color: '#9B1C1C' }}>
+                  style={{ borderColor: '#E8EDF3', color: '#0B132B' }}>
                   + Add sibling
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        </CollapsibleCard>
 
         {/* Astrology — optional */}
-        <div className="card p-5">
-          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Astrology</p>
-          <p className="text-xs text-gray-400 mb-4">Optional — fill if your family values horoscope matching</p>
+        <CollapsibleCard title="Astrology" badge="Optional" subtitle="Fill if your family values horoscope matching">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -878,12 +903,10 @@ function EditProfilePageInner() {
               </div>
             </div>
           </div>
-        </div>
+        </CollapsibleCard>
 
         {/* Lifestyle — optional */}
-        <div className="card p-5">
-          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Lifestyle</p>
-          <p className="text-xs text-gray-400 mb-4">Optional — helps find compatible matches</p>
+        <CollapsibleCard title="Lifestyle" badge="Optional" subtitle="Helps find compatible matches">
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label recommended>Diet</Label>
@@ -913,12 +936,10 @@ function EditProfilePageInner() {
               </select>
             </div>
           </div>
-        </div>
+        </CollapsibleCard>
 
         {/* Partner Preferences */}
-        <div className="card p-5">
-          <p className="font-semibold text-gray-800 mb-1 font-serif-display">Partner Preferences</p>
-          <p className="text-xs text-gray-400 mb-4">Helps us surface more compatible matches for you</p>
+        <CollapsibleCard title="Partner Preferences" badge="Optional" subtitle="Helps us surface more compatible matches for you">
           <div className="space-y-4">
             <div>
               <Label>Preferred age range (years)</Label>
@@ -932,7 +953,7 @@ function EditProfilePageInner() {
               </div>
             </div>
           </div>
-        </div>
+        </CollapsibleCard>
 
         {/* Identity Verification */}
         <div className="card p-5">
@@ -946,7 +967,7 @@ function EditProfilePageInner() {
 
           {verified ? (
             <div className="flex items-center gap-2 text-sm text-gray-600 py-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06D6A0" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
               Mobile number verified
@@ -994,7 +1015,7 @@ function EditProfilePageInner() {
                   {!otpSent ? (
                     <button onClick={sendEmailOTP} disabled={otpLoading}
                       className="text-xs font-semibold px-4 py-2 rounded-lg border"
-                      style={{borderColor: '#E5E7EB', color: '#6B7280'}}>
+                      style={{borderColor: '#E8EDF3', color: '#5B6478'}}>
                       {otpLoading ? 'Sending...' : `Send code to ${userEmail}`}
                     </button>
                   ) : (
@@ -1014,7 +1035,7 @@ function EditProfilePageInner() {
           ) : (
             <div className="space-y-3">
               {devOtp && (
-                <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#FEF2F2', color: '#7F1D1D'}}>
+                <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#EAF8FE', color: '#0B132B'}}>
                   Dev mode — OTP: <span className="font-bold font-mono">{devOtp}</span> (SMS not configured)
                 </div>
               )}

@@ -80,7 +80,7 @@ export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, com
       <div style={{
         width: '100%', maxWidth: size, aspectRatio: '612/696',
         overflow: 'hidden', borderRadius: '14px',
-        margin: '0 auto', background: '#F5F0E8',
+        margin: '0 auto', background: '#F8FAFC',
       }}>
         <svg
           viewBox={IndiaData.viewBox}
@@ -100,8 +100,8 @@ export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, com
             let stroke = '#D5CDB8'
             let sw = '0.5'
             if (isTelugu) {
-              fill = isOn ? '#FEF3C7' : '#D6C9AA'
-              stroke = isOn ? '#9B1C1C' : '#9E8E6A'
+              fill = isOn ? '#E0F7FC' : '#D6C9AA'
+              stroke = isOn ? '#0B132B' : '#9E8E6A'
               sw = isOn ? '2.5' : '1'
             }
             return (
@@ -118,17 +118,17 @@ export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, com
 
           {/* State labels */}
           <text x={TG_CX} y={TG_CY} textAnchor="middle" fontSize={compact ? '7' : '9'} fontWeight="700"
-            fill={highlightedId === 'tg' ? '#7F1D1D' : '#7A6F5A'}
+            fill={highlightedId === 'tg' ? '#0B132B' : '#7A6F5A'}
             style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
             Telangana
           </text>
           <text x={AP_CX} y={AP_CY} textAnchor="middle" fontSize={compact ? '6' : '8'} fontWeight="700"
-            fill={highlightedId === 'ap' ? '#7F1D1D' : '#7A6F5A'}
+            fill={highlightedId === 'ap' ? '#0B132B' : '#7A6F5A'}
             style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
             {apLabel}
           </text>
           {mode === 'filter' && highlightedId === 'ap' && (
-            <text x={AP_CX} y={AP_CY + 10} textAnchor="middle" fontSize="5" fill="#9B1C1C"
+            <text x={AP_CX} y={AP_CY + 10} textAnchor="middle" fontSize="5" fill="#0B132B"
               style={{ pointerEvents: 'none', userSelect: 'none' }}>
               tap again to switch
             </text>
@@ -140,7 +140,7 @@ export default function IndiaMap({ mode, selectedRegion = '', onRegionClick, com
             const cy = animHighlight === 'tg' ? TG_CY : AP_CY
             return (
               <circle cx={cx} cy={cy} r="12"
-                fill="none" stroke="#9B1C1C" strokeWidth="2.5"
+                fill="none" stroke="#0B132B" strokeWidth="2.5"
                 className="india-map-pulse"
                 style={{ transformOrigin: `${cx}px ${cy}px` }}
               />

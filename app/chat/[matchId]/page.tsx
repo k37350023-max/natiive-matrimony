@@ -57,8 +57,41 @@ export default function ChatPage() {
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [sendError, setSendError] = useState('')
+  const [chatState, setChatState] = useState<{ locked: boolean; iAmSender: boolean; interestId: string | null } | null>(null)
+  const [actioning, setActioning] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  async function loadChatState() {
+    const r = await fetch('/api/chat/state', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matchId }),
+    })
+    if (r.ok) setChatState(await r.json())
+  }
+
+  async function acceptRequest() {
+    if (!chatState?.interestId || actioning) return
+    setActioning(true)
+    const r = await fetch('/api/interests/respond', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ interestId: chatState.interestId, accept: true }),
+    })
+    if (r.ok) await loadChatState()
+    setActioning(false)
+  }
+
+  async function unmatch() {
+    if (actioning) return
+    const verb = chatState?.locked && chatState?.iAmSender ? 'withdraw this request' : 'unmatch'
+    if (!confirm(`Are you sure you want to ${verb}? This removes the conversation for both of you.`)) return
+    setActioning(true)
+    const r = await fetch('/api/matches/unmatch', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matchId }),
+    })
+    if (r.ok) { window.location.href = '/matches' } else { setActioning(false) }
+  }
 
   useEffect(() => {
     const id = localStorage.getItem('my_profile_id')
@@ -82,8 +115,9 @@ export default function ChatPage() {
       .eq('id', otherId).maybeSingle()
     setOther(profile)
 
-    // Load messages
+    // Load messages + lock state
     await loadMessages()
+    loadChatState()
     // Mark received messages as read
     supabase.from('messages')
       .update({ read: true })
@@ -134,18 +168,18 @@ export default function ChatPage() {
       read: false,
     }
     setMessages(prev => [...prev, tempMsg])
-    const { data: inserted, error: err } = await supabase.from('messages').insert({
-      match_id: matchId,
-      from_profile_id: myProfileId,
-      content,
-    }).select().single()
-    if (err) {
+    // Secured: sender identity + match membership enforced server-side via session.
+    const res = await fetch('/api/chat/send', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matchId, content }),
+    })
+    const inserted = res.ok ? (await res.json()).message : null
+    if (!inserted) {
       setMessages(prev => prev.filter(m => m.id !== tempMsg.id))
       setSendError('Failed to send. Tap to retry.')
       setText(content)
       setTimeout(() => setSendError(''), 4000)
-    } else if (inserted) {
-      // Replace temp with real message (has correct id)
+    } else {
       setMessages(prev => prev.map(m => m.id === tempMsg.id ? inserted : m))
     }
     setSending(false)
@@ -153,7 +187,7 @@ export default function ChatPage() {
   }
 
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#FFFBF5' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
       <div className="text-center">
         <p className="text-gray-600 mb-4">{error}</p>
         <Link href="/matches" className="btn-primary px-6 py-2.5">Back to Matches</Link>
@@ -162,9 +196,9 @@ export default function ChatPage() {
   )
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#FFFBF5' }}>
+    <div className="flex flex-col h-screen" style={{ background: '#F8FAFC' }}>
       {/* Header */}
-      <header className="bg-white border-b shrink-0 z-10" style={{ borderColor: '#EDE8E0' }}>
+      <header className="bg-white border-b shrink-0 z-10" style={{ borderColor: '#E8EDF3' }}>
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
           <Link href="/matches" className="text-gray-400 hover:text-gray-700 p-1 -ml-1 rounded">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -178,7 +212,7 @@ export default function ChatPage() {
                   className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100" />
               ) : (
                 <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0 text-white"
-                  style={{ background: '#9B1C1C' }}>
+                  style={{ background: '#0B132B' }}>
                   {initials(other.full_name)}
                 </div>
               )}
@@ -188,6 +222,11 @@ export default function ChatPage() {
                 </Link>
                 <p className="text-xs text-gray-400">{lastSeenLabel(other.last_login_at)}</p>
               </div>
+              <button onClick={unmatch} disabled={actioning} title="Unmatch / withdraw"
+                className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors"
+                style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+                {chatState?.locked && chatState?.iAmSender ? 'Withdraw' : 'Unmatch'}
+              </button>
             </>
           ) : (
             <div className="h-9 w-40 bg-gray-100 rounded animate-pulse" />
@@ -205,7 +244,7 @@ export default function ChatPage() {
         {!loading && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 text-2xl"
-              style={{ background: '#FEF2F2' }}>💬</div>
+              style={{ background: '#EAF8FE' }}>💬</div>
             <p className="font-semibold text-gray-700">Start the conversation</p>
             <p className="text-sm text-gray-400 mt-1 mb-5">
               You and {other?.full_name || 'your match'} are connected. Say hello!
@@ -219,7 +258,7 @@ export default function ChatPage() {
                 <button key={starter}
                   onClick={() => setText(starter)}
                   className="text-xs px-4 py-2.5 rounded-xl border text-left transition-colors hover:bg-red-50"
-                  style={{ borderColor: '#FECACA', color: '#7F1D1D', background: '#FEF2F2' }}>
+                  style={{ borderColor: '#BDE9F7', color: '#0B132B', background: '#EAF8FE' }}>
                   "{starter}"
                 </button>
               ))}
@@ -245,8 +284,8 @@ export default function ChatPage() {
                   <div
                     className="max-w-xs sm:max-w-sm px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
                     style={isMe
-                      ? { background: '#9B1C1C', color: 'white', borderBottomRightRadius: '4px' }
-                      : { background: 'white', color: '#111827', border: '1px solid #EDE8E0', borderBottomLeftRadius: '4px' }}>
+                      ? { background: '#0B132B', color: 'white', borderBottomRightRadius: '4px' }
+                      : { background: 'white', color: '#111827', border: '1px solid #E8EDF3', borderBottomLeftRadius: '4px' }}>
                     {m.content}
                     <span className="block text-right mt-1 opacity-60" style={{ fontSize: '10px' }}>
                       {formatTime(m.created_at)}
@@ -263,13 +302,13 @@ export default function ChatPage() {
 
       {/* Send error toast */}
       {sendError && (
-        <div className="shrink-0 px-4 py-2 text-center text-xs font-medium" style={{ background: '#FEF2F2', color: '#9B1C1C' }}>
+        <div className="shrink-0 px-4 py-2 text-center text-xs font-medium" style={{ background: '#EAF8FE', color: '#0B132B' }}>
           {sendError}
         </div>
       )}
 
-      {/* Icebreaker suggestions — shown when conversation just started */}
-      {!loading && messages.filter(m => m.from_profile_id === myProfileId).length === 0 && (
+      {/* Icebreaker suggestions — shown when conversation just started (and not locked) */}
+      {!loading && !chatState?.locked && messages.filter(m => m.from_profile_id === myProfileId).length === 0 && (
         <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#F3F4F6' }}>
           <p className="text-xs text-gray-400 mb-2 font-medium">Quick starters</p>
           <div className="flex flex-wrap gap-1.5">
@@ -281,7 +320,7 @@ export default function ChatPage() {
               <button key={msg}
                 onClick={() => setText(msg)}
                 className="text-xs px-3 py-1.5 rounded-full border transition-all"
-                style={{ borderColor: '#FECACA', color: '#7F1D1D', background: '#FEF2F2' }}>
+                style={{ borderColor: '#BDE9F7', color: '#0B132B', background: '#EAF8FE' }}>
                 {msg.length > 45 ? msg.slice(0, 45) + '…' : msg}
               </button>
             ))}
@@ -289,34 +328,71 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Input */}
-      <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#EDE8E0' }}>
-        <div className="max-w-2xl mx-auto flex items-end gap-2">
-          <textarea
-            ref={inputRef}
-            value={text}
-            onChange={e => setText(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
-            }}
-            placeholder={`Say something to ${other?.full_name?.split(' ')[0] || 'them'}…`}
-            rows={1}
-            style={{ resize: 'none', maxHeight: '120px', overflowY: 'auto' }}
-            className="flex-1 input py-2.5 text-sm"
-          />
-          <button
-            onClick={send}
-            disabled={!text.trim() || sending}
-            className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-            style={{ background: text.trim() ? '#9B1C1C' : '#E7E5E4' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-              stroke={text.trim() ? 'white' : '#9CA3AF'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"/>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-          </button>
+      {/* Composer — locked until the interest is accepted */}
+      {chatState?.locked ? (
+        <div className="shrink-0 bg-white border-t px-4 py-4" style={{ borderColor: '#E8EDF3' }}>
+          <div className="max-w-2xl mx-auto text-center">
+            {chatState.iAmSender ? (
+              <>
+                <p className="text-sm font-semibold" style={{ color: '#0B132B' }}>Request sent — your first message is delivered</p>
+                <p className="text-xs mt-1" style={{ color: '#5B6478' }}>
+                  You can send more messages once {other?.full_name?.split(' ')[0] || 'they'} accept your request.
+                </p>
+                <button onClick={unmatch} disabled={actioning}
+                  className="mt-3 text-xs font-semibold px-4 py-2 rounded-lg border"
+                  style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+                  Withdraw request
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-semibold" style={{ color: '#0B132B' }}>
+                  {other?.full_name?.split(' ')[0] || 'They'} sent you a connection request
+                </p>
+                <p className="text-xs mt-1 mb-3" style={{ color: '#5B6478' }}>Accept to start chatting.</p>
+                <div className="flex items-center justify-center gap-2">
+                  <button onClick={acceptRequest} disabled={actioning} className="btn-primary px-5 py-2.5 text-sm">
+                    {actioning ? 'Accepting…' : 'Accept & chat'}
+                  </button>
+                  <button onClick={unmatch} disabled={actioning}
+                    className="text-xs font-semibold px-4 py-2.5 rounded-lg border"
+                    style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+                    Decline
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#E8EDF3' }}>
+          <div className="max-w-2xl mx-auto flex items-end gap-2">
+            <textarea
+              ref={inputRef}
+              value={text}
+              onChange={e => setText(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() }
+              }}
+              placeholder={`Say something to ${other?.full_name?.split(' ')[0] || 'them'}…`}
+              rows={1}
+              style={{ resize: 'none', maxHeight: '120px', overflowY: 'auto' }}
+              className="flex-1 input py-2.5 text-sm"
+            />
+            <button
+              onClick={send}
+              disabled={!text.trim() || sending}
+              className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
+              style={{ background: text.trim() ? '#0B132B' : '#E7E5E4' }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke={text.trim() ? 'white' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

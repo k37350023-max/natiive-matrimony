@@ -22,11 +22,11 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#F9FAFB' }}>
-      <header className="bg-white border-b" style={{ borderColor: '#E5E7EB' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F8FAFC' }}>
+      <header className="bg-white border-b" style={{ borderColor: '#E8EDF3' }}>
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center">
           <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Native<span style={{ color: '#9B1C1C' }}>Matrimony</span>
+            Native<span style={{ color: '#0B132B' }}>Matrimony</span>
           </Link>
         </div>
       </header>
@@ -38,7 +38,7 @@ export default function ResetPasswordPage() {
             <p className="text-sm text-gray-400 mb-6">Choose a strong password you'll remember.</p>
 
             {error && (
-              <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}>
+              <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
                 {error}
               </div>
             )}

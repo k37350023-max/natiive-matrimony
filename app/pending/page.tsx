@@ -5,11 +5,11 @@ import LaunchBanner from '../components/LaunchBanner'
 
 export default function PendingPage() {
   return (
-    <div className="min-h-screen flex flex-col" style={{background: '#FFFBF5'}}>
-      <header className="bg-white border-b" style={{borderColor: '#EDE8E0'}}>
+    <div className="min-h-screen flex flex-col" style={{background: '#F8FAFC'}}>
+      <header className="bg-white border-b" style={{borderColor: '#E8EDF3'}}>
         <div className="max-w-xl mx-auto px-5 py-4">
           <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Native<span style={{color: '#9B1C1C'}}>Matrimony</span>
+            Native<span style={{color: '#0B132B'}}>Matrimony</span>
           </Link>
         </div>
       </header>
@@ -20,7 +20,7 @@ export default function PendingPage() {
         <div className="w-full max-w-md">
           <div className="card p-8 text-center mb-4">
             <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16A34A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06D6A0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             </div>
@@ -42,7 +42,7 @@ export default function PendingPage() {
                 { icon: '✓', text: 'Biodata PDF download for matches' },
               ].map(f => (
                 <p key={f.text} className="text-sm text-gray-700 flex items-center gap-2">
-                  <span className="font-bold" style={{ color: '#16A34A' }}>{f.icon}</span>
+                  <span className="font-bold" style={{ color: '#06D6A0' }}>{f.icon}</span>
                   {f.text}
                 </p>
               ))}

@@ -128,7 +128,7 @@ export default function NotificationBell() {
       {showPushBanner && !pushGranted && (
         <div className="fixed top-16 left-0 right-0 z-50 flex justify-center px-4">
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg text-sm max-w-sm w-full"
-            style={{ background: '#1F2937', color: 'white' }}>
+            style={{ background: '#0B132B', color: 'white' }}>
             <span className="text-xl">🔔</span>
             <div className="flex-1">
               <p className="font-semibold text-white text-xs">Enable notifications</p>
@@ -136,7 +136,7 @@ export default function NotificationBell() {
             </div>
             <button onClick={enablePush}
               className="text-xs font-bold px-3 py-1.5 rounded-lg shrink-0"
-              style={{ background: '#9B1C1C', color: 'white' }}>
+              style={{ background: '#0B132B', color: 'white' }}>
               Allow
             </button>
             <button onClick={() => { setShowPushBanner(false); sessionStorage.setItem('push_asked','1') }}
@@ -159,7 +159,7 @@ export default function NotificationBell() {
           </svg>
           {unread > 0 && (
             <span className="absolute -top-0.5 -right-0.5 w-4 h-4 flex items-center justify-center rounded-full text-white"
-              style={{ background: '#9B1C1C', fontSize: '10px', fontWeight: 700 }}>
+              style={{ background: '#0B132B', fontSize: '10px', fontWeight: 700 }}>
               {unread > 9 ? '9+' : unread}
             </span>
           )}
@@ -167,16 +167,16 @@ export default function NotificationBell() {
 
         {open && (
           <div className="absolute right-0 top-11 w-80 rounded-xl shadow-xl border overflow-hidden z-50"
-            style={{ background: 'white', borderColor: '#E5E7EB' }}>
+            style={{ background: 'white', borderColor: '#E8EDF3' }}>
 
-            <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: '#E5E7EB' }}>
+            <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: '#E8EDF3' }}>
               <span className="font-semibold text-gray-800 text-sm">
-                Notifications {unread > 0 && <span className="ml-1 text-xs font-bold px-1.5 py-0.5 rounded-full text-white" style={{ background: '#9B1C1C' }}>{unread}</span>}
+                Notifications {unread > 0 && <span className="ml-1 text-xs font-bold px-1.5 py-0.5 rounded-full text-white" style={{ background: '#0B132B' }}>{unread}</span>}
               </span>
               {!pushGranted && (
                 <button onClick={enablePush}
                   className="text-xs font-semibold flex items-center gap-1 px-2 py-1 rounded-lg"
-                  style={{ background: '#FEF2F2', color: '#9B1C1C' }}>
+                  style={{ background: '#EAF8FE', color: '#0B132B' }}>
                   🔔 Enable alerts
                 </button>
               )}
@@ -196,7 +196,7 @@ export default function NotificationBell() {
                     onClick={() => link && handleNotifClick(n)}
                     className="px-4 py-3 flex gap-3 transition-colors"
                     style={{
-                      background: n.read ? 'white' : '#FEF2F2',
+                      background: n.read ? 'white' : '#EAF8FE',
                       cursor: link ? 'pointer' : 'default',
                     }}>
                     <span className="text-base shrink-0 mt-0.5">{notifIcon(n.type)}</span>
@@ -209,7 +209,7 @@ export default function NotificationBell() {
                         <button
                           onClick={e => { e.stopPropagation(); router.push(`/profile/${n.from_profile_id}`); setOpen(false) }}
                           className="mt-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg"
-                          style={{ background: '#9B1C1C', color: 'white' }}>
+                          style={{ background: '#0B132B', color: 'white' }}>
                           View their profile →
                         </button>
                       )}
@@ -217,7 +217,7 @@ export default function NotificationBell() {
                         <button
                           onClick={e => { e.stopPropagation(); router.push('/interests?tab=received'); setOpen(false) }}
                           className="mt-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg"
-                          style={{ background: '#9B1C1C', color: 'white' }}>
+                          style={{ background: '#0B132B', color: 'white' }}>
                           Review interest →
                         </button>
                       )}
@@ -225,13 +225,13 @@ export default function NotificationBell() {
                         <button
                           onClick={e => { e.stopPropagation(); router.push('/matches'); setOpen(false) }}
                           className="mt-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg"
-                          style={{ background: '#059669', color: 'white' }}>
+                          style={{ background: '#06D6A0', color: 'white' }}>
                           Open chat →
                         </button>
                       )}
                     </div>
                     {!n.read && (
-                      <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ background: '#9B1C1C' }} />
+                      <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ background: '#0B132B' }} />
                     )}
                   </div>
                 )
@@ -246,7 +246,7 @@ export default function NotificationBell() {
               )}
               <button onClick={() => { setOpen(false); router.push('/notifications') }}
                 className="text-xs font-semibold ml-auto"
-                style={{ color: '#7F1D1D' }}>
+                style={{ color: '#0B132B' }}>
                 See all →
               </button>
             </div>

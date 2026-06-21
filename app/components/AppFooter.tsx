@@ -2,10 +2,10 @@ import Link from 'next/link'
 
 export default function AppFooter() {
   return (
-    <footer style={{ borderTop: '1px solid #F0EDE8', padding: '32px 20px 24px', marginTop: '40px' }}>
+    <footer style={{ borderTop: '1px solid #E8EDF3', padding: '32px 20px 24px', marginTop: '40px' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'space-between' }}>
-        <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
-          © 2026 <span style={{ fontWeight: 600, color: '#374151' }}>NativeMatrimony</span> · Built for Telugu families
+        <p style={{ fontSize: '12px', color: '#94A3B8', margin: 0 }}>
+          © 2026 <span style={{ fontWeight: 600, color: '#334155' }}>NativeMatrimony</span> · Built for Telugu families
         </p>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           {[
@@ -16,9 +16,9 @@ export default function AppFooter() {
             { label: 'support@nativematrimony.com', href: 'mailto:support@nativematrimony.com' },
           ].map(l => (
             <Link key={l.href} href={l.href}
-              style={{ fontSize: '12px', color: '#9CA3AF', textDecoration: 'none' }}
-              onMouseEnter={e => ((e.target as HTMLAnchorElement).style.color = '#6B7280')}
-              onMouseLeave={e => ((e.target as HTMLAnchorElement).style.color = '#9CA3AF')}>
+              style={{ fontSize: '12px', color: '#94A3B8', textDecoration: 'none' }}
+              onMouseEnter={e => ((e.target as HTMLAnchorElement).style.color = '#5B6478')}
+              onMouseLeave={e => ((e.target as HTMLAnchorElement).style.color = '#94A3B8')}>
               {l.label}
             </Link>
           ))}

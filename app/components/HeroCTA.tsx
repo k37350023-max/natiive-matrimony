@@ -25,7 +25,7 @@ export default function HeroCTA() {
           <Link href={`/profile/${profileId}`} className="btn-primary px-5 py-2 sm:px-7 sm:py-3 text-sm">
             My Profile
           </Link>
-          <Link href="/browse" className="btn-ghost px-5 py-2 sm:px-7 sm:py-3 text-sm">
+          <Link href="/browse" className="btn-outline px-5 py-2 sm:px-7 sm:py-3 text-sm">
             Browse
           </Link>
         </>
@@ -34,7 +34,7 @@ export default function HeroCTA() {
           <Link href="/register" className="btn-primary px-5 py-2 sm:px-7 sm:py-3 text-sm flex-1 sm:flex-none sm:w-auto">
             Create Profile
           </Link>
-          <Link href="/browse" className="btn-ghost px-5 py-2 sm:px-7 sm:py-3 text-sm flex-1 sm:flex-none sm:w-auto">
+          <Link href="/browse" className="btn-outline px-5 py-2 sm:px-7 sm:py-3 text-sm flex-1 sm:flex-none sm:w-auto">
             Browse
           </Link>
         </>

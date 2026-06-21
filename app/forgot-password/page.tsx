@@ -22,11 +22,11 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: '#F9FAFB' }}>
-      <header className="bg-white border-b" style={{ borderColor: '#E5E7EB' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: '#F8FAFC' }}>
+      <header className="bg-white border-b" style={{ borderColor: '#E8EDF3' }}>
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
           <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Native<span style={{ color: '#9B1C1C' }}>Matrimony</span>
+            Native<span style={{ color: '#0B132B' }}>Matrimony</span>
           </Link>
         </div>
       </header>
@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
             {sent ? (
               <div className="text-center">
                 <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#F0FDF4' }}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06D6A0" strokeWidth="2" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <h2 className="text-lg font-bold text-gray-900 mb-2">Check your inbox</h2>
                 <p className="text-sm text-gray-500 mb-6">We sent a password reset link to <strong>{email}</strong>. Check your spam folder if you don't see it.</p>
@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
                 <p className="text-sm text-gray-400 mb-6">We'll email you a link to reset it.</p>
 
                 {error && (
-                  <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: '#FEF2F2', color: '#991B1B', border: '1px solid #FECACA' }}>
+                  <div className="mb-4 px-4 py-3 rounded-lg text-sm" style={{ background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
                     {error}
                   </div>
                 )}
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
                 </div>
 
                 <p className="text-center text-sm text-gray-400 mt-6">
-                  <Link href="/login" className="font-medium" style={{ color: '#9B1C1C' }}>Back to login</Link>
+                  <Link href="/login" className="font-medium" style={{ color: '#0B132B' }}>Back to login</Link>
                 </p>
               </>
             )}

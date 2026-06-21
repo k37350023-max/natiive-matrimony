@@ -24,10 +24,10 @@ export default function FounderTracker() {
 
   return (
     <div className="mx-4 sm:mx-auto sm:max-w-lg rounded-2xl overflow-hidden border bg-white"
-      style={{ borderColor: '#E5E7EB', boxShadow: '0 4px 24px rgba(155,28,28,0.10)' }}>
+      style={{ borderColor: '#E8EDF3', boxShadow: '0 4px 24px rgba(155,28,28,0.10)' }}>
 
       {/* Header */}
-      <div className="px-6 pt-6 pb-5" style={{ background: 'linear-gradient(135deg, #7F1D1D 0%, #9B1C1C 100%)' }}>
+      <div className="px-6 pt-6 pb-5" style={{ background: 'linear-gradient(135deg, #0B132B 0%, #0B132B 100%)' }}>
         <p className="text-xs font-bold uppercase tracking-widest text-red-300 mb-1">Founder Member Offer</p>
         <p className="text-white font-bold text-xl leading-snug font-serif-display">
           First 1,000 profiles get<br />
@@ -44,17 +44,17 @@ export default function FounderTracker() {
             </span>
             / {GOAL.toLocaleString()} joined
           </p>
-          <p className="text-sm font-bold" style={{ color: '#9B1C1C' }}>{pct}% full</p>
+          <p className="text-sm font-bold" style={{ color: '#0B132B' }}>{pct}% full</p>
         </div>
 
         <div className="h-2.5 rounded-full overflow-hidden bg-gray-100">
           <div className="h-full rounded-full transition-all duration-700"
-            style={{ width: `${Math.max(pct, 2)}%`, background: 'linear-gradient(90deg, #9B1C1C, #DC2626)' }} />
+            style={{ width: `${Math.max(pct, 2)}%`, background: 'linear-gradient(90deg, #0B132B, #DC2626)' }} />
         </div>
 
         <p className="text-xs text-gray-500 mt-2">
           {isFull
-            ? <span>Founder spots are full. <Link href="/pricing" className="font-semibold underline" style={{ color: '#9B1C1C' }}>See pricing →</Link></span>
+            ? <span>Founder spots are full. <Link href="/pricing" className="font-semibold underline" style={{ color: '#0B132B' }}>See pricing →</Link></span>
             : <>Only <span className="font-semibold text-gray-800">{remaining.toLocaleString()} spots left</span> at this price — after that, ₹499/mo</>
           }
         </p>
@@ -67,8 +67,8 @@ export default function FounderTracker() {
           {PERKS.map(perk => (
             <div key={perk} className="flex items-center gap-2">
               <span className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                style={{ background: '#FEF2F2' }}>
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#9B1C1C" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                style={{ background: '#EAF8FE' }}>
+                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
               </span>

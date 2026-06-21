@@ -45,14 +45,14 @@ function timeAgo(d: string) {
 }
 
 function typeLabel(type: string) {
-  if (type === 'interest_received')        return { label: 'Interest Received', color: '#7F1D1D', bg: '#FEF2F2' }
+  if (type === 'interest_received')        return { label: 'Interest Received', color: '#0B132B', bg: '#EAF8FE' }
   if (type === 'interest_accepted')        return { label: 'Match!', color: '#065F46', bg: '#ECFDF5' }
-  if (type === 'interest_declined')        return { label: 'Declined', color: '#6B7280', bg: '#F3F4F6' }
-  if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#6B7280', bg: '#F3F4F6' }
+  if (type === 'interest_declined')        return { label: 'Declined', color: '#5B6478', bg: '#F3F4F6' }
+  if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#5B6478', bg: '#F3F4F6' }
   if (type === 'profile_view')             return { label: 'Profile View', color: '#1E40AF', bg: '#EFF6FF' }
   if (type === 'field_request')            return { label: 'Contact Request', color: '#7C3AED', bg: '#F5F3FF' }
   if (type === 'field_request_approved')   return { label: 'Contact Shared', color: '#065F46', bg: '#ECFDF5' }
-  return { label: 'Notification', color: '#6B7280', bg: '#F3F4F6' }
+  return { label: 'Notification', color: '#5B6478', bg: '#F3F4F6' }
 }
 
 function notifIcon(type: string) {
@@ -77,7 +77,7 @@ function notifAction(type: string, fromProfileId: string | null): { label: strin
 
 function Avatar({ profile, size = 44 }: { profile: FromProfile | null; size?: number }) {
   const showPhoto = !!(profile?.photo_url && profile.photo_visibility === 'public')
-  const colors = ['#7F1D1D','#1D4E7F','#1D7F4E','#7F5A1D']
+  const colors = ['#0B132B','#1D4E7F','#1D7F4E','#7F5A1D']
   const bg = colors[(profile?.full_name?.charCodeAt(0) || 0) % colors.length]
   const initials = profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
 
@@ -173,7 +173,7 @@ export default function NotificationsPage() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F5F3F0', paddingBottom: '80px' }}>
+    <div style={{ minHeight: '100vh', background: '#F8FAFC', paddingBottom: '80px' }}>
       <AppHeader />
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '20px 16px' }}>
@@ -184,15 +184,15 @@ export default function NotificationsPage() {
             <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 2px', letterSpacing: '-0.02em' }}>
               Notifications
               {unread > 0 && (
-                <span style={{ marginLeft: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px', borderRadius: '99px', background: '#7F1D1D', color: 'white', fontSize: '11px', fontWeight: 700, padding: '0 5px', verticalAlign: 'middle' }}>
+                <span style={{ marginLeft: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px', borderRadius: '99px', background: '#0B132B', color: 'white', fontSize: '11px', fontWeight: 700, padding: '0 5px', verticalAlign: 'middle' }}>
                   {unread}
                 </span>
               )}
             </h1>
-            <p style={{ fontSize: '13px', color: '#9CA3AF', margin: 0 }}>Activity on your profile</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Activity on your profile</p>
           </div>
           {notifs.some(n => !n.read) && (
-            <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#7F1D1D', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
+            <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#0B132B', background: '#EAF8FE', border: '1px solid #BDE9F7', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
               Mark all read
             </button>
           )}
@@ -203,7 +203,7 @@ export default function NotificationsPage() {
           {tabs.map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               flex: 1, minWidth: 'max-content', padding: '7px 12px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontSize: '12.5px', fontWeight: 600, transition: 'all 0.15s', whiteSpace: 'nowrap',
-              background: tab === t ? '#7F1D1D' : 'transparent',
+              background: tab === t ? '#0B132B' : 'transparent',
               color: tab === t ? 'white' : '#777',
             }}>
               {t}
@@ -221,10 +221,10 @@ export default function NotificationsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[1,2,3,4].map(i => (
               <div key={i} style={{ background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', padding: '16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#F0EDEA', flexShrink: 0 }} />
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E8EDF3', flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ height: 13, background: '#F0EDEA', borderRadius: '6px', width: '60%', marginBottom: '8px' }} />
-                  <div style={{ height: 11, background: '#F0EDEA', borderRadius: '6px', width: '80%' }} />
+                  <div style={{ height: 13, background: '#E8EDF3', borderRadius: '6px', width: '60%', marginBottom: '8px' }} />
+                  <div style={{ height: 11, background: '#E8EDF3', borderRadius: '6px', width: '80%' }} />
                 </div>
               </div>
             ))}
@@ -238,7 +238,7 @@ export default function NotificationsPage() {
             <p style={{ fontSize: '16px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>
               {tab === 'All' ? 'No notifications yet' : `No ${tab.toLowerCase()} notifications`}
             </p>
-            <p style={{ fontSize: '13.5px', color: '#9CA3AF', maxWidth: '280px', margin: '0 auto', lineHeight: 1.6 }}>
+            <p style={{ fontSize: '13.5px', color: '#94A3B8', maxWidth: '280px', margin: '0 auto', lineHeight: 1.6 }}>
               {tab === 'All'
                 ? 'When someone shows interest or views your profile, you\'ll see it here.'
                 : 'Nothing in this category yet.'}
@@ -262,7 +262,7 @@ export default function NotificationsPage() {
                   <div key={n.id} style={{
                     background: n.read ? 'white' : '#FFFBFB',
                     borderRadius: '12px',
-                    border: `1px solid ${n.read ? '#E8E8E8' : '#FECACA'}`,
+                    border: `1px solid ${n.read ? '#E8E8E8' : '#BDE9F7'}`,
                     padding: '14px 16px',
                     display: 'flex',
                     gap: '12px',
@@ -275,13 +275,13 @@ export default function NotificationsPage() {
 
                     {/* Unread dot */}
                     {!n.read && (
-                      <div style={{ position: 'absolute', top: '16px', right: '16px', width: '7px', height: '7px', borderRadius: '50%', background: '#7F1D1D' }} />
+                      <div style={{ position: 'absolute', top: '16px', right: '16px', width: '7px', height: '7px', borderRadius: '50%', background: '#0B132B' }} />
                     )}
 
                     {/* Avatar or icon */}
                     {from
                       ? <Avatar profile={from} />
-                      : <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#FEF2F2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                      : <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
                           {notifIcon(n.type)}
                         </div>}
 
@@ -290,22 +290,22 @@ export default function NotificationsPage() {
                         <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', background: badge.bg, color: badge.color }}>
                           {badge.label}
                         </span>
-                        <span style={{ fontSize: '11px', color: '#9CA3AF' }}>{timeAgo(n.created_at)}</span>
+                        <span style={{ fontSize: '11px', color: '#94A3B8' }}>{timeAgo(n.created_at)}</span>
                       </div>
 
-                      <p style={{ fontSize: '13.5px', color: '#1F2937', margin: '0 0 4px', lineHeight: 1.5 }}>
+                      <p style={{ fontSize: '13.5px', color: '#0B132B', margin: '0 0 4px', lineHeight: 1.5 }}>
                         {n.message}
                       </p>
 
                       {from && (
-                        <p style={{ fontSize: '12px', color: '#9CA3AF', margin: '0 0 8px' }}>
+                        <p style={{ fontSize: '12px', color: '#94A3B8', margin: '0 0 8px' }}>
                           {[from.profession, from.native_district].filter(Boolean).join(' · ')}
                         </p>
                       )}
 
                       {action && (
                         <button onClick={() => router.push(action.href)}
-                          style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '7px', background: '#7F1D1D', color: 'white', border: 'none', cursor: 'pointer' }}>
+                          style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '7px', background: '#0B132B', color: 'white', border: 'none', cursor: 'pointer' }}>
                           {action.label}
                         </button>
                       )}

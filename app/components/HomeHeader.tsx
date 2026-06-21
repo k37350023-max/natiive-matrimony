@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 export default function HomeHeader() {
   const [profileId, setProfileId] = useState<string | null>(null)
   const [ready, setReady] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -15,22 +16,29 @@ export default function HomeHeader() {
     if (id) router.replace('/browse')
   }, [])
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <header style={{
       background: '#FFFFFF',
-      borderBottom: '1px solid #E8E8E8',
+      borderBottom: '1px solid #E8EDF3',
       position: 'sticky', top: 0, zIndex: 50,
+      boxShadow: scrolled ? '0 6px 20px rgba(11,19,43,0.08)' : 'none',
+      transition: 'box-shadow 0.2s',
     }}>
       <div style={{
         maxWidth: '1120px', margin: '0 auto', padding: '0 20px',
-        height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        height: '62px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
         <span style={{
-          fontFamily: 'var(--font-inter), sans-serif',
-          fontSize: '18px', fontWeight: 800,
-          letterSpacing: '-0.04em', color: '#111111', lineHeight: 1,
+          fontFamily: 'var(--font-space-grotesk), sans-serif',
+          fontSize: '23px', letterSpacing: '-0.03em', lineHeight: 1,
         }}>
-          Native<span style={{ color: '#7F1D1D' }}>Matrimony</span>
+          <span style={{ fontWeight: 700, color: '#0B132B' }}>native</span><span style={{ fontWeight: 400, color: '#5B6478' }}>matrimony</span><span style={{ fontWeight: 700, color: '#4CC9F0' }}>.</span>
         </span>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
