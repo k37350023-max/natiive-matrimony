@@ -56,14 +56,17 @@ function typeLabel(type: string) {
 }
 
 function notifIcon(type: string) {
-  if (type === 'interest_received')        return '💌'
-  if (type === 'interest_accepted')        return '🎉'
-  if (type === 'interest_declined')        return '✕'
-  if (type === 'interest_withdrawn')       return '↩'
-  if (type === 'profile_view')             return '👁'
-  if (type === 'field_request')            return '🔓'
-  if (type === 'field_request_approved')   return '✅'
-  return '🔔'
+  const d: Record<string, string> = {
+    interest_received:      '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+    interest_accepted:      '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    field_request_approved: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    interest_declined:      '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+    interest_withdrawn:     '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+    profile_view:           '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+    field_request:          '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+  }
+  const path = d[type] || '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: path }} />
 }
 
 function notifAction(type: string, fromProfileId: string | null): { label: string; href: string } | null {
@@ -234,7 +237,9 @@ export default function NotificationsPage() {
         {/* Empty state */}
         {!loading && filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px 20px', background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8' }}>
-            <div style={{ fontSize: '44px', marginBottom: '16px' }}>🔔</div>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: '#EEF2F7', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
             <p style={{ fontSize: '16px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>
               {tab === 'All' ? 'No notifications yet' : `No ${tab.toLowerCase()} notifications`}
             </p>
@@ -281,7 +286,7 @@ export default function NotificationsPage() {
                     {/* Avatar or icon */}
                     {from
                       ? <Avatar profile={from} />
-                      : <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>
+                      : <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           {notifIcon(n.type)}
                         </div>}
 

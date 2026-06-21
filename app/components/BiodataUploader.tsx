@@ -53,7 +53,7 @@ export default function BiodataUploader({ onParsed }: Props) {
   return (
     <div className="card p-5">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-lg">⚡</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#4CC9F0" stroke="none" style={{ flexShrink: 0 }}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
         <p className="font-semibold text-gray-800 font-serif-display">Auto-fill from your biodata</p>
       </div>
       <p className="text-xs text-gray-400 mb-4">

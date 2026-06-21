@@ -900,21 +900,21 @@ export default function BrowsePage() {
                 onClick={() => {
                   const next = !alertSet
                   setAlertSet(next)
-                  setBrowseToast(next ? '🔔 Alert saved — we\'ll notify you when new matches appear' : 'Alert removed')
+                  setBrowseToast(next ? 'Alert saved — we\'ll notify you when new matches appear' : 'Alert removed')
                   setTimeout(() => setBrowseToast(null), 3500)
                 }}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
                 style={alertSet
                   ? { background: '#EAF8FE', color: '#0B132B', borderColor: '#BDE9F7' }
                   : { borderColor: '#E8EDF3', color: '#5B6478', background: 'white' }}>
-                {alertSet ? '🔔 Alert set' : '+ Save search'}
+                {alertSet ? 'Alert set' : '+ Save search'}
               </button>
             </div>
             {/* ── AI Top Picks ─────────────────────────────── */}
             {aiPicks.length > 0 && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <span style={{ fontSize: '16px' }}>✨</span>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#4CC9F0" stroke="none" style={{ flexShrink: 0 }}><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
                   <span className="text-sm font-bold text-gray-900">Top Picks for You</span>
                   <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
                     AI matched
@@ -935,8 +935,8 @@ export default function BrowsePage() {
                             <img src={pick.photo_url} alt={pick.full_name}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           ) : (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '36px' }}>
-                              👤
+                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </div>
                           )}
                           {/* Score badge */}
@@ -957,8 +957,9 @@ export default function BrowsePage() {
                           <p style={{ fontSize: '11px', color: '#5B6478', margin: 0 }}>
                             {pick.profession?.split(' ').slice(0,2).join(' ')}
                           </p>
-                          <p style={{ fontSize: '10px', color: '#94A3B8', margin: '2px 0 0' }}>
-                            📍 {pick.native_district}
+                          <p style={{ fontSize: '10px', color: '#94A3B8', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            {pick.native_district}
                           </p>
                         </div>
                       </div>
@@ -1178,18 +1179,22 @@ export default function BrowsePage() {
               {/* Info rows */}
               <div className="px-5 py-1 divide-y divide-gray-100">
                 {[
-                  { icon: '📍', text: `Native: ${p.native_district||'—'}${p.current_city?` • ${p.current_city}`:''}` },
-                  { icon: '💼', text: [p.profession,p.education].filter(Boolean).join(' · ')||'—' },
-                  { icon: '🛕', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'—' },
-                  { icon: '👨‍👩‍👧', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '—' },
-                  seenLabel ? { icon: '🟢', text: seenLabel } : null,
-                  p.about ? { icon: '💬', text: p.about.slice(0,120)+(p.about.length>120?'…':'') } : null,
-                ].filter(Boolean).map((row,i) => (
+                  { svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', text: `Native: ${p.native_district||'—'}${p.current_city?` • ${p.current_city}`:''}` },
+                  { svg: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>', text: [p.profession,p.education].filter(Boolean).join(' · ')||'—' },
+                  { svg: '<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/>', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'—' },
+                  { svg: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '—' },
+                  seenLabel ? { dot: true, text: seenLabel } : null,
+                  p.about ? { svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', text: p.about.slice(0,120)+(p.about.length>120?'…':'') } : null,
+                ].filter(Boolean).map((row,i) => {
+                  const r = row as { svg?: string; dot?: boolean; text: string }
+                  return (
                   <div key={i} className="flex items-start gap-3 py-2.5">
-                    <span className="text-base shrink-0 mt-0.5">{(row as {icon:string;text:string}).icon}</span>
-                    <p className="text-sm text-gray-600 leading-snug">{(row as {icon:string;text:string}).text}</p>
+                    {r.dot
+                      ? <span style={{ width: 9, height: 9, borderRadius: 99, background: '#06D6A0', flexShrink: 0, marginTop: 6 }} />
+                      : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }} dangerouslySetInnerHTML={{ __html: r.svg || '' }} />}
+                    <p className="text-sm text-gray-600 leading-snug">{r.text}</p>
                   </div>
-                ))}
+                  )})}
               </div>
 
               {/* Action buttons */}

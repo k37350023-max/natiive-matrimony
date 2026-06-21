@@ -6,6 +6,12 @@ flag anything that needs you under **⚠️ NEEDS YOU** below.
 ---
 
 ## ⚠️ NEEDS YOU (do these when you're back — everything else is handled)
+- [ ] **Set env vars in your HOST dashboard (Vercel/Netlify)** — `.env.local` is gitignored (correct),
+      so the live site needs these set or login/connect/chat will break in prod:
+      `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
+      `SESSION_SECRET`, `OTP_SECRET` (optional now), `FAST2SMS_API_KEY` (for real SMS).
+- [ ] **Before inviting REAL users:** finish the RLS migration (DB is still open until then —
+      fine for the current seed/test data, NOT for real people's data).
 - [ ] **Rotate the `service_role` key** (it was pasted in chat → treat as compromised). Supabase → Settings → API → roll `service_role`, then paste the new value into `.env.local` `SUPABASE_SERVICE_ROLE_KEY=`.
 - [ ] **Add an SMS provider key** when ready for real OTP. I'll wire the code and gate it behind `OTP_DEV_MODE`; you just add the provider key + flip the flag. (placeholder env documented when built)
 - [ ] **Payment provider** (if charging at launch) — premium is currently auto-granted.
@@ -83,6 +89,12 @@ Ranked by what a normal visitor/member would actually hit.
 - Verified end-to-end through the real secured routes: Groom connect → Bride accept (match) →
   Groom chat message delivered. (Test accounts kept; the interaction rows were cleaned.)
 - Also fixed login/register headers to the lowercase `nativematrimony.` wordmark.
+
+## Emoji → professional SVG icons — DONE ✅
+- Replaced all emoji (✅🎉🔔📍💼👨‍👩‍👧✨⚡💬👤💌👁🔒 + dashboard/notification icons) with clean
+  line/solid SVG icons across LaunchBanner, NotificationBell, notifications, interests, browse
+  QuickView, dashboard, chat, biodata, profile/edit, landing. Verified: build green, 0 emoji left,
+  QuickView + banners render with crisp icons.
 
 ## Interest → chat "request" model — BUILT & VERIFIED ✅
 - Connect now opens a thread with the **initial message delivered**, but the thread is

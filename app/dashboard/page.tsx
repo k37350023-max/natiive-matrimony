@@ -371,11 +371,11 @@ export default function DashboardPage() {
         {/* ── Quick links ───────────────────────────────────────── */}
         <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8', overflow: 'hidden' }}>
           {[
-            { icon: '✏️', label: 'Edit profile details',    href: '/profile/edit' },
-            { icon: '🔔', label: 'Notifications',            href: '/notifications' },
-            { icon: '💰', label: 'Upgrade to Premium',       href: '/pricing', hide: isPremium },
-            { icon: '🔒', label: 'Privacy settings',         href: '/profile/edit#privacy' },
-            { icon: '📋', label: 'Download my biodata',      href: `/profile/${profile.id}` },
+            { icon: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/>', label: 'Edit profile details', href: '/profile/edit' },
+            { icon: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>', label: 'Notifications', href: '/notifications' },
+            { icon: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>', label: 'Upgrade to Premium', href: '/pricing', hide: isPremium },
+            { icon: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>', label: 'Privacy settings', href: '/profile/edit#privacy' },
+            { icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>', label: 'Download my biodata', href: `/profile/${profile.id}` },
           ].filter(item => !item.hide).map((item, i, arr) => (
             <Link key={item.label} href={item.href} style={{
               display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px',
@@ -385,7 +385,7 @@ export default function DashboardPage() {
             }}
               onMouseEnter={e => (e.currentTarget.style.background = '#F8FAFC')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <span style={{ fontSize: '16px', width: '22px', textAlign: 'center' }}>{item.icon}</span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5B6478" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: item.icon }} />
               {item.label}
               <svg style={{ marginLeft: 'auto' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCC" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
             </Link>

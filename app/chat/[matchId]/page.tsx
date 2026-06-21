@@ -243,8 +243,10 @@ export default function ChatPage() {
         )}
         {!loading && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 text-2xl"
-              style={{ background: '#EAF8FE' }}>💬</div>
+            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
+              style={{ background: '#EAF8FE' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
             <p className="font-semibold text-gray-700">Start the conversation</p>
             <p className="text-sm text-gray-400 mt-1 mb-5">
               You and {other?.full_name || 'your match'} are connected. Say hello!

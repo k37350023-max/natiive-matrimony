@@ -131,7 +131,7 @@ export default function ChatInboxPage() {
 
         {!loading && !myId && (
           <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5 text-3xl" style={{ background: '#EAF8FE' }}>💬</div>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5" style={{ background: '#EAF8FE' }}><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <p className="font-semibold text-gray-800 text-lg mb-1">Sign in to see your messages</p>
             <p className="text-sm text-gray-400 mb-6">Messages unlock after a mutual match</p>
             <Link href="/login" className="btn-primary px-6 py-2.5">Sign In</Link>
@@ -140,7 +140,7 @@ export default function ChatInboxPage() {
 
         {!loading && myId && threads.length === 0 && (
           <div className="flex flex-col items-center justify-center py-24 text-center px-6">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5 text-3xl" style={{ background: '#EAF8FE' }}>💬</div>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5" style={{ background: '#EAF8FE' }}><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <p className="font-semibold text-gray-800 text-lg mb-1">No messages yet</p>
             <p className="text-sm text-gray-400 mb-2">Messages unlock when you and another person both accept each other's interest.</p>
             <p className="text-sm text-gray-400 mb-6">Browse profiles, send an interest, and once they accept — you can chat here.</p>
@@ -189,7 +189,7 @@ export default function ChatInboxPage() {
                     <div className="flex items-center justify-between gap-2 mt-0.5">
                       <p className={`text-xs truncate ${t.unread > 0 ? 'font-medium text-gray-700' : 'text-gray-400'}`}>
                         {t.last_message ?? (
-                          <span className="italic">Say hello 👋</span>
+                          <span className="italic">Say hello</span>
                         )}
                       </p>
                       {t.unread > 0 && (

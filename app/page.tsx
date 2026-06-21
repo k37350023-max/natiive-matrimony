@@ -24,7 +24,7 @@ export default function Home() {
             padding: '7px 16px', borderRadius: '99px', marginBottom: '28px',
             background: '#E0F7FC', color: '#0B132B', border: '1px solid #BDE9F7',
           }}>
-            ✨ Telugu families · Native place first
+            Telugu families · Native place first
           </div>
           <h1 className="font-serif-display" style={{
             fontSize: 'clamp(40px, 6.5vw, 64px)', fontWeight: 800,
@@ -71,7 +71,9 @@ export default function Home() {
             padding: '18px 22px', borderRadius: '16px',
             background: '#F8FAFC', border: '1px solid #BDE9F7',
           }}>
-            <div style={{ fontSize: '24px', flexShrink: 0 }}>👨‍👩‍👧</div>
+            <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '10px', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: '14px', fontWeight: 600, color: '#0B132B', margin: '0 0 3px' }}>Parents — you can register on behalf of your child</p>
               <p style={{ fontSize: '12.5px', color: '#5B6478', margin: 0 }}>Select "Profile by: Parent / Guardian" during signup.</p>

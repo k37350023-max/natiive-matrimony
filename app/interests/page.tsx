@@ -208,7 +208,7 @@ function InterestsPageInner() {
                   )}
                 </div>
                 <p className="text-xs text-gray-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
-                <p className="text-xs mt-0.5" style={{ color: '#0B132B' }}>📍 {i.profile.native_district}, {i.profile.native_state}</p>
+                <p className="text-xs mt-0.5 flex items-center gap-1" style={{ color: '#0B132B' }}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{i.profile.native_district}, {i.profile.native_state}</p>
               </div>
               {!showActions && !isMatched && (() => {
                 const s = STATUS_STYLES[i.status] || STATUS_STYLES.pending
@@ -327,9 +327,9 @@ function InterestsPageInner() {
         <div className="max-w-2xl mx-auto px-4 pt-4">
           <div className="rounded-2xl px-4 py-4 flex items-center gap-3"
             style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
-            <span className="text-2xl">🎉</span>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#06D6A0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-green-800">You're now matched with {acceptedMatch.name}!</p>
+              <p className="text-sm font-semibold" style={{ color: '#0B132B' }}>You're now matched with {acceptedMatch.name}!</p>
               <p className="text-xs text-green-600 mt-0.5">Start a conversation — they're waiting to hear from you.</p>
             </div>
             <Link href={`/chat/${acceptedMatch.matchId}`}
@@ -385,8 +385,10 @@ function InterestsPageInner() {
 
         {!loading && tab === 'received' && (
           received.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-3xl mb-3">💌</p>
+            <div className="card p-12 text-center flex flex-col items-center">
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EAF8FE', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </span>
               <p className="font-semibold text-gray-700">No pending interests</p>
               <p className="text-sm text-gray-400 mt-1">When someone expresses interest in you, it appears here.</p>
             </div>
@@ -416,8 +418,10 @@ function InterestsPageInner() {
 
         {!loading && tab === 'matched' && (
           matched.length === 0 ? (
-            <div className="card p-12 text-center">
-              <p className="text-3xl mb-3">✅</p>
+            <div className="card p-12 text-center flex flex-col items-center">
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EEF2F7', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
               <p className="font-semibold text-gray-700">No mutual matches yet</p>
               <p className="text-sm text-gray-400 mt-1">Interests you accept become mutual matches here.</p>
             </div>

@@ -385,7 +385,7 @@ function EditProfilePageInner() {
       <div className="max-w-xl mx-auto px-4 py-6 space-y-4">
         {isNewProfile && (
           <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EAF8FE', border: '1px solid #BDE9F7', color: '#0B132B' }}>
-            🎉 Welcome! Fill in the fields below — required fields marked <span className="font-bold text-red-600">*</span>. The more you fill, the more interest you'll get.
+            Welcome! Fill in the fields below — required fields marked <span className="font-bold" style={{ color: '#9B1C1C' }}>*</span>. The more you fill, the more interest you'll get.
           </div>
         )}
         <div className="mb-2">
@@ -798,9 +798,10 @@ function EditProfilePageInner() {
                     ]
                     set('about', templates[Math.floor(Math.random() * templates.length)].slice(0, 400))
                   }}
-                  className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors"
+                  className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1.5"
                   style={{background: '#EAF8FE', color: '#0B132B'}}>
-                  ✨ Generate bio
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
+                  Generate bio
                 </button>
               </div>
               <textarea className="input" rows={3}

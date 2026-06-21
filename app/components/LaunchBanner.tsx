@@ -38,12 +38,14 @@ export default function LaunchBanner() {
     const formatted = expiry.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
     return (
       <div className="mx-4 my-3 rounded-xl px-4 py-2.5 flex items-center justify-between"
-        style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
+        style={{ background: '#E6FBF5', border: '1px solid #A7F3D0' }}>
         <div className="flex items-center gap-2.5">
-          <span className="text-base">✅</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#06D6A0" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
           <div>
-            <p className="text-xs font-semibold text-green-800">Offer Already Applied</p>
-            <p className="text-[11px] text-green-600">Premium active until {formatted}</p>
+            <p className="text-xs font-bold" style={{ color: '#0B132B' }}>Offer Already Applied</p>
+            <p className="text-[11px]" style={{ color: '#057A5B' }}>Premium active until {formatted}</p>
           </div>
         </div>
         <button
