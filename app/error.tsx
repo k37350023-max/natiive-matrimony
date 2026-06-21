@@ -5,10 +5,10 @@ import Link from 'next/link'
 export default function GlobalError({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {}, [error])
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#F8FAFC' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', background: '#FBFAF5' }}>
       <div style={{ textAlign: 'center', maxWidth: '360px' }}>
-        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+        <div style={{ width: '56px', height: '56px', borderRadius: '16px', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
         </div>

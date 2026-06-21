@@ -25,9 +25,9 @@ export default function HomeHeader() {
   return (
     <header style={{
       background: '#FFFFFF',
-      borderBottom: '1px solid #E8EDF3',
+      borderBottom: '1px solid #E7E3D8',
       position: 'sticky', top: 0, zIndex: 50,
-      boxShadow: scrolled ? '0 6px 20px rgba(11,19,43,0.08)' : 'none',
+      boxShadow: scrolled ? '0 6px 20px rgba(20,36,28,0.08)' : 'none',
       transition: 'box-shadow 0.2s',
     }}>
       <div style={{
@@ -38,7 +38,7 @@ export default function HomeHeader() {
           fontFamily: 'var(--font-space-grotesk), sans-serif',
           fontSize: '23px', letterSpacing: '-0.03em', lineHeight: 1,
         }}>
-          <span style={{ fontWeight: 700, color: '#0B132B' }}>native</span><span style={{ fontWeight: 400, color: '#5B6478' }}>matrimony</span><span style={{ fontWeight: 700, color: '#4CC9F0' }}>.</span>
+          <span style={{ fontWeight: 700, color: '#14241C' }}>native</span><span style={{ fontWeight: 400, color: '#1B5E20' }}>matrimony</span><span style={{ fontWeight: 700, color: '#1B5E20' }}>.</span>
         </span>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>

@@ -60,7 +60,7 @@ function Label({ children, optional }: { children: React.ReactNode; optional?: b
 }
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', border: '1.5px solid #E8EDF3', borderRadius: '8px',
+  width: '100%', border: '1.5px solid #E7E3D8', borderRadius: '8px',
   padding: '11px 13px', fontSize: '14px', outline: 'none', boxSizing: 'border-box',
   background: 'white', color: '#111', transition: 'border-color 0.15s',
 }
@@ -171,12 +171,12 @@ export default function RegisterPage() {
   ][step - 1]
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F8FAFC' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FBFAF5' }}>
       <header style={{ background: 'white', borderBottom: '1px solid #E8E8E8' }}>
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '0 20px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Link href="/" style={{ textDecoration: 'none' }}>
             <span style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: '20px', letterSpacing: '-0.03em' }}>
-              <span style={{ fontWeight: 700, color: '#0B132B' }}>native</span><span style={{ fontWeight: 400, color: '#5B6478' }}>matrimony</span><span style={{ fontWeight: 700, color: '#4CC9F0' }}>.</span>
+              <span style={{ fontWeight: 700, color: '#14241C' }}>native</span><span style={{ fontWeight: 400, color: '#1B5E20' }}>matrimony</span><span style={{ fontWeight: 700, color: '#1B5E20' }}>.</span>
             </span>
           </Link>
           <Link href="/login" style={{ fontSize: '13px', color: '#94A3B8', textDecoration: 'none' }}>Sign in instead</Link>
@@ -189,7 +189,7 @@ export default function RegisterPage() {
           {/* Progress dots */}
           <div style={{ display: 'flex', gap: '6px', marginBottom: '22px' }}>
             {[1, 2, 3].map(n => (
-              <div key={n} style={{ flex: 1, height: '4px', borderRadius: '99px', background: n <= step ? '#0B132B' : '#E8EDF3', transition: 'background 0.3s' }} />
+              <div key={n} style={{ flex: 1, height: '4px', borderRadius: '99px', background: n <= step ? '#14241C' : '#E7E3D8', transition: 'background 0.3s' }} />
             ))}
           </div>
 
@@ -198,7 +198,7 @@ export default function RegisterPage() {
 
           <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '24px' }}>
             {error && (
-              <div style={{ marginBottom: '16px', padding: '12px 16px', borderRadius: '8px', fontSize: '13.5px', background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
+              <div style={{ marginBottom: '16px', padding: '12px 16px', borderRadius: '8px', fontSize: '13.5px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
                 {error}
               </div>
             )}
@@ -217,18 +217,18 @@ export default function RegisterPage() {
                       <button key={val} type="button" onClick={() => set('gender', val)} style={{
                         padding: '11px', borderRadius: '8px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer',
                         border: '1.5px solid', transition: 'all 0.12s',
-                        background: form.gender === val ? '#0B132B' : 'white',
+                        background: form.gender === val ? '#14241C' : 'white',
                         color: form.gender === val ? 'white' : '#555',
-                        borderColor: form.gender === val ? '#0B132B' : '#E8EDF3',
+                        borderColor: form.gender === val ? '#14241C' : '#E7E3D8',
                       }}>{lbl}</button>
                     ))}
                   </div>
                 </div>
                 <div>
                   <Label>Mobile number</Label>
-                  <div style={{ display: 'flex', border: '1.5px solid #E8EDF3', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div style={{ display: 'flex', border: '1.5px solid #E7E3D8', borderRadius: '8px', overflow: 'hidden' }}>
                     <select value={phoneCode} onChange={e => setPhoneCode(e.target.value)}
-                      style={{ background: '#F8FAFC', fontSize: '13px', fontWeight: 600, padding: '11px 8px', border: 'none', outline: 'none', borderRight: '1px solid #E8EDF3', flexShrink: 0 }}>
+                      style={{ background: '#FBFAF5', fontSize: '13px', fontWeight: 600, padding: '11px 8px', border: 'none', outline: 'none', borderRight: '1px solid #E7E3D8', flexShrink: 0 }}>
                       {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
                     </select>
                     <input style={{ flex: 1, padding: '11px 13px', fontSize: '14px', border: 'none', outline: 'none', background: 'white' }}
@@ -247,7 +247,7 @@ export default function RegisterPage() {
             {/* ── STEP 2: OTP ───────────────────────────────────── */}
             {step === 2 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ background: '#E0F7FC', border: '1px solid #BDE9F7', borderRadius: '8px', padding: '10px 14px', fontSize: '12px', color: '#0B132B' }}>
+                <div style={{ background: '#EAF3EA', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '12px', color: '#14241C' }}>
                   {devOtp
                     ? <>Dev mode — your code is <strong>{devOtp}</strong>. (Real SMS sends automatically once a gateway key is added.)</>
                     : <>We sent a 6-digit code to {phoneCode} {form.phone}. Enter it below.</>}
@@ -308,7 +308,7 @@ export default function RegisterPage() {
 
           <p style={{ textAlign: 'center', fontSize: '13px', color: '#94A3B8', marginTop: '20px' }}>
             Already have an account?{' '}
-            <Link href="/login" style={{ fontWeight: 600, color: '#0B132B', textDecoration: 'none' }}>Sign in</Link>
+            <Link href="/login" style={{ fontWeight: 600, color: '#14241C', textDecoration: 'none' }}>Sign in</Link>
           </p>
           <p style={{ textAlign: 'center', fontSize: '12px', color: '#C4C4C4', marginTop: '8px' }}>
             Free access to all features until 30 September 2026<br />

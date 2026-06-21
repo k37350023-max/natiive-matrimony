@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 40%, #FFFFFF 100%)' }}>
+    <div className="min-h-screen flex flex-col" style={{ background: 'linear-gradient(180deg, #FBFAF5 0%, #FFFFFF 40%, #FFFFFF 100%)' }}>
 
       <HomeHeader />
 
@@ -22,19 +22,19 @@ export default function Home() {
             display: 'inline-flex', alignItems: 'center', gap: '6px',
             fontSize: '12px', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase',
             padding: '7px 16px', borderRadius: '99px', marginBottom: '28px',
-            background: '#E0F7FC', color: '#0B132B', border: '1px solid #BDE9F7',
+            background: '#EAF3EA', color: '#14241C', border: '1px solid #CADFCA',
           }}>
             Telugu families · Native place first
           </div>
           <h1 className="font-serif-display" style={{
             fontSize: 'clamp(40px, 6.5vw, 64px)', fontWeight: 800,
-            color: '#0B132B', lineHeight: 1.1, letterSpacing: '-0.025em',
+            color: '#14241C', lineHeight: 1.1, letterSpacing: '-0.025em',
             marginBottom: '22px',
           }}>
             Find your match<br />
-            <span style={{ color: '#0B132B' }}>from your native place</span>
+            <span style={{ color: '#14241C' }}>from your native place</span>
           </h1>
-          <p style={{ fontSize: '18px', color: '#5B6478', maxWidth: '440px', margin: '0 auto 36px', lineHeight: 1.65 }}>
+          <p style={{ fontSize: '18px', color: '#5E6B62', maxWidth: '440px', margin: '0 auto 36px', lineHeight: 1.65 }}>
             Telugu matrimony built around where you&apos;re from.
             Join free — first 1,000 members get premium for life.
           </p>
@@ -55,8 +55,8 @@ export default function Home() {
         <section style={{ padding: '40px 20px 60px' }}>
           <div style={{ maxWidth: '900px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-              <p style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 10px' }}>Browse by native place</p>
-              <h2 className="font-serif-display" style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 700, color: '#0B132B', letterSpacing: '-0.02em', margin: 0 }}>
+              <p style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 10px' }}>Browse by native place</p>
+              <h2 className="font-serif-display" style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 700, color: '#14241C', letterSpacing: '-0.02em', margin: 0 }}>
                 Pick your district. See who&apos;s from there.
               </h2>
             </div>
@@ -69,18 +69,18 @@ export default function Home() {
           <div style={{
             display: 'flex', alignItems: 'center', gap: '16px',
             padding: '18px 22px', borderRadius: '16px',
-            background: '#F8FAFC', border: '1px solid #BDE9F7',
+            background: '#FBFAF5', border: '1px solid #CADFCA',
           }}>
-            <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '10px', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <div style={{ flexShrink: 0, width: '40px', height: '40px', borderRadius: '10px', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
             </div>
             <div style={{ flex: 1 }}>
-              <p style={{ fontSize: '14px', fontWeight: 600, color: '#0B132B', margin: '0 0 3px' }}>Parents — you can register on behalf of your child</p>
-              <p style={{ fontSize: '12.5px', color: '#5B6478', margin: 0 }}>Select "Profile by: Parent / Guardian" during signup.</p>
+              <p style={{ fontSize: '14px', fontWeight: 600, color: '#14241C', margin: '0 0 3px' }}>Parents — you can register on behalf of your child</p>
+              <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0 }}>Select "Profile by: Parent / Guardian" during signup.</p>
             </div>
             <Link href="/register" style={{
               fontSize: '12.5px', fontWeight: 700, padding: '8px 16px',
-              borderRadius: '99px', background: '#0B132B', color: 'white',
+              borderRadius: '99px', background: '#14241C', color: 'white',
               textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap',
             }}>
               Start →
@@ -93,7 +93,7 @@ export default function Home() {
 
         {/* ── Feature cards ────────────────────────────────── */}
         <section style={{ maxWidth: '900px', margin: '0 auto 80px', padding: '0 20px' }}>
-          <h2 className="font-serif-display" style={{ fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: 700, color: '#0B132B', textAlign: 'center', letterSpacing: '-0.02em', marginBottom: '32px' }}>
+          <h2 className="font-serif-display" style={{ fontSize: 'clamp(24px, 3vw, 32px)', fontWeight: 700, color: '#14241C', textAlign: 'center', letterSpacing: '-0.02em', marginBottom: '32px' }}>
             Why families choose us
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
@@ -102,7 +102,7 @@ export default function Home() {
                 title: 'Privacy by design',
                 desc: 'Photos and contact details unlock only after both sides accept. Your information is never exposed without consent.',
                 icon: (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                   </svg>
                 ),
@@ -111,7 +111,7 @@ export default function Home() {
                 title: 'Native place matching',
                 desc: 'Filter by region, district, and native village. Find someone who truly understands your roots and traditions.',
                 icon: (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
                   </svg>
                 ),
@@ -120,7 +120,7 @@ export default function Home() {
                 title: 'Mutual interest model',
                 desc: 'Both parties must accept before any contact is exchanged. No unsolicited messages, ever.',
                 icon: (
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                   </svg>
                 ),
@@ -132,11 +132,11 @@ export default function Home() {
                 boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
                 padding: '24px',
               }}>
-                <div style={{ width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EAF8FE', marginBottom: '16px' }}>
+                <div style={{ width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EDF3ED', marginBottom: '16px' }}>
                   {f.icon}
                 </div>
-                <p className="font-serif-display" style={{ fontWeight: 700, fontSize: '16px', color: '#0B132B', marginBottom: '8px', letterSpacing: '-0.01em' }}>{f.title}</p>
-                <p style={{ fontSize: '13.5px', color: '#5B6478', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
+                <p className="font-serif-display" style={{ fontWeight: 700, fontSize: '16px', color: '#14241C', marginBottom: '8px', letterSpacing: '-0.01em' }}>{f.title}</p>
+                <p style={{ fontSize: '13.5px', color: '#5E6B62', lineHeight: 1.65, margin: 0 }}>{f.desc}</p>
               </div>
             ))}
           </div>
@@ -145,8 +145,8 @@ export default function Home() {
         {/* ── Success stories ──────────────────────────────── */}
         <section style={{ maxWidth: '980px', margin: '0 auto 80px', padding: '0 20px' }}>
           <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-            <p style={{ fontSize: '11.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 10px' }}>Happily married</p>
-            <h2 className="font-serif-display" style={{ fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 800, color: '#0B132B', letterSpacing: '-0.02em', margin: 0 }}>
+            <p style={{ fontSize: '11.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 10px' }}>Happily married</p>
+            <h2 className="font-serif-display" style={{ fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 800, color: '#14241C', letterSpacing: '-0.02em', margin: 0 }}>
               Stories that started here
             </h2>
           </div>
@@ -161,12 +161,12 @@ export default function Home() {
                   <img src={t.img} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 6px rgba(0,0,0,0.12)' }} />
                   <img src={t.img2} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 6px rgba(0,0,0,0.12)', marginLeft: '-14px' }} />
                   <div style={{ marginLeft: '12px' }}>
-                    <p style={{ fontSize: '15px', fontWeight: 700, color: '#0B132B', margin: 0 }}>{t.names}</p>
-                    <p style={{ fontSize: '12px', color: '#5B6478', margin: '1px 0 0' }}>{t.place}</p>
+                    <p style={{ fontSize: '15px', fontWeight: 700, color: '#14241C', margin: 0 }}>{t.names}</p>
+                    <p style={{ fontSize: '12px', color: '#5E6B62', margin: '1px 0 0' }}>{t.place}</p>
                   </div>
                 </div>
-                <div style={{ color: '#4CC9F0', fontSize: '14px', letterSpacing: '2px', marginBottom: '8px' }}>★★★★★</div>
-                <p style={{ fontSize: '14px', color: '#5B6478', lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>&ldquo;{t.quote}&rdquo;</p>
+                <div style={{ color: '#1B5E20', fontSize: '14px', letterSpacing: '2px', marginBottom: '8px' }}>★★★★★</div>
+                <p style={{ fontSize: '14px', color: '#5E6B62', lineHeight: 1.65, margin: 0, fontStyle: 'italic' }}>&ldquo;{t.quote}&rdquo;</p>
               </div>
             ))}
           </div>
@@ -184,11 +184,11 @@ export default function Home() {
             boxShadow: '0 4px 24px rgba(0,0,0,0.06)',
             padding: '48px 40px',
           }}>
-            <p style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', marginBottom: '12px' }}>Limited founding spots remaining</p>
-            <h3 className="font-serif-display" style={{ fontSize: '28px', fontWeight: 700, color: '#0B132B', letterSpacing: '-0.02em', marginBottom: '12px' }}>
+            <p style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', marginBottom: '12px' }}>Limited founding spots remaining</p>
+            <h3 className="font-serif-display" style={{ fontSize: '28px', fontWeight: 700, color: '#14241C', letterSpacing: '-0.02em', marginBottom: '12px' }}>
               Your Telugu match is waiting
             </h3>
-            <p style={{ fontSize: '14px', color: '#5B6478', lineHeight: 1.65, marginBottom: '28px' }}>
+            <p style={{ fontSize: '14px', color: '#5E6B62', lineHeight: 1.65, marginBottom: '28px' }}>
               Join the first 1,000 members and get a full year of premium free. No credit card required.
             </p>
             <Link href="/register" className="btn-primary" style={{ width: '100%', fontSize: '15px', padding: '14px 24px', display: 'block' }}>
@@ -202,14 +202,14 @@ export default function Home() {
 
       </main>
 
-      <footer style={{ background: '#0B132B', padding: '52px 20px 44px', textAlign: 'center' }}>
+      <footer style={{ background: '#14241C', padding: '52px 20px 44px', textAlign: 'center' }}>
         <div style={{ maxWidth: '560px', margin: '0 auto' }}>
           <p style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.03em', marginBottom: '8px' }}>
-            <span style={{ color: '#4CC9F0' }}>Native</span><span style={{ color: '#F8FAFC' }}>Matrimony</span>
+            <span style={{ color: '#1B5E20' }}>Native</span><span style={{ color: '#FBFAF5' }}>Matrimony</span>
           </p>
           <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '16px' }}>Built for Telugu families · Hyderabad, Telangana · Est. 2025</p>
           <p style={{ fontSize: '13px', color: '#D6D3D1' }}>
-            <a href="mailto:support@nativematrimony.com" style={{ textDecoration: 'none', color: '#BDE9F7' }}>support@nativematrimony.com</a>
+            <a href="mailto:support@nativematrimony.com" style={{ textDecoration: 'none', color: '#CADFCA' }}>support@nativematrimony.com</a>
             {' · '}
             <Link href="/pricing" style={{ textDecoration: 'none', color: 'inherit' }}>Pricing</Link>
             {' · '}
@@ -217,7 +217,7 @@ export default function Home() {
             {' · '}
             <Link href="/terms" style={{ textDecoration: 'none', color: 'inherit' }}>Terms</Link>
           </p>
-          <p style={{ fontSize: '11.5px', color: '#5B6478', marginTop: '18px' }}>© 2026 NativeMatrimony. All rights reserved.</p>
+          <p style={{ fontSize: '11.5px', color: '#5E6B62', marginTop: '18px' }}>© 2026 NativeMatrimony. All rights reserved.</p>
         </div>
       </footer>
     </div>

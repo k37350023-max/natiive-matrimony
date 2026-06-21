@@ -119,9 +119,9 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
     <button onClick={onClick} style={{
       padding: '5px 11px', borderRadius: '99px', fontSize: '11.5px', fontWeight: 500,
       cursor: 'pointer', border: '1px solid', transition: 'all 0.12s', whiteSpace: 'nowrap',
-      background: active ? '#0B132B' : 'white',
+      background: active ? '#14241C' : 'white',
       color:      active ? 'white'   : '#444',
-      borderColor:active ? '#0B132B' : '#DDDDD8',
+      borderColor:active ? '#14241C' : '#DDDDD8',
     }}>
       {label}
     </button>
@@ -148,7 +148,7 @@ function Section({ title, children, defaultOpen = true }: { title: string; child
 
 function Avatar({ name }: { name: string }) {
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
-  const colors = ['#0B132B','#1D4E7F','#1D7F4E','#7F5A1D','#4E1D7F']
+  const colors = ['#14241C','#1D4E7F','#1D7F4E','#7F5A1D','#4E1D7F']
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: colors[name.charCodeAt(0) % colors.length], color: 'white', fontSize: '22px', fontWeight: 700 }}>
       {initials}
@@ -171,7 +171,7 @@ function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?
       onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)')}
       onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)')}>
 
-      <div onClick={onView} style={{ width: '92px', height: '92px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, cursor: 'pointer', background: '#F8FAFC' }}>
+      <div onClick={onView} style={{ width: '92px', height: '92px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, cursor: 'pointer', background: '#FBFAF5' }}>
         {showPhoto
           ? <img loading="lazy" src={p.photo_url!} alt={p.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
           : <Avatar name={p.full_name} />}
@@ -183,7 +183,7 @@ function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?
             <p style={{ fontSize: '15px', fontWeight: 700, color: '#111', margin: 0 }}>{p.full_name}</p>
           </button>
           {seenLabel && (
-            <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#06D6A0', flexShrink: 0, background: '#ECFDF5', padding: '2px 8px', borderRadius: '99px' }}>{seenLabel}</span>
+            <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#2E7D32', flexShrink: 0, background: '#ECFDF5', padding: '2px 8px', borderRadius: '99px' }}>{seenLabel}</span>
           )}
         </div>
         <p style={{ fontSize: '12.5px', color: '#777', margin: '0 0 8px' }}>
@@ -192,10 +192,10 @@ function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginBottom: '8px' }}>
           {tags.map(v => (
-            <span key={v} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: '#F8FAFC', color: '#555' }}>{v}</span>
+            <span key={v} style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: '#FBFAF5', color: '#555' }}>{v}</span>
           ))}
           {locationTags.length > 0 && (
-            <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: '#EAF8FE', color: '#0B132B', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+            <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: '#EDF3ED', color: '#14241C', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
               <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
               {locationTags[0]}
             </span>
@@ -208,10 +208,10 @@ function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <button onClick={onView} className="btn-primary" style={{ padding: '7px 16px', fontSize: '12.5px', borderRadius: '8px' }}>View Profile</button>
           {interestStatus === 'matched' && (
-            <span style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '8px', background: '#ECFDF5', color: '#06D6A0', fontWeight: 600 }}>Matched ✓</span>
+            <span style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '8px', background: '#ECFDF5', color: '#2E7D32', fontWeight: 600 }}>Matched ✓</span>
           )}
           {interestStatus === 'pending' && (
-            <span style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '8px', background: '#E0F7FC', color: '#0B132B', fontWeight: 600 }}>Interest Sent</span>
+            <span style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '8px', background: '#EAF3EA', color: '#14241C', fontWeight: 600 }}>Interest Sent</span>
           )}
         </div>
       </div>
@@ -398,7 +398,7 @@ export default function SearchPage() {
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: '1px solid #E8E8E8' }}>
         {['Basic Search', 'Profile ID'].map((t, i) => (
-          <button key={t} style={{ flex: 1, padding: '11px 8px', fontSize: '12px', fontWeight: 600, background: i===0?'#0B132B':'white', color: i===0?'white':'#777', border: 'none', cursor: 'pointer' }}>
+          <button key={t} style={{ flex: 1, padding: '11px 8px', fontSize: '12px', fontWeight: 600, background: i===0?'#14241C':'white', color: i===0?'white':'#777', border: 'none', cursor: 'pointer' }}>
             {t}
           </button>
         ))}
@@ -412,7 +412,7 @@ export default function SearchPage() {
             <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#AAA', margin: '0 0 7px' }}>Recent Searches</p>
             {recentSearches.map((s, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '5px' }}>
-                <button style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '11.5px', color: '#0B132B', fontWeight: 500, flex: 1, padding: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <button style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: '11.5px', color: '#14241C', fontWeight: 500, flex: 1, padding: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {s}
                 </button>
                 <button onClick={() => { const u = recentSearches.filter((_,j)=>j!==i); setRecentSearches(u); localStorage.setItem('nm_recent_searches', JSON.stringify(u)) }}
@@ -602,7 +602,7 @@ export default function SearchPage() {
               [photoOnly, setPhotoOnly, 'With photo only'],
             ] as [boolean, (v:boolean)=>void, string][]).map(([v,s,l]) => (
               <label key={l} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#0B132B', width: '13px', height: '13px' }} />
+                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#14241C', width: '13px', height: '13px' }} />
                 <span style={{ fontSize: '12px', color: '#555' }}>{l}</span>
               </label>
             ))}
@@ -616,7 +616,7 @@ export default function SearchPage() {
               [recentOnly, setRecentOnly, 'Joined last 30 days only'],
             ] as [boolean, (v:boolean)=>void, string][]).map(([v,s,l]) => (
               <label key={l} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#0B132B', width: '13px', height: '13px' }} />
+                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#14241C', width: '13px', height: '13px' }} />
                 <span style={{ fontSize: '12px', color: '#555' }}>{l}</span>
               </label>
             ))}
@@ -637,7 +637,7 @@ export default function SearchPage() {
   )
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFC', paddingBottom: '80px' }}>
+    <div style={{ minHeight: '100vh', background: '#FBFAF5', paddingBottom: '80px' }}>
       <AppHeader />
 
       <div style={{ maxWidth: '1120px', margin: '0 auto', padding: '20px 16px', display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
@@ -668,12 +668,12 @@ export default function SearchPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {[1,2,3,4].map(i => (
                 <div key={i} style={{ background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', padding: '16px', display: 'flex', gap: '16px' }}>
-                  <div style={{ width: '92px', height: '92px', borderRadius: '10px', background: '#E8EDF3', flexShrink: 0, animation: 'pulse 1.5s infinite' }} />
+                  <div style={{ width: '92px', height: '92px', borderRadius: '10px', background: '#E7E3D8', flexShrink: 0, animation: 'pulse 1.5s infinite' }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ height: '16px', background: '#E8EDF3', borderRadius: '6px', width: '45%', marginBottom: '8px' }} />
-                    <div style={{ height: '12px', background: '#E8EDF3', borderRadius: '6px', width: '65%', marginBottom: '12px' }} />
+                    <div style={{ height: '16px', background: '#E7E3D8', borderRadius: '6px', width: '45%', marginBottom: '8px' }} />
+                    <div style={{ height: '12px', background: '#E7E3D8', borderRadius: '6px', width: '65%', marginBottom: '12px' }} />
                     <div style={{ display: 'flex', gap: '6px' }}>
-                      {[1,2,3,4].map(j => <div key={j} style={{ height: '20px', width: '55px', background: '#E8EDF3', borderRadius: '99px' }} />)}
+                      {[1,2,3,4].map(j => <div key={j} style={{ height: '20px', width: '55px', background: '#E7E3D8', borderRadius: '99px' }} />)}
                     </div>
                   </div>
                 </div>
@@ -684,8 +684,8 @@ export default function SearchPage() {
           {/* Empty — not searched */}
           {!loading && !searched && (
             <div style={{ textAlign: 'center', padding: '72px 20px' }}>
-              <div style={{ width: '68px', height: '68px', borderRadius: '18px', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+              <div style={{ width: '68px', height: '68px', borderRadius: '18px', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
               </div>

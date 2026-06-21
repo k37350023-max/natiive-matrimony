@@ -187,7 +187,7 @@ export default function ChatPage() {
   }
 
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#FBFAF5' }}>
       <div className="text-center">
         <p className="text-gray-600 mb-4">{error}</p>
         <Link href="/matches" className="btn-primary px-6 py-2.5">Back to Matches</Link>
@@ -196,9 +196,9 @@ export default function ChatPage() {
   )
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#F8FAFC' }}>
+    <div className="flex flex-col h-screen" style={{ background: '#FBFAF5' }}>
       {/* Header */}
-      <header className="bg-white border-b shrink-0 z-10" style={{ borderColor: '#E8EDF3' }}>
+      <header className="bg-white border-b shrink-0 z-10" style={{ borderColor: '#E7E3D8' }}>
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
           <Link href="/matches" className="text-gray-400 hover:text-gray-700 p-1 -ml-1 rounded">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -212,7 +212,7 @@ export default function ChatPage() {
                   className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100" />
               ) : (
                 <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm shrink-0 text-white"
-                  style={{ background: '#0B132B' }}>
+                  style={{ background: '#14241C' }}>
                   {initials(other.full_name)}
                 </div>
               )}
@@ -224,7 +224,7 @@ export default function ChatPage() {
               </div>
               <button onClick={unmatch} disabled={actioning} title="Unmatch / withdraw"
                 className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-colors"
-                style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+                style={{ borderColor: '#E7E3D8', color: '#5E6B62' }}>
                 {chatState?.locked && chatState?.iAmSender ? 'Withdraw' : 'Unmatch'}
               </button>
             </>
@@ -244,8 +244,8 @@ export default function ChatPage() {
         {!loading && messages.length === 0 && (
           <div className="flex flex-col items-center justify-center py-12 text-center">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4"
-              style={{ background: '#EAF8FE' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              style={{ background: '#EDF3ED' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
             <p className="font-semibold text-gray-700">Start the conversation</p>
             <p className="text-sm text-gray-400 mt-1 mb-5">
@@ -260,7 +260,7 @@ export default function ChatPage() {
                 <button key={starter}
                   onClick={() => setText(starter)}
                   className="text-xs px-4 py-2.5 rounded-xl border text-left transition-colors hover:bg-red-50"
-                  style={{ borderColor: '#BDE9F7', color: '#0B132B', background: '#EAF8FE' }}>
+                  style={{ borderColor: '#CADFCA', color: '#14241C', background: '#EDF3ED' }}>
                   "{starter}"
                 </button>
               ))}
@@ -286,8 +286,8 @@ export default function ChatPage() {
                   <div
                     className="max-w-xs sm:max-w-sm px-4 py-2.5 rounded-2xl text-sm leading-relaxed"
                     style={isMe
-                      ? { background: '#0B132B', color: 'white', borderBottomRightRadius: '4px' }
-                      : { background: 'white', color: '#111827', border: '1px solid #E8EDF3', borderBottomLeftRadius: '4px' }}>
+                      ? { background: '#14241C', color: 'white', borderBottomRightRadius: '4px' }
+                      : { background: 'white', color: '#111827', border: '1px solid #E7E3D8', borderBottomLeftRadius: '4px' }}>
                     {m.content}
                     <span className="block text-right mt-1 opacity-60" style={{ fontSize: '10px' }}>
                       {formatTime(m.created_at)}
@@ -304,7 +304,7 @@ export default function ChatPage() {
 
       {/* Send error toast */}
       {sendError && (
-        <div className="shrink-0 px-4 py-2 text-center text-xs font-medium" style={{ background: '#EAF8FE', color: '#0B132B' }}>
+        <div className="shrink-0 px-4 py-2 text-center text-xs font-medium" style={{ background: '#EDF3ED', color: '#14241C' }}>
           {sendError}
         </div>
       )}
@@ -322,7 +322,7 @@ export default function ChatPage() {
               <button key={msg}
                 onClick={() => setText(msg)}
                 className="text-xs px-3 py-1.5 rounded-full border transition-all"
-                style={{ borderColor: '#BDE9F7', color: '#0B132B', background: '#EAF8FE' }}>
+                style={{ borderColor: '#CADFCA', color: '#14241C', background: '#EDF3ED' }}>
                 {msg.length > 45 ? msg.slice(0, 45) + '…' : msg}
               </button>
             ))}
@@ -332,33 +332,33 @@ export default function ChatPage() {
 
       {/* Composer — locked until the interest is accepted */}
       {chatState?.locked ? (
-        <div className="shrink-0 bg-white border-t px-4 py-4" style={{ borderColor: '#E8EDF3' }}>
+        <div className="shrink-0 bg-white border-t px-4 py-4" style={{ borderColor: '#E7E3D8' }}>
           <div className="max-w-2xl mx-auto text-center">
             {chatState.iAmSender ? (
               <>
-                <p className="text-sm font-semibold" style={{ color: '#0B132B' }}>Request sent — your first message is delivered</p>
-                <p className="text-xs mt-1" style={{ color: '#5B6478' }}>
+                <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request sent — your first message is delivered</p>
+                <p className="text-xs mt-1" style={{ color: '#5E6B62' }}>
                   You can send more messages once {other?.full_name?.split(' ')[0] || 'they'} accept your request.
                 </p>
                 <button onClick={unmatch} disabled={actioning}
                   className="mt-3 text-xs font-semibold px-4 py-2 rounded-lg border"
-                  style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+                  style={{ borderColor: '#E7E3D8', color: '#5E6B62' }}>
                   Withdraw request
                 </button>
               </>
             ) : (
               <>
-                <p className="text-sm font-semibold" style={{ color: '#0B132B' }}>
+                <p className="text-sm font-semibold" style={{ color: '#14241C' }}>
                   {other?.full_name?.split(' ')[0] || 'They'} sent you a connection request
                 </p>
-                <p className="text-xs mt-1 mb-3" style={{ color: '#5B6478' }}>Accept to start chatting.</p>
+                <p className="text-xs mt-1 mb-3" style={{ color: '#5E6B62' }}>Accept to start chatting.</p>
                 <div className="flex items-center justify-center gap-2">
                   <button onClick={acceptRequest} disabled={actioning} className="btn-primary px-5 py-2.5 text-sm">
                     {actioning ? 'Accepting…' : 'Accept & chat'}
                   </button>
                   <button onClick={unmatch} disabled={actioning}
                     className="text-xs font-semibold px-4 py-2.5 rounded-lg border"
-                    style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+                    style={{ borderColor: '#E7E3D8', color: '#5E6B62' }}>
                     Decline
                   </button>
                 </div>
@@ -367,7 +367,7 @@ export default function ChatPage() {
           </div>
         </div>
       ) : (
-        <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#E8EDF3' }}>
+        <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#E7E3D8' }}>
           <div className="max-w-2xl mx-auto flex items-end gap-2">
             <textarea
               ref={inputRef}
@@ -385,7 +385,7 @@ export default function ChatPage() {
               onClick={send}
               disabled={!text.trim() || sending}
               className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all"
-              style={{ background: text.trim() ? '#0B132B' : '#E7E5E4' }}>
+              style={{ background: text.trim() ? '#14241C' : '#E7E5E4' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                 stroke={text.trim() ? 'white' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/>

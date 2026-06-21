@@ -109,7 +109,7 @@ export default function LaunchScorePage() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#FBFAF5' }}>
         <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-sm">
           <h1 className="text-xl font-bold text-gray-900 mb-1">Admin Access</h1>
           <p className="text-sm text-gray-500 mb-6">Launch Analytics Dashboard</p>
@@ -120,7 +120,7 @@ export default function LaunchScorePage() {
             onKeyDown={e => e.key === 'Enter' && login()}
             placeholder="Enter admin password"
             className="w-full border rounded-xl px-4 py-3 text-sm mb-4 outline-none focus:ring-2"
-            style={{ borderColor: '#E8EDF3' }}
+            style={{ borderColor: '#E7E3D8' }}
           />
           <button onClick={login} className="w-full btn-primary py-3 text-sm">
             Enter Dashboard
@@ -133,7 +133,7 @@ export default function LaunchScorePage() {
   const maxReg = Math.max(...daily.map(d => d.registrations), 1)
 
   return (
-    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -142,10 +142,10 @@ export default function LaunchScorePage() {
             <p className="text-sm text-gray-500 mt-0.5">NativeMatrimony · Analytics</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={load} className="text-sm px-4 py-2 rounded-xl border font-medium hover:bg-gray-50" style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+            <button onClick={load} className="text-sm px-4 py-2 rounded-xl border font-medium hover:bg-gray-50" style={{ borderColor: '#E7E3D8', color: '#5E6B62' }}>
               Refresh
             </button>
-            <Link href="/admin" className="text-sm px-4 py-2 rounded-xl border font-medium hover:bg-gray-50" style={{ borderColor: '#E8EDF3', color: '#5B6478' }}>
+            <Link href="/admin" className="text-sm px-4 py-2 rounded-xl border font-medium hover:bg-gray-50" style={{ borderColor: '#E7E3D8', color: '#5E6B62' }}>
               ← Admin
             </Link>
           </div>
@@ -160,8 +160,8 @@ export default function LaunchScorePage() {
             {/* Overview cards */}
             <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
               {[
-                { label: 'Total Profiles', value: overview.totalProfiles, color: '#0B132B' },
-                { label: 'Approved', value: overview.approvedProfiles, color: '#06D6A0' },
+                { label: 'Total Profiles', value: overview.totalProfiles, color: '#14241C' },
+                { label: 'Approved', value: overview.approvedProfiles, color: '#2E7D32' },
                 { label: 'Pending', value: overview.pendingProfiles, color: '#D97706' },
                 { label: 'Premium', value: overview.premiumMembers, color: '#7C3AED' },
                 { label: 'New (7d)', value: overview.profilesLast7Days, color: '#0284C7' },
@@ -223,7 +223,7 @@ export default function LaunchScorePage() {
                         className="w-full rounded-t-sm transition-all group-hover:opacity-80"
                         style={{
                           height: `${Math.max((d.registrations / maxReg) * 100, d.registrations > 0 ? 8 : 0)}%`,
-                          background: '#0B132B',
+                          background: '#14241C',
                           minHeight: d.registrations > 0 ? '4px' : '0',
                         }}
                         title={`${d.date}: ${d.registrations} registrations`}
@@ -245,7 +245,7 @@ export default function LaunchScorePage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
                   <thead>
-                    <tr style={{ background: '#F8FAFC' }}>
+                    <tr style={{ background: '#FBFAF5' }}>
                       {['Date', 'Registrations', 'Interests', 'Matches', 'Messages'].map(h => (
                         <th key={h} className="px-4 py-3 text-left font-semibold text-gray-500">{h}</th>
                       ))}

@@ -104,7 +104,7 @@ export default function MobileNav() {
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', padding: '10px 4px 10px', gap: '4px', minHeight: '58px',
             textDecoration: 'none',
-            color: item.active ? '#0B132B' : '#AAAAAA',
+            color: item.active ? '#14241C' : '#AAAAAA',
             transition: 'color 0.15s',
           }}>
             <div style={{ position: 'relative' }}>

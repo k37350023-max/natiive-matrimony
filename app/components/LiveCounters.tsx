@@ -34,10 +34,10 @@ function Counter({ value, label, suffix = '' }: { value: number; label: string; 
   const { val, ref } = useCountUp(value)
   return (
     <div ref={ref} style={{ textAlign: 'center', padding: '24px 12px' }}>
-      <p style={{ fontSize: '42px', fontWeight: 800, color: '#0B132B', margin: '0 0 5px', lineHeight: 1, letterSpacing: '-0.035em' }}>
+      <p style={{ fontSize: '42px', fontWeight: 800, color: '#14241C', margin: '0 0 5px', lineHeight: 1, letterSpacing: '-0.035em' }}>
         {val.toLocaleString('en-IN')}{suffix}
       </p>
-      <p style={{ fontSize: '13px', color: '#5B6478', margin: 0, fontWeight: 600 }}>{label}</p>
+      <p style={{ fontSize: '13px', color: '#5E6B62', margin: 0, fontWeight: 600 }}>{label}</p>
     </div>
   )
 }

@@ -120,7 +120,7 @@ export default function MatchesPage() {
   }
 
   if (!myId) return (
-    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <div className="max-w-3xl mx-auto px-6 py-20 text-center">
         <p className="font-semibold text-gray-800 mb-2">Login to see your inbox</p>
@@ -130,7 +130,7 @@ export default function MatchesPage() {
   )
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <LaunchBanner />
       <div className="max-w-2xl mx-auto px-4 py-6">
@@ -142,9 +142,9 @@ export default function MatchesPage() {
         {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}
 
         {!loading && matches.length === 0 && (
-          <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E8EDF3', padding: '56px 24px', textAlign: 'center' }}>
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E7E3D8', padding: '56px 24px', textAlign: 'center' }}>
+            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </div>
@@ -160,7 +160,7 @@ export default function MatchesPage() {
             return (
               <div key={p.id} style={{
                 background: 'white', borderRadius: '16px',
-                border: '1px solid #E8EDF3',
+                border: '1px solid #E7E3D8',
                 boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
                 padding: '16px',
                 transition: 'box-shadow 0.15s',
@@ -170,13 +170,13 @@ export default function MatchesPage() {
                   <div style={{ position: 'relative', flexShrink: 0 }}>
                     {p.photo_url && p.photo_visibility !== 'hidden' ? (
                       <img loading="lazy" src={p.photo_url} alt={p.full_name}
-                        style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E8EDF3' }} />
+                        style={{ width: '52px', height: '52px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E7E3D8' }} />
                     ) : (
                       <div style={{
                         width: '52px', height: '52px', borderRadius: '50%',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         fontWeight: 700, fontSize: '16px',
-                        background: 'linear-gradient(135deg, #0B132B, #0B132B)',
+                        background: 'linear-gradient(135deg, #14241C, #14241C)',
                         color: 'white',
                       }}>
                         {initials(p.full_name)}
@@ -186,7 +186,7 @@ export default function MatchesPage() {
                       <div style={{
                         position: 'absolute', bottom: 0, right: -2,
                         width: '16px', height: '16px', borderRadius: '50%',
-                        background: '#06D6A0', border: '2px solid white',
+                        background: '#2E7D32', border: '2px solid white',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
                         <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
@@ -204,7 +204,7 @@ export default function MatchesPage() {
                         <span style={{
                           fontSize: '10px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', flexShrink: 0,
                           background: p.is_mutual ? '#ECFDF5' : '#F3F4F6',
-                          color: p.is_mutual ? '#065F46' : '#5B6478',
+                          color: p.is_mutual ? '#065F46' : '#5E6B62',
                         }}>
                           {p.is_mutual ? 'Matched' : 'Interested'}
                         </span>
@@ -213,13 +213,13 @@ export default function MatchesPage() {
                         <span style={{ fontSize: '11px', color: '#94A3B8', flexShrink: 0 }}>{msgTimestamp(p.last_message_at)}</span>
                       )}
                     </div>
-                    <p style={{ fontSize: '12px', color: '#5B6478', marginTop: '3px' }}>
+                    <p style={{ fontSize: '12px', color: '#5E6B62', marginTop: '3px' }}>
                       {getAge(p.date_of_birth)} yrs · {p.profession || p.native_district}
                     </p>
                     {p.last_message ? (
                       <p style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.last_message}</p>
                     ) : p.is_mutual ? (
-                      <p style={{ fontSize: '12px', color: '#06D6A0', fontWeight: 500, marginTop: '3px' }}>Say hello — you're connected!</p>
+                      <p style={{ fontSize: '12px', color: '#2E7D32', fontWeight: 500, marginTop: '3px' }}>Say hello — you're connected!</p>
                     ) : (
                       <p style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px' }}>{seenLabel || `Native: ${p.native_district}`}</p>
                     )}
@@ -231,13 +231,13 @@ export default function MatchesPage() {
                     <button
                       onClick={() => respond(p.pending_interest_id!, true, p.match_id)}
                       disabled={responding === p.pending_interest_id}
-                      style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#06D6A0', color: 'white', transition: 'opacity 0.15s' }}>
+                      style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#2E7D32', color: 'white', transition: 'opacity 0.15s' }}>
                       Accept
                     </button>
                     <button
                       onClick={() => respond(p.pending_interest_id!, false, p.match_id)}
                       disabled={responding === p.pending_interest_id}
-                      style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #7FD8F4', cursor: 'pointer', background: 'white', color: '#DC2626', transition: 'opacity 0.15s' }}>
+                      style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #7FB17F', cursor: 'pointer', background: 'white', color: '#DC2626', transition: 'opacity 0.15s' }}>
                       Decline
                     </button>
                   </div>
@@ -247,11 +247,11 @@ export default function MatchesPage() {
                 {!p.pending_interest_id && (
                   <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
                     <Link href={`/profile/${p.id}`}
-                      style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600, borderRadius: '99px', border: '1px solid #E8EDF3', color: '#334155', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
+                      style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600, borderRadius: '99px', border: '1px solid #E7E3D8', color: '#334155', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
                       View Profile
                     </Link>
                     <Link href={`/chat/${p.match_id}`}
-                      style={{ padding: '8px 18px', fontSize: '12px', fontWeight: 700, borderRadius: '99px', background: '#0B132B', color: 'white', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      style={{ padding: '8px 18px', fontSize: '12px', fontWeight: 700, borderRadius: '99px', background: '#14241C', color: 'white', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                       </svg>

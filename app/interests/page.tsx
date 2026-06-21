@@ -38,7 +38,7 @@ function initials(name: string) {
   return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
 }
 
-const COLORS = ['#0B132B', '#0369A1', '#047857', '#6D28D9', '#BE185D']
+const COLORS = ['#14241C', '#0369A1', '#047857', '#6D28D9', '#BE185D']
 function avatarBg(name: string) { return COLORS[name.charCodeAt(0) % COLORS.length] }
 
 function lastSeenBadge(ts: string | null): string | null {
@@ -53,9 +53,9 @@ function lastSeenBadge(ts: string | null): string | null {
 }
 
 const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; border: string }> = {
-  pending:  { label: 'Awaiting response', bg: '#EAF8FE', color: '#0B132B', border: '#BDE9F7' },
+  pending:  { label: 'Awaiting response', bg: '#EDF3ED', color: '#14241C', border: '#CADFCA' },
   accepted: { label: 'Accepted ✓',        bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
-  rejected: { label: 'Declined',          bg: '#EAF8FE', color: '#0B132B', border: '#BDE9F7' },
+  rejected: { label: 'Declined',          bg: '#EDF3ED', color: '#14241C', border: '#CADFCA' },
 }
 
 type SavedProfile = {
@@ -170,7 +170,7 @@ function InterestsPageInner() {
   }
 
   if (!myId) return (
-    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
         <p className="font-semibold text-gray-700 mb-2">Login to see interests</p>
@@ -182,12 +182,12 @@ function InterestsPageInner() {
   const ProfileCard = ({ i, showActions, isMatched }: { i: Interest; showActions?: boolean; isMatched?: boolean }) => {
     const seenLabel = lastSeenBadge(i.profile.last_login_at)
     return (
-      <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8EDF3', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
+      <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E7E3D8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
         <div className="flex items-start gap-3">
           <Link href={`/profile/${i.profile.id}`} className="shrink-0">
             {i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
               <img loading="lazy" src={i.profile.photo_url} alt={i.profile.full_name}
-                style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E8EDF3' }} />
+                style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E7E3D8' }} />
             ) : (
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '15px', fontWeight: 700, background: avatarBg(i.profile.full_name) }}>
                 {initials(i.profile.full_name)}
@@ -202,13 +202,13 @@ function InterestsPageInner() {
                   {i.profile.verified && <span className="badge badge-verified">✓ Verified</span>}
                   {seenLabel && (
                     <span className="text-xs px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: seenLabel === 'Active now' ? '#ECFDF5' : '#EEF2F7', color: seenLabel === 'Active now' ? '#065F46' : '#5B6478' }}>
+                      style={{ background: seenLabel === 'Active now' ? '#ECFDF5' : '#EFF1EC', color: seenLabel === 'Active now' ? '#065F46' : '#5E6B62' }}>
                       {seenLabel}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-gray-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
-                <p className="text-xs mt-0.5 flex items-center gap-1" style={{ color: '#0B132B' }}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{i.profile.native_district}, {i.profile.native_state}</p>
+                <p className="text-xs mt-0.5 flex items-center gap-1" style={{ color: '#14241C' }}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{i.profile.native_district}, {i.profile.native_state}</p>
               </div>
               {!showActions && !isMatched && (() => {
                 const s = STATUS_STYLES[i.status] || STATUS_STYLES.pending
@@ -224,7 +224,7 @@ function InterestsPageInner() {
             {/* First message preview */}
             {i.firstMessage && showActions && (
               <div className="mt-2 px-3 py-2 rounded-lg text-xs text-gray-600 italic"
-                style={{ background: '#EAF8FE', borderLeft: '3px solid #0B132B' }}>
+                style={{ background: '#EDF3ED', borderLeft: '3px solid #14241C' }}>
                 "{i.firstMessage.slice(0, 120)}{i.firstMessage.length > 120 ? '…' : ''}"
               </div>
             )}
@@ -235,15 +235,15 @@ function InterestsPageInner() {
           <div className="flex gap-2 mt-3">
             <Link href={`/profile/${i.profile.id}`}
               className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
-              style={{ borderColor: '#E8EDF3', color: '#4B5563' }}>
+              style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
               View Profile
             </Link>
             <button onClick={() => respond(i.id, i.from_user, true)}
-              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#06D6A0', color: 'white' }}>
+              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#2E7D32', color: 'white' }}>
               Accept
             </button>
             <button onClick={() => respond(i.id, i.from_user, false)}
-              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #E8EDF3', cursor: 'pointer', background: 'white', color: '#5B6478' }}>
+              style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #E7E3D8', cursor: 'pointer', background: 'white', color: '#5E6B62' }}>
               Decline
             </button>
           </div>
@@ -285,11 +285,11 @@ function InterestsPageInner() {
             <div className="flex gap-2 mt-3">
               <Link href={`/profile/${i.profile.id}`}
                 className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
-                style={{ borderColor: '#E8EDF3', color: '#4B5563' }}>
+                style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
                 View Profile
               </Link>
               <Link href="/matches"
-                style={{ flex: 1, padding: '9px', textAlign: 'center', fontSize: '13px', fontWeight: 700, borderRadius: '12px', background: '#0B132B', color: 'white', textDecoration: 'none', display: 'block' }}>
+                style={{ flex: 1, padding: '9px', textAlign: 'center', fontSize: '13px', fontWeight: 700, borderRadius: '12px', background: '#14241C', color: 'white', textDecoration: 'none', display: 'block' }}>
                 Open Chat
               </Link>
             </div>
@@ -320,7 +320,7 @@ function InterestsPageInner() {
   ]
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <LaunchBanner />
 
@@ -329,14 +329,14 @@ function InterestsPageInner() {
         <div className="max-w-2xl mx-auto px-4 pt-4">
           <div className="rounded-2xl px-4 py-4 flex items-center gap-3"
             style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#06D6A0" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <div className="flex-1">
-              <p className="text-sm font-semibold" style={{ color: '#0B132B' }}>You're now matched with {acceptedMatch.name}!</p>
+              <p className="text-sm font-semibold" style={{ color: '#14241C' }}>You're now matched with {acceptedMatch.name}!</p>
               <p className="text-xs text-green-600 mt-0.5">Start a conversation — they're waiting to hear from you.</p>
             </div>
             <Link href={`/chat/${acceptedMatch.matchId}`}
               className="text-xs font-bold px-3 py-2 rounded-xl text-white shrink-0"
-              style={{ background: '#06D6A0' }}>
+              style={{ background: '#2E7D32' }}>
               Start chat →
             </Link>
             <button onClick={() => setAcceptedMatch(null)} className="text-green-400 hover:text-green-600 ml-1">
@@ -356,11 +356,11 @@ function InterestsPageInner() {
               className="flex-1 py-2 text-sm font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
               style={tab === key
                 ? { background: 'white', color: '#111827', boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }
-                : { color: '#5B6478' }}>
+                : { color: '#5E6B62' }}>
               {label}
               {!loading && count > 0 && (
                 <span className="text-xs px-1.5 py-0.5 rounded-full font-bold"
-                  style={tab === key ? { background: '#0B132B', color: 'white' } : { background: '#E8EDF3', color: '#5B6478' }}>
+                  style={tab === key ? { background: '#14241C', color: 'white' } : { background: '#E7E3D8', color: '#5E6B62' }}>
                   {count}
                 </span>
               )}
@@ -388,8 +388,8 @@ function InterestsPageInner() {
         {!loading && tab === 'received' && (
           received.length === 0 ? (
             <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EAF8FE', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               </span>
               <p className="font-semibold text-gray-700">No pending interests</p>
               <p className="text-sm text-gray-400 mt-1">When someone expresses interest in you, it appears here.</p>
@@ -405,8 +405,8 @@ function InterestsPageInner() {
         {!loading && tab === 'sent' && (
           sent.length === 0 ? (
             <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EAF8FE', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
               </span>
               <p className="font-semibold text-gray-700">No interests sent yet</p>
               <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and express interest to get started.</p>
@@ -423,7 +423,7 @@ function InterestsPageInner() {
         {!loading && tab === 'matched' && (
           matched.length === 0 ? (
             <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EEF2F7', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EFF1EC', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </span>
               <p className="font-semibold text-gray-700">No mutual matches yet</p>
@@ -439,8 +439,8 @@ function InterestsPageInner() {
         {!loading && tab === 'saved' && (
           saved.length === 0 ? (
             <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EAF8FE', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
               </span>
               <p className="font-semibold text-gray-700">No saved profiles</p>
               <p className="text-sm text-gray-400 mt-1 mb-6">Tap the heart on any profile to save them here.</p>

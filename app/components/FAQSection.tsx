@@ -33,7 +33,7 @@ export default function FAQSection() {
   return (
     <section style={{ maxWidth: '720px', margin: '0 auto 80px', padding: '0 20px' }}>
       <div style={{ textAlign: 'center', marginBottom: '36px' }}>
-        <p style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#0B132B', margin: '0 0 10px' }}>Common questions</p>
+        <p style={{ fontSize: '11.5px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 10px' }}>Common questions</p>
         <h2 className="font-serif-display" style={{ fontSize: 'clamp(24px, 3.5vw, 34px)', fontWeight: 700, color: '#0F0F0F', letterSpacing: '-0.02em', margin: 0 }}>
           Frequently asked
         </h2>
@@ -41,18 +41,18 @@ export default function FAQSection() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {FAQS.map((faq, i) => (
-          <div key={i} style={{ background: 'white', borderRadius: '14px', border: `1px solid ${open === i ? '#BDE9F7' : 'rgba(0,0,0,0.06)'}`, overflow: 'hidden', transition: 'border-color 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+          <div key={i} style={{ background: 'white', borderRadius: '14px', border: `1px solid ${open === i ? '#CADFCA' : 'rgba(0,0,0,0.06)'}`, overflow: 'hidden', transition: 'border-color 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
             <button
               onClick={() => setOpen(open === i ? null : i)}
               style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 20px', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', gap: '12px' }}>
-              <span style={{ fontSize: '14.5px', fontWeight: 600, color: open === i ? '#0B132B' : '#0B132B', lineHeight: 1.4 }}>{faq.q}</span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={open === i ? '#0B132B' : '#94A3B8'} strokeWidth="2.5" style={{ flexShrink: 0, transform: open === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+              <span style={{ fontSize: '14.5px', fontWeight: 600, color: open === i ? '#14241C' : '#14241C', lineHeight: 1.4 }}>{faq.q}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={open === i ? '#14241C' : '#94A3B8'} strokeWidth="2.5" style={{ flexShrink: 0, transform: open === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
                 <polyline points="6 9 12 15 18 9"/>
               </svg>
             </button>
             {open === i && (
               <div style={{ padding: '0 20px 18px' }}>
-                <p style={{ fontSize: '13.5px', color: '#5B6478', lineHeight: 1.7, margin: 0 }}>{faq.a}</p>
+                <p style={{ fontSize: '13.5px', color: '#5E6B62', lineHeight: 1.7, margin: 0 }}>{faq.a}</p>
               </div>
             )}
           </div>

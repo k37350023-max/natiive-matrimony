@@ -81,7 +81,7 @@ function getAge(dob: string): number | null {
   return a > 0 ? a : null
 }
 function initials(name: string) { return name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2) }
-const AVATAR_COLORS = ['#0B132B','#0369A1','#047857','#6D28D9','#BE185D']
+const AVATAR_COLORS = ['#14241C','#0369A1','#047857','#6D28D9','#BE185D']
 function avatarBg(name: string) { return AVATAR_COLORS[(name?.charCodeAt(0)||0) % AVATAR_COLORS.length] }
 function isVerified(p: Pick<Profile,'verified'|'phone_verified'>) { return p.verified || p.phone_verified }
 function lastSeen(ts: string | null): string | null {
@@ -117,11 +117,11 @@ function GuestBrowsePreview() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
-      <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E8EDF3' }}>
+    <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
+      <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E7E3D8' }}>
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold font-serif-display tracking-tight">
-            Native<span style={{ color: '#0B132B' }}>Matrimony</span>
+            Native<span style={{ color: '#14241C' }}>Matrimony</span>
           </Link>
           <div className="flex items-center gap-2">
             <Link href="/login" className="text-sm font-medium text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50">Login</Link>
@@ -140,7 +140,7 @@ function GuestBrowsePreview() {
           {previews.map((p, i) => {
             const age = p.date_of_birth ? Math.floor((Date.now() - new Date(p.date_of_birth + 'T00:00:00').getTime()) / (365.25*24*60*60*1000)) : null
             return (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: '#E8EDF3' }}>
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: '#E7E3D8' }}>
                 <div className="relative" style={{ paddingBottom: '115%' }}>
                   <GeometricPlaceholder name={p.full_name} />
                   <div className="absolute inset-0 flex items-end justify-center pb-3 pointer-events-none">
@@ -159,7 +159,7 @@ function GuestBrowsePreview() {
           })}
         </div>
 
-        <div className="text-center bg-white rounded-2xl p-8 shadow-sm border" style={{ borderColor: '#E8EDF3' }}>
+        <div className="text-center bg-white rounded-2xl p-8 shadow-sm border" style={{ borderColor: '#E7E3D8' }}>
           <p className="font-bold text-gray-900 text-lg mb-2">See full profiles & connect</p>
           <p className="text-sm text-gray-500 mb-6">Free until September 2026 · No credit card needed</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -178,8 +178,8 @@ function Chip({ active, onClick, label }: { active: boolean; onClick: ()=>void; 
     <button onClick={onClick}
       className="text-xs px-2.5 py-1.5 rounded-full border font-medium transition-all whitespace-nowrap"
       style={active
-        ? { background: '#0B132B', color: 'white', borderColor: '#0B132B' }
-        : { borderColor: '#E8EDF3', color: '#5B6478', background: 'white' }}>
+        ? { background: '#14241C', color: 'white', borderColor: '#14241C' }
+        : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}>
       {label}
     </button>
   )
@@ -208,11 +208,12 @@ function GeometricPlaceholder({ name }: { name: string }) {
 
 /* ─── Profile Card ─────────────────────────────────────────────── */
 function ProfileCard({
-  p, status, shortlisted, onToggleShortlist, onClick, onSendInterest, sending
+  p, status, shortlisted, onToggleShortlist, onClick, onSendInterest, sending, onContact, chatHref
 }: {
   p: Profile; status?: string; shortlisted: boolean
   onToggleShortlist: ()=>void; onClick: ()=>void
   onSendInterest?: ()=>void; sending?: boolean
+  onContact?: ()=>void; chatHref?: string
 }) {
   const age = getAge(p.date_of_birth)
   const showPhoto = !!(p.photo_url && p.photo_visibility === 'public')
@@ -226,12 +227,12 @@ function ProfileCard({
       style={{
         position: 'relative', borderRadius: '16px', overflow: 'hidden',
         background: '#FFFFFF', cursor: 'pointer',
-        border: '1px solid #E8EDF3',
-        boxShadow: '0 1px 3px rgba(11,19,43,0.05), 0 8px 24px rgba(11,19,43,0.04)',
+        border: '1px solid #E7E3D8',
+        boxShadow: '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)',
         transition: 'box-shadow 0.2s, transform 0.18s',
       }}
-      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 36px rgba(11,19,43,0.12)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)' }}
-      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(11,19,43,0.05), 0 8px 24px rgba(11,19,43,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 36px rgba(20,36,28,0.12)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)' }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
       {/* Photo (4:5) — no overlays, photo stays clean */}
       <div style={{ position: 'relative', paddingBottom: '125%', overflow: 'hidden' }}>
@@ -249,8 +250,8 @@ function ProfileCard({
         {/* Mint Verified pill — the only badge on the image */}
         {isVerified(p) && (
           <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '4px 9px', borderRadius: '99px', background: '#06D6A0', color: '#0B132B', boxShadow: '0 2px 8px rgba(6,214,160,0.35)' }}>
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '4px 9px', borderRadius: '99px', background: '#2E7D32', color: '#14241C', boxShadow: '0 2px 8px rgba(46,125,50,0.35)' }}>
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
               Verified
             </span>
           </div>
@@ -261,59 +262,76 @@ function ProfileCard({
       <div style={{ padding: '14px 14px 16px' }}>
         {/* Name + age */}
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
-          <p style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 600, color: '#0B132B', fontSize: '17px', lineHeight: 1.25, letterSpacing: '-0.01em', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <p style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 600, color: '#14241C', fontSize: '17px', lineHeight: 1.25, letterSpacing: '-0.01em', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {p.full_name.split(' ').slice(0,2).join(' ')}
           </p>
-          {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5B6478', flexShrink: 0 }}>{age}</span>}
+          {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>{age}</span>}
         </div>
 
         {/* Location */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5B6478" strokeWidth="2.25" strokeLinecap="round" style={{ flexShrink: 0 }}>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#5E6B62" strokeWidth="2.25" strokeLinecap="round" style={{ flexShrink: 0 }}>
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
           </svg>
-          <p style={{ fontSize: '13px', color: '#5B6478', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <p style={{ fontSize: '13px', color: '#5E6B62', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {[p.native_district, p.current_city].filter(Boolean).join(' · ') || '—'}
           </p>
         </div>
 
         {/* Profession */}
-        <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#0B132B', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#14241C', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {p.profession || '—'}
         </p>
 
         {/* Activity meta */}
         {seenLabel && (
-          <p style={{ fontSize: '11.5px', fontWeight: 600, margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: '5px', color: isOnline ? '#06D6A0' : '#8A93A6' }}>
-            {isOnline && <span style={{ width: '7px', height: '7px', borderRadius: '99px', background: '#06D6A0', flexShrink: 0 }} />}
+          <p style={{ fontSize: '11.5px', fontWeight: 600, margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: '5px', color: isOnline ? '#2E7D32' : '#8A938A' }}>
+            {isOnline && <span style={{ width: '7px', height: '7px', borderRadius: '99px', background: '#2E7D32', flexShrink: 0 }} />}
             {seenLabel}
           </p>
         )}
 
-        {/* Connect — Electric Cyan, obsidian text */}
+        {/* Contact + Connect row */}
         {onSendInterest && (
-          <button
-            onClick={e => { e.stopPropagation(); if (!status && !sending) onSendInterest() }}
-            disabled={!!status || sending}
-            style={{
-              width: '100%', marginTop: '14px', padding: '10px', borderRadius: '10px',
-              border: 'none', cursor: status ? 'default' : 'pointer',
-              fontFamily: 'var(--font-space-grotesk), sans-serif',
-              fontSize: '13.5px', fontWeight: 600, letterSpacing: '-0.01em',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background 0.15s',
-              background: status === 'matched' ? '#E6FBF5' : status ? '#EEF2F7' : '#4CC9F0',
-              color: status === 'matched' ? '#06D6A0' : status ? '#8A93A6' : '#0B132B',
-            }}
-            onMouseEnter={e => { if (!status && !sending) (e.currentTarget.style.background = '#38B6DD') }}
-            onMouseLeave={e => { if (!status && !sending) (e.currentTarget.style.background = '#4CC9F0') }}>
-            {status === 'matched' ? 'Connected'
-              : status === 'pending' ? 'Request Sent'
-              : status === 'accepted' ? 'Accepted'
-              : status === 'rejected' ? 'Declined'
-              : sending ? 'Connecting…'
-              : 'Connect'}
-          </button>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
+            {/* Contact — green outline icon button */}
+            {onContact && (
+              <button
+                onClick={e => { e.stopPropagation(); onContact() }}
+                title="Contact"
+                style={{
+                  flexShrink: 0, width: '42px', padding: '10px', borderRadius: '10px', cursor: 'pointer',
+                  border: '1.5px solid #1B5E20', background: 'white', color: '#1B5E20',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = '#EAF3EA')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'white')}>
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              </button>
+            )}
+            <button
+              onClick={e => { e.stopPropagation(); if (status==='matched' && chatHref) { window.location.href = chatHref } else if (!status && !sending) onSendInterest() }}
+              disabled={(!!status && status!=='matched') || sending}
+              style={{
+                flex: 1, padding: '10px', borderRadius: '10px',
+                border: 'none', cursor: (status && status!=='matched') ? 'default' : 'pointer',
+                fontFamily: 'var(--font-space-grotesk), sans-serif',
+                fontSize: '13.5px', fontWeight: 600, letterSpacing: '-0.01em',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'background 0.15s',
+                background: status === 'matched' ? '#1B5E20' : status ? '#EFF1EC' : '#1B5E20',
+                color: status === 'matched' ? '#FFFFFF' : status ? '#8A938A' : '#FFFFFF',
+              }}
+              onMouseEnter={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#14532D') }}
+              onMouseLeave={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#1B5E20') }}>
+              {status === 'matched' ? 'Go to Chat'
+                : status === 'pending' ? 'Request Sent'
+                : status === 'accepted' ? 'Accepted'
+                : status === 'rejected' ? 'Declined'
+                : sending ? 'Connecting…'
+                : 'Connect'}
+            </button>
+          </div>
         )}
       </div>
     </div>
@@ -497,6 +515,10 @@ export default function BrowsePage() {
   const [alertSet,        setAlertSet]        = useState(false)
   const [browseToast,     setBrowseToast]     = useState<string|null>(null)
   const [interestMap,     setInterestMap]     = useState<Record<string,string>>({})
+  const [matchIdMap,      setMatchIdMap]      = useState<Record<string,string>>({})
+  const [contactProfile, setContactProfile] = useState<Profile | null>(null)
+  const [contactInfo, setContactInfo] = useState<{ unlocked: boolean; phone?: string|null; email?: string|null } | null>(null)
+  const [revealNumber, setRevealNumber] = useState(false)
   const [shortlists,      setShortlists]      = useState<Set<string>>(new Set())
   const [quickView,       setQuickView]       = useState<Profile|null>(null)
   const [quickViewIdx,    setQuickViewIdx]    = useState<number>(0)
@@ -519,7 +541,7 @@ export default function BrowsePage() {
     Promise.all([
       supabase.from('profiles').select('member_number, full_name, gender, date_of_birth, native_state, native_district, photo_url, about, profession, education, height_cm, religion, current_city, caste, annual_income, mother_tongue, family_type, company, diet, star, rashi').eq('id', myId).maybeSingle(),
       supabase.from('interests').select('to_user, status').eq('from_user', myId),
-      supabase.from('matches').select('user1,user2').or(`user1.eq.${myId},user2.eq.${myId}`),
+      supabase.from('matches').select('id,user1,user2').or(`user1.eq.${myId},user2.eq.${myId}`),
       supabase.from('interests').select('id',{count:'exact',head:true}).eq('from_user',myId),
       supabase.from('interests').select('id',{count:'exact',head:true}).eq('to_user',myId).eq('status','pending'),
       supabase.from('matches').select('id',{count:'exact',head:true}).or(`user1.eq.${myId},user2.eq.${myId}`),
@@ -537,10 +559,15 @@ export default function BrowsePage() {
         setBannerDismissed(sessionStorage.getItem('completeness_banner_dismissed') === '1')
       }
 
+      // Status per profile: accepted interest = matched (chat); pending = request sent.
+      // A match row alone (created when a request opens a thread) is NOT "matched"
+      // unless the interest was accepted.
       const map: Record<string,string> = {}
-      ints?.forEach(i => { map[i.to_user] = i.status })
-      matchRows?.forEach(m => { const o = m.user1===myId?m.user2:m.user1; map[o]='matched' })
+      ints?.forEach(i => { map[i.to_user] = i.status === 'accepted' ? 'matched' : i.status })
+      const mIdMap: Record<string,string> = {}
+      matchRows?.forEach(m => { const o = m.user1===myId?m.user2:m.user1; if (!map[o]) map[o]='matched'; if (m.id) mIdMap[o]=m.id })
       setInterestMap(map)
+      setMatchIdMap(mIdMap)
 
       setStats({
         interestsSent:     sentRes.count     || 0,
@@ -752,6 +779,22 @@ export default function BrowsePage() {
   // Modal keeps its swipe-through behaviour; cards do not.
   const handleInterestFromModal = (p: Profile) => sendInterest(p, { advance: true })
 
+  // Contact: auto-sends a request, opens a popup that reveals WhatsApp/number
+  // only once the other person has accepted (privacy-respecting).
+  async function openContact(p: Profile) {
+    if (!myProfileId) { window.location.href = '/login'; return }
+    setContactProfile(p); setContactInfo(null); setRevealNumber(false)
+    if (!interestMap[p.id]) sendInterest(p)
+    try {
+      const r = await fetch('/api/profiles/contact', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileId: p.id }),
+      })
+      if (r.ok) setContactInfo(await r.json())
+      else setContactInfo({ unlocked: false })
+    } catch { setContactInfo({ unlocked: false }) }
+  }
+
   const activeFilterCount = [region,state,district,ageRange,profCat,maritalFilter,heightRange,casteFilter,
     religionFilter,educationFilter,...motherTongues,
     photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':'',
@@ -761,7 +804,7 @@ export default function BrowsePage() {
 
   /* ── Not logged in ── */
   if (!sessionChecked) return (
-    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <div className="flex items-center justify-center py-24 text-gray-400 text-sm">Loading…</div>
     </div>
@@ -770,7 +813,7 @@ export default function BrowsePage() {
   if (!myProfileId) return <GuestBrowsePreview />
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
       <AppHeader />
 
       <div className="max-w-6xl mx-auto px-4 py-4">
@@ -778,7 +821,7 @@ export default function BrowsePage() {
         {/* ── Profile completeness banner ─────────────────────── */}
         {completenessPercent !== null && completenessPercent < 50 && !bannerDismissed && (
           <div className="mb-4 rounded-xl px-4 py-3 flex items-center gap-3 text-sm"
-            style={{ background: '#E0F7FC', border: '1px solid #7FD8F4' }}>
+            style={{ background: '#EAF3EA', border: '1px solid #7FB17F' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
@@ -826,8 +869,8 @@ export default function BrowsePage() {
             <button
               className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold"
               style={activeFilterCount > 0
-                ? { background: '#EAF8FE', color: '#0B132B', borderColor: '#BDE9F7' }
-                : { borderColor: '#E8EDF3', color: '#5B6478', background: 'white' }}
+                ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA' }
+                : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}
               onClick={() => setShowSidebar(s=>!s)}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
@@ -840,8 +883,8 @@ export default function BrowsePage() {
             <button
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold shrink-0"
               style={activeFilterCount > 0
-                ? { background: '#EAF8FE', color: '#0B132B', borderColor: '#BDE9F7' }
-                : { borderColor: '#E8EDF3', color: '#5B6478', background: 'white' }}
+                ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA' }
+                : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}
               onClick={() => setShowSidebar(s=>!s)}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
@@ -878,10 +921,10 @@ export default function BrowsePage() {
 
             {/* Results header */}
             <div className="flex items-center gap-2 mb-3 flex-wrap">
-              <p className="flex-1" style={{ color: '#5B6478', fontSize: '15px' }}>
+              <p className="flex-1" style={{ color: '#5E6B62', fontSize: '15px' }}>
                 {loading ? 'Loading…' : (
                   <>
-                    <span style={{ fontWeight: 800, color: '#0B132B', fontSize: '19px', letterSpacing: '-0.01em' }}>
+                    <span style={{ fontWeight: 800, color: '#14241C', fontSize: '19px', letterSpacing: '-0.01em' }}>
                       {profiles.length.toLocaleString('en-IN')}
                     </span> {genderLabel} found
                   </>
@@ -891,7 +934,7 @@ export default function BrowsePage() {
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as 'newest'|'last_active'|'best_match')}
                 className="text-xs border rounded-lg px-2 py-1.5 text-gray-600"
-                style={{ borderColor: '#E8EDF3', background: 'white', outline: 'none' }}>
+                style={{ borderColor: '#E7E3D8', background: 'white', outline: 'none' }}>
                 <option value="newest">Newest first</option>
                 <option value="last_active">Last active</option>
                 <option value="best_match">Best match</option>
@@ -905,8 +948,8 @@ export default function BrowsePage() {
                 }}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
                 style={alertSet
-                  ? { background: '#EAF8FE', color: '#0B132B', borderColor: '#BDE9F7' }
-                  : { borderColor: '#E8EDF3', color: '#5B6478', background: 'white' }}>
+                  ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA' }
+                  : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}>
                 {alertSet ? 'Alert set' : '+ Save search'}
               </button>
             </div>
@@ -914,9 +957,9 @@ export default function BrowsePage() {
             {aiPicks.length > 0 && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#4CC9F0" stroke="none" style={{ flexShrink: 0 }}><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#1B5E20" stroke="none" style={{ flexShrink: 0 }}><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
                   <span className="text-sm font-bold text-gray-900">Top Picks for You</span>
-                  <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
                     AI matched
                   </span>
                 </div>
@@ -926,11 +969,11 @@ export default function BrowsePage() {
                       style={{ textDecoration: 'none', flexShrink: 0, width: '140px' }}>
                       <div style={{
                         borderRadius: '16px', overflow: 'hidden',
-                        border: '1px solid #E8EDF3', background: 'white',
+                        border: '1px solid #E7E3D8', background: 'white',
                         boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       }}>
                         {/* Photo */}
-                        <div style={{ position: 'relative', height: '160px', background: '#EAF8FE' }}>
+                        <div style={{ position: 'relative', height: '160px', background: '#EDF3ED' }}>
                           {pick.photo_url && pick.photo_visibility !== 'hidden' ? (
                             <img src={pick.photo_url} alt={pick.full_name}
                               style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -942,7 +985,7 @@ export default function BrowsePage() {
                           {/* Score badge */}
                           <div style={{
                             position: 'absolute', top: '8px', right: '8px',
-                            background: 'rgba(11,19,43,0.90)', backdropFilter: 'blur(4px)',
+                            background: 'rgba(20,36,28,0.90)', backdropFilter: 'blur(4px)',
                             color: 'white', fontSize: '10px', fontWeight: 800,
                             padding: '3px 7px', borderRadius: '99px',
                           }}>
@@ -954,7 +997,7 @@ export default function BrowsePage() {
                           <p style={{ fontSize: '12px', fontWeight: 700, color: '#111827', margin: '0 0 2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {pick.full_name.split(' ')[0]}
                           </p>
-                          <p style={{ fontSize: '11px', color: '#5B6478', margin: 0 }}>
+                          <p style={{ fontSize: '11px', color: '#5E6B62', margin: 0 }}>
                             {pick.profession?.split(' ').slice(0,2).join(' ')}
                           </p>
                           <p style={{ fontSize: '10px', color: '#94A3B8', margin: '2px 0 0', display: 'flex', alignItems: 'center', gap: '3px' }}>
@@ -982,7 +1025,7 @@ export default function BrowsePage() {
                       shortlisted={shortlists.has(p.id)}
                       onToggleShortlist={() => toggleShortlist(p.id)}
                       onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                      onSendInterest={() => sendInterest(p)} sending={sendingInterest} />
+                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingInterest} />
                   ))}
                 </div>
                 <hr className="my-4 border-gray-100" />
@@ -1001,7 +1044,7 @@ export default function BrowsePage() {
                       shortlisted={shortlists.has(p.id)}
                       onToggleShortlist={() => toggleShortlist(p.id)}
                       onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                      onSendInterest={() => sendInterest(p)} sending={sendingInterest} />
+                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingInterest} />
                   ))}
                 </div>
                 <hr className="my-4 border-gray-100" />
@@ -1011,8 +1054,8 @@ export default function BrowsePage() {
             {/* Empty state */}
             {!loading && profiles.length === 0 && (
               <div className="card p-10 text-center">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#EAF8FE' }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="1.75">
+                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#EDF3ED' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75">
                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
                   </svg>
                 </div>
@@ -1062,7 +1105,7 @@ export default function BrowsePage() {
                         shortlisted={shortlists.has(p.id)}
                         onToggleShortlist={() => toggleShortlist(p.id)}
                         onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                        onSendInterest={() => sendInterest(p)} sending={sendingInterest}
+                        onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingInterest}
                       />
                     ))}
                   </div>
@@ -1071,8 +1114,8 @@ export default function BrowsePage() {
                       <button
                         onClick={() => setPage(p => p + 1)}
                         className="px-6 py-2.5 text-sm font-semibold rounded-xl border transition-all"
-                        style={{ borderColor: '#0B132B', color: '#0B132B', background: 'white' }}
-                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#EAF8FE' }}
+                        style={{ borderColor: '#14241C', color: '#14241C', background: 'white' }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#EDF3ED' }}
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'white' }}>
                         Load more ({profiles.length - page * PAGE_SIZE} remaining)
                       </button>
@@ -1156,11 +1199,11 @@ export default function BrowsePage() {
                     <div className="flex flex-col items-end gap-1">
                       {isVerified(p) && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{ background: 'rgba(255,255,255,0.95)', color: '#06D6A0' }}>✓ Verified</span>
+                          style={{ background: 'rgba(255,255,255,0.95)', color: '#2E7D32' }}>✓ Verified</span>
                       )}
                       {status && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{ background: 'rgba(255,255,255,0.95)', color: status==='matched'?'#06D6A0':'#0B132B' }}>
+                          style={{ background: 'rgba(255,255,255,0.95)', color: status==='matched'?'#2E7D32':'#14241C' }}>
                           {status==='matched'?'Matched ✓':status==='pending'?'Interest Sent':'Accepted'}
                         </span>
                       )}
@@ -1171,7 +1214,7 @@ export default function BrowsePage() {
 
               {/* Member ID */}
               {p.member_number && (
-                <div className="px-5 py-2 border-b" style={{ borderColor: '#F3F4F6', background: '#F8FAFC' }}>
+                <div className="px-5 py-2 border-b" style={{ borderColor: '#F3F4F6', background: '#FBFAF5' }}>
                   <span className="text-xs font-semibold text-gray-400">{memberLabel(p.member_number)}</span>
                 </div>
               )}
@@ -1190,7 +1233,7 @@ export default function BrowsePage() {
                   return (
                   <div key={i} className="flex items-start gap-3 py-2.5">
                     {r.dot
-                      ? <span style={{ width: 9, height: 9, borderRadius: 99, background: '#06D6A0', flexShrink: 0, marginTop: 6 }} />
+                      ? <span style={{ width: 9, height: 9, borderRadius: 99, background: '#2E7D32', flexShrink: 0, marginTop: 6 }} />
                       : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 2 }} dangerouslySetInnerHTML={{ __html: r.svg || '' }} />}
                     <p className="text-sm text-gray-600 leading-snug">{r.text}</p>
                   </div>
@@ -1211,13 +1254,15 @@ export default function BrowsePage() {
 
                 {myProfileId && myProfileId !== p.id && !interestSent && (
                   <button
-                    onClick={() => handleInterestFromModal(p)}
-                    disabled={!!status || sendingInterest}
+                    onClick={() => { if (status==='matched' && matchIdMap[p.id]) { window.location.href = `/chat/${matchIdMap[p.id]}` } else if (!status) { handleInterestFromModal(p) } }}
+                    disabled={(!!status && status!=='matched') || sendingInterest}
                     className="w-full py-3 rounded-xl text-sm font-bold transition-all"
-                    style={status
-                      ? { background: '#ECFDF5', color: '#06D6A0' }
-                      : { background: '#4CC9F0', color: '#0B132B', boxShadow: '0 4px 14px rgba(76,201,240,0.35)' }}>
-                    {status==='matched'  ? 'Matched — Go to Chat' :
+                    style={status==='matched'
+                      ? { background: '#1B5E20', color: '#FFFFFF', cursor: 'pointer' }
+                      : status
+                      ? { background: '#ECFDF5', color: '#2E7D32' }
+                      : { background: '#1B5E20', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(27,94,32,0.35)' }}>
+                    {status==='matched'  ? 'Matched — Go to Chat →' :
                      status==='accepted' ? 'Accepted' :
                      status==='pending'  ? 'Request Sent ✓' :
                      status==='rejected' ? 'Declined' :
@@ -1233,7 +1278,7 @@ export default function BrowsePage() {
                 <div className="flex gap-2.5">
                   <Link href={`/profile/${p.id}`}
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1.5"
-                    style={{ borderColor: '#E8EDF3', color: '#4B5563' }}
+                    style={{ borderColor: '#E7E3D8', color: '#4B5563' }}
                     onClick={()=>setQuickView(null)}>
                     View full profile
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1242,10 +1287,10 @@ export default function BrowsePage() {
                     onClick={() => toggleShortlist(p.id)}
                     className="px-3.5 py-2.5 rounded-xl border flex items-center gap-1.5 text-sm font-semibold"
                     style={shortlists.has(p.id)
-                      ? { background: '#EAF8FE', color: '#0B132B', borderColor: '#BDE9F7' }
-                      : { borderColor: '#E8EDF3', color: '#5B6478', background: 'white' }}>
+                      ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA' }
+                      : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}>
                     <svg width="14" height="14" viewBox="0 0 24 24"
-                      fill={shortlists.has(p.id)?'#0B132B':'none'} stroke="#0B132B" strokeWidth="2.5">
+                      fill={shortlists.has(p.id)?'#14241C':'none'} stroke="#14241C" strokeWidth="2.5">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                     </svg>
                     {shortlists.has(p.id) ? 'Saved' : 'Save'}
@@ -1262,8 +1307,55 @@ export default function BrowsePage() {
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none"
           style={{ animation: 'fadeInUp 0.25s ease' }}>
           <div className="px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white whitespace-nowrap"
-            style={{ background: '#0B132B' }}>
+            style={{ background: '#14241C' }}>
             {browseToast}
+          </div>
+        </div>
+      )}
+
+      {/* ── Contact popup ─────────────────────────────────────── */}
+      {contactProfile && (
+        <div onClick={() => setContactProfile(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 60, background: 'rgba(20,36,28,0.55)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: 'white', width: '100%', maxWidth: '440px', borderRadius: '20px 20px 0 0', padding: '22px 20px 28px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+              <p style={{ fontWeight: 700, fontSize: '16px', color: '#14241C', margin: 0, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
+                Contact {contactProfile.full_name?.split(' ')[0]}
+              </p>
+              <button onClick={() => setContactProfile(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8A938A' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            {!contactInfo ? (
+              <p style={{ fontSize: '13px', color: '#5E6B62', padding: '16px 0' }}>Loading…</p>
+            ) : contactInfo.unlocked ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
+                <a href={`https://wa.me/${(contactInfo.phone||'').replace(/\D/g,'')}`} target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '13px', borderRadius: '12px', background: '#25D366', color: 'white', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 0 1-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 0 1 8.413 3.488 11.824 11.824 0 0 1 3.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 0 1-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 0 0 1.51 5.26l-.999 3.648 3.978-1.607z"/></svg>
+                  Message on WhatsApp
+                </a>
+                <button onClick={() => setRevealNumber(true)}
+                  style={{ padding: '13px', borderRadius: '12px', background: 'white', border: '1.5px solid #1B5E20', color: '#1B5E20', fontWeight: 700, fontSize: '14px', cursor: 'pointer' }}>
+                  {revealNumber ? (contactInfo.phone || 'No number on file') : 'View number'}
+                </button>
+                {contactInfo.email && revealNumber && (
+                  <a href={`mailto:${contactInfo.email}`} style={{ textAlign: 'center', fontSize: '13px', color: '#1B5E20', textDecoration: 'none', fontWeight: 600 }}>{contactInfo.email}</a>
+                )}
+              </div>
+            ) : (
+              <div style={{ marginTop: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 14px', borderRadius: '12px', background: '#EDF3ED', marginBottom: '12px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent — contact unlocks once they accept</p>
+                </div>
+                <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0, lineHeight: 1.5 }}>
+                  Contact details are shared only after acceptance. We&apos;ve sent {contactProfile.full_name?.split(' ')[0]} your request — you&apos;ll be notified when they accept.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

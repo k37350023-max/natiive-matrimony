@@ -90,6 +90,25 @@ Ranked by what a normal visitor/member would actually hit.
   Groom chat message delivered. (Test accounts kept; the interaction rows were cleaned.)
 - Also fixed login/register headers to the lowercase `nativematrimony.` wordmark.
 
+## Native-place spec pass 1 (deep-green theme + contact/chat) — DONE ✅
+- **Retheme to deep-green / navy / cream** (mockup): tokens in globals.css, app-wide hex remap
+  (40 files), green CTAs with white text, cream canvas, wordmark "matrimony" now green.
+- **Matched → Go to Chat** now a real link (modal + card use matchIdMap → /chat/[id]).
+- **Fixed:** pending requests no longer mislabeled "Go to Chat" (a request opens a match row,
+  but status is 'matched' only when the interest is accepted).
+- **Contact button** added left of Connect on cards: auto-sends the request and opens a popup
+  with **WhatsApp + View number** — revealed only after acceptance (respects "contact shared
+  only after acceptance"); shows "unlocks once they accept" while pending. New `/api/profiles/contact`.
+  Verified: locked before accept, unlocked w/ number after.
+
+## Native-place spec — STILL TO DO (next, from the uploaded mockup/spec)
+- Homepage = native-place **search-first** hero (popular places chips, "Find someone who shares your roots")
+- Search results: field-limited **blurred public cards** + **"No profiles from X yet → Notify Me"** waitlist
+  (new `native_place_waitlist` table)
+- Signup **Step 1 "Profile For"** (Myself/Son/Daughter/…) + map existing fields to native_place schema
+- **Biodata PDF** download on accepted profile
+- Tables from spec: `native_place_waitlist`, align `profiles` columns (native_place etc.)
+
 ## Emoji → professional SVG icons — DONE ✅
 - Replaced all emoji (✅🎉🔔📍💼👨‍👩‍👧✨⚡💬👤💌👁🔒 + dashboard/notification icons) with clean
   line/solid SVG icons across LaunchBanner, NotificationBell, notifications, interests, browse

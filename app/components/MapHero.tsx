@@ -32,19 +32,19 @@ const PULSE_CENTER: Record<RKey, { cx: number; cy: number }> = {
 
 const MOCK: Record<RKey, { initials: string; name: string; age: number; profession: string; district: string; color: string }[]> = {
   telangana: [
-    { initials: 'PR', name: 'Priya R.', age: 27, profession: 'Software Engineer', district: 'Hyderabad', color: '#0B132B' },
+    { initials: 'PR', name: 'Priya R.', age: 27, profession: 'Software Engineer', district: 'Hyderabad', color: '#14241C' },
     { initials: 'SK', name: 'Sai K.', age: 29, profession: 'Doctor', district: 'Warangal', color: '#0369A1' },
     { initials: 'AM', name: 'Anjali M.', age: 26, profession: 'Teacher', district: 'Karimnagar', color: '#047857' },
   ],
   coastal: [
-    { initials: 'RV', name: 'Ravi V.', age: 31, profession: 'Business Owner', district: 'East Godavari', color: '#0B132B' },
+    { initials: 'RV', name: 'Ravi V.', age: 31, profession: 'Business Owner', district: 'East Godavari', color: '#14241C' },
     { initials: 'MK', name: 'Meena K.', age: 28, profession: 'Nurse', district: 'Visakhapatnam', color: '#6D28D9' },
     { initials: 'SP', name: 'Srini P.', age: 33, profession: 'Civil Engineer', district: 'Guntur', color: '#BE185D' },
   ],
   rayala: [
     { initials: 'VR', name: 'Vijay R.', age: 30, profession: 'Govt. Officer', district: 'Kurnool', color: '#047857' },
     { initials: 'NK', name: 'Nanda K.', age: 27, profession: 'Software Developer', district: 'Kadapa', color: '#0369A1' },
-    { initials: 'KB', name: 'Kavya B.', age: 25, profession: 'MBA', district: 'Chittoor', color: '#0B132B' },
+    { initials: 'KB', name: 'Kavya B.', age: 25, profession: 'MBA', district: 'Chittoor', color: '#14241C' },
   ],
 }
 
@@ -124,7 +124,7 @@ export default function MapHero() {
           width: '100%', maxWidth: '280px', flexShrink: 0,
           aspectRatio: '612 / 696', overflow: 'hidden',
           borderRadius: '16px', margin: '0 auto',
-          background: '#F8FAFC',
+          background: '#FBFAF5',
         }}>
           <svg
             viewBox={IndiaData.viewBox}
@@ -149,8 +149,8 @@ export default function MapHero() {
               let strokeW = '0.5'
 
               if (isTeluguAP || isTeluguTG) {
-                fill = highlighted_ ? '#E0F7FC' : '#D6C9AA'
-                stroke = highlighted_ ? '#0B132B' : '#9E8E6A'
+                fill = highlighted_ ? '#EAF3EA' : '#D6C9AA'
+                stroke = highlighted_ ? '#14241C' : '#9E8E6A'
                 strokeW = highlighted_ ? '2' : '1'
               } else if (isBg) {
                 fill = '#E4DDD0'
@@ -180,14 +180,14 @@ export default function MapHero() {
 
             {/* Telangana label */}
             <text x="230" y="472" textAnchor="middle" fontSize="8" fontWeight="700"
-              fill={highlighted && REGION_STATE_ID[highlighted] === 'tg' ? '#0B132B' : '#7A6F5A'}
+              fill={highlighted && REGION_STATE_ID[highlighted] === 'tg' ? '#14241C' : '#7A6F5A'}
               style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
               Telangana
             </text>
 
             {/* AP labels */}
             <text x="320" y="510" textAnchor="middle" fontSize="7" fontWeight="700"
-              fill={highlighted && REGION_STATE_ID[highlighted] === 'ap' ? '#0B132B' : '#7A6F5A'}
+              fill={highlighted && REGION_STATE_ID[highlighted] === 'ap' ? '#14241C' : '#7A6F5A'}
               style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill .3s' }}>
               Andhra Pradesh
             </text>
@@ -199,7 +199,7 @@ export default function MapHero() {
                 <circle
                   key={`pulse-${pulsing}`}
                   cx={cx} cy={cy} r="12"
-                  fill="none" stroke="#0B132B" strokeWidth="3"
+                  fill="none" stroke="#14241C" strokeWidth="3"
                   className="map-pulse-ring"
                   style={{ transformOrigin: `${cx}px ${cy}px` }}
                 />
@@ -224,7 +224,7 @@ export default function MapHero() {
               <div className="flex items-center gap-2 mb-3 flex-wrap">
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Profiles from</span>
                 <span className="text-sm font-bold px-3 py-0.5 rounded-full"
-                  style={{ background: '#E0F7FC', color: '#0B132B' }}>
+                  style={{ background: '#EAF3EA', color: '#14241C' }}>
                   {REGION_LABEL[profileKey]}
                 </span>
               </div>
@@ -233,7 +233,7 @@ export default function MapHero() {
                 {MOCK[profileKey].map((p, i) => (
                   <div key={p.name} className="profile-card-in" style={{ animationDelay: `${i * 75}ms` }}>
                     <div className="flex items-center gap-3 p-3 rounded-xl border"
-                      style={{ background: 'white', borderColor: '#E8EDF3' }}>
+                      style={{ background: 'white', borderColor: '#E7E3D8' }}>
                       {/* Geometric avatar */}
                       <div className="w-10 h-10 rounded-full overflow-hidden shrink-0 shadow-sm">
                         <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -249,7 +249,7 @@ export default function MapHero() {
                         <p className="text-xs text-gray-500 truncate">{p.age} yrs · {p.profession}</p>
                       </div>
                       <span className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
-                        style={{ background: '#E0F7FC', color: '#0B132B' }}>
+                        style={{ background: '#EAF3EA', color: '#14241C' }}>
                         {p.district}
                       </span>
                     </div>
@@ -259,7 +259,7 @@ export default function MapHero() {
 
               <Link href="/register"
                 className="mt-4 flex items-center justify-center gap-1.5 font-semibold py-2.5 rounded-xl text-sm"
-                style={{ background: '#0B132B', color: 'white' }}>
+                style={{ background: '#14241C', color: 'white' }}>
                 See all {REGION_LABEL[profileKey]} profiles →
               </Link>
             </div>

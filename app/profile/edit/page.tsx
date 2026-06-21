@@ -43,7 +43,7 @@ const Label = ({ children, required, recommended }: { children: React.ReactNode;
   <label className="form-label">
     {children}
     {required && <span className="ml-0.5 font-bold" style={{ color: '#DC2626' }}>*</span>}
-    {recommended && !required && <span className="ml-1 font-normal text-xs" style={{ color: '#0B132B' }}>recommended</span>}
+    {recommended && !required && <span className="ml-1 font-normal text-xs" style={{ color: '#14241C' }}>recommended</span>}
   </label>
 )
 
@@ -60,11 +60,11 @@ function CollapsibleCard({ title, subtitle, badge, defaultOpen = false, children
         <div>
           <p className="font-semibold text-gray-800 font-serif-display">
             {title}
-            {badge && <span className="ml-2 align-middle text-xs font-normal px-2 py-0.5 rounded-full" style={{ background: '#EAF8FE', color: '#0B132B' }}>{badge}</span>}
+            {badge && <span className="ml-2 align-middle text-xs font-normal px-2 py-0.5 rounded-full" style={{ background: '#EDF3ED', color: '#14241C' }}>{badge}</span>}
           </p>
           {subtitle && <p className="text-xs text-gray-400 mt-0.5">{subtitle}</p>}
         </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="2.5"
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="2.5"
           style={{ flexShrink: 0, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
           <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -373,18 +373,18 @@ function EditProfilePageInner() {
   }
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ background: '#FBFAF5' }}>
       <p className="text-gray-400 text-sm">Loading profile...</p>
     </div>
   )
 
   return (
-    <div className="min-h-screen pb-20" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen pb-20" style={{ background: '#FBFAF5' }}>
       <AppHeader />
 
       <div className="max-w-xl mx-auto px-4 py-6 space-y-4">
         {isNewProfile && (
-          <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EAF8FE', border: '1px solid #BDE9F7', color: '#0B132B' }}>
+          <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EDF3ED', border: '1px solid #CADFCA', color: '#14241C' }}>
             Welcome! Fill in the fields below — required fields marked <span className="font-bold" style={{ color: '#9B1C1C' }}>*</span>. The more you fill, the more interest you'll get.
           </div>
         )}
@@ -450,7 +450,7 @@ function EditProfilePageInner() {
         }} />
 
         {error && (
-          <div className="px-4 py-3 rounded-lg text-sm" style={{ background: '#EAF8FE', color: '#0B132B', border: '1px solid #BDE9F7' }}>
+          <div className="px-4 py-3 rounded-lg text-sm" style={{ background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
             {error}
           </div>
         )}
@@ -469,7 +469,7 @@ function EditProfilePageInner() {
                 className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-200" />
             ) : (
               <div className="w-16 h-16 rounded-full flex items-center justify-center text-gray-400"
-                style={{ background: '#EEF2F7' }}>
+                style={{ background: '#EFF1EC' }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                   <circle cx="12" cy="7" r="4"/>
@@ -489,7 +489,7 @@ function EditProfilePageInner() {
           </div>
 
           {/* Additional photos */}
-          <div className="mb-5 pt-4 border-t" style={{ borderColor: '#E8EDF3' }}>
+          <div className="mb-5 pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-2">More photos <span className="font-normal text-gray-400">({additionalPhotos.length}/4 added)</span></p>
             <p className="text-xs text-gray-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get significantly more interest.</p>
             <div className="flex flex-wrap gap-2">
@@ -526,7 +526,7 @@ function EditProfilePageInner() {
             </div>
           </div>
 
-          <div className="pt-4 border-t" style={{ borderColor: '#E8EDF3' }}>
+          <div className="pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-1">Privacy — what do you want to hide?</p>
             <p className="text-xs text-gray-400 mb-3">Hidden fields show as blurred on your profile. Visitors can request to see them — you approve or decline.</p>
             <div className="space-y-2">
@@ -536,8 +536,8 @@ function EditProfilePageInner() {
                   <label key={f.key}
                     className="flex items-start gap-3 px-3.5 py-3 rounded-lg border cursor-pointer transition-colors"
                     style={{
-                      borderColor: checked ? '#0B132B' : '#E8EDF3',
-                      background: checked ? '#EAF8FE' : 'white',
+                      borderColor: checked ? '#14241C' : '#E7E3D8',
+                      background: checked ? '#EDF3ED' : 'white',
                     }}>
                     <input type="checkbox" checked={checked}
                       onChange={() => setHiddenFields(prev =>
@@ -799,7 +799,7 @@ function EditProfilePageInner() {
                     set('about', templates[Math.floor(Math.random() * templates.length)].slice(0, 400))
                   }}
                   className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1.5"
-                  style={{background: '#EAF8FE', color: '#0B132B'}}>
+                  style={{background: '#EDF3ED', color: '#14241C'}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
                   Generate bio
                 </button>
@@ -867,7 +867,7 @@ function EditProfilePageInner() {
                 <button type="button"
                   onClick={() => setSiblings(prev => [...prev, { name: '', relation: 'Brother', married: false }])}
                   className="text-sm font-medium px-3 py-1.5 rounded-lg border"
-                  style={{ borderColor: '#E8EDF3', color: '#0B132B' }}>
+                  style={{ borderColor: '#E7E3D8', color: '#14241C' }}>
                   + Add sibling
                 </button>
               </div>
@@ -968,7 +968,7 @@ function EditProfilePageInner() {
 
           {verified ? (
             <div className="flex items-center gap-2 text-sm text-gray-600 py-2">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06D6A0" strokeWidth="2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
               Mobile number verified
@@ -1016,7 +1016,7 @@ function EditProfilePageInner() {
                   {!otpSent ? (
                     <button onClick={sendEmailOTP} disabled={otpLoading}
                       className="text-xs font-semibold px-4 py-2 rounded-lg border"
-                      style={{borderColor: '#E8EDF3', color: '#5B6478'}}>
+                      style={{borderColor: '#E7E3D8', color: '#5E6B62'}}>
                       {otpLoading ? 'Sending...' : `Send code to ${userEmail}`}
                     </button>
                   ) : (
@@ -1036,7 +1036,7 @@ function EditProfilePageInner() {
           ) : (
             <div className="space-y-3">
               {devOtp && (
-                <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#EAF8FE', color: '#0B132B'}}>
+                <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#EDF3ED', color: '#14241C'}}>
                   Dev mode — OTP: <span className="font-bold font-mono">{devOtp}</span> (SMS not configured)
                 </div>
               )}

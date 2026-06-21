@@ -1,45 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  /* ─── Trust-First, Premium Tech design system (2026) ─────────── */
+  /* ─── Native-place registry — deep green / navy / cream (2026) ─── */
 
   /* 60% Canvas / Background */
-  --bg-canvas: #F8FAFC;        /* Clean Off-White */
+  --bg-canvas: #FBFAF5;        /* Warm cream */
   --bg-surface: #FFFFFF;       /* Pure White for Cards */
 
   /* 20% Dominant Brand / Text */
-  --color-obsidian: #0B132B;   /* Deep Navy — headings, main text, heavy UI blocks */
-  --color-slate: #5B6478;      /* Neutral muted — secondary text, labels, borders */
+  --color-obsidian: #14241C;   /* Deep forest-navy — headings, main text */
+  --color-slate: #5E6B62;      /* Muted greyed-green — secondary text, labels */
 
-  /* 10% Interactive Accent */
-  --color-cyan: #4CC9F0;       /* Electric Cyan — primary buttons and CTAs */
-  --color-cyan-hover: #38B6DD; /* Deepened Cyan — hover states */
+  /* 10% Interactive Accent — deep green CTAs */
+  --color-green: #1B5E20;      /* Deep green — primary buttons and CTAs */
+  --color-green-hover: #14532D;/* Deeper green — hover states */
+  /* legacy name kept (was cyan) so existing var refs resolve to green */
+  --color-cyan: #1B5E20;
+  --color-cyan-hover: #14532D;
 
   /* Trust / Security Accent */
-  --color-mint: #06D6A0;       /* Mint Green — reserved ONLY for verified badges */
+  --color-mint: #2E7D32;       /* Verified green */
 
-  /* Borders & Shadows (cool-toned) */
-  --border-light: 1px solid #E8EDF3;
-  --shadow-sm: 0 1px 3px rgba(11, 19, 43, 0.05);
-  --shadow-md: 0 8px 24px rgba(11, 19, 43, 0.04);
+  /* Borders & Shadows */
+  --border-light: 1px solid #E7E3D8;
+  --shadow-sm: 0 1px 3px rgba(20, 36, 28, 0.05);
+  --shadow-md: 0 8px 24px rgba(20, 36, 28, 0.06);
 
   /* ─── Legacy token aliases → remapped to the new system ──────── */
   /* Keeps existing var(--primary)/.btn-primary/.card consumers on-brand */
   --primary: var(--color-obsidian);
-  --primary-dark: #060B1A;
-  --primary-hover: #11203F;
-  --primary-light: #EEF6FB;
-  --primary-ring: rgba(76,201,240,0.30);
+  --primary-dark: #0C1711;
+  --primary-hover: #1C3326;
+  --primary-light: #EDF3ED;
+  --primary-ring: rgba(27,94,32,0.25);
 
-  --gold: var(--color-cyan);
-  --gold-hover: var(--color-cyan-hover);
-  --gold-soft: #EAF8FE;
-  --gold-text: var(--color-obsidian);
+  --gold: var(--color-green);
+  --gold-hover: var(--color-green-hover);
+  --gold-soft: #EAF3EA;
+  --gold-text: #FFFFFF;
 
   --verified: var(--color-mint);
   --online: var(--color-mint);
 
-  --border: #E8EDF3;
+  --border: #E7E3D8;
   --bg: var(--bg-canvas);
   --surface: var(--bg-surface);
   --footer: var(--color-obsidian);
@@ -126,11 +129,11 @@ select.input {
   gap: 0.4rem;
   letter-spacing: -0.01em;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(76,201,240,0.30);
+  box-shadow: 0 2px 8px rgba(27,94,32,0.25);
 }
 .btn-primary:hover {
   background: var(--gold-hover);
-  box-shadow: 0 10px 24px rgba(76,201,240,0.40);
+  box-shadow: 0 10px 24px rgba(27,94,32,0.32);
   transform: translateY(-2px);
 }
 .btn-primary:active { transform: translateY(0); }

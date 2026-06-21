@@ -94,9 +94,9 @@ export default function AppHeader() {
   return (
     <header style={{
       background: '#FFFFFF',
-      borderBottom: '1px solid #E8EDF3',
+      borderBottom: '1px solid #E7E3D8',
       position: 'sticky', top: 0, zIndex: 40,
-      boxShadow: scrolled ? '0 6px 20px rgba(11,19,43,0.08)' : 'none',
+      boxShadow: scrolled ? '0 6px 20px rgba(20,36,28,0.08)' : 'none',
       transition: 'box-shadow 0.2s',
     }}>
       <div style={{
@@ -112,7 +112,7 @@ export default function AppHeader() {
             fontSize: '21px', letterSpacing: '-0.03em',
             lineHeight: 1,
           }}>
-            <span style={{ fontWeight: 700, color: '#0B132B' }}>native</span><span style={{ fontWeight: 400, color: '#5B6478' }}>matrimony</span><span style={{ fontWeight: 700, color: '#4CC9F0' }}>.</span>
+            <span style={{ fontWeight: 700, color: '#14241C' }}>native</span><span style={{ fontWeight: 400, color: '#1B5E20' }}>matrimony</span><span style={{ fontWeight: 700, color: '#1B5E20' }}>.</span>
           </span>
         </Link>
 
@@ -126,8 +126,8 @@ export default function AppHeader() {
                   position: 'relative', display: 'flex', alignItems: 'center', gap: '5px',
                   fontSize: '13.5px', fontWeight: item.active ? 700 : 500,
                   padding: '8px 14px', textDecoration: 'none',
-                  color: item.active ? '#0B132B' : '#555555',
-                  borderBottom: item.active ? '2.5px solid #0B132B' : '2.5px solid transparent',
+                  color: item.active ? '#14241C' : '#555555',
+                  borderBottom: item.active ? '2.5px solid #14241C' : '2.5px solid transparent',
                   marginBottom: '-1px',
                   transition: 'color 0.15s',
                 }}>
@@ -158,7 +158,7 @@ export default function AppHeader() {
                     <svg width="46" height="46" viewBox="0 0 46 46"
                       style={{ position: 'absolute', top: '-5px', left: '-5px', pointerEvents: 'none', transform: 'rotate(-90deg)' }}>
                       <circle cx="23" cy="23" r="21" fill="none" stroke="#EFE7E2" strokeWidth="3" />
-                      <circle cx="23" cy="23" r="21" fill="none" stroke="#0B132B" strokeWidth="3" strokeLinecap="round"
+                      <circle cx="23" cy="23" r="21" fill="none" stroke="#14241C" strokeWidth="3" strokeLinecap="round"
                         strokeDasharray={2 * Math.PI * 21}
                         strokeDashoffset={2 * Math.PI * 21 * (1 - completeness / 100)}
                         style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
@@ -166,7 +166,7 @@ export default function AppHeader() {
                     {/* Percentage pill */}
                     <span style={{
                       position: 'absolute', bottom: '-7px', left: '50%', transform: 'translateX(-50%)',
-                      background: '#0B132B', color: 'white', fontSize: '8.5px', fontWeight: 700,
+                      background: '#14241C', color: 'white', fontSize: '8.5px', fontWeight: 700,
                       lineHeight: 1, padding: '2px 5px', borderRadius: '99px', border: '1.5px solid white',
                       whiteSpace: 'nowrap', pointerEvents: 'none',
                     }}>
@@ -178,14 +178,14 @@ export default function AppHeader() {
                   onClick={() => setMenuOpen(o => !o)}
                   style={{
                     width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden',
-                    border: menuOpen ? '2px solid #0B132B' : '2px solid #E0E0E0',
+                    border: menuOpen ? '2px solid #14241C' : '2px solid #E0E0E0',
                     cursor: 'pointer', background: 'none', padding: 0,
                     transition: 'border-color 0.15s',
                   }}>
                   {photoUrl ? (
                     <img loading="lazy" src={photoUrl} alt={profileName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0B132B', color: 'white', fontSize: '12px', fontWeight: 700 }}>
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#14241C', color: 'white', fontSize: '12px', fontWeight: 700 }}>
                       {profileName ? initials(profileName) : (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                       )}
@@ -203,7 +203,7 @@ export default function AppHeader() {
                     <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0F0F0' }}>
                       <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#111', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileName}</p>
                       {isPremium ? (
-                        <p style={{ fontSize: '11.5px', fontWeight: 600, color: '#0B132B', margin: '2px 0 0' }}>
+                        <p style={{ fontSize: '11.5px', fontWeight: 600, color: '#14241C', margin: '2px 0 0' }}>
                           {memberNumber ? `Founder #${memberNumber}` : 'Premium Member'}
                         </p>
                       ) : (
@@ -214,11 +214,11 @@ export default function AppHeader() {
                       <Link href="/profile/edit" onClick={() => setMenuOpen(false)}
                         style={{ display: 'block', padding: '12px 16px', borderBottom: '1px solid #F0F0F0', textDecoration: 'none' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#0B132B' }}>Profile {completeness}% complete</span>
-                          <span style={{ fontSize: '11px', color: '#0B132B', fontWeight: 600 }}>Complete →</span>
+                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#14241C' }}>Profile {completeness}% complete</span>
+                          <span style={{ fontSize: '11px', color: '#14241C', fontWeight: 600 }}>Complete →</span>
                         </div>
                         <div style={{ height: '5px', borderRadius: '99px', background: '#EFE7E2', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${completeness}%`, background: '#0B132B', borderRadius: '99px', transition: 'width 0.5s ease' }} />
+                          <div style={{ height: '100%', width: `${completeness}%`, background: '#14241C', borderRadius: '99px', transition: 'width 0.5s ease' }} />
                         </div>
                       </Link>
                     )}
@@ -229,7 +229,7 @@ export default function AppHeader() {
                       ].map(item => (
                         <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
                           style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', textDecoration: 'none', color: '#333', fontSize: '13.5px', transition: 'background 0.1s' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#EEF2F7')}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#EFF1EC')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                             <path d={item.icon} />
@@ -239,8 +239,8 @@ export default function AppHeader() {
                       ))}
                       {!isPremium && (
                         <Link href="/pricing" onClick={() => setMenuOpen(false)}
-                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', textDecoration: 'none', color: '#0B132B', fontSize: '13.5px', fontWeight: 600, transition: 'background 0.1s' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#EAF8FE')}
+                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', textDecoration: 'none', color: '#14241C', fontSize: '13.5px', fontWeight: 600, transition: 'background 0.1s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#EDF3ED')}
                           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -252,7 +252,7 @@ export default function AppHeader() {
                     <div style={{ borderTop: '1px solid #F0F0F0', padding: '6px' }}>
                       <button onClick={signOut}
                         style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer', color: '#999', fontSize: '13.5px', transition: 'all 0.1s', textAlign: 'left' }}
-                        onMouseEnter={e => { (e.currentTarget.style.background = '#EEF2F7'); (e.currentTarget.style.color = '#333') }}
+                        onMouseEnter={e => { (e.currentTarget.style.background = '#EFF1EC'); (e.currentTarget.style.color = '#333') }}
                         onMouseLeave={e => { (e.currentTarget.style.background = 'transparent'); (e.currentTarget.style.color = '#999') }}>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>

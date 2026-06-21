@@ -45,14 +45,14 @@ function timeAgo(d: string) {
 }
 
 function typeLabel(type: string) {
-  if (type === 'interest_received')        return { label: 'Interest Received', color: '#0B132B', bg: '#EAF8FE' }
+  if (type === 'interest_received')        return { label: 'Interest Received', color: '#14241C', bg: '#EDF3ED' }
   if (type === 'interest_accepted')        return { label: 'Match!', color: '#065F46', bg: '#ECFDF5' }
-  if (type === 'interest_declined')        return { label: 'Declined', color: '#5B6478', bg: '#F3F4F6' }
-  if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#5B6478', bg: '#F3F4F6' }
+  if (type === 'interest_declined')        return { label: 'Declined', color: '#5E6B62', bg: '#F3F4F6' }
+  if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#5E6B62', bg: '#F3F4F6' }
   if (type === 'profile_view')             return { label: 'Profile View', color: '#1E40AF', bg: '#EFF6FF' }
   if (type === 'field_request')            return { label: 'Contact Request', color: '#7C3AED', bg: '#F5F3FF' }
   if (type === 'field_request_approved')   return { label: 'Contact Shared', color: '#065F46', bg: '#ECFDF5' }
-  return { label: 'Notification', color: '#5B6478', bg: '#F3F4F6' }
+  return { label: 'Notification', color: '#5E6B62', bg: '#F3F4F6' }
 }
 
 function notifIcon(type: string) {
@@ -66,7 +66,7 @@ function notifIcon(type: string) {
     field_request:          '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
   }
   const path = d[type] || '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'
-  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B132B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: path }} />
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: path }} />
 }
 
 function notifAction(type: string, fromProfileId: string | null): { label: string; href: string } | null {
@@ -80,7 +80,7 @@ function notifAction(type: string, fromProfileId: string | null): { label: strin
 
 function Avatar({ profile, size = 44 }: { profile: FromProfile | null; size?: number }) {
   const showPhoto = !!(profile?.photo_url && profile.photo_visibility === 'public')
-  const colors = ['#0B132B','#1D4E7F','#1D7F4E','#7F5A1D']
+  const colors = ['#14241C','#1D4E7F','#1D7F4E','#7F5A1D']
   const bg = colors[(profile?.full_name?.charCodeAt(0) || 0) % colors.length]
   const initials = profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
 
@@ -176,7 +176,7 @@ export default function NotificationsPage() {
   })
 
   return (
-    <div style={{ minHeight: '100vh', background: '#F8FAFC', paddingBottom: '80px' }}>
+    <div style={{ minHeight: '100vh', background: '#FBFAF5', paddingBottom: '80px' }}>
       <AppHeader />
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '20px 16px' }}>
@@ -187,7 +187,7 @@ export default function NotificationsPage() {
             <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 2px', letterSpacing: '-0.02em' }}>
               Notifications
               {unread > 0 && (
-                <span style={{ marginLeft: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px', borderRadius: '99px', background: '#0B132B', color: 'white', fontSize: '11px', fontWeight: 700, padding: '0 5px', verticalAlign: 'middle' }}>
+                <span style={{ marginLeft: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px', borderRadius: '99px', background: '#14241C', color: 'white', fontSize: '11px', fontWeight: 700, padding: '0 5px', verticalAlign: 'middle' }}>
                   {unread}
                 </span>
               )}
@@ -195,7 +195,7 @@ export default function NotificationsPage() {
             <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Activity on your profile</p>
           </div>
           {notifs.some(n => !n.read) && (
-            <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#0B132B', background: '#EAF8FE', border: '1px solid #BDE9F7', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
+            <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#14241C', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
               Mark all read
             </button>
           )}
@@ -206,7 +206,7 @@ export default function NotificationsPage() {
           {tabs.map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
               flex: 1, minWidth: 'max-content', padding: '7px 12px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontSize: '12.5px', fontWeight: 600, transition: 'all 0.15s', whiteSpace: 'nowrap',
-              background: tab === t ? '#0B132B' : 'transparent',
+              background: tab === t ? '#14241C' : 'transparent',
               color: tab === t ? 'white' : '#777',
             }}>
               {t}
@@ -224,10 +224,10 @@ export default function NotificationsPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[1,2,3,4].map(i => (
               <div key={i} style={{ background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', padding: '16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E8EDF3', flexShrink: 0 }} />
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E7E3D8', flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ height: 13, background: '#E8EDF3', borderRadius: '6px', width: '60%', marginBottom: '8px' }} />
-                  <div style={{ height: 11, background: '#E8EDF3', borderRadius: '6px', width: '80%' }} />
+                  <div style={{ height: 13, background: '#E7E3D8', borderRadius: '6px', width: '60%', marginBottom: '8px' }} />
+                  <div style={{ height: 11, background: '#E7E3D8', borderRadius: '6px', width: '80%' }} />
                 </div>
               </div>
             ))}
@@ -237,7 +237,7 @@ export default function NotificationsPage() {
         {/* Empty state */}
         {!loading && filtered.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px 20px', background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8' }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, background: '#EEF2F7', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+            <div style={{ width: 56, height: 56, borderRadius: 16, background: '#EFF1EC', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             </div>
             <p style={{ fontSize: '16px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>
@@ -267,7 +267,7 @@ export default function NotificationsPage() {
                   <div key={n.id} style={{
                     background: n.read ? 'white' : '#FFFBFB',
                     borderRadius: '12px',
-                    border: `1px solid ${n.read ? '#E8E8E8' : '#BDE9F7'}`,
+                    border: `1px solid ${n.read ? '#E8E8E8' : '#CADFCA'}`,
                     padding: '14px 16px',
                     display: 'flex',
                     gap: '12px',
@@ -280,13 +280,13 @@ export default function NotificationsPage() {
 
                     {/* Unread dot */}
                     {!n.read && (
-                      <div style={{ position: 'absolute', top: '16px', right: '16px', width: '7px', height: '7px', borderRadius: '50%', background: '#0B132B' }} />
+                      <div style={{ position: 'absolute', top: '16px', right: '16px', width: '7px', height: '7px', borderRadius: '50%', background: '#14241C' }} />
                     )}
 
                     {/* Avatar or icon */}
                     {from
                       ? <Avatar profile={from} />
-                      : <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EAF8FE', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      : <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           {notifIcon(n.type)}
                         </div>}
 
@@ -298,7 +298,7 @@ export default function NotificationsPage() {
                         <span style={{ fontSize: '11px', color: '#94A3B8' }}>{timeAgo(n.created_at)}</span>
                       </div>
 
-                      <p style={{ fontSize: '13.5px', color: '#0B132B', margin: '0 0 4px', lineHeight: 1.5 }}>
+                      <p style={{ fontSize: '13.5px', color: '#14241C', margin: '0 0 4px', lineHeight: 1.5 }}>
                         {n.message}
                       </p>
 
@@ -310,7 +310,7 @@ export default function NotificationsPage() {
 
                       {action && (
                         <button onClick={() => router.push(action.href)}
-                          style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '7px', background: '#0B132B', color: 'white', border: 'none', cursor: 'pointer' }}>
+                          style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '7px', background: '#14241C', color: 'white', border: 'none', cursor: 'pointer' }}>
                           {action.label}
                         </button>
                       )}

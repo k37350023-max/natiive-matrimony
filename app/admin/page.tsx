@@ -145,7 +145,7 @@ export default function AdminPage() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{background: '#F8FAFC'}}>
+      <div className="min-h-screen flex items-center justify-center" style={{background: '#FBFAF5'}}>
         <div className="card p-8 w-80">
           <div className="text-center mb-6">
             <p className="text-sm font-bold text-orange-700 mb-1">NativeMatrimony</p>
@@ -172,9 +172,9 @@ export default function AdminPage() {
   ]
 
   return (
-    <div className="min-h-screen" style={{background: '#F8FAFC'}}>
+    <div className="min-h-screen" style={{background: '#FBFAF5'}}>
       {/* Header */}
-      <header style={{background: 'white', borderBottom: '1px solid #E8EDF3'}}>
+      <header style={{background: 'white', borderBottom: '1px solid #E7E3D8'}}>
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
           <div>
             <Link href="/" className="text-base font-bold text-gray-900">Native<span className="text-orange-700">Matrimony</span></Link>
@@ -335,7 +335,7 @@ export default function AdminPage() {
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex gap-4 flex-1 min-w-0">
                           <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
-                            style={{ background: p._score >= 5 ? '#FEE2E2' : '#E0F7FC', color: p._score >= 5 ? '#DC2626' : '#0B132B' }}>
+                            style={{ background: p._score >= 5 ? '#FEE2E2' : '#EAF3EA', color: p._score >= 5 ? '#DC2626' : '#14241C' }}>
                             {p.full_name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
                           </div>
                           <div className="min-w-0">
@@ -343,7 +343,7 @@ export default function AdminPage() {
                               <a href={`/profile/${p.id}`} target="_blank" rel="noopener"
                                 className="font-bold text-gray-900 text-sm hover:underline">{p.full_name}</a>
                               <span className="text-xs font-bold px-2 py-0.5 rounded-full"
-                                style={{ background: p._score >= 5 ? '#FEE2E2' : '#E0F7FC', color: p._score >= 5 ? '#DC2626' : '#0B132B' }}>
+                                style={{ background: p._score >= 5 ? '#FEE2E2' : '#EAF3EA', color: p._score >= 5 ? '#DC2626' : '#14241C' }}>
                                 {p._score} flags
                               </span>
                               <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 capitalize">{p.status}</span>
@@ -353,7 +353,7 @@ export default function AdminPage() {
                             <div className="flex flex-wrap gap-1.5 mt-2">
                               {p._flags.map((flag: string) => (
                                 <span key={flag} className="text-xs px-2 py-0.5 rounded-full font-medium"
-                                  style={{ background: '#FEE2E2', color: '#0B132B' }}>
+                                  style={{ background: '#FEE2E2', color: '#14241C' }}>
                                   🚩 {flag}
                                 </span>
                               ))}

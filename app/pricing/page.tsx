@@ -85,14 +85,14 @@ export default function PricingPage() {
   const pct = Math.min(Math.round((filled / GOAL) * 100), 100)
 
   return (
-    <div className="min-h-screen" style={{ background: '#F8FAFC' }}>
+    <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <HomeHeader />
 
       <div className="max-w-2xl mx-auto px-5 pt-10 pb-20">
 
         {/* Heading */}
         <div className="text-center mb-10">
-          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#0B132B' }}>Simple, honest pricing</p>
+          <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: '#14241C' }}>Simple, honest pricing</p>
           <h1 className="font-serif-display text-3xl font-bold text-gray-900 mb-3">
             Free now. Affordable always.
           </h1>
@@ -104,8 +104,8 @@ export default function PricingPage() {
 
         {/* Live tracker */}
         {!isFull ? (
-          <div className="rounded-2xl border mb-8 overflow-hidden" style={{ borderColor: '#E8EDF3', background: 'white' }}>
-            <div className="px-6 py-4" style={{ background: 'linear-gradient(135deg, #0B132B, #0B132B)' }}>
+          <div className="rounded-2xl border mb-8 overflow-hidden" style={{ borderColor: '#E7E3D8', background: 'white' }}>
+            <div className="px-6 py-4" style={{ background: 'linear-gradient(135deg, #14241C, #14241C)' }}>
               <p className="text-red-200 text-xs font-bold uppercase tracking-widest mb-1">Founder offer — still open</p>
               <p className="text-white font-serif-display text-lg font-bold">
                 {count === null ? '…' : remaining.toLocaleString()} spots left for free 1-year premium
@@ -116,13 +116,13 @@ export default function PricingPage() {
                 <span>{filled.toLocaleString()} joined</span>
                 <span>{pct}% of {GOAL.toLocaleString()}</span>
               </div>
-              <div className="h-2.5 rounded-full overflow-hidden" style={{ background: '#E8EDF3' }}>
-                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #0B132B, #D97706)' }} />
+              <div className="h-2.5 rounded-full overflow-hidden" style={{ background: '#E7E3D8' }}>
+                <div className="h-full rounded-full" style={{ width: `${pct}%`, background: 'linear-gradient(90deg, #14241C, #D97706)' }} />
               </div>
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border mb-8 px-6 py-4 text-center" style={{ borderColor: '#E8EDF3', background: '#EAF8FE' }}>
+          <div className="rounded-2xl border mb-8 px-6 py-4 text-center" style={{ borderColor: '#E7E3D8', background: '#EDF3ED' }}>
             <p className="text-sm font-semibold text-gray-700">Founder spots are now full. Premium subscription below applies.</p>
           </div>
         )}
@@ -136,13 +136,13 @@ export default function PricingPage() {
               <div key={tier.name}
                 className="rounded-2xl p-6 relative flex flex-col"
                 style={{
-                  border: tier.highlight ? '2px solid #0B132B' : '1px solid #E8EDF3',
+                  border: tier.highlight ? '2px solid #14241C' : '1px solid #E7E3D8',
                   background: 'white',
-                  boxShadow: tier.highlight ? '0 8px 32px rgba(11,19,43,0.12)' : 'none',
+                  boxShadow: tier.highlight ? '0 8px 32px rgba(20,36,28,0.12)' : 'none',
                 }}>
                 {tier.highlight && !isFull && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
-                    <span className="text-xs font-bold px-3 py-1 rounded-full text-white" style={{ background: '#0B132B' }}>
+                    <span className="text-xs font-bold px-3 py-1 rounded-full text-white" style={{ background: '#14241C' }}>
                       {remaining.toLocaleString()} spots left
                     </span>
                   </div>
@@ -162,7 +162,7 @@ export default function PricingPage() {
                   {tier.features.map(f => (
                     <li key={f.text} className="flex items-start gap-2 text-xs"
                       style={{ color: f.included ? '#334155' : '#D1D5DB' }}>
-                      <span className="mt-0.5 font-bold shrink-0" style={{ color: f.included ? '#0B132B' : '#D1D5DB' }}>
+                      <span className="mt-0.5 font-bold shrink-0" style={{ color: f.included ? '#14241C' : '#D1D5DB' }}>
                         {f.included ? '✓' : '—'}
                       </span>
                       {f.text}
@@ -174,7 +174,7 @@ export default function PricingPage() {
                 ) : tier.ctaStyle === 'ghost' && tier.ctaHref ? (
                   <Link href={tier.ctaHref} className="btn-ghost w-full py-3 text-sm text-center block">{tier.cta}</Link>
                 ) : (
-                  <div className="w-full py-3 text-sm text-center rounded-xl font-medium text-gray-400 cursor-not-allowed" style={{ background: '#E8EDF3' }}>
+                  <div className="w-full py-3 text-sm text-center rounded-xl font-medium text-gray-400 cursor-not-allowed" style={{ background: '#E7E3D8' }}>
                     {disabled ? 'All spots taken' : tier.cta}
                   </div>
                 )}
@@ -184,7 +184,7 @@ export default function PricingPage() {
         </div>
 
         {/* FAQ */}
-        <div className="rounded-2xl border p-6" style={{ borderColor: '#E8EDF3', background: 'white' }}>
+        <div className="rounded-2xl border p-6" style={{ borderColor: '#E7E3D8', background: 'white' }}>
           <h2 className="font-serif-display font-bold text-gray-900 mb-5">Common questions</h2>
           <div className="space-y-5">
             {[
