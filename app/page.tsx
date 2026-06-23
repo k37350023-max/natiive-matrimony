@@ -85,6 +85,25 @@ export default function Home() {
             </div>
           </div>
 
+          <Link href="/register" style={{ display: 'block', textDecoration: 'none', marginTop: '26px', borderRadius: '16px', overflow: 'hidden', background: 'linear-gradient(135deg, #1B5E20 0%, #14532D 100%)', boxShadow: '0 8px 22px rgba(20,83,45,0.28)' }}>
+            <div style={{ padding: '18px 18px 16px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.15)', borderRadius: '99px', padding: '4px 10px', marginBottom: '10px' }}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#FBD56A" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span style={{ fontSize: '10.5px', fontWeight: 800, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#FBD56A' }}>Founder Member Offer</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '15px', fontWeight: 700, color: '#FFFFFF', lineHeight: 1.4 }}>
+                First 1,000 verified profiles get <span style={{ color: '#FBD56A' }}>Founder Member</span> status
+              </p>
+              <p style={{ margin: '6px 0 0', fontSize: '12.5px', color: '#D7E8D7', lineHeight: 1.5 }}>
+                Premium+ free through 2027. Verify your profile to claim your spot.
+              </p>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '13px', fontSize: '12.5px', fontWeight: 700, color: '#14241C', background: '#FBD56A', borderRadius: '9px', padding: '8px 14px' }}>
+                Claim your spot
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </div>
+          </Link>
+
           <div className="nm-soft-card" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', marginTop: '26px' }}>
             <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#075E3E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="5" y="10" width="14" height="10" rx="2" />
