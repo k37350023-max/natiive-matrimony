@@ -86,6 +86,11 @@ export default function RegisterPage() {
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
 
   useEffect(() => {
+    const place = new URLSearchParams(window.location.search).get('native_place')?.trim()
+    if (place) setForm(f => f.native_district ? f : ({ ...f, native_district: place }))
+  }, [])
+
+  useEffect(() => {
     const id = localStorage.getItem('my_profile_id')
     if (id) router.replace(`/profile/${id}`)
   }, [])

@@ -111,16 +111,105 @@ function memberLabel(n: number | null): string {
 }
 
 /* ─── Guest preview (unauthenticated browse wall) ─────────────── */
-function GuestBrowsePreview() {
+function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
   const [previews, setPreviews] = React.useState<{ full_name: string; profession: string; native_district: string; date_of_birth: string }[]>([])
+  const [checkedPlace, setCheckedPlace] = React.useState(false)
+
   React.useEffect(() => {
-    supabase.from('profiles').select('full_name, profession, native_district, date_of_birth').eq('status', 'approved').limit(6)
-      .then(({ data }) => { if (data) setPreviews(data) })
-  }, [])
+    setCheckedPlace(false)
+    let q = supabase
+      .from('profiles')
+      .select('full_name, profession, native_district, date_of_birth')
+      .eq('status', 'approved')
+      .limit(6)
+
+    const place = nativePlace?.trim()
+    if (place) {
+      const safePlace = place.replace(/[%_,'"()]/g, ' ').trim()
+      q = q.or(`native_district.ilike.%${safePlace}%,native_state.ilike.%${safePlace}%,current_city.ilike.%${safePlace}%`)
+    }
+
+    q.then(({ data }) => {
+      setPreviews(data || [])
+      setCheckedPlace(true)
+    })
+  }, [nativePlace])
 
   function maskName(name: string) {
     const parts = name.trim().split(' ')
     return parts.map(p => p[0] + '***').join(' ')
+  }
+
+  const searchedPlace = nativePlace?.trim()
+  if (searchedPlace && checkedPlace && previews.length === 0) {
+    return (
+      <main className="nm-page">
+        <div className="nm-shell" style={{ width: '100%', maxWidth: '340px', overflow: 'hidden' }}>
+          <header className="nm-topbar">
+            <Link href="/" className="nm-logo" aria-label="NativeMatrimony home">
+              <span>native</span>
+              <span>matrimony</span>
+            </Link>
+            <Link href="/login" className="nm-icon-btn" aria-label="Login">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round">
+                <path d="M4 7h16M4 12h16M4 17h16" />
+              </svg>
+            </Link>
+          </header>
+
+          <section style={{ paddingTop: '58px' }}>
+            <p className="section-label" style={{ margin: '0 0 14px' }}>Native-place registry</p>
+            <h1 className="nm-title" style={{ fontSize: '33px', margin: 0, maxWidth: '330px' }}>
+              No one from {searchedPlace} yet.
+            </h1>
+            <p className="nm-muted" style={{ fontSize: '15px', lineHeight: 1.7, margin: '18px 0 0', maxWidth: '300px' }}>
+              Register your profile and we’ll keep your hometown search ready. When someone from {searchedPlace} joins, you’ll know where to start.
+            </p>
+
+            <div aria-hidden="true" style={{ position: 'relative', height: '210px', margin: '24px -18px 0', overflow: 'hidden' }}>
+              <svg viewBox="0 0 390 220" width="100%" height="220" fill="none" style={{ display: 'block' }}>
+                <path d="M0 190C45 163 88 159 132 177C176 195 208 186 248 165C292 142 338 151 390 177V220H0V190Z" fill="#F2F6EA" />
+                <path d="M14 183C51 159 88 153 124 170C164 188 207 183 245 160C291 133 340 144 379 169" stroke="#B9CEB0" strokeWidth="2" />
+                <path d="M104 164H180V205H104V164Z" fill="#F7E9C7" stroke="#9CB28E" strokeWidth="2" />
+                <path d="M94 164L142 124L190 164H94Z" fill="#E9C980" stroke="#9CB28E" strokeWidth="2" />
+                <path d="M129 205V178C129 170 135 164 143 164C151 164 157 170 157 178V205" fill="#FFF8E8" stroke="#9CB28E" strokeWidth="2" />
+                <path d="M230 158L250 104L270 158H230Z" fill="#F1D992" stroke="#9CB28E" strokeWidth="2" />
+                <path d="M237 158H263V204H237V158Z" fill="#F8EDD1" stroke="#9CB28E" strokeWidth="2" />
+                <path d="M250 89V104" stroke="#0D6B44" strokeWidth="3" strokeLinecap="round" />
+                <path d="M50 201V140M334 202V131" stroke="#8FAE80" strokeWidth="4" strokeLinecap="round" />
+                <path d="M50 140C34 144 22 153 17 166M50 140C64 145 74 155 79 170M334 131C319 135 307 146 303 160M334 131C350 136 360 148 365 164" stroke="#7EA36F" strokeWidth="3" strokeLinecap="round" />
+                <path d="M22 196C61 202 96 199 126 191C163 181 194 181 226 192C257 202 306 202 365 190" stroke="#C7D8BB" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 45%, #FFFEFA 100%)' }} />
+            </div>
+
+            <div className="nm-card" style={{ padding: '16px', marginTop: '-18px', position: 'relative', zIndex: 2 }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <div style={{ width: 38, height: 38, borderRadius: 10, background: '#EAF3EA', color: '#075E3E', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                  </svg>
+                </div>
+                <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
+                  <strong>Private until both sides agree.</strong><br />
+                  Create your registry profile now. Your biodata and contact stay locked until a request is accepted.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gap: '10px', marginTop: '22px' }}>
+              <Link href={`/register?native_place=${encodeURIComponent(searchedPlace)}`} className="btn-primary" style={{ minHeight: 48 }}>
+                Register and notify me
+              </Link>
+              <Link href="/" className="nm-outline" style={{ minHeight: 46, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>
+                Try another hometown
+              </Link>
+            </div>
+          </section>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -139,8 +228,14 @@ function GuestBrowsePreview() {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 font-serif-display mb-2">Search the native-place registry</h2>
-          <p className="text-gray-500 text-sm">Create a profile to send requests and unlock biodata after acceptance.</p>
+          <h2 className="text-2xl font-bold text-gray-900 font-serif-display mb-2">
+            {searchedPlace ? `Profiles from ${searchedPlace}` : 'Search the native-place registry'}
+          </h2>
+          <p className="text-gray-500 text-sm">
+            {searchedPlace
+              ? 'Create a profile to request biodata and contact after acceptance.'
+              : 'Create a profile to send requests and unlock biodata after acceptance.'}
+          </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
@@ -170,7 +265,9 @@ function GuestBrowsePreview() {
           <p className="font-bold text-gray-900 text-lg mb-2">Request before contact unlocks</p>
           <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">Names, photos, biodata, and contact stay private until accepted.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/register" className="btn-primary px-8 py-3 text-sm">Create Free Profile</Link>
+            <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
+              Create Profile
+            </Link>
             <Link href="/login" className="btn-ghost px-8 py-3 text-sm">Sign in</Link>
           </div>
         </div>
@@ -857,7 +954,7 @@ export default function BrowsePage() {
     </div>
   )
 
-  if (!myProfileId) return <GuestBrowsePreview />
+  if (!myProfileId) return <GuestBrowsePreview nativePlace={nativePlace} />
 
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
