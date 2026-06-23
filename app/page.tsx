@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import FounderSlots from './components/FounderSlots'
 
 const POPULAR_PLACES = ['Guntur', 'Warangal', 'Nellore', 'Coimbatore', 'Madurai', 'Rajkot', 'Vijayawada', 'Chennai', 'Mysore']
 
@@ -97,6 +98,7 @@ export default function Home() {
               <p style={{ margin: '6px 0 0', fontSize: '12.5px', color: '#D7E8D7', lineHeight: 1.5 }}>
                 Premium+ free through 2027. Verify your profile to claim your spot.
               </p>
+              <FounderSlots />
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', marginTop: '13px', fontSize: '12.5px', fontWeight: 700, color: '#14241C', background: '#FBD56A', borderRadius: '9px', padding: '8px 14px' }}>
                 Claim your spot
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
