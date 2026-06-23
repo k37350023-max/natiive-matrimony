@@ -12,7 +12,6 @@ export default function AppHeader() {
   const [profileId, setProfileId] = useState<string | null>(null)
   const [profileName, setProfileName] = useState('')
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
-  const [isPremium, setIsPremium] = useState(false)
   const [memberNumber, setMemberNumber] = useState<number | null>(null)
   const [pendingInterests, setPendingInterests] = useState(0)
   const [unreadMessages, setUnreadMessages] = useState(0)
@@ -41,7 +40,6 @@ export default function AppHeader() {
         setProfileName(data.full_name || '')
         setPhotoUrl(data.photo_visibility === 'public' ? data.photo_url : null)
         setMemberNumber(data.member_number ?? null)
-        setIsPremium(!!data.premium_expires_at && new Date(data.premium_expires_at) > new Date())
         setCompleteness(computeCompleteness(data).percent)
       })
 
@@ -84,11 +82,10 @@ export default function AppHeader() {
   }
 
   const navItems = [
-    { href: '/browse',    label: 'Home',      active: path.startsWith('/browse') },
-    { href: '/search',    label: 'Search',    active: path.startsWith('/search') },
-    { href: '/interests', label: 'Interests', active: path.startsWith('/interests'), badge: pendingInterests },
-    { href: '/chat',      label: 'Chat',      active: path.startsWith('/chat'), badge: unreadMessages },
-    { href: '/matches',   label: 'Matches',   active: path.startsWith('/matches') },
+    { href: '/browse',    label: 'Browse',      active: path.startsWith('/browse') },
+    { href: '/search',    label: 'Search',      active: path.startsWith('/search') },
+    { href: '/interests', label: 'Requests',    active: path.startsWith('/interests'), badge: pendingInterests },
+    { href: '/matches',   label: 'Connections', active: path.startsWith('/matches') || path.startsWith('/chat'), badge: unreadMessages },
   ]
 
   return (
@@ -202,13 +199,9 @@ export default function AppHeader() {
                   }}>
                     <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0F0F0' }}>
                       <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#111', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileName}</p>
-                      {isPremium ? (
-                        <p style={{ fontSize: '11.5px', fontWeight: 600, color: '#14241C', margin: '2px 0 0' }}>
-                          {memberNumber ? `Founder #${memberNumber}` : 'Premium Member'}
-                        </p>
-                      ) : (
-                        <p style={{ fontSize: '11.5px', color: '#999', margin: '2px 0 0' }}>Free account</p>
-                      )}
+                      <p style={{ fontSize: '11.5px', color: '#667085', margin: '2px 0 0' }}>
+                        {memberNumber ? `Registry #${memberNumber}` : 'Private registry profile'}
+                      </p>
                     </div>
                     {completeness !== null && completeness < 100 && (
                       <Link href="/profile/edit" onClick={() => setMenuOpen(false)}
@@ -237,17 +230,6 @@ export default function AppHeader() {
                           {item.label}
                         </Link>
                       ))}
-                      {!isPremium && (
-                        <Link href="/pricing" onClick={() => setMenuOpen(false)}
-                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', textDecoration: 'none', color: '#14241C', fontSize: '13.5px', fontWeight: 600, transition: 'background 0.1s' }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#EDF3ED')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                          </svg>
-                          Upgrade to Premium
-                        </Link>
-                      )}
                     </div>
                     <div style={{ borderTop: '1px solid #F0F0F0', padding: '6px' }}>
                       <button onClick={signOut}
@@ -272,7 +254,7 @@ export default function AppHeader() {
                 Login
               </Link>
               <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px' }}>
-                Register Free
+                Create Profile
               </Link>
             </>
           )}

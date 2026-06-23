@@ -21,9 +21,9 @@ export async function POST(req: Request) {
   try {
     assertAdminConfigured()
     const body = await req.json().catch(() => ({}))
-    const { oppositeGender, region, state, district, casteFilter } = body as {
+    const { oppositeGender, region, state, district, casteFilter, nativePlace, currentLocation } = body as {
       oppositeGender?: string; region?: string; state?: string
-      district?: string; casteFilter?: string
+      district?: string; casteFilter?: string; nativePlace?: string; currentLocation?: string
     }
 
     const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
@@ -33,6 +33,14 @@ export async function POST(req: Request) {
     if (state)          q = q.eq('native_state', state)
     if (district)       q = q.eq('native_district', district)
     if (casteFilter)    q = q.ilike('caste', `%${casteFilter}%`)
+    if (nativePlace) {
+      const place = String(nativePlace).trim()
+      q = q.or(`native_district.ilike.%${place}%,native_state.ilike.%${place}%,current_city.ilike.%${place}%`)
+    }
+    if (currentLocation) {
+      const location = String(currentLocation).trim()
+      q = q.or(`current_city.ilike.%${location}%,current_state.ilike.%${location}%`)
+    }
 
     const { data, error } = await q
       .or(`last_login_at.gt.${fourteenDaysAgo},last_login_at.is.null`)

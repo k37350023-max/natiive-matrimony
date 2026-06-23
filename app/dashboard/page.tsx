@@ -91,25 +91,6 @@ function MiniAvatar({ p, size = 40 }: { p: ViewerProfile; size?: number }) {
   )
 }
 
-/* ─── Stat card ──────────────────────────────────────────────── */
-function StatCard({ value, label, sub, color, icon, href }: { value: number | string; label: string; sub?: string; color: string; icon: React.ReactNode; href?: string }) {
-  const inner = (
-    <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E7E3D8', padding: '18px 16px', display: 'flex', gap: '14px', alignItems: 'center', transition: 'box-shadow 0.18s, transform 0.18s', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}
-      onMouseEnter={e => href && ((e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.10)'), (e.currentTarget.style.transform = 'translateY(-1px)'))}
-      onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'none' }}>
-      <div style={{ width: '46px', height: '46px', borderRadius: '12px', background: color + '15', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: `1px solid ${color}25` }}>
-        {icon}
-      </div>
-      <div style={{ minWidth: 0 }}>
-        <p style={{ fontSize: '26px', fontWeight: 800, color: '#0F0F0F', margin: 0, lineHeight: 1, letterSpacing: '-0.02em' }}>{value}</p>
-        <p style={{ fontSize: '12px', fontWeight: 600, color: '#334155', margin: '3px 0 0', whiteSpace: 'nowrap' }}>{label}</p>
-        {sub && <p style={{ fontSize: '10.5px', color: '#94A3B8', margin: '2px 0 0' }}>{sub}</p>}
-      </div>
-    </div>
-  )
-  return href ? <Link href={href} style={{ textDecoration: 'none' }}>{inner}</Link> : inner
-}
-
 /* ─── Completeness ring SVG ──────────────────────────────────── */
 function CompletenessRing({ pct }: { pct: number }) {
   const r = 44; const circ = 2 * Math.PI * r
@@ -134,7 +115,6 @@ export default function DashboardPage() {
   const [stats,      setStats]      = useState({ views: 0, viewsWeek: 0, interests: 0, matches: 0, shortlistCount: 0 })
   const [viewers,    setViewers]    = useState<ViewerProfile[]>([])
   const [shortlist,  setShortlist]  = useState<ShortlistProfile[]>([])
-  const [isPremium,  setIsPremium]  = useState(false)
 
   useEffect(() => {
     const id = localStorage.getItem('my_profile_id')
@@ -148,7 +128,6 @@ export default function DashboardPage() {
     const { data: p } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
     if (!p) { router.replace('/login'); return }
     setProfile(p)
-    setIsPremium(!!p.premium_expires_at && new Date(p.premium_expires_at) > new Date())
 
     // Interests received
     const { count: intCount } = await supabase.from('interests')
@@ -237,7 +216,7 @@ export default function DashboardPage() {
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: '20px 16px' }}>
 
         {/* ── Profile header card ───────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px', display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '18px', marginBottom: '14px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
           {/* Avatar */}
           <div style={{ width: '72px', height: '72px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#14241C', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {profile.photo_url
@@ -248,17 +227,12 @@ export default function DashboardPage() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
               <div>
-                <h1 style={{ fontSize: '18px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 3px', letterSpacing: '-0.01em' }}>{profile.full_name}</h1>
+                <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: '0 0 3px', letterSpacing: 0 }}>My registry profile</h1>
                 <p style={{ fontSize: '12.5px', color: '#777', margin: 0 }}>
                   {[age ? `${age} yrs` : null, profile.profession, profile.native_district].filter(Boolean).join(' · ')}
                 </p>
-                {memberLabel && <p style={{ fontSize: '11px', color: '#94A3B8', margin: '3px 0 0', fontWeight: 600 }}>{memberLabel}</p>}
+                {memberLabel && <p style={{ fontSize: '11px', color: '#5E6B62', margin: '3px 0 0', fontWeight: 700 }}>Registry Profile #{profile.member_number}</p>}
               </div>
-              {isPremium && (
-                <span style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '99px', background: '#EAF3EA', color: '#14241C', border: '1px solid #CADFCA', flexShrink: 0 }}>
-                  ★ Premium
-                </span>
-              )}
             </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
               <Link href={`/profile/${profile.id}`} style={{ fontSize: '12.5px', fontWeight: 600, padding: '7px 16px', borderRadius: '8px', background: '#14241C', color: 'white', textDecoration: 'none' }}>
@@ -267,29 +241,32 @@ export default function DashboardPage() {
               <Link href="/profile/edit" style={{ fontSize: '12.5px', fontWeight: 600, padding: '7px 16px', borderRadius: '8px', background: 'white', color: '#555', textDecoration: 'none', border: '1.5px solid #E8E8E8' }}>
                 Edit Profile
               </Link>
-              {!isPremium && (
-                <Link href="/pricing" style={{ fontSize: '12.5px', fontWeight: 600, padding: '7px 16px', borderRadius: '8px', background: '#EDF3ED', color: '#14241C', textDecoration: 'none', border: '1.5px solid #CADFCA' }}>
-                  Upgrade →
-                </Link>
-              )}
             </div>
           </div>
         </div>
 
-        {/* ── Stats grid ────────────────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px', marginBottom: '16px' }}>
-          <StatCard value={stats.viewsWeek} label="Profile views" sub="this week" color="#1D4E7F" href="/dashboard#viewers"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1D4E7F" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>} />
-          <StatCard value={stats.interests} label="Pending interests" sub="awaiting your reply" color="#14241C" href="/interests"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>} />
-          <StatCard value={stats.matches} label="Mutual matches" sub="chat unlocked" color="#2E7D32" href="/matches"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>} />
-          <StatCard value={stats.shortlistCount} label="Shortlisted you" sub="members who saved you" color="#7C3AED"
-            icon={<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>} />
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', overflow: 'hidden', marginBottom: '14px' }}>
+          {[
+            { label: 'Requests Received', sub: 'Accept or decline families who requested your biodata.', href: '/interests?tab=received' },
+            { label: 'Requests Sent', sub: 'Track pending requests you sent from native-place search.', href: '/interests?tab=sent' },
+            { label: 'Accepted Connections', sub: 'View biodata, contact, WhatsApp, and optional chat.', href: '/matches' },
+            { label: 'My Profile', sub: 'Edit your native place, phone, photo, and biodata fields.', href: '/profile/edit' },
+          ].map((item, i, arr) => (
+            <Link key={item.label} href={item.href} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px',
+              padding: '16px 20px', textDecoration: 'none', borderBottom: i < arr.length - 1 ? '1px solid #F3F4F6' : 'none',
+            }}>
+              <div>
+                <p style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', margin: '0 0 3px' }}>{item.label}</p>
+                <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.5 }}>{item.sub}</p>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+            </Link>
+          ))}
         </div>
 
         {/* ── Profile completeness ──────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px' }}>
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '18px', marginBottom: '14px' }}>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
             <CompletenessRing pct={pct} />
             <div style={{ flex: 1 }}>
@@ -298,8 +275,8 @@ export default function DashboardPage() {
               </p>
               <p style={{ fontSize: '12.5px', color: '#94A3B8', margin: '0 0 10px', lineHeight: 1.5 }}>
                 {pct >= 90
-                  ? 'Profiles above 90% get 3× more matches.'
-                  : `Add the missing details to get more visibility.`}
+                  ? 'Your biodata is ready to share after accepted requests.'
+                  : `Add missing details so families can evaluate after acceptance.`}
               </p>
               {missing.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
@@ -321,7 +298,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Who viewed me ─────────────────────────────────────── */}
-        <div id="viewers" style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px' }}>
+        <div id="viewers" style={{ display: 'none', background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
             <h2 style={{ fontSize: '14px', fontWeight: 700, color: '#111', margin: 0 }}>Who viewed my profile</h2>
             <span style={{ fontSize: '12px', color: '#94A3B8' }}>{stats.views} total views</span>
@@ -359,7 +336,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── My shortlist ──────────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px' }}>
+        <div style={{ display: 'none', background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px' }}>
           <h2 style={{ fontSize: '14px', fontWeight: 700, color: '#111', margin: '0 0 14px' }}>My shortlist</h2>
           {shortlist.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '20px 0' }}>
@@ -387,14 +364,13 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Quick links ───────────────────────────────────────── */}
-        <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8', overflow: 'hidden' }}>
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', overflow: 'hidden' }}>
           {[
             { icon: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/>', label: 'Edit profile details', href: '/profile/edit' },
             { icon: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>', label: 'Notifications', href: '/notifications' },
-            { icon: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>', label: 'Upgrade to Premium', href: '/pricing', hide: isPremium },
             { icon: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>', label: 'Privacy settings', href: '/profile/edit#privacy' },
             { icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>', label: 'Download my biodata', href: `/profile/${profile.id}` },
-          ].filter(item => !item.hide).map((item, i, arr) => (
+          ].map((item, i, arr) => (
             <Link key={item.label} href={item.href} style={{
               display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px',
               textDecoration: 'none', color: '#333', fontSize: '13.5px', fontWeight: 500,

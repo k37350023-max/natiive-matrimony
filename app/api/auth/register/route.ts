@@ -14,9 +14,9 @@ export async function POST(req: Request) {
   try {
     assertAdminConfigured()
     const b = await req.json()
-    const { full_name, gender, phone, date_of_birth, native_state, native_district, otp, token } = b
+    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token } = b
 
-    if (!full_name || !gender || !phone || !date_of_birth || !native_state || !native_district) {
+    if (!full_name || !gender || !phone || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -46,10 +46,10 @@ export async function POST(req: Request) {
       full_name: String(full_name).trim(),
       gender, phone, date_of_birth,
       native_state, native_district, native_region: native_state,
+      current_city: String(current_city).trim(),
       marital_status: 'never_married', religion: 'Hindu', mother_tongue: 'Telugu',
-      profile_created_by: 'self', photo_url: '', photo_visibility: 'private',
+      profile_created_by, photo_url: '', photo_visibility: 'private',
       status: 'approved', verified: false,
-      premium_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
     }).select('id').maybeSingle()
     if (pErr || !profile) {
       return NextResponse.json({ error: pErr?.message || 'Could not create profile' }, { status: 400 })

@@ -51,9 +51,9 @@
   --text-3: #8A93A6;
 
   --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
   --radius-full: 9999px;
 
   --shadow-card: var(--shadow-sm), var(--shadow-md);
@@ -64,11 +64,18 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-size: 16px;
-  line-height: 1.65;
-  letter-spacing: 0.005em;
+  font-size: 15px;
+  line-height: 1.55;
+  letter-spacing: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+html { overflow-x: hidden; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 /* Headings now use the geometric Space Grotesk (legacy class name kept
@@ -85,9 +92,9 @@ h1, h2, h3, h4 {
 .input {
   width: 100%;
   border: 1.5px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: 0.72rem 1rem;
-  font-size: 0.9375rem;
+  border-radius: 8px;
+  padding: 0.78rem 0.9rem;
+  font-size: 0.875rem;
   font-family: var(--font-inter), sans-serif;
   outline: none;
   background: white;
@@ -115,8 +122,8 @@ select.input {
 .btn-primary {
   background: var(--gold);
   color: var(--gold-text);
-  padding: 0.72rem 1.6rem;
-  border-radius: 10px;
+  padding: 0.78rem 1.4rem;
+  border-radius: 8px;
   font-weight: 800;
   font-size: 0.9375rem;
   font-family: var(--font-inter), sans-serif;
@@ -129,12 +136,12 @@ select.input {
   gap: 0.4rem;
   letter-spacing: -0.01em;
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(27,94,32,0.25);
+  box-shadow: 0 8px 18px rgba(15, 94, 62, 0.16);
 }
 .btn-primary:hover {
   background: var(--gold-hover);
-  box-shadow: 0 10px 24px rgba(27,94,32,0.32);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 94, 62, 0.22);
+  transform: translateY(-1px);
 }
 .btn-primary:active { transform: translateY(0); }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; transform: none; }
@@ -179,7 +186,7 @@ select.input {
 /* ── Cards ── */
 .card {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: 10px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-card);
 }
@@ -258,6 +265,175 @@ select.input {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #CFC9BB; }
+
+/* ── NativeMatrimony launch UI system ────────────────────────── */
+.nm-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(229, 241, 229, 0.62), transparent 34rem),
+    #FFFEFA;
+  color: #071527;
+}
+
+.nm-shell {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #FFFEFA;
+  padding: 20px 18px 28px;
+}
+
+@media (min-width: 768px) {
+  .nm-shell {
+    max-width: 1120px;
+    padding: 24px 28px 48px;
+  }
+}
+
+.nm-topbar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nm-logo {
+  display: inline-flex;
+  flex-direction: column;
+  color: #071527;
+  font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
+  font-size: 18px;
+  line-height: 0.9;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-decoration: none;
+}
+
+.nm-logo span:last-child { color: #075E3E; }
+
+.nm-icon-btn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #071527;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.nm-card {
+  background: #FFFFFF;
+  border: 1px solid #E6E6E2;
+  border-radius: 10px;
+  box-shadow: 0 8px 26px rgba(7, 21, 39, 0.055);
+}
+
+.nm-soft-card {
+  background: #F7FAF5;
+  border: 1px solid #E3ECE0;
+  border-radius: 10px;
+}
+
+.nm-title {
+  color: #071527;
+  font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+
+.nm-muted {
+  color: #4B5563;
+}
+
+.nm-primary {
+  background: linear-gradient(160deg, #0D6B44 0%, #064628 100%);
+  color: #FFFFFF;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(6, 70, 40, 0.18);
+}
+
+.nm-outline {
+  background: #FFFFFF;
+  color: #071527;
+  border: 1px solid #D8D8D4;
+  border-radius: 8px;
+}
+
+.nm-input {
+  width: 100%;
+  border: 1px solid #E2E2DE;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #071527;
+  font-size: 14px;
+  outline: none;
+  padding: 13px 12px;
+}
+
+.nm-input:focus {
+  border-color: #0D6B44;
+  box-shadow: 0 0 0 3px rgba(13, 107, 68, 0.12);
+}
+
+.nm-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid #E1E1DD;
+  background: #FFFFFF;
+  color: #071527;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.nm-step-line {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 8px;
+}
+
+.nm-step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid #CFCFCB;
+  background: #FFFFFF;
+  color: #667085;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.nm-step-dot[data-active="true"] {
+  background: #075E3E;
+  color: #FFFFFF;
+  border-color: #075E3E;
+}
+
+.nm-blur-photo {
+  filter: blur(8px);
+  transform: scale(1.05);
+}
+
+@media print {
+  .nm-no-print { display: none !important; }
+  body { background: #FFFFFF; }
+}
 
 /* ── Focus ── */
 *:focus-visible {

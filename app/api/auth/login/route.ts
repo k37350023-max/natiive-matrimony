@@ -1,16 +1,53 @@
 import { NextResponse } from 'next/server'
+import { createHmac } from 'crypto'
 import { createClient } from '@supabase/supabase-js'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
 
-/* Verifies email/password server-side, then issues the trusted session cookie.
-   The browser never gets to assert who it is — identity comes from this check. */
+const OTP_SECRET = process.env.OTP_SECRET || 'natiive-matrimony-otp'
+function otpSign(payload: string) {
+  return createHmac('sha256', OTP_SECRET).update(payload).digest('hex').slice(0, 20)
+}
+
+/* Verifies phone+OTP (primary) or email/password (legacy/dev) server-side,
+   then issues the trusted session cookie. */
 export async function POST(req: Request) {
   try {
     assertAdminConfigured()
-    const { email, password } = await req.json()
+    const { email, password, phone, otp, token } = await req.json()
+
+    if (phone || otp || token) {
+      if (!phone || !otp || !token) {
+        return NextResponse.json({ error: 'Phone verification required' }, { status: 400 })
+      }
+      const parts = String(token || '').split('.')
+      if (parts.length !== 3) return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 })
+      const [storedOtp, expires, sig] = parts
+      if (sig !== otpSign(storedOtp + phone + expires)) {
+        return NextResponse.json({ error: 'Verification failed' }, { status: 400 })
+      }
+      if (Date.now() > parseInt(expires)) {
+        return NextResponse.json({ error: 'Code expired' }, { status: 400 })
+      }
+      if (String(otp).trim() !== storedOtp) {
+        return NextResponse.json({ error: 'Incorrect code' }, { status: 400 })
+      }
+
+      const { data: profile } = await supabaseAdmin
+        .from('profiles').select('id,user_id').eq('phone', phone).maybeSingle()
+      if (!profile) {
+        return NextResponse.json({ error: 'No profile found for this mobile number' }, { status: 404 })
+      }
+
+      await setSession(profile.id)
+      supabaseAdmin.from('profiles').update({ last_login_at: new Date().toISOString() })
+        .eq('id', profile.id).then(() => {})
+
+      return NextResponse.json({ profileId: profile.id, userId: profile.user_id })
+    }
+
     if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password required' }, { status: 400 })
+      return NextResponse.json({ error: 'Mobile number required' }, { status: 400 })
     }
 
     // Verify credentials against Supabase Auth (anon client, no session persisted).

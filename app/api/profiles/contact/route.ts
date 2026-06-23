@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { getSessionProfileId } from '@/lib/session'
 
-/* Returns a profile's contact details ONLY when the requester is connected
-   (a match exists / interest accepted). Identity from the session cookie.
+/* Returns a profile's contact details ONLY when the request was accepted.
+   Identity comes from the session cookie.
    Otherwise returns unlocked:false so the UI can show a "pending" state. */
 export async function POST(req: Request) {
   try {
@@ -22,11 +22,11 @@ export async function POST(req: Request) {
       .order('created_at', { ascending: false }).limit(1).maybeSingle()
 
     const unlocked = interest?.status === 'accepted'
-    if (!unlocked) return NextResponse.json({ unlocked: false, hasMatch: !!match })
+    if (!unlocked) return NextResponse.json({ unlocked: false, hasAcceptedConnection: false, threadExists: !!match })
 
     const { data: p } = await supabaseAdmin.from('profiles')
       .select('phone, email').eq('id', profileId).maybeSingle()
-    return NextResponse.json({ unlocked: true, phone: p?.phone || null, email: p?.email || null })
+    return NextResponse.json({ unlocked: true, hasAcceptedConnection: true, phone: p?.phone || null, email: p?.email || null })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed'
     return NextResponse.json({ error: msg }, { status: 500 })

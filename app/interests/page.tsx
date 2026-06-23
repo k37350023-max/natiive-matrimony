@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
-import LaunchBanner from '../components/LaunchBanner'
 import AppHeader from '../components/AppHeader'
 import AppFooter from '../components/AppFooter'
 
@@ -71,12 +70,12 @@ type SavedProfile = {
   photo_visibility: string | null
 }
 
-function InterestsPageInner() {
+function RequestsPageInner() {
   const searchParams = useSearchParams()
   const initialTab = searchParams.get('tab') || 'received'
   const [tab, setTab] = useState<'received' | 'matched' | 'sent' | 'saved'>(initialTab as 'received' | 'matched' | 'sent' | 'saved')
   const [received, setReceived] = useState<Interest[]>([])
-  const [matched, setMatched] = useState<Interest[]>([])
+  const [matched, setAccepted] = useState<Interest[]>([])
   const [sent, setSent] = useState<Interest[]>([])
   const [saved, setSaved] = useState<SavedProfile[]>([])
   const [loading, setLoading] = useState(true)
@@ -88,7 +87,7 @@ function InterestsPageInner() {
 
   async function loadAll() {
     setLoading(true)
-    await Promise.all([loadReceived(), loadMatched(), loadSent(), loadSaved()])
+    await Promise.all([loadReceived(), loadAccepted(), loadSent(), loadSaved()])
     setLoading(false)
   }
 
@@ -125,15 +124,15 @@ function InterestsPageInner() {
     }).filter(r => r.profile) as Interest[])
   }
 
-  async function loadMatched() {
+  async function loadAccepted() {
     const { data: rows } = await supabase
       .from('interests').select('*')
       .eq('to_user', myId).eq('status', 'accepted')
       .order('created_at', { ascending: false })
-    if (!rows?.length) { setMatched([]); return }
+    if (!rows?.length) { setAccepted([]); return }
     const ids = rows.map(r => r.from_user)
     const { data: profiles } = await supabase.from('profiles').select('*').in('id', ids)
-    setMatched(rows
+    setAccepted(rows
       .map(r => ({ ...r, profile: profiles?.find(p => p.id === r.from_user) }))
       .filter(r => r.profile) as Interest[])
   }
@@ -166,31 +165,35 @@ function InterestsPageInner() {
       if (senderName) setAcceptedMatch({ name: senderName, matchId: data.matchId })
     }
     setReceived(i => i.filter(r => r.id !== interestId))
-    if (accept) loadMatched()
+    if (accept) loadAccepted()
   }
 
   if (!myId) return (
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-        <p className="font-semibold text-gray-700 mb-2">Login to see interests</p>
+        <p className="font-semibold text-gray-700 mb-2">Login to see requests</p>
         <Link href="/login" className="btn-primary px-6 py-2.5 mt-2">Login</Link>
       </div>
     </div>
   )
 
-  const ProfileCard = ({ i, showActions, isMatched }: { i: Interest; showActions?: boolean; isMatched?: boolean }) => {
+  const ProfileCard = ({ i, showActions, isAccepted }: { i: Interest; showActions?: boolean; isAccepted?: boolean }) => {
     const seenLabel = lastSeenBadge(i.profile.last_login_at)
+    const unlocked = !!isAccepted
+    const shownName = unlocked ? i.profile.full_name : 'Profile locked'
     return (
-      <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #E7E3D8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
+      <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E7E3D8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
         <div className="flex items-start gap-3">
           <Link href={`/profile/${i.profile.id}`} className="shrink-0">
-            {i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
-              <img loading="lazy" src={i.profile.photo_url} alt={i.profile.full_name}
+            {unlocked && i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
+              <img loading="lazy" src={i.profile.photo_url} alt={shownName}
                 style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E7E3D8' }} />
             ) : (
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '15px', fontWeight: 700, background: avatarBg(i.profile.full_name) }}>
-                {initials(i.profile.full_name)}
+                {unlocked ? initials(i.profile.full_name) : (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                )}
               </div>
             )}
           </Link>
@@ -198,8 +201,8 @@ function InterestsPageInner() {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Link href={`/profile/${i.profile.id}`} className="font-bold text-gray-900 text-sm hover:underline">{i.profile.full_name}</Link>
-                  {i.profile.verified && <span className="badge badge-verified">✓ Verified</span>}
+                  <Link href={`/profile/${i.profile.id}`} className="font-bold text-gray-900 text-sm hover:underline">{shownName}</Link>
+                  {unlocked && i.profile.verified && <span className="badge badge-verified">✓ Verified</span>}
                   {seenLabel && (
                     <span className="text-xs px-2 py-0.5 rounded-full font-medium"
                       style={{ background: seenLabel === 'Active now' ? '#ECFDF5' : '#EFF1EC', color: seenLabel === 'Active now' ? '#065F46' : '#5E6B62' }}>
@@ -210,7 +213,7 @@ function InterestsPageInner() {
                 <p className="text-xs text-gray-500 mt-0.5">{getAge(i.profile.date_of_birth)} yrs · {i.profile.profession}</p>
                 <p className="text-xs mt-0.5 flex items-center gap-1" style={{ color: '#14241C' }}><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>{i.profile.native_district}, {i.profile.native_state}</p>
               </div>
-              {!showActions && !isMatched && (() => {
+              {!showActions && !isAccepted && (() => {
                 const s = STATUS_STYLES[i.status] || STATUS_STYLES.pending
                 return (
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full border shrink-0"
@@ -236,7 +239,7 @@ function InterestsPageInner() {
             <Link href={`/profile/${i.profile.id}`}
               className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
               style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
-              View Profile
+              View Biodata
             </Link>
             <button onClick={() => respond(i.id, i.from_user, true)}
               style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#2E7D32', color: 'white' }}>
@@ -249,13 +252,13 @@ function InterestsPageInner() {
           </div>
         )}
 
-        {isMatched && (
+        {isAccepted && (
           <>
             {/* Contact info unlock on match */}
             {((i.profile as any).phone || (i.profile as any).email) && (
               <div className="mt-3 px-3 py-2.5 rounded-xl flex flex-wrap gap-3"
                 style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
-                <span className="text-xs font-semibold text-green-700">Contact unlocked</span>
+                <span className="text-xs font-semibold text-green-700">Biodata and contact unlocked</span>
                 {(i.profile as any).phone && (
                   <a href={`tel:${(i.profile as any).phone}`}
                     className="text-xs font-semibold flex items-center gap-1"
@@ -286,17 +289,17 @@ function InterestsPageInner() {
               <Link href={`/profile/${i.profile.id}`}
                 className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
                 style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
-                View Profile
+                View locked profile
               </Link>
               <Link href="/matches"
                 style={{ flex: 1, padding: '9px', textAlign: 'center', fontSize: '13px', fontWeight: 700, borderRadius: '12px', background: '#14241C', color: 'white', textDecoration: 'none', display: 'block' }}>
-                Open Chat
+                Chat
               </Link>
             </div>
           </>
         )}
 
-        {!showActions && !isMatched && i.status === 'pending' && (
+        {!showActions && !isAccepted && i.status === 'pending' && (
           <div className="mt-2 flex justify-end">
             <button
               onClick={async () => {
@@ -304,7 +307,7 @@ function InterestsPageInner() {
                 setSent(prev => prev.filter(x => x.id !== i.id))
               }}
               className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1">
-              Withdraw interest
+              Withdraw request
             </button>
           </div>
         )}
@@ -315,15 +318,13 @@ function InterestsPageInner() {
   const tabs: { key: 'received' | 'sent' | 'matched' | 'saved'; label: string; count: number }[] = [
     { key: 'received', label: 'Received', count: received.length },
     { key: 'sent',     label: 'Sent',     count: sent.length },
-    { key: 'matched',  label: 'Matched',  count: matched.length },
+    { key: 'matched',  label: 'Accepted',  count: matched.length },
     { key: 'saved',    label: 'Saved',    count: saved.length },
   ]
 
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
       <AppHeader />
-      <LaunchBanner />
-
       {/* Accepted match banner */}
       {acceptedMatch && (
         <div className="max-w-2xl mx-auto px-4 pt-4">
@@ -331,13 +332,13 @@ function InterestsPageInner() {
             style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <div className="flex-1">
-              <p className="text-sm font-semibold" style={{ color: '#14241C' }}>You're now matched with {acceptedMatch.name}!</p>
-              <p className="text-xs text-green-600 mt-0.5">Start a conversation — they're waiting to hear from you.</p>
+              <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request accepted with {acceptedMatch.name}!</p>
+              <p className="text-xs text-green-600 mt-0.5">Biodata and contact are now unlocked.</p>
             </div>
-            <Link href={`/chat/${acceptedMatch.matchId}`}
+            <Link href="/matches"
               className="text-xs font-bold px-3 py-2 rounded-xl text-white shrink-0"
               style={{ background: '#2E7D32' }}>
-              Start chat →
+              View connection →
             </Link>
             <button onClick={() => setAcceptedMatch(null)} className="text-green-400 hover:text-green-600 ml-1">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -347,7 +348,7 @@ function InterestsPageInner() {
       )}
 
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-gray-900 font-serif-display mb-4">Interests</h1>
+        <h1 className="text-2xl font-bold text-gray-900 font-serif-display mb-4">Requests</h1>
 
         <div className="flex rounded-xl p-1 mb-5" style={{ background: '#F3F4F6' }}>
           {tabs.map(({ key, label, count }) => (
@@ -391,8 +392,8 @@ function InterestsPageInner() {
               <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
               </span>
-              <p className="font-semibold text-gray-700">No pending interests</p>
-              <p className="text-sm text-gray-400 mt-1">When someone expresses interest in you, it appears here.</p>
+              <p className="font-semibold text-gray-700">No pending requests</p>
+              <p className="text-sm text-gray-400 mt-1">When someone sends you a request, it appears here.</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -408,13 +409,13 @@ function InterestsPageInner() {
               <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
               </span>
-              <p className="font-semibold text-gray-700">No interests sent yet</p>
-              <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and express interest to get started.</p>
+              <p className="font-semibold text-gray-700">No requests sent yet</p>
+              <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and send request to get started.</p>
               <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-gray-400 mb-1">{sent.length} sent — you can chat while awaiting response</p>
+              <p className="text-xs text-gray-400 mb-1">{sent.length} sent — biodata unlocks after acceptance</p>
               {sent.map(i => <ProfileCard key={i.id} i={i} />)}
             </div>
           )
@@ -426,12 +427,12 @@ function InterestsPageInner() {
               <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EFF1EC', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </span>
-              <p className="font-semibold text-gray-700">No mutual matches yet</p>
-              <p className="text-sm text-gray-400 mt-1">Interests you accept become mutual matches here.</p>
+              <p className="font-semibold text-gray-700">No accepted connections yet</p>
+              <p className="text-sm text-gray-400 mt-1">Requests you accept become accepted connections here.</p>
             </div>
           ) : (
             <div className="space-y-3">
-              {matched.map(i => <ProfileCard key={i.id} i={i} isMatched />)}
+              {matched.map(i => <ProfileCard key={i.id} i={i} isAccepted />)}
             </div>
           )
         )}
@@ -450,28 +451,20 @@ function InterestsPageInner() {
             <div className="grid grid-cols-2 gap-3">
               {saved.map(p => {
                 const age = p.date_of_birth ? Math.floor((Date.now() - new Date(p.date_of_birth + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365.25)) : null
-                const showPhoto = p.photo_url && p.photo_visibility === 'public'
                 return (
                   <Link key={p.id} href={`/profile/${p.id}`}
-                    className="bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow"
+                    className="bg-white overflow-hidden shadow-sm border hover:shadow-md transition-shadow"
                     style={{ borderColor: '#F3F4F6' }}>
                     <div className="relative" style={{ paddingBottom: '100%' }}>
-                      {showPhoto ? (
-                        <img loading="lazy" src={p.photo_url!} alt={p.full_name} className="absolute inset-0 w-full h-full object-cover" />
-                      ) : (
-                        <div className="absolute inset-0 flex items-center justify-center"
-                          style={{ background: avatarBg(p.full_name) }}>
-                          <span className="text-3xl font-bold text-white">{initials(p.full_name)}</span>
+                      <div className="absolute inset-0 flex items-center justify-center"
+                        style={{ background: avatarBg(p.full_name) }}>
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(20,36,28,0.78)' }}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         </div>
-                      )}
-                      {p.verified && (
-                        <div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                          <svg width="10" height="10" viewBox="0 0 24 24" fill="white"><path d="M20 6L9 17l-5-5"/></svg>
-                        </div>
-                      )}
+                      </div>
                     </div>
                     <div className="p-3">
-                      <p className="font-semibold text-gray-900 text-sm truncate">{p.full_name}</p>
+                      <p className="font-semibold text-gray-900 text-sm truncate">Profile locked</p>
                       <p className="text-xs text-gray-500">{age ? `${age} yrs` : ''}{p.profession ? ` · ${p.profession}` : ''}</p>
                       <p className="text-xs text-gray-400 mt-0.5 truncate">{[p.native_district, p.native_state].filter(Boolean).join(', ')}</p>
                     </div>
@@ -488,10 +481,10 @@ function InterestsPageInner() {
   )
 }
 
-export default function InterestsPage() {
+export default function RequestsPage() {
   return (
     <Suspense>
-      <InterestsPageInner />
+      <RequestsPageInner />
     </Suspense>
   )
 }

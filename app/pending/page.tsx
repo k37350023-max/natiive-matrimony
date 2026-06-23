@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import LaunchBanner from '../components/LaunchBanner'
 
 export default function PendingPage() {
   return (
@@ -14,8 +13,6 @@ export default function PendingPage() {
         </div>
       </header>
 
-      <LaunchBanner />
-
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="card p-8 text-center mb-4">
@@ -26,20 +23,20 @@ export default function PendingPage() {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2 font-serif-display">Profile Created!</h1>
             <p className="text-gray-500 leading-relaxed text-sm">
-              Your profile is live and visible to matches. Start browsing now!
+              Your profile is live in the native-place registry. Start browsing now.
             </p>
           </div>
 
           <div className="card p-5 mb-4 border-2" style={{ borderColor: '#BBF7D0', background: '#F0FDF4' }}>
             <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: '#166534' }}>
-              You have FREE access to everything
+              Your privacy rules are active
             </p>
             <div className="space-y-2">
               {[
-                { icon: '✓', text: 'Browse all profiles — unlimited' },
-                { icon: '✓', text: 'Send interests — no daily limit' },
-                { icon: '✓', text: 'Contact details unlock after mutual match' },
-                { icon: '✓', text: 'Biodata PDF download for matches' },
+                { icon: '✓', text: 'Search by native place and current location' },
+                { icon: '✓', text: 'Send requests without showing contact details' },
+                { icon: '✓', text: 'Biodata unlocks only after acceptance' },
+                { icon: '✓', text: 'Print biodata for accepted connections' },
               ].map(f => (
                 <p key={f.text} className="text-sm text-gray-700 flex items-center gap-2">
                   <span className="font-bold" style={{ color: '#2E7D32' }}>{f.icon}</span>
@@ -47,12 +44,11 @@ export default function PendingPage() {
                 </p>
               ))}
             </div>
-            <p className="text-xs mt-3" style={{ color: '#166534' }}>All free until 30 September 2026</p>
           </div>
 
           <div className="flex gap-3">
             <Link href="/browse" className="flex-1 btn-primary text-center py-3">Browse Profiles →</Link>
-            <Link href="/interests" className="flex-1 btn-outline text-center py-3">My Interests</Link>
+            <Link href="/interests" className="flex-1 btn-outline text-center py-3">My Requests</Link>
           </div>
         </div>
       </div>

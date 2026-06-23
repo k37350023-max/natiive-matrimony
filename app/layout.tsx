@@ -16,19 +16,19 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: { default: "NativeMatrimony — Find your match from your native place", template: "%s | NativeMatrimony" },
-  description: "Telugu matrimony focused on native place. Browse profiles by district, state, and region.",
+  title: { default: "NativeMatrimony — Native-place matrimonial registry", template: "%s | NativeMatrimony" },
+  description: "A privacy-first matrimonial registry where families search by native place, send requests, and unlock biodata only after acceptance.",
   openGraph: {
-    title: "NativeMatrimony — Find your match from your native place",
-    description: "Thousands of verified Telugu profiles. Browse by native district, caste, and profession.",
+    title: "NativeMatrimony — Native-place matrimonial registry",
+    description: "Search by roots first. Biodata, photos, and contact unlock only after request acceptance.",
     siteName: "NativeMatrimony",
     locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "NativeMatrimony — Telugu matrimony by native place",
-    description: "Find your match from Telangana & Andhra Pradesh. Free to join.",
+    title: "NativeMatrimony — Native-place matrimonial registry",
+    description: "Search native place first. Connect only through accepted requests.",
   },
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "NativeMatrimony" },

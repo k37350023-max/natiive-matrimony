@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import BiodataUploader from '../../components/BiodataUploader'
 import AppHeader from '../../components/AppHeader'
+import MobileNav from '../../components/MobileNav'
 
 const REGIONS: Record<string, Record<string, string[]>> = {
   'Coastal Andhra': {
@@ -379,18 +380,18 @@ function EditProfilePageInner() {
   )
 
   return (
-    <div className="min-h-screen pb-20" style={{ background: '#FBFAF5' }}>
+    <div className="min-h-screen pb-24 sm:pb-20" style={{ background: '#FBFAF5' }}>
       <AppHeader />
 
-      <div className="max-w-xl mx-auto px-4 py-6 space-y-4">
+      <div className="max-w-xl mx-auto px-4 py-5 space-y-4">
         {isNewProfile && (
           <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EDF3ED', border: '1px solid #CADFCA', color: '#14241C' }}>
-            Welcome! Fill in the fields below — required fields marked <span className="font-bold" style={{ color: '#9B1C1C' }}>*</span>. The more you fill, the more interest you'll get.
+            Fill the essentials first. Biodata and contact unlock only after acceptance.
           </div>
         )}
         <div className="mb-2">
           <h1 className="text-xl font-bold text-gray-900 font-serif-display">Edit Profile</h1>
-          <p className="text-sm text-gray-400 mt-0.5">Changes are saved to your profile immediately</p>
+          <p className="text-sm text-gray-400 mt-0.5">Keep your native place and biodata accurate.</p>
         </div>
 
         <BiodataUploader onParsed={data => {
@@ -1094,6 +1095,7 @@ function EditProfilePageInner() {
         </div>
 
       </div>
+      <MobileNav />
     </div>
   )
 }

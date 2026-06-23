@@ -333,25 +333,34 @@ export default function ProfilePage() {
   }
 
   async function checkRelation(myId: string) {
-    const { data: match } = await supabase.from('matches').select('id')
-      .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
-      .maybeSingle()
-    if (match) { setViewerRelation('matched'); setChatMatchId(match.id); return }
-    const { data: sent } = await supabase.from('interests').select('id')
+    const { data: sent } = await supabase.from('interests').select('id,status')
       .eq('from_user', myId).eq('to_user', id as string).maybeSingle()
     if (sent) {
-      setViewerRelation('interested')
+      if (sent.status === 'accepted') {
+        setViewerRelation('matched')
+        const { data: m } = await supabase.from('matches').select('id')
+          .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
+          .maybeSingle()
+        if (m) setChatMatchId(m.id)
+      } else {
+        setViewerRelation('interested')
+      }
       setInterestSent(true)
-      // Look up match created when interest was sent
-      const { data: m } = await supabase.from('matches').select('id')
-        .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
-        .maybeSingle()
-      if (m) setChatMatchId(m.id)
       return
     }
-    const { data: received } = await supabase.from('interests').select('id')
+    const { data: received } = await supabase.from('interests').select('id,status')
       .eq('from_user', id as string).eq('to_user', myId).maybeSingle()
-    if (received) setViewerRelation('received')
+    if (received) {
+      if (received.status === 'accepted') {
+        setViewerRelation('matched')
+        const { data: m } = await supabase.from('matches').select('id')
+          .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
+          .maybeSingle()
+        if (m) setChatMatchId(m.id)
+      } else {
+        setViewerRelation('received')
+      }
+    }
   }
 
   async function requestFields(fields: string[]) {
@@ -430,13 +439,6 @@ export default function ProfilePage() {
     if (!myId) { router.push('/register'); return }
     if (myId === id) return
 
-    // Block if no photo
-    if (!profile?.photo_url) {
-      setToast('Add a profile photo before expressing interest')
-      setTimeout(() => setToast(null), 3500)
-      return
-    }
-
     // Rate limit: max 10 interests per hour
     const key = 'interest_timestamps'
     const now = Date.now()
@@ -450,44 +452,16 @@ export default function ProfilePage() {
     localStorage.setItem(key, JSON.stringify([...recent, now]))
 
     setSending(true)
-    const payload: Record<string, unknown> = { from_user: myId, to_user: id as string, status: 'pending' }
-    if (note?.trim()) payload.note = note.trim()
-    const { error } = await supabase.from('interests').insert(payload)
-    if (error && note) {
-      await supabase.from('interests').insert({ from_user: myId, to_user: id as string, status: 'pending' })
-    }
-
-    if (profile) {
-      const { data: me } = await supabase.from('profiles').select('full_name').eq('id', myId).single()
-      const msg = note?.trim()
-        ? `${me?.full_name || 'Someone'} sent you an interest: "${note.trim()}"`
-        : `${me?.full_name || 'Someone'} sent you an interest request`
-      supabase.from('notifications').insert({
-        user_id: profile.user_id, type: 'interest_received',
-        message: msg, from_profile_id: myId, read: false
-      })
-      if (profile.email) {
-        fetch('/api/notify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: profile.email,
-            subject: 'New Interest — NativeMatrimony',
-            html: `<div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px">
-              <h2 style="color:#111827">You have a new interest!</h2>
-              <p style="color:#4B5563"><strong>${me?.full_name || 'Someone'}</strong> sent you an interest on NativeMatrimony.</p>
-              ${note?.trim() ? `<blockquote style="border-left:3px solid #14241C;margin:16px 0;padding:8px 16px;color:#4B5563;font-style:italic">"${note.trim()}"</blockquote>` : ''}
-              <a href="https://nativematrimony.com/interests" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#14241C;color:white;border-radius:8px;text-decoration:none;font-weight:600">View &amp; Respond</a>
-            </div>`
-          })
-        }).catch(() => {})
-      }
-    }
-
+    await fetch('/api/interests/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ toProfileId: id as string, note: note?.trim() || undefined }),
+    })
     setInterestSent(true)
+    setViewerRelation('interested')
     setSending(false)
     setShowNoteModal(false)
-    showToast(`Interest sent to ${profile?.full_name || 'them'}. You'll be notified when they respond.`)
+    showToast('Request sent. Biodata and contact unlock after they accept.')
   }
 
   function showToast(msg: string) {
@@ -512,11 +486,13 @@ export default function ProfilePage() {
 
   const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
   const isOwnProfile = !previewMode && myProfileId === profile.id
+  const canViewBiodata = isOwnProfile || viewerRelation === 'matched'
+  const publicName = canViewBiodata ? profile.full_name : 'Profile locked'
 
   // Photo visibility: use hidden_fields first, fall back to old photo_visibility
   const photoHidden = fieldIsHidden('photo')
   const photoRevealed = fieldIsRevealed('photo')
-  const showPhoto = !!profile.photo_url && (!photoHidden || isOwnProfile || photoRevealed ||
+  const showPhoto = !!profile.photo_url && (isOwnProfile || canViewBiodata) && (!photoHidden || isOwnProfile || photoRevealed ||
     (!fieldIsHidden('photo') && (() => {
       const v = profile.photo_visibility || 'after_match'
       if (v === 'hidden') return false
@@ -688,7 +664,7 @@ export default function ProfilePage() {
                   return (
                     <div className="relative" style={{ paddingBottom: '110%' }}>
                       <button onClick={() => setPhotoExpanded(true)} className="focus:outline-none absolute inset-0 w-full h-full group">
-                        <img loading="lazy" src={allPhotos[photoIdx]} alt={profile.full_name}
+                        <img loading="lazy" src={allPhotos[photoIdx]} alt={publicName}
                           className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02] cursor-zoom-in" />
                         <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity" />
                       </button>
@@ -718,8 +694,15 @@ export default function ProfilePage() {
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <div className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
                       style={{ background: avatarBg(profile.full_name) }}>
-                      {initials(profile.full_name)}
+                      {canViewBiodata ? initials(profile.full_name) : ''}
                     </div>
+                    {!canViewBiodata && !isOwnProfile && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(20,36,28,0.82)' }}>
+                          <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                      </div>
+                    )}
                     {isOwnProfile && !profile.photo_url && (
                       <label className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap cursor-pointer">
                         <span className="text-xs font-semibold px-3 py-1 rounded-full border shadow-sm flex items-center gap-1"
@@ -767,19 +750,19 @@ export default function ProfilePage() {
           <div className="px-5 py-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 font-serif-display tracking-tight">{profile.full_name}</h1>
+                <h1 className="text-xl font-bold text-gray-900 font-serif-display tracking-tight">{publicName}</h1>
                 <p className="text-gray-500 mt-0.5 text-sm">
                   {[
                     getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs` : null,
-                    profile.height_cm ? cmToFeet(profile.height_cm).split(' ')[0] : null,
+                    canViewBiodata && profile.height_cm ? cmToFeet(profile.height_cm).split(' ')[0] : null,
                     profile.gender === 'male' ? 'Groom' : 'Bride',
                   ].filter(Boolean).join(' · ')}
                 </p>
-                {lastSeenLabel(profile.last_login_at) && (
+                {canViewBiodata && lastSeenLabel(profile.last_login_at) && (
                   <p className="text-xs text-gray-400 mt-0.5">{lastSeenLabel(profile.last_login_at)}</p>
                 )}
               </div>
-              {(profile.verified || profile.phone_verified) ? (
+              {(canViewBiodata && (profile.verified || profile.phone_verified)) ? (
                 <div className="relative shrink-0 mt-1">
                   <button onClick={() => setVerifiedOpen(v => !v)}
                     className="badge badge-verified cursor-pointer select-none">✓ Verified</button>
@@ -809,7 +792,7 @@ export default function ProfilePage() {
                   {fieldIsHidden('native_location') && !isOwnProfile && !fieldIsRevealed('native_location')
                     ? profile.native_state
                     : profile.native_district}
-                  {profile.current_city && (
+                  {canViewBiodata && profile.current_city && (
                     <span className="text-gray-400"> | {profile.current_city}</span>
                   )}
                 </span>
@@ -817,14 +800,14 @@ export default function ProfilePage() {
               {isSerious(profile) && (
                 <span className="text-xs px-3 py-1.5 rounded-full font-semibold"
                   style={{ background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
-                  ★ Serious Seeker
+                  Profile active
                 </span>
               )}
             </div>
           </div>
         </div>
 
-        {/* Founder member badge — own profile only */}
+        {/* Registry badge — own profile only */}
         {isOwnProfile && profile.member_number && (
           <div className="card px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -832,15 +815,13 @@ export default function ProfilePage() {
                 #{profile.member_number}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Founder Member #{profile.member_number}</p>
+                <p className="text-sm font-semibold text-gray-800">Registry Profile #{profile.member_number}</p>
                 <p className="text-xs text-gray-400">
-                  {profile.premium_expires_at
-                    ? `Free premium until ${new Date(profile.premium_expires_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`
-                    : 'Free premium active'}
+                  Biodata and contact unlock only after an accepted request.
                 </p>
               </div>
             </div>
-            <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: '#14241C' }}>★ Founder</span>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: '#14241C' }}>Private</span>
           </div>
         )}
 
@@ -960,6 +941,21 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* Locked notice */}
+        {!canViewBiodata && !isOwnProfile && (
+          <div className="card px-5 py-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: '#E6F1E8', color: '#0F5E3E' }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-800">Private until both sides agree.</p>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request to unlock full biodata, contact, WhatsApp, and clear photos after acceptance.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Quick facts */}
         <div className="card" style={{ padding: '20px 24px' }}>
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 16px' }}>Quick facts</p>
@@ -968,10 +964,10 @@ export default function ProfilePage() {
             {
               label: 'Current city',
               fieldKey: 'current_city',
-              value: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city')
+              value: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city') && canViewBiodata
                 ? null
                 : `${profile.current_city}${profile.current_state ? ', ' + profile.current_state : ''}`,
-              hidden: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city'),
+              hidden: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city') && canViewBiodata,
             },
             { label: 'Profession', fieldKey: undefined, value: profile.profession, sub: profile.education, hidden: false },
           ].map((r) => (
@@ -1004,7 +1000,7 @@ export default function ProfilePage() {
         </div>
 
         {/* About */}
-        {(profile.about || isOwnProfile) && (
+        {((profile.about && canViewBiodata) || isOwnProfile) && (
           <div className="card px-6 py-5">
             <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 10px' }}>About</p>
             {profile.about ? (
@@ -1021,6 +1017,7 @@ export default function ProfilePage() {
         {/* Looking for / Partner preferences */}
         {(() => {
           const hasPrefs = profile.pref_age_min || profile.pref_age_max
+          if (!canViewBiodata && !isOwnProfile) return null
           if (!hasPrefs && !isOwnProfile) return null
           return (
             <div className="card px-6 py-5">
@@ -1044,67 +1041,69 @@ export default function ProfilePage() {
           )
         })()}
 
-        {/* Compatibility bar — only shown to non-owners who are logged in */}
-        {compatScore && !isOwnProfile && myProfileId && (
-          <div className="card px-6 py-4">
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 10px' }}>Compatibility</p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ flex: 1, height: '8px', borderRadius: '99px', background: '#F3F4F6', overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.round((compatScore.match / compatScore.total) * 100)}%`, borderRadius: '99px', background: compatScore.match >= compatScore.total * 0.7 ? '#2E7D32' : compatScore.match >= compatScore.total * 0.4 ? '#D97706' : '#14241C', transition: 'width 0.8s ease' }} />
-              </div>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#0F0F0F', whiteSpace: 'nowrap' }}>
-                {compatScore.match}/{compatScore.total} match
-              </span>
-            </div>
-            <p style={{ fontSize: '11.5px', color: '#94A3B8', margin: '6px 0 0' }}>
-              Based on age, religion, caste, mother tongue, and native place
-            </p>
-          </div>
-        )}
-
-        {/* Full biodata — always visible, hidden fields blurred */}
+        {/* Full biodata */}
         <div className="card px-6 py-5">
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 16px' }}>Full biodata</p>
-          <div className="space-y-0">
-            {(bioExpanded ? bioSections : bioSections.slice(0, 1)).map((section, si) => (
-              <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F3F4F6' } : {}}>
-                <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 12px' }}>{section.heading}</p>
-                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  {section.rows.map(f => (
-                    <div key={f.label} className={f.wide ? 'col-span-2' : ''}>
-                      <p style={{ fontSize: '10.5px', color: '#B0B7C3', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
-                        {f.label}
-                        {isOwnProfile && !f.value && REQUIRED_FIELD_LABELS.has(f.label) && (
-                          <span className="font-bold" style={{ color: '#DC2626' }}>*</span>
-                        )}
-                      </p>
-                      {renderFieldValue(f.fieldKey, f.value, f.label)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="flex items-center justify-between gap-3" style={{ marginBottom: '16px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: 0 }}>Biodata</p>
+            {canViewBiodata && (
+              <button onClick={() => window.print()} className="text-xs font-semibold px-3 py-1.5 rounded-lg border" style={{ borderColor: '#CADFCA', color: '#0F5E3E', background: '#F7FBF7' }}>
+                Print / Download Biodata
+              </button>
+            )}
           </div>
-          {bioSections.length > 1 && (
-            <button
-              onClick={() => setBioExpanded(v => !v)}
-              className="mt-4 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-colors hover:bg-gray-50"
-              style={{ color: '#14241C', border: '1px solid #E7E3D8' }}>
-              {bioExpanded
-                ? 'Show less'
-                : `Show more — ${bioSections.slice(1).map(s => s.heading).join(', ')}`}
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
-                style={{ transform: bioExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
+          {!canViewBiodata ? (
+            <div style={{ padding: '20px', borderRadius: '14px', background: '#F7FBF7', border: '1px solid #DDE6DA', textAlign: 'center' }}>
+              <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#E6F1E8', color: '#0F5E3E', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <p className="font-semibold text-gray-800 mb-1">Full biodata is locked.</p>
+              <p className="text-sm text-gray-500 mb-4">Send a request to unlock full details after acceptance.</p>
+              {interestSent && <p className="text-sm font-semibold" style={{ color: '#0F5E3E' }}>Request sent. Waiting for acceptance.</p>}
+            </div>
+          ) : (
+            <>
+              <div className="space-y-0">
+                {(bioExpanded ? bioSections : bioSections.slice(0, 1)).map((section, si) => (
+                  <div key={section.heading} className={si > 0 ? 'pt-4 mt-4 border-t' : ''} style={si > 0 ? { borderColor: '#F3F4F6' } : {}}>
+                    <p style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 12px' }}>{section.heading}</p>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                      {section.rows.map(f => (
+                        <div key={f.label} className={f.wide ? 'col-span-2' : ''}>
+                          <p style={{ fontSize: '10.5px', color: '#B0B7C3', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', margin: '0 0 3px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                            {f.label}
+                            {isOwnProfile && !f.value && REQUIRED_FIELD_LABELS.has(f.label) && (
+                              <span className="font-bold" style={{ color: '#DC2626' }}>*</span>
+                            )}
+                          </p>
+                          {renderFieldValue(f.fieldKey, f.value, f.label)}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {bioSections.length > 1 && (
+                <button
+                  onClick={() => setBioExpanded(v => !v)}
+                  className="mt-4 w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-colors hover:bg-gray-50"
+                  style={{ color: '#14241C', border: '1px solid #E7E3D8' }}>
+                  {bioExpanded
+                    ? 'Show less'
+                    : `Show more — ${bioSections.slice(1).map(s => s.heading).join(', ')}`}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+                    style={{ transform: bioExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                    <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              )}
+            </>
           )}
         </div>
 
         {/* Contact — phone hidden by default */}
         {(() => {
           const phoneHidden = fieldIsHidden('phone') && !isOwnProfile && !fieldIsRevealed('phone')
-          const showContact = isOwnProfile || viewerRelation === 'matched'
+          const showContact = canViewBiodata
           if (!showContact && !profile.phone && !profile.email) return null
           return (
             <div className="card px-6 py-5">
@@ -1129,7 +1128,14 @@ export default function ProfilePage() {
                         )}
                       </div>
                     ) : showContact ? (
-                      <p className="font-semibold text-gray-700 text-sm">{profile.phone}</p>
+                      <div>
+                        <p className="font-semibold text-gray-700 text-sm">{profile.phone}</p>
+                        {!isOwnProfile && (
+                          <a href={`https://wa.me/${String(profile.phone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="inline-flex mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg" style={{ background: '#E6F1E8', color: '#0F5E3E', textDecoration: 'none' }}>
+                            WhatsApp
+                          </a>
+                        )}
+                      </div>
                     ) : (
                       <p className="font-semibold text-gray-300 text-sm">—</p>
                     )}
@@ -1143,7 +1149,7 @@ export default function ProfilePage() {
                 )}
               </div>
               {!showContact && !isOwnProfile && (
-                <p className="text-xs text-gray-400 mt-2">Contact details unlock after mutual match</p>
+                <p className="text-xs text-gray-400 mt-2">Contact details unlock after request acceptance.</p>
               )}
             </div>
           )
@@ -1151,7 +1157,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Similar profiles row */}
-      {similarProfiles.length > 0 && (
+      {false && similarProfiles.length > 0 && (
         <div className="card px-6 py-5">
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 14px' }}>Similar profiles</p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
@@ -1196,8 +1202,8 @@ export default function ProfilePage() {
           <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="font-bold text-gray-900 font-serif-display">Break the ice</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Add a personal note — optional but encouraged</p>
+                <h3 className="font-bold text-gray-900 font-serif-display">Send Request</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want. Biodata unlocks only after acceptance.</p>
               </div>
               <button onClick={() => setShowNoteModal(false)} className="text-gray-300 hover:text-gray-500 ml-3 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1219,7 +1225,7 @@ export default function ProfilePage() {
                 onClick={() => expressInterest()}
                 disabled={sending}
                 className="flex-1 btn-ghost py-2.5 text-sm">
-                Send without note
+                Send Request
               </button>
               <button
                 onClick={() => expressInterest(noteText)}
@@ -1306,7 +1312,7 @@ export default function ProfilePage() {
             const allPhotos = [profile.photo_url, ...extraPhotos].filter(Boolean) as string[]
             return (
               <div className="flex flex-col items-center gap-3" onClick={e => e.stopPropagation()}>
-                <img loading="lazy" src={allPhotos[photoIdx]} alt={profile.full_name}
+                        <img loading="lazy" src={allPhotos[photoIdx]} alt={publicName}
                   className="max-w-[90vw] max-h-[80vh] rounded-2xl object-contain shadow-2xl" />
                 {allPhotos.length > 1 && (
                   <div className="flex items-center gap-3">
@@ -1339,7 +1345,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-around py-1">
               <Link href="/browse" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#5E6B62' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <span className="text-[10px] font-medium">Home</span>
+                <span className="text-[10px] font-medium">Browse</span>
               </Link>
               <Link href="/profile/edit" className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#14241C' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -1352,35 +1358,31 @@ export default function ProfilePage() {
               <a href={`/profile/${profile.id}?preview=1`} target="_blank" rel="noopener"
                 className="flex flex-col items-center gap-1 px-4 py-1 rounded-xl hover:bg-gray-50 transition-colors" style={{ color: '#5E6B62' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <span className="text-[10px] font-medium">Preview</span>
+                <span className="text-[10px] font-medium">View</span>
               </a>
             </div>
           ) : isLoggedIn ? (
             <>
               <div className="flex gap-2.5">
-                {chatMatchId ? (
-                  <Link href={`/chat/${chatMatchId}`} className="flex-1 btn-primary py-3 text-sm text-center">
-                    Message
-                  </Link>
+                {canViewBiodata ? (
+                  <>
+                    <button onClick={() => window.print()} className="flex-1 btn-primary py-3 text-sm">
+                      View / Print Biodata
+                    </button>
+                    {profile.phone && (
+                      <a href={`https://wa.me/${String(profile.phone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="px-4 py-3 rounded-lg font-semibold text-sm border text-center" style={{ background: 'white', color: '#0F5E3E', borderColor: '#DDE6DA', textDecoration: 'none' }}>
+                        WhatsApp
+                      </a>
+                    )}
+                    {chatMatchId && (
+                      <Link href={`/chat/${chatMatchId}`} className="px-4 py-3 rounded-lg font-semibold text-sm border text-center" style={{ background: 'white', color: '#5E6B62', borderColor: '#E7E3D8' }}>
+                        Chat
+                      </Link>
+                    )}
+                  </>
                 ) : interestSent ? (
-                  <button
-                    onClick={async () => {
-                      const myId = localStorage.getItem('my_profile_id')
-                      if (!myId) return
-                      const { data: existing } = await supabase.from('matches').select('id')
-                        .or(`and(user1.eq.${myId},user2.eq.${id}),and(user1.eq.${id},user2.eq.${myId})`)
-                        .maybeSingle()
-                      let mId = existing?.id
-                      if (!mId) {
-                        const { data: created } = await supabase.from('matches')
-                          .insert({ user1: myId, user2: id as string }).select('id').single()
-                        mId = created?.id
-                      }
-                      if (mId) router.push(`/chat/${mId}`)
-                    }}
-                    className="flex-1 btn-primary py-3 text-sm"
-                  >
-                    Message
+                  <button disabled className="flex-1 btn-primary py-3 text-sm" style={{ opacity: 0.72 }}>
+                    Request Sent
                   </button>
                 ) : (
                   <button
@@ -1388,7 +1390,7 @@ export default function ProfilePage() {
                     disabled={sending}
                     className="flex-1 btn-primary py-3 text-sm"
                   >
-                    {sending ? 'Sending...' : 'Express Interest'}
+                    {sending ? 'Sending...' : 'Send Request'}
                   </button>
                 )}
                 <button
@@ -1400,12 +1402,12 @@ export default function ProfilePage() {
                   {shortlisted ? '★ Saved' : '☆ Save'}
                 </button>
               </div>
-              {!interestSent && !chatMatchId && (
+              {!interestSent && !canViewBiodata && (
                 <div className="flex justify-center mt-2">
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
                     style={{ background: '#EDF3ED', color: '#14241C' }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Chat unlocks when they accept your interest
+                    Biodata and contact unlock when they accept your request
                   </span>
                 </div>
               )}
@@ -1414,7 +1416,7 @@ export default function ProfilePage() {
             <>
               <div className="flex gap-2.5">
                 <Link href="/register" className="flex-1 btn-primary py-3 text-sm text-center">
-                  Register to Express Interest
+                  Register to Send Request
                 </Link>
                 <Link href="/login"
                   className="px-4 py-3 rounded-lg font-semibold text-sm border text-center"
@@ -1422,7 +1424,7 @@ export default function ProfilePage() {
                   Login
                 </Link>
               </div>
-              <p className="text-center text-xs text-gray-400 mt-2">Free until September 2026 · No credit card needed</p>
+              <p className="text-center text-xs text-gray-400 mt-2">Biodata and contact unlock only after acceptance.</p>
             </>
           )}
         </div>

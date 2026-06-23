@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { computeCompleteness } from '@/lib/completeness'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
@@ -54,6 +55,7 @@ const ACTIVE_WITHIN_OPTS = [
 ]
 const INCOME_RANGES = ['Below ₹3L','₹3L–6L','₹6L–10L','₹10L–20L','₹20L–50L','₹50L+']
 const PAGE_SIZE = 18
+const POPULAR_NATIVE_PLACES = ['Guntur', 'Warangal', 'Nellore', 'Vijayawada', 'Chennai', 'Coimbatore', 'Madurai', 'Rajkot', 'Mysore']
 
 /* ─── Types ──────────────────────────────────────────────────── */
 type Profile = {
@@ -84,6 +86,11 @@ function initials(name: string) { return name.split(' ').map(n=>n[0]).join('').t
 const AVATAR_COLORS = ['#14241C','#0369A1','#047857','#6D28D9','#BE185D']
 function avatarBg(name: string) { return AVATAR_COLORS[(name?.charCodeAt(0)||0) % AVATAR_COLORS.length] }
 function isVerified(p: Pick<Profile,'verified'|'phone_verified'>) { return p.verified || p.phone_verified }
+function isAcceptedStatus(status?: string) { return status === 'matched' || status === 'accepted' }
+function displayName(p: Pick<Profile,'full_name'>, unlocked: boolean) {
+  if (unlocked) return p.full_name.split(' ').slice(0,2).join(' ')
+  return 'Profile locked'
+}
 function lastSeen(ts: string | null): string | null {
   if (!ts) return null
   const m = Math.floor((Date.now()-new Date(ts).getTime())/60000)
@@ -119,21 +126,21 @@ function GuestBrowsePreview() {
   return (
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E7E3D8' }}>
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="text-lg font-bold font-serif-display tracking-tight">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+          <Link href="/" className="text-base font-bold font-serif-display tracking-tight shrink-0">
             Native<span style={{ color: '#14241C' }}>Matrimony</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <Link href="/login" className="text-sm font-medium text-gray-600 px-3 py-1.5 rounded-lg hover:bg-gray-50">Login</Link>
-            <Link href="/register" className="btn-primary text-sm px-4 py-1.5">Register Free</Link>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Link href="/login" className="text-sm font-medium text-gray-600 px-2 py-1.5 rounded-lg hover:bg-gray-50">Login</Link>
+            <Link href="/register" className="btn-primary text-sm px-3 py-1.5 whitespace-nowrap">Create Profile</Link>
           </div>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 font-serif-display mb-2">Browse Telugu Profiles</h2>
-          <p className="text-gray-500 text-sm">Create a free profile to see full details and connect</p>
+          <h2 className="text-2xl font-bold text-gray-900 font-serif-display mb-2">Search the native-place registry</h2>
+          <p className="text-gray-500 text-sm">Create a profile to send requests and unlock biodata after acceptance.</p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
@@ -159,9 +166,9 @@ function GuestBrowsePreview() {
           })}
         </div>
 
-        <div className="text-center bg-white rounded-2xl p-8 shadow-sm border" style={{ borderColor: '#E7E3D8' }}>
-          <p className="font-bold text-gray-900 text-lg mb-2">See full profiles & connect</p>
-          <p className="text-sm text-gray-500 mb-6">Free until September 2026 · No credit card needed</p>
+        <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
+          <p className="font-bold text-gray-900 text-lg mb-2">Request before contact unlocks</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">Names, photos, biodata, and contact stay private until accepted.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/register" className="btn-primary px-8 py-3 text-sm">Create Free Profile</Link>
             <Link href="/login" className="btn-ghost px-8 py-3 text-sm">Sign in</Link>
@@ -216,7 +223,8 @@ function ProfileCard({
   onContact?: ()=>void; chatHref?: string
 }) {
   const age = getAge(p.date_of_birth)
-  const showPhoto = !!(p.photo_url && p.photo_visibility === 'public')
+  const unlocked = isAcceptedStatus(status)
+  const showPhoto = unlocked && !!(p.photo_url && p.photo_visibility === 'public')
   const seenLabel = lastSeen(p.last_login_at)
   const isOnline = seenLabel === 'Active now'
   const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000
@@ -225,7 +233,7 @@ function ProfileCard({
     <div
       onClick={onClick}
       style={{
-        position: 'relative', borderRadius: '16px', overflow: 'hidden',
+        position: 'relative', borderRadius: '10px', overflow: 'hidden',
         background: '#FFFFFF', cursor: 'pointer',
         border: '1px solid #E7E3D8',
         boxShadow: '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)',
@@ -235,7 +243,7 @@ function ProfileCard({
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
       {/* Photo (4:5) — no overlays, photo stays clean */}
-      <div style={{ position: 'relative', paddingBottom: '125%', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
         {showPhoto ? (
           <img loading="lazy"
             src={p.photo_url} alt={p.full_name}
@@ -246,9 +254,16 @@ function ProfileCard({
             <GeometricPlaceholder name={p.full_name} />
           </div>
         )}
+        {!unlocked && (
+          <div style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(7px)', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(20,36,28,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+          </div>
+        )}
 
         {/* Mint Verified pill — the only badge on the image */}
-        {isVerified(p) && (
+        {isVerified(p) && unlocked && (
           <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '4px 9px', borderRadius: '99px', background: '#2E7D32', color: '#14241C', boxShadow: '0 2px 8px rgba(46,125,50,0.35)' }}>
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
@@ -263,9 +278,9 @@ function ProfileCard({
         {/* Name + age */}
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
           <p style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 600, color: '#14241C', fontSize: '17px', lineHeight: 1.25, letterSpacing: '-0.01em', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {p.full_name.split(' ').slice(0,2).join(' ')}
+            {displayName(p, unlocked)}
           </p>
-          {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>{age}</span>}
+          {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>{p.gender === 'male' ? 'Male' : 'Female'}, {age}</span>}
         </div>
 
         {/* Location */}
@@ -274,13 +289,16 @@ function ProfileCard({
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
           </svg>
           <p style={{ fontSize: '13px', color: '#5E6B62', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {[p.native_district, p.current_city].filter(Boolean).join(' · ') || '—'}
+            {p.native_district ? `Native: ${p.native_district}` : 'Native place not set'}
           </p>
         </div>
 
         {/* Profession */}
         <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#14241C', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {p.profession || '—'}
+        </p>
+        <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {p.current_city || 'Current city not set'}
         </p>
 
         {/* Activity meta */}
@@ -294,11 +312,11 @@ function ProfileCard({
         {/* Contact + Connect row */}
         {onSendInterest && (
           <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
-            {/* Contact — green outline icon button */}
-            {onContact && (
+            {/* Contact unlocks only after acceptance. */}
+            {onContact && unlocked && (
               <button
                 onClick={e => { e.stopPropagation(); onContact() }}
-                title="Contact"
+                title="View Contact"
                 style={{
                   flexShrink: 0, width: '42px', padding: '10px', borderRadius: '10px', cursor: 'pointer',
                   border: '1.5px solid #1B5E20', background: 'white', color: '#1B5E20',
@@ -310,7 +328,7 @@ function ProfileCard({
               </button>
             )}
             <button
-              onClick={e => { e.stopPropagation(); if (status==='matched' && chatHref) { window.location.href = chatHref } else if (!status && !sending) onSendInterest() }}
+              onClick={e => { e.stopPropagation(); if (status==='matched' || status==='accepted') { onClick() } else if (!status && !sending) onSendInterest() }}
               disabled={(!!status && status!=='matched') || sending}
               style={{
                 flex: 1, padding: '10px', borderRadius: '10px',
@@ -324,13 +342,26 @@ function ProfileCard({
               }}
               onMouseEnter={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#14532D') }}
               onMouseLeave={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#1B5E20') }}>
-              {status === 'matched' ? 'Go to Chat'
+              {status === 'matched' ? 'View Biodata'
+                : status === 'accepted' ? 'View Biodata'
                 : status === 'pending' ? 'Request Sent'
-                : status === 'accepted' ? 'Accepted'
                 : status === 'rejected' ? 'Declined'
-                : sending ? 'Connecting…'
-                : 'Connect'}
+                : sending ? 'Sending…'
+                : 'Send Request'}
             </button>
+            {unlocked && chatHref && (
+              <Link
+                href={chatHref}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  flexShrink: 0, padding: '10px 12px', borderRadius: '8px',
+                  border: '1px solid #E7E3D8', color: '#5E6B62', background: 'white',
+                  fontSize: '12px', fontWeight: 700, textDecoration: 'none',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                Chat
+              </Link>
+            )}
           </div>
         )}
       </div>
@@ -475,6 +506,7 @@ function Filters({
 
 /* ─── Main Page ──────────────────────────────────────────────── */
 export default function BrowsePage() {
+  const searchParams = useSearchParams()
   const [sessionChecked, setSessionChecked] = useState(false)
   const [myGender, setMyGender]       = useState<string|null>(null)
   const [myProfileId, setMyProfileId] = useState<string|null>(null)
@@ -508,6 +540,8 @@ export default function BrowsePage() {
   const [verifiedOnly,    setVerifiedOnly]    = useState(false)
   const [profileByFilter, setProfileByFilter] = useState('')
   const [incomeFilter,    setIncomeFilter]    = useState('')
+  const [nativePlace,     setNativePlace]     = useState('')
+  const [currentLocation, setCurrentLocation] = useState('')
   const [sortBy,          setSortBy]          = useState<'newest'|'last_active'|'best_match'>('newest')
   const [page,            setPage]            = useState(1)
 
@@ -528,6 +562,13 @@ export default function BrowsePage() {
   const [sinceLastVisit,  setSinceLastVisit]  = useState<Profile[]>([])
   const [myNativeDistrict, setMyNativeDistrict] = useState<string>('')
 
+  useEffect(() => {
+    const place = searchParams.get('native_place') || ''
+    const location = searchParams.get('current_location') || ''
+    if (place) setNativePlace(place)
+    if (location) setCurrentLocation(location)
+  }, [searchParams])
+
   const availableStates    = region ? Object.keys(REGIONS[region]||{}) : []
   const availableDistricts = state  ? (REGIONS[region]?.[state] || []) : []
   const oppositeGender     = myGender === 'male' ? 'female' : myGender === 'female' ? 'male' : null
@@ -540,7 +581,7 @@ export default function BrowsePage() {
 
     Promise.all([
       supabase.from('profiles').select('member_number, full_name, gender, date_of_birth, native_state, native_district, photo_url, about, profession, education, height_cm, religion, current_city, caste, annual_income, mother_tongue, family_type, company, diet, star, rashi').eq('id', myId).maybeSingle(),
-      supabase.from('interests').select('to_user, status').eq('from_user', myId),
+      supabase.from('interests').select('from_user, to_user, status').or(`from_user.eq.${myId},to_user.eq.${myId}`),
       supabase.from('matches').select('id,user1,user2').or(`user1.eq.${myId},user2.eq.${myId}`),
       supabase.from('interests').select('id',{count:'exact',head:true}).eq('from_user',myId),
       supabase.from('interests').select('id',{count:'exact',head:true}).eq('to_user',myId).eq('status','pending'),
@@ -563,9 +604,12 @@ export default function BrowsePage() {
       // A match row alone (created when a request opens a thread) is NOT "matched"
       // unless the interest was accepted.
       const map: Record<string,string> = {}
-      ints?.forEach(i => { map[i.to_user] = i.status === 'accepted' ? 'matched' : i.status })
+      ints?.forEach(i => {
+        const other = i.from_user === myId ? i.to_user : i.from_user
+        map[other] = i.status === 'accepted' ? 'matched' : i.status
+      })
       const mIdMap: Record<string,string> = {}
-      matchRows?.forEach(m => { const o = m.user1===myId?m.user2:m.user1; if (!map[o]) map[o]='matched'; if (m.id) mIdMap[o]=m.id })
+      matchRows?.forEach(m => { const o = m.user1===myId?m.user2:m.user1; if (m.id) mIdMap[o]=m.id })
       setInterestMap(map)
       setMatchIdMap(mIdMap)
 
@@ -623,7 +667,7 @@ export default function BrowsePage() {
   }, [sessionChecked, oppositeGender, region, state, district, ageRange, profCat, maritalFilter,
       heightRange, motherTongues, casteFilter, religionFilter, educationFilter, photoOnly,
       recentOnly, showViewed, ignorePrefs, myProfileId,
-      activeWithin, verifiedOnly, profileByFilter, incomeFilter, sortBy])
+      activeWithin, verifiedOnly, profileByFilter, incomeFilter, sortBy, nativePlace, currentLocation])
 
   async function loadProfiles() {
     setLoading(true)
@@ -636,7 +680,7 @@ export default function BrowsePage() {
       const res = await fetch('/api/profiles/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ oppositeGender, region, state, district, casteFilter }),
+        body: JSON.stringify({ oppositeGender, region, state, district, casteFilter, nativePlace, currentLocation }),
       })
       if (res.ok) data = (await res.json()).profiles as Profile[]
     } catch { /* fall through to legacy query */ }
@@ -647,6 +691,8 @@ export default function BrowsePage() {
       if (region)         q = q.eq('native_region', region)
       if (state)          q = q.eq('native_state', state)
       if (district)       q = q.eq('native_district', district)
+      if (nativePlace)    q = q.or(`native_district.ilike.%${nativePlace}%,native_state.ilike.%${nativePlace}%,current_city.ilike.%${nativePlace}%`)
+      if (currentLocation) q = q.or(`current_city.ilike.%${currentLocation}%,current_state.ilike.%${currentLocation}%`)
       if (casteFilter)    q = q.ilike('caste', `%${casteFilter}%`)
       const resp = await q
         .or(`last_login_at.gt.${fourteenDaysAgo},last_login_at.is.null`)
@@ -720,6 +766,7 @@ export default function BrowsePage() {
     setReligionFilter(''); setEducationFilter(''); setPhotoOnly(false)
     setRecentOnly(false); setShowViewed(false); setIgnorePrefs(false); setAlertSet(false)
     setActiveWithin(''); setVerifiedOnly(false); setProfileByFilter(''); setIncomeFilter('')
+    setNativePlace(''); setCurrentLocation('')
     setPage(1)
   }
 
@@ -798,7 +845,7 @@ export default function BrowsePage() {
   const activeFilterCount = [region,state,district,ageRange,profCat,maritalFilter,heightRange,casteFilter,
     religionFilter,educationFilter,...motherTongues,
     photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':'',
-    activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter].filter(Boolean).length
+    activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter,nativePlace,currentLocation].filter(Boolean).length
 
   const genderLabel = oppositeGender === 'female' ? 'brides' : oppositeGender === 'male' ? 'grooms' : 'profiles'
 
@@ -836,18 +883,18 @@ export default function BrowsePage() {
 
         {/* ── Stats Dashboard ─────────────────────────────────── */}
         {stats && (
-          <div className="grid grid-cols-4 gap-3 mb-5">
+          <div className="grid grid-cols-4 gap-2 mb-4">
             {[
               { label: 'Sent',     value: stats.interestsSent,     href: '/interests?tab=sent' },
               { label: 'Received', value: stats.interestsReceived, href: '/interests?tab=received' },
-              { label: 'Matches',  value: stats.matches,           href: '/matches' },
+              { label: 'Accepted', value: stats.matches,           href: '/matches' },
               { label: 'Views',    value: stats.profileViews,      href: `/profile/${myProfileId}` },
             ].map(s => (
               <Link key={s.label} href={s.href}
-                style={{ background: 'white', borderRadius: '14px', border: '1px solid rgba(0,0,0,0.06)', padding: '14px 8px', textAlign: 'center', textDecoration: 'none', display: 'block', transition: 'box-shadow 0.15s' }}
+                style={{ background: 'white', borderRadius: '10px', border: '1px solid #E7E3D8', padding: '10px 6px', textAlign: 'center', textDecoration: 'none', display: 'block', transition: 'box-shadow 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)')}
                 onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}>
-                <p style={{ fontSize: '26px', fontWeight: 700, color: '#0F0F0F', lineHeight: 1, margin: '0 0 5px' }}>{s.value}</p>
+                <p style={{ fontSize: '20px', fontWeight: 800, color: '#0F0F0F', lineHeight: 1, margin: '0 0 4px' }}>{s.value}</p>
                 <p style={{ fontSize: '11px', color: '#94A3B8', margin: 0, fontWeight: 500 }}>{s.label}</p>
               </Link>
             ))}
@@ -858,11 +905,11 @@ export default function BrowsePage() {
         <div className="mb-3">
           <div className="flex items-center justify-between mb-2">
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '7px' }}>
-              <h1 style={{ fontSize: '18px', fontWeight: 700, color: '#0F0F0F', margin: 0, letterSpacing: '-0.01em', fontFamily: 'var(--font-playfair), Georgia, serif' }}>
-                {myName ? `Browse ${genderLabel}` : 'Browse profiles'}
+              <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: 0, letterSpacing: 0, fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif' }}>
+                Native-place registry
               </h1>
               {myMemberNum && (
-                <span style={{ fontSize: '11px', color: '#B0B7C3', fontWeight: 500 }}>{memberLabel(myMemberNum)}</span>
+                <span style={{ fontSize: '11px', color: '#5E6B62', fontWeight: 700 }}>{memberLabel(myMemberNum)}</span>
               )}
             </div>
             {/* Desktop filter button (hidden on mobile — chips below) */}
@@ -877,6 +924,32 @@ export default function BrowsePage() {
               </svg>
               Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
             </button>
+          </div>
+          <form
+            onSubmit={e => { e.preventDefault(); setPage(1); loadProfiles() }}
+            style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '8px', padding: '8px', borderRadius: '10px', background: 'white', border: '1px solid #E2E8DD', marginBottom: '10px', boxShadow: '0 8px 24px rgba(7,21,39,0.045)' }}>
+            <input
+              value={nativePlace}
+              onChange={e => setNativePlace(e.target.value)}
+              placeholder="Native place"
+              aria-label="Search Native Place"
+              className="nm-input"
+            />
+            <input
+              value={currentLocation}
+              onChange={e => setCurrentLocation(e.target.value)}
+              placeholder="Current location (optional)"
+              aria-label="Current location"
+              className="nm-input"
+            />
+            <button type="submit" className="nm-primary" style={{ minHeight: '46px', padding: '0 14px', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}>
+              Search
+            </button>
+          </form>
+          <div className="flex gap-1.5 overflow-x-auto mb-3" style={{ scrollbarWidth: 'none' }}>
+            {POPULAR_NATIVE_PLACES.map(place => (
+              <Chip key={place} active={nativePlace.toLowerCase() === place.toLowerCase()} onClick={() => { setNativePlace(nativePlace === place ? '' : place); setPage(1) }} label={place} />
+            ))}
           </div>
           {/* Mobile filter row */}
           <div className="sm:hidden flex items-center gap-2">
@@ -924,7 +997,7 @@ export default function BrowsePage() {
               <p className="flex-1" style={{ color: '#5E6B62', fontSize: '15px' }}>
                 {loading ? 'Loading…' : (
                   <>
-                    <span style={{ fontWeight: 800, color: '#14241C', fontSize: '19px', letterSpacing: '-0.01em' }}>
+                    <span style={{ fontWeight: 800, color: '#14241C', fontSize: '18px', letterSpacing: 0 }}>
                       {profiles.length.toLocaleString('en-IN')}
                     </span> {genderLabel} found
                   </>
@@ -954,7 +1027,7 @@ export default function BrowsePage() {
               </button>
             </div>
             {/* ── AI Top Picks ─────────────────────────────── */}
-            {aiPicks.length > 0 && (
+            {false && aiPicks.length > 0 && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#1B5E20" stroke="none" style={{ flexShrink: 0 }}><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
@@ -1019,7 +1092,7 @@ export default function BrowsePage() {
                 <div className="flex items-center gap-2 mb-2.5">
                   <span className="text-sm font-bold text-gray-900">New this week</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {newArrivals.map((p, idx) => (
                     <ProfileCard key={p.id} p={p} status={interestMap[p.id]}
                       shortlisted={shortlists.has(p.id)}
@@ -1038,7 +1111,7 @@ export default function BrowsePage() {
                 <div className="flex items-center gap-2 mb-2.5">
                   <span className="text-sm font-bold text-gray-900">New from {myNativeDistrict} since your last visit</span>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {sinceLastVisit.map((p, idx) => (
                     <ProfileCard key={p.id} p={p} status={interestMap[p.id]}
                       shortlisted={shortlists.has(p.id)}
@@ -1065,6 +1138,23 @@ export default function BrowsePage() {
                     <p className="text-sm text-gray-500 mb-5">Be the first from your area, or invite friends.</p>
                     <button onClick={clearAll} className="btn-ghost px-5 py-2 text-sm">Show all {genderLabel}</button>
                   </>
+                ) : nativePlace ? (
+                  <>
+                    <p className="font-semibold text-gray-800 mb-1">No profiles from {nativePlace} yet.</p>
+                    <p className="text-sm text-gray-500 mb-5">Be the first person from {nativePlace} to join. We&apos;ll notify you when new members from {nativePlace} join.</p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Link href="/register" className="btn-primary px-5 py-2 text-sm">Create Profile</Link>
+                      <button
+                        onClick={() => {
+                          setAlertSet(true)
+                          setBrowseToast(`We'll notify you when profiles from ${nativePlace} join`)
+                          setTimeout(() => setBrowseToast(null), 3500)
+                        }}
+                        className="btn-ghost px-5 py-2 text-sm">
+                        Notify Me
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <p className="font-semibold text-gray-700 mb-1">No profiles match these filters</p>
@@ -1077,7 +1167,7 @@ export default function BrowsePage() {
 
             {/* Skeleton loaders */}
             {loading && (
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                 {Array.from({length: 6}).map((_, i) => (
                   <div key={i} className="card overflow-hidden animate-pulse">
                     <div className="h-36 bg-gray-100" />
@@ -1096,7 +1186,7 @@ export default function BrowsePage() {
               const paged = profiles.slice(0, page * PAGE_SIZE)
               return (
                 <>
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                     {paged.map((p, idx) => (
                       <ProfileCard
                         key={p.id}
@@ -1136,7 +1226,8 @@ export default function BrowsePage() {
       {quickView && (() => {
         const p = quickView
         const status = interestMap[p.id]
-        const showPhoto = !!(p.photo_url && p.photo_visibility === 'public')
+        const unlocked = isAcceptedStatus(status)
+        const showPhoto = unlocked && !!(p.photo_url && p.photo_visibility === 'public')
         const age = getAge(p.date_of_birth)
         const seenLabel = lastSeen(p.last_login_at)
 
@@ -1156,7 +1247,12 @@ export default function BrowsePage() {
                   <div className="w-full h-full flex flex-col items-center justify-center"
                     style={{ background: `linear-gradient(135deg, ${avatarBg(p.full_name)}33, ${avatarBg(p.full_name)}66)` }}>
                     <div className="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-2"
-                      style={{ background: avatarBg(p.full_name) }}>{initials(p.full_name)}</div>
+                      style={{ background: avatarBg(p.full_name), filter: unlocked ? 'none' : 'blur(4px)' }}>{unlocked ? initials(p.full_name) : ''}</div>
+                    {!unlocked && (
+                      <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(20,36,28,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      </div>
+                    )}
                   </div>
                 )}
                 <div className="absolute inset-0"
@@ -1189,10 +1285,9 @@ export default function BrowsePage() {
                 <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
                   <div className="flex items-end justify-between">
                     <div>
-                      <h2 className="text-white font-bold text-lg leading-tight">{p.full_name}</h2>
+                      <h2 className="text-white font-bold text-lg leading-tight">{displayName(p, unlocked)}</h2>
                       <p className="text-white/80 text-sm">
                         {age?`${age} yrs`:''}
-                        {p.height_cm?` • ${cmToFeet(p.height_cm)}`:''}
                         {p.gender?` • ${p.gender==='male'?'Groom':'Bride'}`:''}
                       </p>
                     </div>
@@ -1204,7 +1299,7 @@ export default function BrowsePage() {
                       {status && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                           style={{ background: 'rgba(255,255,255,0.95)', color: status==='matched'?'#2E7D32':'#14241C' }}>
-                          {status==='matched'?'Matched ✓':status==='pending'?'Interest Sent':'Accepted'}
+                          {status==='matched'?'Accepted ✓':status==='pending'?'Request Sent':'Accepted'}
                         </span>
                       )}
                     </div>
@@ -1223,11 +1318,11 @@ export default function BrowsePage() {
               <div className="px-5 py-1 divide-y divide-gray-100">
                 {[
                   { svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', text: `Native: ${p.native_district||'—'}${p.current_city?` • ${p.current_city}`:''}` },
-                  { svg: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>', text: [p.profession,p.education].filter(Boolean).join(' · ')||'—' },
-                  { svg: '<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/>', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'—' },
-                  { svg: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '—' },
+                  { svg: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>', text: p.profession || '—' },
+                  unlocked ? { svg: '<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/>', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'—' } : null,
+                  unlocked ? { svg: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '—' } : null,
                   seenLabel ? { dot: true, text: seenLabel } : null,
-                  p.about ? { svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', text: p.about.slice(0,120)+(p.about.length>120?'…':'') } : null,
+                  unlocked && p.about ? { svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', text: p.about.slice(0,120)+(p.about.length>120?'…':'') } : null,
                 ].filter(Boolean).map((row,i) => {
                   const r = row as { svg?: string; dot?: boolean; text: string }
                   return (
@@ -1254,7 +1349,7 @@ export default function BrowsePage() {
 
                 {myProfileId && myProfileId !== p.id && !interestSent && (
                   <button
-                    onClick={() => { if (status==='matched' && matchIdMap[p.id]) { window.location.href = `/chat/${matchIdMap[p.id]}` } else if (!status) { handleInterestFromModal(p) } }}
+                    onClick={() => { if (status==='matched' || status==='accepted') { window.location.href = `/profile/${p.id}` } else if (!status) { handleInterestFromModal(p) } }}
                     disabled={(!!status && status!=='matched') || sendingInterest}
                     className="w-full py-3 rounded-xl text-sm font-bold transition-all"
                     style={status==='matched'
@@ -1262,11 +1357,11 @@ export default function BrowsePage() {
                       : status
                       ? { background: '#ECFDF5', color: '#2E7D32' }
                       : { background: '#1B5E20', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(27,94,32,0.35)' }}>
-                    {status==='matched'  ? 'Matched — Go to Chat →' :
+                    {status==='matched'  ? 'View Biodata →' :
                      status==='accepted' ? 'Accepted' :
                      status==='pending'  ? 'Request Sent ✓' :
                      status==='rejected' ? 'Declined' :
-                     sendingInterest ? 'Connecting…' : 'Connect'}
+                     sendingInterest ? 'Sending…' : 'Send Request'}
                   </button>
                 )}
 
@@ -1280,7 +1375,7 @@ export default function BrowsePage() {
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1.5"
                     style={{ borderColor: '#E7E3D8', color: '#4B5563' }}
                     onClick={()=>setQuickView(null)}>
-                    View full profile
+                    {unlocked ? 'View biodata' : 'View locked profile'}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                   </Link>
                   <button
@@ -1321,7 +1416,7 @@ export default function BrowsePage() {
             style={{ background: 'white', width: '100%', maxWidth: '440px', borderRadius: '20px 20px 0 0', padding: '22px 20px 28px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
               <p style={{ fontWeight: 700, fontSize: '16px', color: '#14241C', margin: 0, fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
-                Contact {contactProfile.full_name?.split(' ')[0]}
+                Contact profile
               </p>
               <button onClick={() => setContactProfile(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8A938A' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -1352,7 +1447,7 @@ export default function BrowsePage() {
                   <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent — contact unlocks once they accept</p>
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0, lineHeight: 1.5 }}>
-                  Contact details are shared only after acceptance. We&apos;ve sent {contactProfile.full_name?.split(' ')[0]} your request — you&apos;ll be notified when they accept.
+                  Contact details are shared only after acceptance. We&apos;ve sent your request — you&apos;ll be notified when they accept.
                 </p>
               </div>
             )}

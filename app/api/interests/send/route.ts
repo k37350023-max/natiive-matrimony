@@ -18,35 +18,16 @@ export async function POST(req: Request) {
     const { data: existing } = await supabaseAdmin.from('interests')
       .select('id,status').eq('from_user', fromId).eq('to_user', toProfileId).maybeSingle()
     if (existing) {
-      const { data: m } = await supabaseAdmin.from('matches').select('id')
-        .or(`and(user1.eq.${fromId},user2.eq.${toProfileId}),and(user1.eq.${toProfileId},user2.eq.${fromId})`)
-        .maybeSingle()
-      return NextResponse.json({ ok: true, status: existing.status, matchId: m?.id })
+      return NextResponse.json({ ok: true, id: existing.id, status: existing.status })
     }
 
-    const { error } = await supabaseAdmin.from('interests')
+    const { data: created, error } = await supabaseAdmin.from('interests')
       .insert({ from_user: fromId, to_user: toProfileId, status: 'pending' })
+      .select('id,status')
+      .maybeSingle()
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
     const { data: me } = await supabaseAdmin.from('profiles').select('full_name').eq('id', fromId).maybeSingle()
-
-    // Open a thread immediately with one initial message. Further messages are
-    // locked (in /api/chat/send) until the recipient accepts.
-    const { data: existingMatch } = await supabaseAdmin.from('matches').select('id')
-      .or(`and(user1.eq.${fromId},user2.eq.${toProfileId}),and(user1.eq.${toProfileId},user2.eq.${fromId})`)
-      .maybeSingle()
-    let matchId = existingMatch?.id
-    if (!matchId) {
-      const { data: created } = await supabaseAdmin.from('matches')
-        .insert({ user1: fromId, user2: toProfileId }).select('id').maybeSingle()
-      matchId = created?.id
-    }
-    if (matchId) {
-      await supabaseAdmin.from('messages').insert({
-        match_id: matchId, from_profile_id: fromId,
-        content: `Hi, I came across your profile and I'm interested in connecting. Looking forward to hearing from you!`,
-      })
-    }
 
     // Best-effort notification to the recipient.
     const { data: target } = await supabaseAdmin.from('profiles').select('user_id').eq('id', toProfileId).maybeSingle()
@@ -58,7 +39,7 @@ export async function POST(req: Request) {
       }).then(() => {})
     }
 
-    return NextResponse.json({ ok: true, status: 'pending', matchId })
+    return NextResponse.json({ ok: true, id: created?.id, status: created?.status || 'pending' })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed'
     return NextResponse.json({ error: msg }, { status: 500 })

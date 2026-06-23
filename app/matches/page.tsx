@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
-import LaunchBanner from '../components/LaunchBanner'
 import AppHeader from '../components/AppHeader'
 
 type MatchEntry = {
@@ -112,7 +111,7 @@ export default function MatchesPage() {
         last_message_at: last?.created_at || null,
         pending_interest_id,
       }
-    }).filter(p => p.match_id)
+    }).filter(p => p.match_id && p.is_mutual)
       .sort((a, b) => (b.last_message_at || '').localeCompare(a.last_message_at || ''))
 
     setMatches(enriched)
@@ -132,11 +131,10 @@ export default function MatchesPage() {
   return (
     <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
       <AppHeader />
-      <LaunchBanner />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-5">
-          <h1 className="text-2xl font-bold text-gray-900">Inbox</h1>
-          <p className="text-gray-500 text-sm mt-0.5">Matches and interests in one place</p>
+          <h1 className="text-2xl font-bold text-gray-900">Accepted Connections</h1>
+          <p className="text-gray-500 text-sm mt-0.5">View biodata, contact, WhatsApp, and secondary chat after acceptance.</p>
         </div>
 
         {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}
@@ -148,9 +146,9 @@ export default function MatchesPage() {
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
               </svg>
             </div>
-            <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No conversations yet</p>
-            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Express interest on a profile to start chatting immediately.</p>
-            <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Profiles</Link>
+            <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No accepted connections yet</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from native-place search. Biodata and contact unlock after acceptance.</p>
+            <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Registry</Link>
           </div>
         )}
 
@@ -248,14 +246,14 @@ export default function MatchesPage() {
                   <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
                     <Link href={`/profile/${p.id}`}
                       style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600, borderRadius: '99px', border: '1px solid #E7E3D8', color: '#334155', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                      View Profile
+                      View Biodata
                     </Link>
                     <Link href={`/chat/${p.match_id}`}
-                      style={{ padding: '8px 18px', fontSize: '12px', fontWeight: 700, borderRadius: '99px', background: '#14241C', color: 'white', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 700, borderRadius: '99px', border: '1px solid #E7E3D8', background: 'white', color: '#5E6B62', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                       </svg>
-                      Message
+                      Chat
                     </Link>
                   </div>
                 )}

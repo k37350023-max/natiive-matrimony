@@ -10,7 +10,6 @@ export default function AppFooter() {
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           {[
             { label: 'Browse', href: '/browse' },
-            { label: 'Pricing', href: '/pricing' },
             { label: 'Privacy', href: '/privacy' },
             { label: 'Terms', href: '/terms' },
             { label: 'support@nativematrimony.com', href: 'mailto:support@nativematrimony.com' },
