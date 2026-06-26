@@ -1,0 +1,394 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import AppHeader from '../components/AppHeader'
+import MobileNav from '../components/MobileNav'
+import AppFooter from '../components/AppFooter'
+
+type Profile = {
+  id: string; full_name: string; gender: string; date_of_birth: string | null
+  photo_url: string | null; photo_visibility: string | null
+  profession: string | null; education: string | null; about: string | null
+  native_state: string | null; native_district: string | null
+  current_city: string | null; height_cm: number | null
+  religion: string | null; caste: string | null; mother_tongue: string | null
+  marital_status: string | null; diet: string | null; family_type: string | null
+  annual_income: string | null; visa_status: string | null
+  star: string | null; rashi: string | null; manglik: string | null; gotra: string | null
+  verified: boolean; member_number: number | null; premium_expires_at: string | null
+  created_at: string; last_login_at: string | null
+}
+
+type ViewerProfile = {
+  id: string; full_name: string; profession: string | null
+  native_district: string | null; photo_url: string | null; photo_visibility: string | null
+  date_of_birth: string | null
+  viewCount?: number; lastViewedAt?: string
+}
+
+type ShortlistProfile = ViewerProfile
+
+/* ─── Completeness ───────────────────────────────────────────── */
+const COMPLETENESS_FIELDS: { key: keyof Profile; label: string; weight: number }[] = [
+  { key: 'photo_url',       label: 'Profile photo',        weight: 20 },
+  { key: 'about',           label: 'About yourself',       weight: 10 },
+  { key: 'profession',      label: 'Profession',           weight: 8  },
+  { key: 'education',       label: 'Education',            weight: 8  },
+  { key: 'height_cm',       label: 'Height',               weight: 5  },
+  { key: 'religion',        label: 'Religion',             weight: 5  },
+  { key: 'caste',           label: 'Caste / Community',    weight: 5  },
+  { key: 'mother_tongue',   label: 'Mother tongue',        weight: 5  },
+  { key: 'marital_status',  label: 'Marital status',       weight: 5  },
+  { key: 'diet',            label: 'Diet preference',      weight: 4  },
+  { key: 'family_type',     label: 'Family type',          weight: 4  },
+  { key: 'annual_income',   label: 'Annual income',        weight: 4  },
+  { key: 'native_district', label: 'Native district',      weight: 5  },
+  { key: 'current_city',    label: 'Current city',         weight: 4  },
+  { key: 'star',            label: 'Star / Nakshatra',     weight: 4  },
+  { key: 'rashi',           label: 'Rashi',                weight: 4  },
+]
+
+function calcCompleteness(p: Profile): { pct: number; missing: string[] } {
+  let total = 0; let earned = 0; const missing: string[] = []
+  COMPLETENESS_FIELDS.forEach(({ key, label, weight }) => {
+    total += weight
+    const val = p[key]
+    if (val !== null && val !== undefined && val !== '') earned += weight
+    else missing.push(label)
+  })
+  return { pct: Math.round((earned / total) * 100), missing }
+}
+
+function getAge(dob: string | null) {
+  if (!dob) return null
+  const a = Math.floor((Date.now() - new Date(dob + 'T00:00:00').getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+  return a > 0 ? a : null
+}
+
+function timeAgo(ts: string | null) {
+  if (!ts) return null
+  const m = Math.floor((Date.now() - new Date(ts).getTime()) / 60000)
+  if (m < 60) return `${m}m ago`
+  if (m < 1440) return `${Math.floor(m / 60)}h ago`
+  return `${Math.floor(m / 1440)}d ago`
+}
+
+/* ─── Small avatar ───────────────────────────────────────────── */
+function MiniAvatar({ p, size = 40 }: { p: ViewerProfile; size?: number }) {
+  const show = !!(p.photo_url && p.photo_visibility === 'public')
+  const colors = ['#14241C','#1D4E7F','#1D7F4E','#7F5A1D','#4E1D7F']
+  const bg = colors[(p.full_name?.charCodeAt(0) || 0) % colors.length]
+  const init = p.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
+  return (
+    <div style={{ width: size, height: size, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {show
+        ? <img src={p.photo_url!} alt={p.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : <span style={{ fontSize: size * 0.35, fontWeight: 700, color: 'white' }}>{init}</span>}
+    </div>
+  )
+}
+
+/* ─── Completeness ring SVG ──────────────────────────────────── */
+function CompletenessRing({ pct }: { pct: number }) {
+  const r = 44; const circ = 2 * Math.PI * r
+  const dash = (pct / 100) * circ
+  const color = pct >= 80 ? '#2E7D32' : pct >= 50 ? '#D97706' : '#14241C'
+  return (
+    <svg width="110" height="110" viewBox="0 0 110 110">
+      <circle cx="55" cy="55" r={r} fill="none" stroke="#E7E3D8" strokeWidth="10" />
+      <circle cx="55" cy="55" r={r} fill="none" stroke={color} strokeWidth="10"
+        strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
+        transform="rotate(-90 55 55)" style={{ transition: 'stroke-dasharray 0.8s ease' }} />
+      <text x="55" y="51" textAnchor="middle" fontSize="20" fontWeight="800" fill="#0F0F0F">{pct}%</text>
+      <text x="55" y="66" textAnchor="middle" fontSize="9" fill="#94A3B8" fontWeight="600">COMPLETE</text>
+    </svg>
+  )
+}
+
+export default function DashboardPage() {
+  const router = useRouter()
+  const [profile,    setProfile]    = useState<Profile | null>(null)
+  const [loading,    setLoading]    = useState(true)
+  const [stats,      setStats]      = useState({ views: 0, viewsWeek: 0, interests: 0, matches: 0, shortlistCount: 0 })
+  const [viewers,    setViewers]    = useState<ViewerProfile[]>([])
+  const [shortlist,  setShortlist]  = useState<ShortlistProfile[]>([])
+
+  useEffect(() => {
+    const id = localStorage.getItem('my_profile_id')
+    if (!id) { router.replace('/login'); return }
+    load(id)
+  }, [])
+
+  async function load(id: string) {
+    setLoading(true)
+
+    const { data: p } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
+    if (!p) { router.replace('/login'); return }
+    setProfile(p)
+
+    // Interests received
+    const { count: intCount } = await supabase.from('interests')
+      .select('id', { count: 'exact', head: true }).eq('to_user', id).eq('status', 'pending')
+
+    // Matches
+    const { data: matchRows } = await supabase.from('matches').select('id').or(`user1.eq.${id},user2.eq.${id}`)
+    const matchCount = matchRows?.length || 0
+
+    // Profile views
+    const { data: viewRows } = await supabase.from('profile_views')
+      .select('viewer_id, viewed_at').eq('viewed_id', id)
+      .order('viewed_at', { ascending: false }).limit(50)
+
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    const viewsWeek = (viewRows || []).filter(v => new Date(v.viewed_at) > weekAgo).length
+
+    // Group views per viewer → count + last viewed (most-interested first).
+    const stat: Record<string, { count: number; last: string }> = {}
+    ;(viewRows || []).forEach(v => {
+      const s = stat[v.viewer_id] || { count: 0, last: v.viewed_at }
+      s.count += 1
+      if (new Date(v.viewed_at) > new Date(s.last)) s.last = v.viewed_at
+      stat[v.viewer_id] = s
+    })
+    const viewerIds = Object.keys(stat).slice(0, 10)
+    if (viewerIds.length > 0) {
+      const { data: vProfiles } = await supabase.from('profiles')
+        .select('id, full_name, profession, native_district, photo_url, photo_visibility, date_of_birth')
+        .in('id', viewerIds)
+      const merged = (vProfiles || []).map(p => ({ ...p, viewCount: stat[p.id]?.count || 1, lastViewedAt: stat[p.id]?.last }))
+      merged.sort((a, b) => (b.viewCount - a.viewCount) || (new Date(b.lastViewedAt || 0).getTime() - new Date(a.lastViewedAt || 0).getTime()))
+      setViewers(merged)
+    }
+
+    // Shortlists of me
+    const { count: shortCount } = await supabase.from('shortlists')
+      .select('id', { count: 'exact', head: true }).eq('profile_id', id)
+
+    // My shortlist
+    const { data: myShortlist } = await supabase.from('shortlists')
+      .select('profile_id').eq('by_profile_id', id).limit(10)
+
+    if (myShortlist && myShortlist.length > 0) {
+      const sIds = myShortlist.map(s => s.profile_id)
+      const { data: sProfiles } = await supabase.from('profiles')
+        .select('id, full_name, profession, native_district, photo_url, photo_visibility, date_of_birth')
+        .in('id', sIds)
+      setShortlist(sProfiles || [])
+    }
+
+    setStats({
+      views: viewRows?.length || 0,
+      viewsWeek,
+      interests: intCount || 0,
+      matches: matchCount,
+      shortlistCount: shortCount || 0,
+    })
+
+    setLoading(false)
+  }
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', background: '#FBFAF5' }}>
+      <AppHeader />
+      <div style={{ maxWidth: '760px', margin: '0 auto', padding: '32px 16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+          {[1,2,3,4].map(i => <div key={i} style={{ height: '80px', background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8' }} />)}
+        </div>
+        <div style={{ height: '220px', background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8' }} />
+      </div>
+      <MobileNav />
+    </div>
+  )
+
+  if (!profile) return null
+
+  const { pct, missing } = calcCompleteness(profile)
+  const memberLabel = profile.member_number ? `NTV-${String(profile.member_number).padStart(5,'0')}` : null
+  const age = getAge(profile.date_of_birth)
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#FBFAF5', paddingBottom: '80px' }}>
+      <AppHeader />
+
+      <div style={{ maxWidth: '760px', margin: '0 auto', padding: '20px 16px' }}>
+
+        {/* ── Profile header card ───────────────────────────────── */}
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '18px', marginBottom: '14px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+          {/* Avatar */}
+          <div style={{ width: '72px', height: '72px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#14241C', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {profile.photo_url
+              ? <img src={profile.photo_url} alt={profile.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : <span style={{ fontSize: '26px', fontWeight: 700, color: 'white' }}>{profile.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)}</span>}
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
+              <div>
+                <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: '0 0 3px', letterSpacing: 0 }}>My registry profile</h1>
+                <p style={{ fontSize: '12.5px', color: '#777', margin: 0 }}>
+                  {[age ? `${age} yrs` : null, profile.profession, profile.native_district].filter(Boolean).join(' · ')}
+                </p>
+                {memberLabel && <p style={{ fontSize: '11px', color: '#5E6B62', margin: '3px 0 0', fontWeight: 700 }}>Registry Profile #{profile.member_number}</p>}
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+              <Link href={`/profile/${profile.id}`} style={{ fontSize: '12.5px', fontWeight: 600, padding: '7px 16px', borderRadius: '8px', background: '#14241C', color: 'white', textDecoration: 'none' }}>
+                View Profile
+              </Link>
+              <Link href="/profile/edit" style={{ fontSize: '12.5px', fontWeight: 600, padding: '7px 16px', borderRadius: '8px', background: 'white', color: '#555', textDecoration: 'none', border: '1.5px solid #E8E8E8' }}>
+                Edit Profile
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', overflow: 'hidden', marginBottom: '14px' }}>
+          {[
+            { label: 'Requests Received', sub: 'Accept or decline families who requested your biodata.', href: '/interests?tab=received' },
+            { label: 'Requests Sent', sub: 'Track pending requests you sent from native-place search.', href: '/interests?tab=sent' },
+            { label: 'Accepted Connections', sub: 'View biodata, contact, WhatsApp, and optional chat.', href: '/matches' },
+            { label: 'My Profile', sub: 'Edit your native place, phone, photo, and biodata fields.', href: '/profile/edit' },
+          ].map((item, i, arr) => (
+            <Link key={item.label} href={item.href} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px',
+              padding: '16px 20px', textDecoration: 'none', borderBottom: i < arr.length - 1 ? '1px solid #F3F4F6' : 'none',
+            }}>
+              <div>
+                <p style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', margin: '0 0 3px' }}>{item.label}</p>
+                <p style={{ fontSize: '12px', color: '#64748B', margin: 0, lineHeight: 1.5 }}>{item.sub}</p>
+              </div>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+            </Link>
+          ))}
+        </div>
+
+        {/* ── Profile completeness ──────────────────────────────── */}
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '18px', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+            <CompletenessRing pct={pct} />
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: '14px', fontWeight: 700, color: '#111', margin: '0 0 6px' }}>
+                {pct >= 90 ? 'Your profile looks great!' : pct >= 60 ? 'Good progress!' : 'Complete your profile'}
+              </p>
+              <p style={{ fontSize: '12.5px', color: '#94A3B8', margin: '0 0 10px', lineHeight: 1.5 }}>
+                {pct >= 90
+                  ? 'Your biodata is ready to share after accepted requests.'
+                  : `Add missing details so families can evaluate after acceptance.`}
+              </p>
+              {missing.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                  {missing.slice(0, 4).map(m => (
+                    <Link key={m} href="/profile/edit" style={{ fontSize: '11px', fontWeight: 600, padding: '3px 9px', borderRadius: '99px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA', textDecoration: 'none' }}>
+                      + {m}
+                    </Link>
+                  ))}
+                  {missing.length > 4 && (
+                    <span style={{ fontSize: '11px', color: '#94A3B8', padding: '3px 5px' }}>+{missing.length - 4} more</span>
+                  )}
+                </div>
+              )}
+              {missing.length === 0 && (
+                <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2E7D32' }}>✓ All fields complete</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Who viewed me ─────────────────────────────────────── */}
+        <div id="viewers" style={{ display: 'none', background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+            <h2 style={{ fontSize: '14px', fontWeight: 700, color: '#111', margin: 0 }}>Who viewed my profile</h2>
+            <span style={{ fontSize: '12px', color: '#94A3B8' }}>{stats.views} total views</span>
+          </div>
+          {viewers.length === 0 ? (
+            <p style={{ fontSize: '13px', color: '#94A3B8', textAlign: 'center', padding: '20px 0' }}>
+              No views yet — complete your profile to get discovered!
+            </p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {viewers.map(v => (
+                <Link key={v.id} href={`/profile/${v.id}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', padding: '8px', borderRadius: '10px', transition: 'background 0.12s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#FBFAF5')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <MiniAvatar p={v} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#111', margin: 0 }}>{v.full_name}</p>
+                      {(v.viewCount || 0) > 1 && (
+                        <span style={{ fontSize: '10px', fontWeight: 700, padding: '1px 6px', borderRadius: '99px', background: '#EDF3ED', color: '#14241C', flexShrink: 0 }}>
+                          viewed {v.viewCount}×
+                        </span>
+                      )}
+                    </div>
+                    <p style={{ fontSize: '11.5px', color: '#94A3B8', margin: '2px 0 0' }}>
+                      {(v.viewCount || 0) > 1 && v.lastViewedAt ? `Last viewed ${timeAgo(v.lastViewedAt)} · ` : ''}
+                      {[v.profession, v.native_district].filter(Boolean).join(' · ')}
+                    </p>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCC" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── My shortlist ──────────────────────────────────────── */}
+        <div style={{ display: 'none', background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '20px', marginBottom: '16px' }}>
+          <h2 style={{ fontSize: '14px', fontWeight: 700, color: '#111', margin: '0 0 14px' }}>My shortlist</h2>
+          {shortlist.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+              <p style={{ fontSize: '13px', color: '#94A3B8', margin: '0 0 10px' }}>No profiles shortlisted yet</p>
+              <Link href="/browse" style={{ fontSize: '13px', fontWeight: 600, color: '#14241C', textDecoration: 'none' }}>Browse profiles →</Link>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {shortlist.map(s => (
+                <Link key={s.id} href={`/profile/${s.id}`} style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none', padding: '8px', borderRadius: '10px', transition: 'background 0.12s' }}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#FBFAF5')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                  <MiniAvatar p={s} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#111', margin: 0 }}>{s.full_name}</p>
+                    <p style={{ fontSize: '11.5px', color: '#94A3B8', margin: '2px 0 0' }}>
+                      {[getAge(s.date_of_birth) ? `${getAge(s.date_of_birth)} yrs` : null, s.profession, s.native_district].filter(Boolean).join(' · ')}
+                    </p>
+                  </div>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCC" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* ── Quick links ───────────────────────────────────────── */}
+        <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', overflow: 'hidden' }}>
+          {[
+            { icon: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/>', label: 'Edit profile details', href: '/profile/edit' },
+            { icon: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>', label: 'Notifications', href: '/notifications' },
+            { icon: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>', label: 'Privacy settings', href: '/profile/edit#privacy' },
+            { icon: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>', label: 'Download my biodata', href: `/profile/${profile.id}` },
+          ].map((item, i, arr) => (
+            <Link key={item.label} href={item.href} style={{
+              display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 20px',
+              textDecoration: 'none', color: '#333', fontSize: '13.5px', fontWeight: 500,
+              borderBottom: i < arr.length - 1 ? '1px solid #FBFAF5' : 'none',
+              transition: 'background 0.1s',
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#FBFAF5')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#5E6B62" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }} dangerouslySetInnerHTML={{ __html: item.icon }} />
+              {item.label}
+              <svg style={{ marginLeft: 'auto' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CCC" strokeWidth="2.5"><path d="m9 18 6-6-6-6"/></svg>
+            </Link>
+          ))}
+        </div>
+
+      </div>
+      <AppFooter />
+      <MobileNav />
+    </div>
+  )
+}
