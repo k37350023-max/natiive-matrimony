@@ -136,18 +136,17 @@ export default function NotificationsPage() {
     }
     setLoading(false)
 
-    // Mark all as read
-    await supabase.from('notifications').update({ read: true }).eq('user_id', uid).eq('read', false)
+    // Mark all as read (secured: scoped to session user server-side)
+    fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'markAllRead' }) })
   }
 
   async function markAllRead() {
-    if (!userId) return
-    await supabase.from('notifications').update({ read: true }).eq('user_id', userId)
+    await fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'markAllRead' }) })
     setNotifs(p => p.map(n => ({ ...n, read: true })))
   }
 
   async function dismissNotif(id: string) {
-    await supabase.from('notifications').delete().eq('id', id)
+    await fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'dismiss', id }) })
     setNotifs(p => p.filter(n => n.id !== id))
   }
 

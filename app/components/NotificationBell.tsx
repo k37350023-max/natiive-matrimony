@@ -105,7 +105,7 @@ export default function NotificationBell() {
 
   async function markRead() {
     if (!userId) return
-    await supabase.from('notifications').update({ read: true }).eq('user_id', userId).eq('read', false)
+    await fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'markAllRead' }) })
     setNotifs(p => p.map(n => ({ ...n, read: true })))
   }
 
@@ -120,8 +120,8 @@ export default function NotificationBell() {
   function handleNotifClick(n: Notif) {
     const link = notifLink(n)
     setOpen(false)
-    // Mark this one read
-    supabase.from('notifications').update({ read: true }).eq('id', n.id).then(() => {})
+    // Mark this one read (secured, scoped to session user)
+    fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'markRead', id: n.id }) })
     setNotifs(p => p.map(x => x.id === n.id ? { ...x, read: true } : x))
     if (link) router.push(link)
   }

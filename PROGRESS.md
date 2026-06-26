@@ -90,6 +90,25 @@ Ranked by what a normal visitor/member would actually hit.
   Groom chat message delivered. (Test accounts kept; the interaction rows were cleaned.)
 - Also fixed login/register headers to the lowercase `nativematrimony.` wordmark.
 
+## FIX-ALL audit + RLS finish plan (in progress)
+Audit: build green; lint 120 (mostly noise: set-state-in-effect, no-img-element). Real backend
+risk = direct client DB access still bypassing the secured API → blocks RLS.
+
+Remaining client WRITES to migrate to cookie-authorized /api (then enable RLS):
+- [x] notifications: markAllRead / markRead / dismiss → `/api/notifications` (NotificationBell + notifications page)
+- [ ] profile_views insert + view notification (profile/[id]:255,268) → `/api/profiles/view`
+- [ ] field_requests update + notifications (profile/[id]:371,381,393,402) → `/api/field-requests/respond`
+- [ ] reports insert (profile/[id]:1282) → `/api/reports`
+- [ ] matches accept (matches/page:67) → reuse `/api/interests/respond`
+- [ ] chat messages mark-read (chat/[id]:140) → `/api/chat/read`
+- [ ] profiles.update last_login_at (browse:677, profile/[id]:722) → drop or `/api/profiles/touch`
+- [ ] profile/edit phone_verified update (367/1067) + profile_photos insert/delete (330/340) → `/api/profiles/photo` + verify
+- [ ] interests withdraw delete (interests:306) → reuse `/api/matches/unmatch`
+- [ ] admin writes (internal-only) → lower priority
+Then: enable RLS (deny anon) on all tables + remove anon fallbacks + full verify.
+P1 frontend: native-place input value loss on state-select; stale header stat counters.
+P2: eslint --fix; <img>→next/image on hot paths.
+
 ## Native-place spec pass 1 (deep-green theme + contact/chat) — DONE ✅
 - **Retheme to deep-green / navy / cream** (mockup): tokens in globals.css, app-wide hex remap
   (40 files), green CTAs with white text, cream canvas, wordmark "matrimony" now green.
