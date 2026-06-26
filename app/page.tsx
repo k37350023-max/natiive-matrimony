@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import FounderCount from './components/FounderCount'
 
 const TRUST_BADGES = [
   ['Free', 'Forever', 'M5 13l4 4L19 7'],
@@ -146,24 +145,14 @@ export default function Home() {
                 Browse Profiles
               </Link>
             </div>
+            <div className="hero-privacy-note">
+              <Icon path="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" size={17} />
+              Biodata and contact unlock only after acceptance.
+            </div>
           </div>
 
           <div className="hero-visual-wrap">
             <HeroIllustration />
-            <div className="founder-card">
-              <div className="card-title">
-                <span><Icon path="M20 12v10H4V12 M2 7h20v5H2z M12 22V7 M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z M12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z" size={20} /></span>
-                <strong>Founding Member Program</strong>
-              </div>
-              <p>First 1,000 profiles receive:</p>
-              {['Profile support free for 1 year', 'Founding Member badge', 'Priority verification'].map(item => (
-                <div className="founder-bullet" key={item}>
-                  <Icon path="M20 6 9 17l-5-5" size={14} />
-                  {item}
-                </div>
-              ))}
-              <FounderCount />
-            </div>
           </div>
         </section>
 
