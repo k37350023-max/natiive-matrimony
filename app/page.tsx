@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import FounderCount from './components/FounderCount'
 
 const TRUST_BADGES = [
   ['Free', 'Forever', 'M5 13l4 4L19 7'],
@@ -51,39 +52,34 @@ function Logo() {
 
 function HeroIllustration() {
   return (
-    <div className="hero-art" aria-label="Native place illustration">
-      <svg viewBox="0 0 420 420" role="img">
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#FFF8E7" />
-            <stop offset="1" stopColor="#E8F4EA" />
-          </linearGradient>
-          <linearGradient id="greenSari" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#0E7A46" />
-            <stop offset="1" stopColor="#064628" />
-          </linearGradient>
-        </defs>
-        <rect width="420" height="420" rx="36" fill="url(#sky)" />
-        <path d="M0 310C52 270 110 268 168 298C232 331 286 288 420 300V420H0Z" fill="#F9E9C4" opacity=".72" />
-        <path d="M252 205h92v118h-92z" fill="#E6B86C" opacity=".5" />
-        <path d="M240 205l58-92 58 92z" fill="#C9893D" opacity=".58" />
-        <path d="M272 168h52M260 195h76M278 225h40" stroke="#8D5E2E" strokeWidth="7" strokeLinecap="round" opacity=".5" />
-        <path d="M50 307V184M50 184c-28 6-42 24-45 43M50 184c27 7 44 27 50 52M50 184c-8-33 7-57 31-73" stroke="#8AA46E" strokeWidth="8" strokeLinecap="round" opacity=".65" />
-        <path d="M354 312V205M354 205c-25 4-42 20-48 41M354 205c26 9 42 28 47 55" stroke="#8AA46E" strokeWidth="8" strokeLinecap="round" opacity=".65" />
-        <circle cx="185" cy="140" r="42" fill="#3A231B" />
-        <circle cx="185" cy="130" r="30" fill="#AF6E48" />
-        <path d="M134 286c4-62 24-98 52-98s49 36 56 98z" fill="url(#greenSari)" />
-        <path d="M151 205c38 26 66 53 78 81" stroke="#D7A85D" strokeWidth="12" strokeLinecap="round" />
-        <circle cx="256" cy="132" r="38" fill="#2A1A14" />
-        <circle cx="256" cy="127" r="30" fill="#B77954" />
-        <path d="M220 288c7-64 27-100 62-100 29 0 51 35 57 100z" fill="#F7E5C9" />
-        <path d="M236 191c23 26 60 28 88 1" stroke="#EFD7B9" strokeWidth="8" strokeLinecap="round" opacity=".8" />
-        <path d="M150 127c18-35 62-32 75 4" stroke="#241611" strokeWidth="18" strokeLinecap="round" />
-        <path d="M226 125c18-37 65-33 76 7" stroke="#241611" strokeWidth="18" strokeLinecap="round" />
-        <path d="M172 138c8 9 20 9 28 0M244 139c8 9 20 9 28 0" stroke="#5B2F23" strokeWidth="4" strokeLinecap="round" />
-        <path d="M162 155c17 18 43 18 58 0M237 155c16 17 40 17 56 0" stroke="#6B3A29" strokeWidth="5" strokeLinecap="round" />
-        <path d="M76 94c8 7 16 7 24 0M116 72c6 5 12 5 18 0M344 76c8 7 16 7 24 0" stroke="#A6998B" strokeWidth="4" strokeLinecap="round" />
-      </svg>
+    <div className="hero-art" aria-label="Private native-place registry preview">
+      <div className="hero-map">
+        <span className="hero-map-pin" />
+        <span className="hero-map-line one" />
+        <span className="hero-map-line two" />
+        <span className="hero-map-line three" />
+      </div>
+      <div className="hero-profile-card primary">
+        <div className="profile-photo locked">
+          <Icon path="M7 10V7a5 5 0 0 1 10 0v3 M5 10h14v10H5z" size={26} />
+        </div>
+        <div className="profile-lines">
+          <strong>Profile locked</strong>
+          <span>Age • Occupation</span>
+          <span>Native place visible</span>
+        </div>
+      </div>
+      <div className="hero-profile-card secondary">
+        <div>
+          <small>Native Place</small>
+          <strong>Karimnagar</strong>
+        </div>
+        <span className="match-pill">Private until accepted</span>
+      </div>
+      <div className="hero-profile-card tertiary">
+        <Icon path="M20 6 9 17l-5-5" size={18} />
+        <span>Biodata unlocks after mutual interest</span>
+      </div>
     </div>
   )
 }
@@ -160,14 +156,13 @@ export default function Home() {
                 <strong>Founding Member Program</strong>
               </div>
               <p>First 1,000 profiles receive:</p>
-              {['Premium features free for 1 year', 'Founding Member badge', 'Priority verification'].map(item => (
+              {['Profile support free for 1 year', 'Founding Member badge', 'Priority verification'].map(item => (
                 <div className="founder-bullet" key={item}>
                   <Icon path="M20 6 9 17l-5-5" size={14} />
                   {item}
                 </div>
               ))}
-              <div className="founder-progress"><span /></div>
-              <div className="founder-count"><strong>47</strong> / 1,000 joined</div>
+              <FounderCount />
             </div>
           </div>
         </section>
