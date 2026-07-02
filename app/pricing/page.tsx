@@ -12,17 +12,18 @@ export default function PricingPage() {
         <div className="card px-6 py-7">
           <p className="section-label mb-3">NativeMatrimony</p>
           <h1 className="font-serif-display text-2xl font-bold text-gray-900 mb-3">
-            Request-based registry access
+            Free registry, optional guided help
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed mb-6">
-            NativeMatrimony does not use premium plans right now. Search by native place,
-            send a request, and unlock biodata and contact only after acceptance.
+            NativeMatrimony is free for registry access right now. Search by Telugu native place,
+            send requests, and unlock biodata and contact only after acceptance. Families who want more help can use optional guided introductions.
           </p>
           <div className="space-y-3 mb-6">
             {[
               'Search by native place first.',
               'Photos are visible unless a member hides them.',
               'Biodata and contact unlock only after acceptance.',
+              'Optional human-assisted matching for families who want extra vetting.',
             ].map(item => (
               <div key={item} className="flex items-start gap-3 text-sm text-gray-700">
                 <span className="mt-0.5 h-5 w-5 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: '#1B5E20' }}>✓</span>

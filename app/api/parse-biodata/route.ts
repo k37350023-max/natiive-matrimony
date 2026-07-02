@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
     console.error('parse-biodata error:', err)
     const msg = (err as { error?: { type?: string } })?.error?.type === 'invalid_request_error' &&
       JSON.stringify(err).includes('credit balance')
-      ? 'AI service is temporarily unavailable. Please fill in your details manually.'
+      ? 'Auto-fill service is temporarily unavailable. Please fill in your details manually.'
       : 'Failed to parse biodata. Please try again.'
     return NextResponse.json({ error: msg }, { status: 500 })
   }

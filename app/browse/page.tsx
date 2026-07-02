@@ -161,7 +161,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
               No one from {searchedPlace} yet.
             </h1>
             <p className="nm-muted" style={{ fontSize: '15px', lineHeight: 1.7, margin: '18px 0 0', maxWidth: '300px' }}>
-              Register your profile and we’ll keep your hometown search ready. When someone from {searchedPlace} joins, you’ll know where to start.
+              Register your profile and seed this Telugu hometown corridor. When someone from {searchedPlace} joins, your family will not be starting from zero.
             </p>
 
             <div aria-hidden="true" style={{ position: 'relative', height: '210px', margin: '24px -18px 0', overflow: 'hidden' }}>
@@ -191,7 +191,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
                   <strong>Details unlock after acceptance.</strong><br />
-                  Create your registry profile now. Your biodata and contact stay locked until a request is accepted.
+                  Create your registry profile now. Key profile signals stay visible, while biodata and contact stay locked until a request is accepted.
                 </p>
               </div>
             </div>
@@ -225,12 +225,12 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900 font-serif-display mb-2">
-            {searchedPlace ? `Profiles from ${searchedPlace}` : 'Search the native-place registry'}
+            {searchedPlace ? `Profiles from ${searchedPlace}` : 'Search the Telugu native-place registry'}
           </h1>
           <p className="text-gray-500 text-sm">
             {searchedPlace
-              ? 'Create a profile to request biodata and contact after acceptance.'
-              : 'Create a profile to send requests and unlock biodata after acceptance.'}
+              ? 'Create a profile to see high-signal details and request biodata after acceptance.'
+              : 'Create a profile to browse serious Telugu profiles and unlock biodata after acceptance.'}
           </p>
         </div>
 
@@ -243,7 +243,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                   <GeometricPlaceholder name={p.full_name} />
                   <div className="absolute inset-0 flex items-end justify-center pb-3 pointer-events-none">
                     <div className="text-xs font-medium px-3 py-1.5 rounded-full" style={{ background: 'rgba(0,0,0,0.55)', color: 'white' }}>
-                      Photo visible after signup
+                      Photo choice visible after signup
                     </div>
                   </div>
                 </div>
@@ -258,8 +258,8 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
         </div>
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
-          <p className="font-bold text-gray-900 text-lg mb-2">Request before contact unlocks</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">Photos help you recognize real profiles. Full names, biodata, and contact unlock after acceptance.</p>
+          <p className="font-bold text-gray-900 text-lg mb-2">Useful previews before private details unlock</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see practical signals first. Full names, biodata, and contact unlock only after acceptance.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
               Create Profile
@@ -1127,14 +1127,14 @@ export default function BrowsePage() {
                 {alertSet ? 'Alert set' : '+ Save search'}
               </button>
             </div>
-            {/* ── AI Top Picks ─────────────────────────────── */}
+            {/* Suggested profiles */}
             {false && aiPicks.length > 0 && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#1B5E20" stroke="none" style={{ flexShrink: 0 }}><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
                   <span className="text-sm font-bold text-gray-900">Top Picks for You</span>
                   <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
-                    AI matched
+                    Suggested
                   </span>
                 </div>
                 <div style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}>
