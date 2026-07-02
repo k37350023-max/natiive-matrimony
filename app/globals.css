@@ -2505,6 +2505,9 @@ select.input {
 
 .nmh-hero-visual {
   aspect-ratio: 4 / 3.45;
+  background:
+    radial-gradient(circle at 72% 20%, rgba(238, 214, 154, 0.42), transparent 16rem),
+    linear-gradient(135deg, #FFF8E6 0%, #EEF5EA 100%);
   border: 1px solid #DFEADF;
   border-radius: 28px;
   box-shadow: 0 26px 58px rgba(7, 21, 39, 0.12);
@@ -2513,17 +2516,31 @@ select.input {
   position: relative;
 }
 
+.nmh-hero-visual::before {
+  background-image: url("/home-hero-match.webp");
+  background-position: center;
+  background-size: cover;
+  content: "";
+  filter: blur(18px) saturate(1.05);
+  inset: -24px;
+  opacity: 0.34;
+  position: absolute;
+  transform: scale(1.04);
+}
+
 .nmh-hero-visual::after {
   background:
-    linear-gradient(180deg, transparent 38%, rgba(7, 21, 39, 0.46) 100%),
-    linear-gradient(90deg, rgba(255, 254, 250, 0.38) 0%, transparent 42%);
+    linear-gradient(180deg, rgba(255, 254, 250, 0.10) 0%, transparent 40%, rgba(7, 21, 39, 0.26) 100%),
+    linear-gradient(90deg, rgba(255, 254, 250, 0.30) 0%, transparent 44%);
   content: "";
   inset: 0;
   position: absolute;
 }
 
 .nmh-hero-image {
-  object-fit: cover;
+  object-fit: contain;
+  padding: 14px;
+  z-index: 1;
 }
 
 .nmh-profile-panel {

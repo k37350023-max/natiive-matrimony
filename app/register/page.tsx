@@ -202,7 +202,11 @@ export default function RegisterPage() {
             ))}
           </div>
 
-          <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 4px', letterSpacing: '-0.02em' }}>{STEP_META.title}</h2>
+          {step === 1 ? (
+            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 4px', letterSpacing: 0 }}>{STEP_META.title}</h1>
+          ) : (
+            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 4px', letterSpacing: 0 }}>{STEP_META.title}</h2>
+          )}
           <p style={{ fontSize: '13.5px', color: '#94A3B8', margin: '0 0 22px' }}>{STEP_META.sub}</p>
 
           <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '20px' }}>

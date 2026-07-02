@@ -8,7 +8,7 @@ const trustItems = [
   ['Free Forever', 'No subscriptions, no hidden unlock charges.', 'check'],
   ['Photo Control', 'Photos are visible by default, with a hide option anytime.', 'lock'],
   ['No Random Messages', 'Chat starts only when both sides accept.', 'chat'],
-  ['Family Friendly', 'Simple enough for parents to review and manage.', 'family'],
+  ['Telugu Family Friendly', 'Built around native place, parents, and serious family review.', 'family'],
   ['Verified Profiles', 'Phone-verified registry profiles with approval flow.', 'shield'],
 ]
 
@@ -76,6 +76,7 @@ function HeroVisual() {
         priority
         sizes="(min-width: 960px) 520px, 100vw"
         className="nmh-hero-image"
+        style={{ objectFit: 'contain', padding: '14px' }}
       />
       <div className="nmh-profile-panel">
         <div className="nmh-panel-top">
@@ -126,7 +127,7 @@ export default function Home() {
               Native-place-first matrimonial registry
             </div>
             <h1>Create your profile. Let the right hometown match find you.</h1>
-            <p>NativeMatrimony keeps the first step simple: register your family profile, choose your native place, show a real photo if you want, and keep biodata and contact locked until acceptance.</p>
+            <p>Built for Telugu families across Andhra, Telangana, and the diaspora. Create your profile, choose your native place, and keep biodata and contact locked until acceptance.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
@@ -139,7 +140,7 @@ export default function Home() {
             <div className="nmh-proof-row" aria-label="Trust highlights">
               <span><strong>2 min</strong> profile start</span>
               <span><strong>100%</strong> free</span>
-              <span><strong>Biodata</strong> gated</span>
+              <span><strong>Details</strong> locked</span>
             </div>
           </div>
           <HeroVisual />
@@ -175,7 +176,7 @@ export default function Home() {
             <article>
               <Icon name="lock" size={25} />
               <h3>Stay private</h3>
-              <p>Photos, contact, and full biodata stay behind acceptance so your profile feels safe to create.</p>
+              <p>Show a real photo when you are ready, while biodata and contact stay locked until acceptance.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
