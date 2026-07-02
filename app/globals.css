@@ -2756,3 +2756,258 @@ select.input {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* ── App browse polish overrides: kept at EOF so Next/Tailwind serves them ── */
+.app-brand {
+  align-items: center;
+  color: #14241C;
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 10px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.app-brand-mark {
+  align-items: center;
+  background: linear-gradient(145deg, #153829 0%, #0A2118 100%);
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(20, 36, 28, 0.16), inset 0 1px 0 rgba(255,255,255,0.18);
+  color: #FFFFFF;
+  display: inline-flex;
+  font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  height: 38px;
+  justify-content: center;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  position: relative;
+  width: 38px;
+}
+
+.app-brand-mark::after {
+  background: #B7D9B8;
+  border-radius: 99px;
+  bottom: 7px;
+  content: "";
+  height: 6px;
+  position: absolute;
+  right: 7px;
+  width: 6px;
+}
+
+.app-brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.app-brand-copy > span {
+  color: #166534;
+  font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  white-space: nowrap;
+}
+
+.app-brand-copy strong {
+  color: #14241C;
+  font-weight: 800;
+}
+
+.app-brand-copy small {
+  color: #718072;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.app-nav-link:hover {
+  color: #14241C !important;
+  background: #F4F7F1;
+  border-radius: 10px;
+}
+
+.mobile-tabbar {
+  box-shadow: 0 -14px 28px rgba(20, 36, 28, 0.08);
+}
+
+.mobile-tabbar-icon {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  transition: background 0.18s, color 0.18s, transform 0.18s;
+  width: 42px;
+}
+
+.mobile-tabbar a.active .mobile-tabbar-icon {
+  background: #14241C;
+  color: #FFFFFF;
+  transform: translateY(-3px);
+}
+
+.browse-stats-grid {
+  background: linear-gradient(135deg, rgba(237,243,237,0.7), rgba(255,255,255,0));
+  border: 1px solid rgba(231, 227, 216, 0.78);
+  border-radius: 14px;
+  padding: 8px;
+}
+
+.browse-stat-card {
+  box-shadow: 0 1px 0 rgba(255,255,255,0.8), 0 10px 22px rgba(20,36,28,0.04);
+}
+
+.browse-command {
+  background: radial-gradient(circle at 10% 0%, rgba(237, 243, 237, 0.95), transparent 16rem), #FFFFFF;
+  border: 1px solid #E4EADC;
+  border-radius: 14px;
+  box-shadow: 0 14px 36px rgba(20,36,28,0.07);
+  padding: 16px;
+}
+
+.browse-page-title {
+  font-size: 23px !important;
+  letter-spacing: -0.03em !important;
+}
+
+.browse-search-card {
+  align-items: center;
+  border-radius: 12px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto !important;
+  padding: 6px !important;
+}
+
+.browse-search-input {
+  min-height: 46px;
+}
+
+.browse-search-button {
+  border-radius: 10px !important;
+  min-width: 132px;
+}
+
+.browse-results-bar {
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(231,227,216,0.78);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.browse-profile-card {
+  box-shadow: 0 1px 0 rgba(255,255,255,0.9), 0 12px 28px rgba(20,36,28,0.07) !important;
+}
+
+.browse-profile-card::after {
+  border: 1px solid rgba(255,255,255,0.72);
+  border-radius: inherit;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.browse-profile-media {
+  background: #EFF4EC;
+}
+
+.browse-profile-body {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FCFCF8 100%);
+}
+
+@media (max-width: 639px) {
+  .app-header-inner {
+    min-height: 64px !important;
+    padding: 0 16px !important;
+  }
+
+  .app-brand {
+    gap: 8px;
+  }
+
+  .app-brand-mark {
+    border-radius: 9px;
+    font-size: 20px;
+    height: 36px;
+    width: 36px;
+  }
+
+  .app-brand-copy > span {
+    font-size: 23px;
+  }
+
+  .app-brand-copy small {
+    display: none;
+  }
+
+  .browse-stats-grid {
+    background: transparent;
+    border: 0;
+    gap: 10px !important;
+    margin-bottom: 18px !important;
+    padding: 0;
+  }
+
+  .browse-stat-card {
+    border-radius: 16px !important;
+    padding: 16px 4px !important;
+  }
+
+  .browse-command {
+    border-radius: 16px;
+    margin: 0 -2px 16px;
+    padding: 14px;
+  }
+
+  .browse-page-title {
+    font-size: 27px !important;
+    line-height: 1.08 !important;
+    max-width: 260px;
+  }
+
+  .browse-search-card {
+    gap: 8px !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    margin-top: 12px;
+    padding: 8px !important;
+  }
+
+  .browse-search-input {
+    font-size: 16px !important;
+    min-height: 48px;
+    padding: 12px 14px !important;
+  }
+
+  .browse-search-button {
+    min-height: 50px !important;
+    width: 100%;
+  }
+
+  .browse-results-bar {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    padding: 6px 0 12px;
+  }
+
+  .browse-profile-card {
+    border-radius: 16px !important;
+  }
+
+  .browse-profile-media {
+    padding-bottom: 70% !important;
+  }
+
+  .browse-profile-body {
+    padding: 16px !important;
+  }
+}

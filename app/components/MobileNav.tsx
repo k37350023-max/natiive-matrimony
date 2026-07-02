@@ -92,7 +92,7 @@ export default function MobileNav() {
   ]
 
   return (
-    <nav className="sm:hidden" style={{
+    <nav className="mobile-tabbar sm:hidden" style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50,
       background: '#FFFFFF',
       borderTop: '1px solid #E8E8E8',
@@ -100,14 +100,14 @@ export default function MobileNav() {
     }}>
       <div style={{ display: 'flex' }}>
         {items.map(item => (
-          <Link key={item.href} href={item.href} style={{
+          <Link key={item.href} href={item.href} className={item.active ? 'active' : ''} style={{
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
             justifyContent: 'center', padding: '10px 4px 10px', gap: '4px', minHeight: '58px',
             textDecoration: 'none',
             color: item.active ? '#14241C' : '#AAAAAA',
             transition: 'color 0.15s',
           }}>
-            <div style={{ position: 'relative' }}>
+            <div className="mobile-tabbar-icon" style={{ position: 'relative' }}>
               {item.icon}
               {item.badge ? <Badge count={item.badge} /> : null}
             </div>

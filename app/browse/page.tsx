@@ -328,6 +328,7 @@ function ProfileCard({
 
   return (
     <div
+      className="browse-profile-card"
       onClick={onClick}
       style={{
         position: 'relative', borderRadius: '10px', overflow: 'hidden',
@@ -340,7 +341,7 @@ function ProfileCard({
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
       {/* Photo (4:5) — no overlays, photo stays clean */}
-      <div style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
+      <div className="browse-profile-media" style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
         {showPhoto ? (
           <img loading="lazy"
             src={p.photo_url} alt={p.full_name}
@@ -371,7 +372,7 @@ function ProfileCard({
       </div>
 
       {/* Info — all text below the photo */}
-      <div style={{ padding: '14px 14px 16px' }}>
+      <div className="browse-profile-body" style={{ padding: '14px 14px 16px' }}>
         {/* Name + age */}
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
           <p style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 600, color: '#14241C', fontSize: '17px', lineHeight: 1.25, letterSpacing: '-0.01em', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -980,7 +981,7 @@ export default function BrowsePage() {
 
         {/* ── Stats Dashboard ─────────────────────────────────── */}
         {stats && (
-          <div className="grid grid-cols-4 gap-2 mb-4">
+          <div className="browse-stats-grid grid grid-cols-4 gap-2 mb-4">
             {[
               { label: 'Sent',     value: stats.interestsSent,     href: '/interests?tab=sent' },
               { label: 'Received', value: stats.interestsReceived, href: '/interests?tab=received' },
@@ -988,6 +989,7 @@ export default function BrowsePage() {
               { label: 'Views',    value: stats.profileViews,      href: `/profile/${myProfileId}` },
             ].map(s => (
               <Link key={s.label} href={s.href}
+                className="browse-stat-card"
                 style={{ background: 'white', borderRadius: '10px', border: '1px solid #E7E3D8', padding: '10px 6px', textAlign: 'center', textDecoration: 'none', display: 'block', transition: 'box-shadow 0.15s' }}
                 onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)')}
                 onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}>
@@ -999,10 +1001,10 @@ export default function BrowsePage() {
         )}
 
         {/* ── Greeting + filter toggle ─────────────────────────── */}
-        <div className="mb-3">
+        <div className="browse-command mb-3">
           <div className="flex items-center justify-between mb-2">
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '7px' }}>
-              <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: 0, letterSpacing: 0, fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif' }}>
+              <h1 className="browse-page-title" style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: 0, letterSpacing: 0, fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif' }}>
                 Native-place registry
               </h1>
               {myMemberNum && (
@@ -1024,22 +1026,23 @@ export default function BrowsePage() {
           </div>
           <form
             onSubmit={e => { e.preventDefault(); setPage(1); loadProfiles() }}
+            className="browse-search-card"
             style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '8px', padding: '8px', borderRadius: '10px', background: 'white', border: '1px solid #E2E8DD', marginBottom: '10px', boxShadow: '0 8px 24px rgba(7,21,39,0.045)' }}>
             <input
               value={nativePlace}
               onChange={e => setNativePlace(e.target.value)}
               placeholder="Native place"
               aria-label="Search Native Place"
-              className="nm-input"
+              className="nm-input browse-search-input"
             />
             <input
               value={currentLocation}
               onChange={e => setCurrentLocation(e.target.value)}
               placeholder="Current location (optional)"
               aria-label="Current location"
-              className="nm-input"
+              className="nm-input browse-search-input"
             />
-            <button type="submit" className="nm-primary" style={{ minHeight: '46px', padding: '0 14px', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}>
+            <button type="submit" className="nm-primary browse-search-button" style={{ minHeight: '46px', padding: '0 14px', fontSize: '13px', fontWeight: 800, cursor: 'pointer' }}>
               Search
             </button>
           </form>
@@ -1090,7 +1093,7 @@ export default function BrowsePage() {
           <div className="flex-1 min-w-0">
 
             {/* Results header */}
-            <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <div className="browse-results-bar flex items-center gap-2 mb-3 flex-wrap">
               <p className="flex-1" style={{ color: '#5E6B62', fontSize: '15px' }}>
                 {loading ? 'Loading…' : (
                   <>

@@ -6,6 +6,20 @@ import { supabase } from '@/lib/supabase'
 import { computeCompleteness } from '@/lib/completeness'
 import NotificationBell from './NotificationBell'
 
+function BrandLogo({ signedIn }: { signedIn: boolean }) {
+  return (
+    <Link href={signedIn ? '/browse' : '/'} className="app-brand" aria-label="NativeMatrimony home">
+      <span className="app-brand-mark" aria-hidden="true">
+        <span>n</span>
+      </span>
+      <span className="app-brand-copy">
+        <span><strong>native</strong>matrimony</span>
+        <small>native-place matrimony</small>
+      </span>
+    </Link>
+  )
+}
+
 export default function AppHeader() {
   const path = usePathname()
   const router = useRouter()
@@ -89,29 +103,20 @@ export default function AppHeader() {
   ]
 
   return (
-    <header style={{
+    <header className="app-header" style={{
       background: '#FFFFFF',
       borderBottom: '1px solid #E7E3D8',
       position: 'sticky', top: 0, zIndex: 40,
       boxShadow: scrolled ? '0 6px 20px rgba(20,36,28,0.08)' : 'none',
       transition: 'box-shadow 0.2s',
     }}>
-      <div style={{
+      <div className="app-header-inner" style={{
         maxWidth: '1120px', margin: '0 auto', padding: '0 20px',
-        height: '60px', display: 'flex', alignItems: 'center',
+        minHeight: '60px', display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', gap: '16px',
       }}>
 
-        {/* Wordmark */}
-        <Link href={profileId ? '/browse' : '/'} style={{ flexShrink: 0, textDecoration: 'none' }}>
-          <span style={{
-            fontFamily: 'var(--font-space-grotesk), sans-serif',
-            fontSize: '21px', letterSpacing: '-0.03em',
-            lineHeight: 1,
-          }}>
-            <span style={{ fontWeight: 700, color: '#14241C' }}>native</span><span style={{ fontWeight: 400, color: '#1B5E20' }}>matrimony</span><span style={{ fontWeight: 700, color: '#1B5E20' }}>.</span>
-          </span>
-        </Link>
+        <BrandLogo signedIn={!!profileId} />
 
         {/* Nav links — desktop */}
         {ready && profileId && (
@@ -119,6 +124,7 @@ export default function AppHeader() {
             <style>{`.hdr-nav { display: none; } @media(min-width:640px){.hdr-nav{display:flex;}}`}</style>
             {navItems.map(item => (
               <Link key={item.href} href={item.href}
+                className="app-nav-link"
                 style={{
                   position: 'relative', display: 'flex', alignItems: 'center', gap: '5px',
                   fontSize: '13.5px', fontWeight: item.active ? 700 : 500,
