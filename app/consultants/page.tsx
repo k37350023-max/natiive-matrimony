@@ -1,15 +1,12 @@
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
 
 export default function ConsultantsPage() {
   return (
     <main className="landing-page">
       <div className="landing-shell">
         <header className="landing-header">
-          <Link href="/" className="home-logo" aria-label="NativeMatrimony home">
-            <span>native</span>
-            <span>matrimony</span>
-            <small>Your hometown. Your roots. Your match.</small>
-          </Link>
+          <BrandLogo className="app-brand-home" />
           <Link href="/" className="landing-menu" aria-label="Back to home">
             <span />
             <span />

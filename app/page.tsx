@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import BrandLogo from './components/BrandLogo'
 
 const popularPlaces = ['Karimnagar', 'Warangal', 'Guntur', 'Nellore', 'Rajahmundry', 'Nizamabad', 'Vijayawada', 'Vizag']
 
@@ -62,13 +63,7 @@ function Icon({ name, size = 22 }: { name: string; size?: number }) {
 }
 
 function Logo() {
-  return (
-    <Link href="/" className="nmh-logo" aria-label="NativeMatrimony home">
-      <span>native</span>
-      <span>matrimony</span>
-      <small>Your hometown. Your roots. Your match.</small>
-    </Link>
-  )
+  return <BrandLogo className="app-brand-home" />
 }
 
 function HeroVisual() {
@@ -276,11 +271,6 @@ export default function Home() {
           </div>
         </section>
       </div>
-
-      <Link href="/register" className="nmh-sticky-cta">
-        <Icon name="user" size={18} />
-        Create Free Profile
-      </Link>
 
       <nav className="nmh-mobile-nav" aria-label="Mobile navigation">
         {navItems.map(([href, label, icon]) => (

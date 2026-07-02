@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import BrandLogo from './BrandLogo'
 
 export default function HomeHeader() {
   const [profileId, setProfileId] = useState<string | null>(null)
@@ -34,12 +35,7 @@ export default function HomeHeader() {
         maxWidth: '1120px', margin: '0 auto', padding: '0 20px',
         height: '62px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <span style={{
-          fontFamily: 'var(--font-space-grotesk), sans-serif',
-          fontSize: '23px', letterSpacing: '-0.03em', lineHeight: 1,
-        }}>
-          <span style={{ fontWeight: 700, color: '#14241C' }}>native</span><span style={{ fontWeight: 400, color: '#1B5E20' }}>matrimony</span><span style={{ fontWeight: 700, color: '#1B5E20' }}>.</span>
-        </span>
+        <BrandLogo href={profileId ? '/browse' : '/'} />
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
           {ready && profileId ? (

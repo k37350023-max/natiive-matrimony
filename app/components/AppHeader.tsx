@@ -5,20 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { computeCompleteness } from '@/lib/completeness'
 import NotificationBell from './NotificationBell'
-
-function BrandLogo({ signedIn }: { signedIn: boolean }) {
-  return (
-    <Link href={signedIn ? '/browse' : '/'} className="app-brand" aria-label="NativeMatrimony home">
-      <span className="app-brand-mark" aria-hidden="true">
-        <span>n</span>
-      </span>
-      <span className="app-brand-copy">
-        <span><strong>native</strong>matrimony</span>
-        <small>native-place matrimony</small>
-      </span>
-    </Link>
-  )
-}
+import BrandLogo from './BrandLogo'
 
 export default function AppHeader() {
   const path = usePathname()
@@ -116,7 +103,7 @@ export default function AppHeader() {
         justifyContent: 'space-between', gap: '16px',
       }}>
 
-        <BrandLogo signedIn={!!profileId} />
+        <BrandLogo href={profileId ? '/browse' : '/'} />
 
         {/* Nav links — desktop */}
         {ready && profileId && (

@@ -2830,6 +2830,41 @@ select.input {
   white-space: nowrap;
 }
 
+.app-brand-home .app-brand-mark {
+  height: 44px;
+  width: 44px;
+}
+
+.app-brand-home .app-brand-copy > span {
+  font-size: 24px;
+}
+
+.app-brand-home .app-brand-copy small {
+  font-size: 10.5px;
+}
+
+.app-brand-compact {
+  gap: 8px;
+}
+
+.app-brand-compact .app-brand-mark {
+  border-radius: 8px;
+  font-size: 18px;
+  height: 32px;
+  width: 32px;
+}
+
+.app-brand-compact .app-brand-mark::after {
+  bottom: 6px;
+  height: 5px;
+  right: 6px;
+  width: 5px;
+}
+
+.app-brand-compact .app-brand-copy > span {
+  font-size: 18px;
+}
+
 .app-nav-link:hover {
   color: #14241C !important;
   background: #F4F7F1;
@@ -2939,6 +2974,25 @@ select.input {
     font-size: 20px;
     height: 36px;
     width: 36px;
+  }
+
+  .app-brand-compact .app-brand-mark {
+    font-size: 17px;
+    height: 30px;
+    width: 30px;
+  }
+
+  .app-brand-compact .app-brand-copy > span {
+    font-size: 17px;
+  }
+
+  .app-brand-home .app-brand-mark {
+    height: 38px;
+    width: 38px;
+  }
+
+  .app-brand-home .app-brand-copy > span {
+    font-size: 24px;
   }
 
   .app-brand-copy > span {

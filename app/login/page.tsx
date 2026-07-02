@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
 
 const COUNTRY_CODES = [
   { code: '+91', label: '+91' },
@@ -96,11 +97,7 @@ export default function LoginPage() {
       {/* Header */}
       <header style={{ background: '#FFFFFF', borderBottom: '1px solid #E8E8E8' }}>
         <div style={{ maxWidth: '390px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <span style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: '21px', letterSpacing: '-0.03em', lineHeight: 1 }}>
-              <span style={{ fontWeight: 700, color: '#14241C' }}>native</span><span style={{ fontWeight: 400, color: '#1B5E20' }}>matrimony</span><span style={{ fontWeight: 700, color: '#1B5E20' }}>.</span>
-            </span>
-          </Link>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
           <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 14px', whiteSpace: 'nowrap' }}>Create Profile</Link>
         </div>
       </header>

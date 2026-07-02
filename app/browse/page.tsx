@@ -9,6 +9,7 @@ import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
 import AppFooter from '../components/AppFooter'
+import BrandLogo from '../components/BrandLogo'
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const REGIONS: Record<string, Record<string, string[]>> = {
@@ -146,10 +147,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
       <main className="nm-page">
         <div className="nm-shell" style={{ width: '100%', maxWidth: '340px', overflow: 'hidden' }}>
           <header className="nm-topbar">
-            <Link href="/" className="nm-logo" aria-label="NativeMatrimony home">
-              <span>native</span>
-              <span>matrimony</span>
-            </Link>
+            <BrandLogo className="app-brand-compact" showTagline={false} />
             <Link href="/login" className="nm-icon-btn" aria-label="Login">
               <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round">
                 <path d="M4 7h16M4 12h16M4 17h16" />

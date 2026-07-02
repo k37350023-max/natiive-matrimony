@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
 
 /* ─── India states & districts ───────────────────────────────── */
 const INDIA_STATES: Record<string, string[]> = {
@@ -186,11 +187,7 @@ export default function RegisterPage() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FBFAF5' }}>
       <header style={{ background: 'white', borderBottom: '1px solid #E8E8E8' }}>
         <div style={{ maxWidth: '390px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-          <Link href="/" style={{ textDecoration: 'none' }}>
-            <span style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontSize: '20px', letterSpacing: '-0.03em' }}>
-              <span style={{ fontWeight: 700, color: '#14241C' }}>native</span><span style={{ fontWeight: 400, color: '#1B5E20' }}>matrimony</span><span style={{ fontWeight: 700, color: '#1B5E20' }}>.</span>
-            </span>
-          </Link>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
           <Link href="/login" style={{ fontSize: '13px', color: '#94A3B8', textDecoration: 'none' }}>Sign in instead</Link>
         </div>
       </header>
