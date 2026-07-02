@@ -115,12 +115,12 @@ export default function LoginPage() {
             Find someone who shares your roots.
           </h2>
           <p style={{ fontSize: '15px', opacity: 0.8, margin: '0 0 40px', lineHeight: 1.65 }}>
-            Search by native place first. Biodata, photos, and contact stay private until a request is accepted.
+            Search by native place first. Photos are visible unless hidden, while biodata and contact unlock only after acceptance.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
               'Native place and current location filters',
-              'Photo, full name, biodata, and contact locked before acceptance',
+              'Photo visibility control from your profile privacy settings',
               'Mobile verification before a profile goes live',
             ].map(f => (
               <div key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>

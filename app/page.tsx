@@ -6,7 +6,7 @@ const popularPlaces = ['Karimnagar', 'Warangal', 'Guntur', 'Nellore', 'Rajahmund
 
 const trustItems = [
   ['Free Forever', 'No subscriptions, no hidden unlock charges.', 'check'],
-  ['Photos Stay Private', 'Photos and contact open only after mutual interest.', 'lock'],
+  ['Photo Control', 'Photos are visible by default, with a hide option anytime.', 'lock'],
   ['No Random Messages', 'Chat starts only when both sides accept.', 'chat'],
   ['Family Friendly', 'Simple enough for parents to review and manage.', 'family'],
   ['Verified Profiles', 'Phone-verified registry profiles with approval flow.', 'shield'],
@@ -27,7 +27,7 @@ const regions: Array<[string, string[]]> = [
 const profilePreview = [
   ['Native place', 'Karimnagar'],
   ['Profile status', 'Waiting for match'],
-  ['Privacy', 'Locked until accepted'],
+  ['Biodata', 'Locked until accepted'],
 ]
 
 const navItems = [
@@ -68,7 +68,7 @@ function Logo() {
 
 function HeroVisual() {
   return (
-    <div className="nmh-hero-visual" aria-label="Private matrimonial profile preview">
+    <div className="nmh-hero-visual" aria-label="Matrimonial profile preview">
       <Image
         src="/home-hero-match.webp"
         alt=""
@@ -126,20 +126,20 @@ export default function Home() {
               Native-place-first matrimonial registry
             </div>
             <h1>Create your profile. Let the right hometown match find you.</h1>
-            <p>NativeMatrimony keeps the first step simple: register your family profile, choose your native place, and wait for a serious match without exposing photos, biodata, or contact too early.</p>
+            <p>NativeMatrimony keeps the first step simple: register your family profile, choose your native place, show a real photo if you want, and keep biodata and contact locked until acceptance.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
                 Create Free Profile
               </Link>
               <Link href="/browse" className="nmh-secondary">
-                Browse Private Registry
+                Browse Registry
               </Link>
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
               <span><strong>2 min</strong> profile start</span>
               <span><strong>100%</strong> free</span>
-              <span><strong>Private</strong> until accepted</span>
+              <span><strong>Biodata</strong> gated</span>
             </div>
           </div>
           <HeroVisual />
@@ -188,7 +188,7 @@ export default function Home() {
         <section className="nmh-section">
           <div className="nmh-section-heading">
             <p className="nmh-section-kicker">Built for family trust</p>
-            <h2>Private until both sides agree.</h2>
+            <h2>Biodata and contact unlock after acceptance.</h2>
           </div>
           <div className="nmh-trust-grid">
             {trustItems.map(([title, body, icon]) => (

@@ -2982,10 +2982,6 @@ select.input {
     width: 30px;
   }
 
-  .app-brand-compact .app-brand-copy > span {
-    font-size: 17px;
-  }
-
   .app-brand-home .app-brand-mark {
     height: 38px;
     width: 38px;
@@ -2997,6 +2993,10 @@ select.input {
 
   .app-brand-copy > span {
     font-size: 23px;
+  }
+
+  .app-brand-compact .app-brand-copy > span {
+    font-size: 17px;
   }
 
   .app-brand-copy small {

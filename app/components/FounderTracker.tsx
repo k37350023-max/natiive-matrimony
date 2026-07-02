@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 const GOAL = 1000
-const PERKS = ['Unlimited interests', 'Full biodata access', 'Direct chat', 'Priority listing']
+const PERKS = ['Native-place search', 'Request-based biodata unlock', 'Contact gating', 'Photo privacy controls']
 
 export default function FounderTracker() {
   const [count, setCount] = useState<number | null>(null)
@@ -31,7 +31,7 @@ export default function FounderTracker() {
         <p className="text-xs font-bold uppercase tracking-widest text-red-300 mb-1">Founder Member Offer</p>
         <p className="text-white font-bold text-xl leading-snug font-serif-display">
           First 1,000 profiles get<br />
-          <span className="text-red-200">1 year free premium</span>
+          <span className="text-red-200">free founder access</span>
         </p>
       </div>
 
@@ -55,14 +55,14 @@ export default function FounderTracker() {
         <p className="text-xs text-gray-500 mt-2">
           {isFull
             ? <span>Founder spots are full. <Link href="/pricing" className="font-semibold underline" style={{ color: '#14241C' }}>See pricing →</Link></span>
-            : <>Only <span className="font-semibold text-gray-800">{remaining.toLocaleString()} spots left</span> at this price — after that, ₹499/mo</>
+            : <>Only <span className="font-semibold text-gray-800">{remaining.toLocaleString()} spots left</span> in the founder registry launch.</>
           }
         </p>
       </div>
 
       {/* Perks */}
       <div className="px-6 py-4 border-t" style={{ borderColor: '#F3F4F6' }}>
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">What you get free for a year</p>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">What founder members get</p>
         <div className="grid grid-cols-2 gap-y-2.5 gap-x-4">
           {PERKS.map(perk => (
             <div key={perk} className="flex items-center gap-2">
@@ -80,9 +80,9 @@ export default function FounderTracker() {
 
       {/* CTA */}
       <div className="px-6 pb-6 pt-2">
-        <Link href={isLoggedIn ? '/pricing' : '/register'}
+        <Link href={isLoggedIn ? '/browse' : '/register'}
           className="btn-primary w-full py-3 text-sm text-center block rounded-xl font-semibold">
-          {isLoggedIn ? 'View your membership →' : 'Claim your free spot →'}
+          {isLoggedIn ? 'Browse founder registry →' : 'Claim your free spot →'}
         </Link>
       </div>
     </div>

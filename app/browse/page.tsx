@@ -190,7 +190,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                   </svg>
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
-                  <strong>Private until both sides agree.</strong><br />
+                  <strong>Details unlock after acceptance.</strong><br />
                   Create your registry profile now. Your biodata and contact stay locked until a request is accepted.
                 </p>
               </div>
@@ -214,9 +214,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E7E3D8' }}>
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
-          <Link href="/" className="text-base font-bold font-serif-display tracking-tight shrink-0">
-            Native<span style={{ color: '#14241C' }}>Matrimony</span>
-          </Link>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
           <div className="flex items-center gap-1.5 shrink-0">
             <Link href="/login" className="text-sm font-medium text-gray-600 px-2 py-1.5 rounded-lg hover:bg-gray-50">Login</Link>
             <Link href="/register" className="btn-primary text-sm px-3 py-1.5 whitespace-nowrap">Create Profile</Link>
@@ -226,9 +224,9 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 font-serif-display mb-2">
+          <h1 className="text-2xl font-bold text-gray-900 font-serif-display mb-2">
             {searchedPlace ? `Profiles from ${searchedPlace}` : 'Search the native-place registry'}
-          </h2>
+          </h1>
           <p className="text-gray-500 text-sm">
             {searchedPlace
               ? 'Create a profile to request biodata and contact after acceptance.'
@@ -261,7 +259,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
           <p className="font-bold text-gray-900 text-lg mb-2">Request before contact unlocks</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">Names, photos, biodata, and contact stay private until accepted.</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">Photos help you recognize real profiles. Full names, biodata, and contact unlock after acceptance.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
               Create Profile

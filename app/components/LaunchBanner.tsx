@@ -9,7 +9,6 @@ export default function LaunchBanner() {
   const [dismissed, setDismissed] = useState(false)
   const [count, setCount] = useState<number | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isPremium, setIsPremium] = useState(false)
   const [premiumExpiry, setPremiumExpiry] = useState<string | null>(null)
 
   useEffect(() => {
@@ -23,7 +22,6 @@ export default function LaunchBanner() {
       supabase.from('profiles').select('premium_expires_at').eq('id', id).maybeSingle()
         .then(({ data }) => {
           if (data?.premium_expires_at && new Date(data.premium_expires_at) > new Date()) {
-            setIsPremium(true)
             setPremiumExpiry(data.premium_expires_at)
           }
         })
@@ -32,8 +30,8 @@ export default function LaunchBanner() {
 
   if (dismissed) return null
 
-  // Show "Offer Already Applied" minimized banner for premium users
-  if (isPremium && premiumExpiry) {
+  // Show "founder access active" minimized banner for early members.
+  if (premiumExpiry) {
     const expiry = new Date(premiumExpiry)
     const formatted = expiry.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
     return (
@@ -44,8 +42,8 @@ export default function LaunchBanner() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
           <div>
-            <p className="text-xs font-bold" style={{ color: '#14241C' }}>Offer Already Applied</p>
-            <p className="text-[11px]" style={{ color: '#057A5B' }}>Premium active until {formatted}</p>
+            <p className="text-xs font-bold" style={{ color: '#14241C' }}>Founder Access Active</p>
+            <p className="text-[11px]" style={{ color: '#057A5B' }}>Registry access active until {formatted}</p>
           </div>
         </div>
         <button
@@ -62,7 +60,7 @@ export default function LaunchBanner() {
   const pct = Math.min(Math.round((filled / GOAL) * 100), 100)
 
   return (
-    <Link href={isLoggedIn ? '/pricing' : '/register'}
+    <Link href={isLoggedIn ? '/browse' : '/register'}
       className="block mx-4 my-3 rounded-2xl overflow-hidden transition-shadow"
       style={{ background: 'linear-gradient(135deg, #1B5E20 0%, #1B5E20 55%, #14532D 100%)', boxShadow: '0 4px 16px rgba(27,94,32,0.35)' }}>
       <div className="px-5 py-5 flex items-center gap-5">
@@ -79,7 +77,7 @@ export default function LaunchBanner() {
         <div className="flex-1 min-w-0">
           <p className="font-extrabold text-sm leading-snug" style={{ color: '#14241C' }}>Founder Member Offer</p>
           <p className="text-xs mt-0.5 leading-snug" style={{ color: '#14241C' }}>
-            First 1,000 profiles get<br />1 year free premium
+            First 1,000 profiles get<br />founder access free
           </p>
           {count !== null && (
             <div className="mt-2 flex items-center gap-2">
@@ -95,7 +93,7 @@ export default function LaunchBanner() {
         <div className="shrink-0 flex flex-col items-end gap-2">
           <span className="text-xs font-extrabold px-3 py-1.5 rounded-lg"
             style={{ background: '#14241C', color: '#EAF3EA' }}>
-            {isLoggedIn ? 'See pricing' : 'Claim spot'}
+            {isLoggedIn ? 'Browse now' : 'Claim spot'}
           </span>
           <button
             onClick={e => { e.preventDefault(); e.stopPropagation(); setDismissed(true); sessionStorage.setItem('banner_dismissed', '1') }}

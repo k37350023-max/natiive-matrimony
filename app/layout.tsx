@@ -17,10 +17,10 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: { default: "NativeMatrimony — Native-place matrimonial registry", template: "%s | NativeMatrimony" },
-  description: "A privacy-first matrimonial registry where families search by native place, send requests, and unlock biodata only after acceptance.",
+  description: "A native-place-first matrimonial registry where families see real profiles, send requests, and unlock biodata only after acceptance.",
   openGraph: {
     title: "NativeMatrimony — Native-place matrimonial registry",
-    description: "Search by roots first. Biodata, photos, and contact unlock only after request acceptance.",
+    description: "Search by roots first. Photos are visible unless hidden, while biodata and contact unlock only after request acceptance.",
     siteName: "NativeMatrimony",
     locale: "en_IN",
     type: "website",

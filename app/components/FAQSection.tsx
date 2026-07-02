@@ -12,7 +12,7 @@ const FAQS = [
   },
   {
     q: 'Is the service free?',
-    a: 'Yes — the first 1,000 members get full premium access free for one year. After that, premium plans start at ₹999/month. You can always browse and receive interests for free.',
+    a: 'Yes. NativeMatrimony is currently request-based and free to use: create a profile, browse by native place, send requests, and unlock details after mutual acceptance.',
   },
   {
     q: 'How private are my photos and contact details?',

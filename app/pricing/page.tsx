@@ -21,7 +21,7 @@ export default function PricingPage() {
           <div className="space-y-3 mb-6">
             {[
               'Search by native place first.',
-              'Private until both sides agree.',
+              'Photos are visible unless a member hides them.',
               'Biodata and contact unlock only after acceptance.',
             ].map(item => (
               <div key={item} className="flex items-start gap-3 text-sm text-gray-700">

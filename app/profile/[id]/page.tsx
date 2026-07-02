@@ -941,8 +941,8 @@ export default function ProfilePage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Private until both sides agree.</p>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request to unlock full biodata, contact, WhatsApp, and clear photos after acceptance.</p>
+                <p className="text-sm font-semibold text-gray-800">Biodata unlocks after acceptance.</p>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request to unlock full biodata, contact details, WhatsApp, and chat after acceptance.</p>
               </div>
             </div>
           </div>

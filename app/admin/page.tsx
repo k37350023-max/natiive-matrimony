@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
 
 const ADMIN_PASSWORD = 'natiive@admin2024'
 
@@ -148,7 +149,7 @@ export default function AdminPage() {
       <div className="min-h-screen flex items-center justify-center" style={{background: '#FBFAF5'}}>
         <div className="card p-8 w-80">
           <div className="text-center mb-6">
-            <p className="text-sm font-bold text-orange-700 mb-1">NativeMatrimony</p>
+            <BrandLogo className="app-brand-compact justify-center" showTagline={false} />
             <h1 className="text-xl font-bold text-gray-900">Admin Login</h1>
           </div>
           <div className="space-y-4">
@@ -168,7 +169,7 @@ export default function AdminPage() {
     { key: 'pending', label: 'Pending' },
     { key: 'approved', label: 'Approved' },
     { key: 'rejected', label: 'Rejected' },
-    { key: 'fake', label: '🚩 Suspicious' },
+    { key: 'fake', label: 'Suspicious' },
   ]
 
   return (
@@ -177,7 +178,7 @@ export default function AdminPage() {
       <header style={{background: 'white', borderBottom: '1px solid #E7E3D8'}}>
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
           <div>
-            <Link href="/" className="text-base font-bold text-gray-900">Native<span className="text-orange-700">Matrimony</span></Link>
+            <BrandLogo className="app-brand-compact" showTagline={false} />
             <span className="ml-3 text-xs font-semibold text-gray-400 uppercase tracking-wide">Admin</span>
           </div>
           <button onClick={() => setAuthed(false)} className="text-sm text-gray-500 hover:text-gray-800">Sign out</button>
@@ -193,14 +194,15 @@ export default function AdminPage() {
           <div className="flex gap-2 shrink-0">
             <button onClick={() => setShowAnnouncement(s => !s)}
               className="px-4 py-2 text-sm font-semibold rounded-lg border border-blue-300 text-blue-700 hover:bg-blue-50 transition-colors">
-              📢 Announce
+              Announce
             </button>
             <button onClick={exportCSV}
               className="px-4 py-2 text-sm font-semibold rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors">
               ↓ Export CSV
             </button>
             <Link href="/admin/launch-score"
-              className="px-4 py-2 text-sm font-semibold rounded-lg bg-orange-700 text-white hover:bg-orange-800 transition-colors">
+              className="px-4 py-2 text-sm font-semibold rounded-lg text-white transition-colors"
+              style={{ background: '#14241C' }}>
               Dashboard →
             </Link>
           </div>
@@ -227,7 +229,8 @@ export default function AdminPage() {
           <div className="flex gap-1 p-1 bg-white rounded-lg border border-gray-200 w-fit">
             {tabs.map(t => (
               <button key={t.key} onClick={() => setFilter(t.key)}
-                className={`px-5 py-2 rounded-md text-sm font-semibold transition-all ${filter === t.key ? 'bg-orange-700 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
+                className={`px-5 py-2 rounded-md text-sm font-semibold transition-all ${filter === t.key ? 'text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+                style={filter === t.key ? { background: '#14241C' } : undefined}>
                 {t.label}
               </button>
             ))}
@@ -262,7 +265,8 @@ export default function AdminPage() {
               <div className="flex justify-between items-start gap-4">
                 <div className="flex gap-4 flex-1 min-w-0">
                   {/* Avatar */}
-                  <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-800 flex items-center justify-center font-bold text-sm shrink-0">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm shrink-0"
+                    style={{ background: '#EDF3ED', color: '#14241C' }}>
                     {p.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
                   </div>
                   <div className="min-w-0">
@@ -354,7 +358,7 @@ export default function AdminPage() {
                               {p._flags.map((flag: string) => (
                                 <span key={flag} className="text-xs px-2 py-0.5 rounded-full font-medium"
                                   style={{ background: '#FEE2E2', color: '#14241C' }}>
-                                  🚩 {flag}
+                                  Review: {flag}
                                 </span>
                               ))}
                             </div>

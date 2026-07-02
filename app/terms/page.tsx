@@ -37,8 +37,8 @@ export default function TermsPage() {
               body: 'All profiles are reviewed by our team before becoming visible. We reserve the right to reject or remove any profile that violates our guidelines.',
             },
             {
-              title: '5. Premium membership',
-              body: 'Founder members receive 1 year of free premium access. After the founding period, premium features are available via paid subscription. Pricing is listed on our Pricing page.',
+              title: '5. Service access',
+              body: 'NativeMatrimony is currently a request-based registry. We may add paid services later, but any pricing changes will be presented clearly before they apply.',
             },
             {
               title: '6. Limitation of liability',
