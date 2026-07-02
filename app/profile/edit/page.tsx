@@ -544,7 +544,8 @@ function EditProfilePageInner() {
                       onChange={() => setHiddenFields(prev =>
                         prev.includes(f.key) ? prev.filter(k => k !== f.key) : [...prev, f.key]
                       )}
-                      className="mt-0.5 accent-amber-700" />
+                      className="mt-0.5 accent-amber-700"
+                      style={{ width: 18, height: 18, flexShrink: 0 }} />
                     <div>
                       <p className="font-semibold text-gray-800 text-sm">{f.label}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{f.desc}</p>
@@ -799,8 +800,8 @@ function EditProfilePageInner() {
                     ]
                     set('about', templates[Math.floor(Math.random() * templates.length)].slice(0, 400))
                   }}
-                  className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-colors inline-flex items-center gap-1.5"
-                  style={{background: '#EDF3ED', color: '#14241C'}}>
+                  className="text-xs font-semibold px-3 rounded-lg transition-colors inline-flex items-center gap-1.5"
+                  style={{background: '#EDF3ED', color: '#14241C', minHeight: '34px'}}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 6.9L21 11l-6.6 2.1L12 20l-2.4-6.9L3 11l6.6-2.1z"/></svg>
                   Generate bio
                 </button>

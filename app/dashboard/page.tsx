@@ -235,10 +235,10 @@ export default function DashboardPage() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
-              <Link href={`/profile/${profile.id}`} style={{ fontSize: '12.5px', fontWeight: 600, padding: '7px 16px', borderRadius: '8px', background: '#14241C', color: 'white', textDecoration: 'none' }}>
+              <Link href={`/profile/${profile.id}`} style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', fontSize: '12.5px', fontWeight: 700, padding: '0 16px', borderRadius: '8px', background: '#14241C', color: 'white', textDecoration: 'none' }}>
                 View Profile
               </Link>
-              <Link href="/profile/edit" style={{ fontSize: '12.5px', fontWeight: 600, padding: '7px 16px', borderRadius: '8px', background: 'white', color: '#555', textDecoration: 'none', border: '1.5px solid #E8E8E8' }}>
+              <Link href="/profile/edit" style={{ minHeight: '38px', display: 'inline-flex', alignItems: 'center', fontSize: '12.5px', fontWeight: 700, padding: '0 16px', borderRadius: '8px', background: 'white', color: '#555', textDecoration: 'none', border: '1.5px solid #E8E8E8' }}>
                 Edit Profile
               </Link>
             </div>
@@ -281,7 +281,7 @@ export default function DashboardPage() {
               {missing.length > 0 && (
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
                   {missing.slice(0, 4).map(m => (
-                    <Link key={m} href="/profile/edit" style={{ fontSize: '11px', fontWeight: 600, padding: '3px 9px', borderRadius: '99px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA', textDecoration: 'none' }}>
+                    <Link key={m} href="/profile/edit" style={{ minHeight: '32px', display: 'inline-flex', alignItems: 'center', fontSize: '11.5px', fontWeight: 700, padding: '0 11px', borderRadius: '99px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA', textDecoration: 'none' }}>
                       + {m}
                     </Link>
                   ))}

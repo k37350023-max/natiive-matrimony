@@ -1016,8 +1016,8 @@ export default function BrowsePage() {
             <button
               className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold"
               style={activeFilterCount > 0
-                ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA' }
-                : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}
+                ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px' }
+                : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px' }}
               onClick={() => setShowSidebar(s=>!s)}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
@@ -1057,8 +1057,8 @@ export default function BrowsePage() {
             <button
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold shrink-0"
               style={activeFilterCount > 0
-                ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA' }
-                : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}
+                ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px' }
+                : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px' }}
               onClick={() => setShowSidebar(s=>!s)}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
@@ -1108,7 +1108,7 @@ export default function BrowsePage() {
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value as 'newest'|'last_active'|'best_match')}
                 className="text-xs border rounded-lg px-2 py-1.5 text-gray-600"
-                style={{ borderColor: '#E7E3D8', background: 'white', outline: 'none' }}>
+                style={{ borderColor: '#E7E3D8', background: 'white', outline: 'none', minHeight: '38px', padding: '0 12px', fontWeight: 700 }}>
                 <option value="newest">Newest first</option>
                 <option value="last_active">Last active</option>
                 <option value="best_match">Best match</option>
@@ -1122,8 +1122,8 @@ export default function BrowsePage() {
                 }}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
                 style={alertSet
-                  ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA' }
-                  : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}>
+                  ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px', padding: '0 14px' }
+                  : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px' }}>
                 {alertSet ? 'Alert set' : '+ Save search'}
               </button>
             </div>

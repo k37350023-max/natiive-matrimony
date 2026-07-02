@@ -2538,8 +2538,12 @@ select.input {
 }
 
 .nmh-hero-image {
+  display: block;
+  height: auto;
   object-fit: contain;
   padding: 14px;
+  position: relative;
+  width: 100%;
   z-index: 1;
 }
 
@@ -2633,6 +2637,42 @@ select.input {
   position: absolute;
   top: 18px;
   z-index: 2;
+}
+
+@media (max-width: 719px) {
+  .nmh-hero-visual {
+    aspect-ratio: auto;
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    padding: 12px;
+  }
+
+  .nmh-hero-visual::before,
+  .nmh-hero-visual::after {
+    display: none;
+  }
+
+  .nmh-hero-image {
+    border-radius: 18px;
+    height: auto;
+    object-fit: contain;
+    padding: 0 !important;
+    width: 100%;
+  }
+
+  .nmh-profile-panel {
+    bottom: auto;
+    left: auto;
+    margin: -14px 6px 0;
+    position: relative;
+    right: auto;
+  }
+
+  .nmh-match-chip {
+    left: 24px;
+    top: 24px;
+  }
 }
 
 .nmh-intent-grid {
@@ -2929,7 +2969,7 @@ select.input {
 
 .browse-page-title {
   font-size: 23px !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing: 0 !important;
 }
 
 .browse-search-card {

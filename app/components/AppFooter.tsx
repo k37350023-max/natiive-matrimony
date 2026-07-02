@@ -7,7 +7,7 @@ export default function AppFooter() {
         <p style={{ fontSize: '12px', color: '#94A3B8', margin: 0 }}>
           © 2026 <span style={{ fontWeight: 600, color: '#334155' }}>NativeMatrimony</span> · Built for Telugu families
         </p>
-        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {[
             { label: 'Browse', href: '/browse' },
             { label: 'Privacy', href: '/privacy' },
@@ -15,7 +15,7 @@ export default function AppFooter() {
             { label: 'support@nativematrimony.com', href: 'mailto:support@nativematrimony.com' },
           ].map(l => (
             <Link key={l.href} href={l.href}
-              style={{ fontSize: '12px', color: '#94A3B8', textDecoration: 'none' }}
+              style={{ minHeight: '36px', display: 'inline-flex', alignItems: 'center', padding: '0 8px', fontSize: '12px', color: '#94A3B8', textDecoration: 'none', borderRadius: '8px' }}
               onMouseEnter={e => ((e.target as HTMLAnchorElement).style.color = '#5E6B62')}
               onMouseLeave={e => ((e.target as HTMLAnchorElement).style.color = '#94A3B8')}>
               {l.label}

@@ -72,11 +72,11 @@ function HeroVisual() {
       <Image
         src="/home-hero-match.webp"
         alt=""
-        fill
+        width={1672}
+        height={941}
         priority
         sizes="(min-width: 960px) 520px, 100vw"
         className="nmh-hero-image"
-        style={{ objectFit: 'contain', padding: '14px' }}
       />
       <div className="nmh-profile-panel">
         <div className="nmh-panel-top">

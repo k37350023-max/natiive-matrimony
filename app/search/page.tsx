@@ -119,7 +119,7 @@ const lastSeen = (t: string | null) => {
 function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button onClick={onClick} style={{
-      padding: '5px 11px', borderRadius: '99px', fontSize: '11.5px', fontWeight: 500,
+      minHeight: '36px', padding: '8px 12px', borderRadius: '99px', fontSize: '12px', fontWeight: 700,
       cursor: 'pointer', border: '1px solid', transition: 'all 0.12s', whiteSpace: 'nowrap',
       background: active ? '#14241C' : 'white',
       color:      active ? 'white'   : '#444',
@@ -136,7 +136,7 @@ function Section({ title, children, defaultOpen = true }: { title: string; child
     <div style={{ borderBottom: '1px solid #F0F0F0' }}>
       <button onClick={() => setOpen(o => !o)} style={{
         width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '11px 0', background: 'none', border: 'none', cursor: 'pointer',
+        minHeight: '44px', padding: '11px 0', background: 'none', border: 'none', cursor: 'pointer',
       }}>
         <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#777' }}>{title}</span>
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#AAA" strokeWidth="2.5" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.18s', flexShrink: 0 }}>
@@ -428,10 +428,10 @@ export default function SearchPage() {
         <Section title="Age">
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <input type="number" min="18" max="70" value={ageMin} onChange={e=>setAgeMin(e.target.value)}
-              style={{ width: '52px', border: '1.5px solid #DDDDD8', borderRadius: '6px', padding: '6px 6px', fontSize: '13px', textAlign: 'center', outline: 'none' }} />
+              style={{ width: '58px', minHeight: '38px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '8px 6px', fontSize: '14px', textAlign: 'center', outline: 'none' }} />
             <span style={{ color: '#AAA', fontSize: '12px' }}>to</span>
             <input type="number" min="18" max="70" value={ageMax} onChange={e=>setAgeMax(e.target.value)}
-              style={{ width: '52px', border: '1.5px solid #DDDDD8', borderRadius: '6px', padding: '6px 6px', fontSize: '13px', textAlign: 'center', outline: 'none' }} />
+              style={{ width: '58px', minHeight: '38px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '8px 6px', fontSize: '14px', textAlign: 'center', outline: 'none' }} />
             <span style={{ fontSize: '12px', color: '#AAA' }}>yrs</span>
           </div>
         </Section>
@@ -440,12 +440,12 @@ export default function SearchPage() {
         <Section title="Height">
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <select value={heightMin} onChange={e=>setHeightMin(Number(e.target.value))}
-              style={{ flex: 1, border: '1.5px solid #DDDDD8', borderRadius: '6px', padding: '5px 4px', fontSize: '10.5px', outline: 'none' }}>
+              style={{ flex: 1, minHeight: '38px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 8px', fontSize: '12px', outline: 'none', background: 'white' }}>
               {HEIGHTS_CM.map(h=><option key={h} value={h}>{ftIn(h)}</option>)}
             </select>
             <span style={{ color: '#AAA', fontSize: '11px', flexShrink: 0 }}>to</span>
             <select value={heightMax} onChange={e=>setHeightMax(Number(e.target.value))}
-              style={{ flex: 1, border: '1.5px solid #DDDDD8', borderRadius: '6px', padding: '5px 4px', fontSize: '10.5px', outline: 'none' }}>
+              style={{ flex: 1, minHeight: '38px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 8px', fontSize: '12px', outline: 'none', background: 'white' }}>
               {HEIGHTS_CM.map(h=><option key={h} value={h}>{ftIn(h)}</option>)}
             </select>
           </div>
@@ -502,13 +502,13 @@ export default function SearchPage() {
         {/* Location */}
         <Section title="Native State / Region">
           <select value={region} onChange={e=>{ setRegion(e.target.value); setDistrict('') }}
-            style={{ width: '100%', border: '1.5px solid #DDDDD8', borderRadius: '6px', padding: '7px 8px', fontSize: '12px', outline: 'none', marginBottom: '7px' }}>
+            style={{ width: '100%', minHeight: '40px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none', marginBottom: '8px', background: 'white' }}>
             <option value="">Any State / Region</option>
             {Object.keys(REGIONS).map(r=><option key={r} value={r}>{r}</option>)}
           </select>
           {region && districtList.length > 0 && (
             <select value={district} onChange={e=>setDistrict(e.target.value)}
-              style={{ width: '100%', border: '1.5px solid #DDDDD8', borderRadius: '6px', padding: '7px 8px', fontSize: '12px', outline: 'none' }}>
+              style={{ width: '100%', minHeight: '40px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none', background: 'white' }}>
               <option value="">All districts in {region}</option>
               {districtList.map(d=><option key={d} value={d}>{d}</option>)}
             </select>
@@ -603,9 +603,9 @@ export default function SearchPage() {
             {([
               [photoOnly, setPhotoOnly, 'With photo only'],
             ] as [boolean, (v:boolean)=>void, string][]).map(([v,s,l]) => (
-              <label key={l} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#14241C', width: '13px', height: '13px' }} />
-                <span style={{ fontSize: '12px', color: '#555' }}>{l}</span>
+              <label key={l} style={{ minHeight: '42px', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '8px 10px', border: '1px solid #EDF0EA', borderRadius: '10px', background: '#FFFFFF' }}>
+                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#14241C', width: '18px', height: '18px' }} />
+                <span style={{ fontSize: '13px', color: '#555', fontWeight: 600 }}>{l}</span>
               </label>
             ))}
           </div>
@@ -617,9 +617,9 @@ export default function SearchPage() {
               [hideViewed, setHideViewed, 'Profiles I have already Viewed'],
               [recentOnly, setRecentOnly, 'Joined last 30 days only'],
             ] as [boolean, (v:boolean)=>void, string][]).map(([v,s,l]) => (
-              <label key={l} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#14241C', width: '13px', height: '13px' }} />
-                <span style={{ fontSize: '12px', color: '#555' }}>{l}</span>
+              <label key={l} style={{ minHeight: '42px', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '8px 10px', border: '1px solid #EDF0EA', borderRadius: '10px', background: '#FFFFFF' }}>
+                <input type="checkbox" checked={v} onChange={e=>s(e.target.checked)} style={{ accentColor: '#14241C', width: '18px', height: '18px' }} />
+                <span style={{ fontSize: '13px', color: '#555', fontWeight: 600 }}>{l}</span>
               </label>
             ))}
           </div>
@@ -627,10 +627,10 @@ export default function SearchPage() {
 
         {/* Actions */}
         <div style={{ padding: '14px 0 16px', display: 'flex', gap: '8px' }}>
-          <button onClick={doSearch} className="btn-primary" style={{ flex: 1, padding: '10px', fontSize: '13.5px' }}>
+          <button onClick={doSearch} className="btn-primary" style={{ flex: 1, minHeight: '44px', padding: '10px', fontSize: '13.5px' }}>
             Search{activeCount > 0 ? ` (${activeCount})` : ''}
           </button>
-          <button onClick={resetAll} style={{ padding: '10px 14px', border: '1.5px solid #DDDDD8', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '12px', color: '#777', fontWeight: 600 }}>
+          <button onClick={resetAll} style={{ minHeight: '44px', padding: '10px 16px', border: '1.5px solid #DDDDD8', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '13px', color: '#777', fontWeight: 700 }}>
             Reset
           </button>
         </div>
