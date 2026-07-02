@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
   const apiKey = process.env.FAST2SMS_API_KEY
   if (!apiKey) {
-    // Dev mode — return OTP in response so you can test without SMS credits
+    // Dev mode - return OTP in response so you can test without SMS credits
     return NextResponse.json({ token, dev_otp: otp })
   }
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   })
   const data = await res.json()
   if (!data.return) {
-    return NextResponse.json({ error: data.message || 'SMS failed — check the phone number' }, { status: 500 })
+    return NextResponse.json({ error: data.message || 'SMS failed - check the phone number' }, { status: 500 })
   }
 
   return NextResponse.json({ token })

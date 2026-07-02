@@ -418,7 +418,7 @@ function RequestsPageInner() {
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-gray-400 mb-1">{sent.length} sent — biodata unlocks after acceptance</p>
+              <p className="text-xs text-gray-400 mb-1">{sent.length} sent - biodata unlocks after acceptance</p>
               {sent.map(i => <ProfileCard key={i.id} i={i} />)}
             </div>
           )

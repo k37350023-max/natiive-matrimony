@@ -1,31 +1,31 @@
-# NativeMatrimony — Development Instructions
+# NativeMatrimony - Development Instructions
 
 You are the sole developer of NativeMatrimony, an Indian matrimony web app. The basic version is already built. Every time you receive input (even just "continue" or "go"), inspect the current codebase, compare it against the spec below, identify what's missing or incomplete, and upgrade the next chunk to production quality. Commit after each chunk.
 
 ## THE PRODUCT
 
-NativeMatrimony — find matches close to your native place. Simple as that. An Indian matrimony platform where native place (state + district) is the primary way people discover each other. Clean, modern, works well.
+NativeMatrimony - find matches close to your native place. Simple as that. An Indian matrimony platform where native place (state + district) is the primary way people discover each other. Clean, modern, works well.
 
 ## CORE PRINCIPLES (Never violate these)
 
-1. **Native place first** — district-level matching across India. People find matches from their native place.
-2. **Simple & clean** — don't over-engineer. Keep it easy to use.
-3. **Mobile-first responsive** — works on phone and desktop
-4. **Launch offer** — First 1,000 profiles get free premium for 1 year
+1. **Native place first** - district-level matching across India. People find matches from their native place.
+2. **Simple & clean** - don't over-engineer. Keep it easy to use.
+3. **Mobile-first responsive** - works on phone and desktop
+4. **Launch offer** - First 1,000 profiles get free premium for 1 year
 
 ## HOW TO WORK EVERY SESSION
 
-1. Read the existing codebase — check what pages, components, features exist
+1. Read the existing codebase - check what pages, components, features exist
 2. Compare against the UPGRADE CHECKLIST below
 3. Find the first item that's missing or incomplete
-4. Upgrade it to the full spec described (not stubs — complete, polished, functional)
+4. Upgrade it to the full spec described (not stubs - complete, polished, functional)
 5. Ensure the app compiles and runs without errors
 6. Git commit with clear message
 7. If time/context allows, move to the next item. Otherwise stop.
 
-**If a page exists but is basic/minimal** — upgrade it to match the full spec below.  
-**If a page is missing** — create it.  
-**If something is buggy** — fix it before building new things.
+**If a page exists but is basic/minimal** - upgrade it to match the full spec below.  
+**If a page is missing** - create it.  
+**If something is buggy** - fix it before building new things.
 
 ## UPGRADE CHECKLIST
 
@@ -44,10 +44,10 @@ Cards should show: photo (or initials), verified badge, name, age · height, pro
 Clicking a profile card opens a full page with: header (large photo, name, age, district badge, verified badges, "Active X ago"), compatibility bar ("You match X/Y of their preferences" with visual), action buttons (Send Interest · Shortlist · Report/Block). Sections: About (bio text + who posted), Personal Details table, Education & Career table, Family Details table, Astrology section (collapsible), Hobbies (tags/chips), Partner Preferences (their prefs listed with green ✓ / grey ✗ showing which of YOUR attributes match). Contact section shows phone/email for premium users or after mutual match. "Similar Profiles" row (3-4 cards from same district/profession).
 
 ### ✅ CHECK 5: Interests System
-Three tabs with badge counts: Received (profile card + compatibility + Accept ✓ / Decline ✗ buttons + "View Profile"), Sent (profile card + status badge: Awaiting · Viewed · Accepted · Declined + Withdraw option), Mutual Matches (contact info visible — phone, email, WhatsApp button, "Start Chat" button, "Download Biodata" option).
+Three tabs with badge counts: Received (profile card + compatibility + Accept ✓ / Decline ✗ buttons + "View Profile"), Sent (profile card + status badge: Awaiting · Viewed · Accepted · Declined + Withdraw option), Mutual Matches (contact info visible - phone, email, WhatsApp button, "Start Chat" button, "Download Biodata" option).
 
 ### ✅ CHECK 6: Chat
-Left panel: conversation list with photo, name, last message preview, time, unread badge, online dot. Right panel: message bubbles with timestamps, text input, emoji picker. Icebreaker suggestions for first message. Only accessible for mutual matches — others see "Express interest to unlock chat".
+Left panel: conversation list with photo, name, last message preview, time, unread badge, online dot. Right panel: message bubbles with timestamps, text input, emoji picker. Icebreaker suggestions for first message. Only accessible for mutual matches - others see "Express interest to unlock chat".
 
 ### ✅ CHECK 7: Dashboard / My Profile
 Profile completeness ring (percentage + "Add [specific field] to reach 100%"). Activity summary cards: profile views this week, interests received, mutual matches count, shortlisted by count. "Who Viewed Me" list. "My Shortlist" section. Profile sections with inline edit (click to edit any field). "Download My Biodata" button. Settings link (notifications, privacy, account).
@@ -78,14 +78,14 @@ Nav bar: Browse · Interests · Chat · Bell (notification count) · Profile ava
 
 ## ORIGINALITY
 
-- Design must be original — no copying from any competitor
+- Design must be original - no copying from any competitor
 - Our visual identity: maroon/burgundy + gold
 - No competitor brand names in UI, code, or comments
 
 ## DESIGN & BRAND GUIDELINES
 
 ### Colors
-- Primary: deep maroon/burgundy (#8B1A1A or similar — matches current NativeMatrimony header)
+- Primary: deep maroon/burgundy (#8B1A1A or similar - matches current NativeMatrimony header)
 - Accent: warm gold (#D4A853) for CTAs, badges, highlights
 - Background: white (#FFFFFF) with light grey (#F8F9FA) section alternation
 - Text: dark charcoal (#1A1A1A) for headings, medium grey (#6B7280) for secondary text
@@ -95,24 +95,24 @@ Nav bar: Browse · Interests · Chat · Bell (notification count) · Profile ava
 ### Typography
 - Headings: Inter or similar clean sans-serif, bold
 - Body: Inter/system font, 14-16px
-- Keep generous whitespace — don't cram content like Shaadi does
+- Keep generous whitespace - don't cram content like Shaadi does
 
-### Card Design (Critical — this is what users see most)
+### Card Design (Critical - this is what users see most)
 Current NativeMatrimony cards are good (large photo, clean layout) but need MORE info density without losing elegance:
-- Large photo area (keep current style — full bleed, dark gradient overlay at bottom for text)
+- Large photo area (keep current style - full bleed, dark gradient overlay at bottom for text)
 - Name + age + height overlaid on photo bottom (white text on gradient)
 - Below photo: profession (bold), native district · current city, "Active X ago" in green
 - Compatibility score badge: "8/9 match" in top-right corner (gold badge)
 - Verified badge: keep current style (teal pill with ✓)
 - "Profile by: Self/Parent" small tag
 - Action: "Send Interest" button + heart/shortlist icon
-- Cards should be in a GRID (2-3 per row on desktop, 1 on mobile) — keep current layout
+- Cards should be in a GRID (2-3 per row on desktop, 1 on mobile) - keep current layout
 
 ### Layout Philosophy
 - NativeMatrimony should feel like a modern social/dating app (clean, photo-forward) but with the DATA DEPTH expected in Indian matrimony
-- Left sidebar for filters (keep current map + filters approach — it's great and unique to us)
+- Left sidebar for filters (keep current map + filters approach - it's great and unique to us)
 - Main content area for cards/profiles
-- Chat is its own dedicated page — no persistent sidebar
+- Chat is its own dedicated page - no persistent sidebar
 - Make it feel ALIVE: show "X profiles online now" counter, "X interests sent today"
 
 ### Profile Card Sizes
@@ -125,7 +125,7 @@ Current NativeMatrimony cards are good (large photo, clean layout) but need MORE
 - Large photo cards with gradient text overlay
 - Clean nav bar with maroon/burgundy header text
 - The "✓ Verified" teal badge style
-- Region filter chips (Telangana, Coastal Andhra, Rayalaseema) — but expand to all India states
+- Region filter chips (Telangana, Coastal Andhra, Rayalaseema) - but expand to all India states
 - The overall clean white+maroon aesthetic
 
 ### What to ADD (industry-standard matrimony features currently missing):
@@ -215,12 +215,12 @@ Populate with 30-50 realistic profiles:
 - Some with photos (use placeholder avatar URLs), some without
 - Realistic "about me" bios (2-3 sentences each)
 
-This ensures the app feels ALIVE on first load — not empty like a new startup.
+This ensures the app feels ALIVE on first load - not empty like a new startup.
 
 ## TECH NOTES
 
 - Keep whatever stack is currently in use (check package.json)
 - Use realistic seed/mock data: Indian names from various states, real districts across India, real professions
-- Every page should feel alive with data — no empty states on first load (use seed data)
+- Every page should feel alive with data - no empty states on first load (use seed data)
 - Ensure `npm run dev` / `npm run build` works after every change
 - If using mock/static data initially, structure it so it's easy to swap with real Supabase queries later

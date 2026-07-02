@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
     const otherId = match.user1 === meId ? match.user2 : match.user1
 
-    // Locked until the request is accepted — only the initial message exists till then.
+    // Locked until the request is accepted - only the initial message exists till then.
     const { data: interest } = await supabaseAdmin.from('interests').select('status')
       .or(`and(from_user.eq.${meId},to_user.eq.${otherId}),and(from_user.eq.${otherId},to_user.eq.${meId})`)
       .order('created_at', { ascending: false }).limit(1).maybeSingle()

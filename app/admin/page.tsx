@@ -70,7 +70,7 @@ export default function AdminPage() {
     // Score each profile
     const scored = all.map(p => {
       const flags: string[] = []
-      // User reports — most important
+      // User reports - most important
       const userReports = reportCounts[p.id] || []
       if (userReports.length > 0) {
         flags.push(`Reported ${userReports.length}x: ${[...new Set(userReports)].join(', ')}`)
@@ -278,7 +278,7 @@ export default function AdminPage() {
                       {p.verified && <span className="badge badge-verified">Verified</span>}
                     </div>
                     <p className="text-sm text-gray-500 mt-0.5">
-                      {p.gender} · {p.date_of_birth ? new Date(p.date_of_birth + 'T00:00:00').toLocaleDateString('en-IN') : '—'} · {p.profession}
+                      {p.gender} · {p.date_of_birth ? new Date(p.date_of_birth + 'T00:00:00').toLocaleDateString('en-IN') : '-'} · {p.profession}
                     </p>
                     <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-2 text-xs text-gray-400">
                       <span>Native: {p.native_district}, {p.native_state}</span>
@@ -352,7 +352,7 @@ export default function AdminPage() {
                               </span>
                               <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 capitalize">{p.status}</span>
                             </div>
-                            <p className="text-sm text-gray-500 mt-0.5">{p.gender} · {p.profession || '—'} · {p.native_district}, {p.native_state}</p>
+                            <p className="text-sm text-gray-500 mt-0.5">{p.gender} · {p.profession || '-'} · {p.native_district}, {p.native_state}</p>
                             {p.email && <p className="text-xs text-gray-400 mt-0.5">{p.email} {p.phone && `· ${p.phone}`}</p>}
                             <div className="flex flex-wrap gap-1.5 mt-2">
                               {p._flags.map((flag: string) => (

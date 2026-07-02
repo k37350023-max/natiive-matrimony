@@ -160,7 +160,7 @@ async function main() {
   }
 
   console.log('✅ Inserted 6 test profiles:')
-  TEST_PROFILES.forEach(p => console.log(`  ${p.gender === 'male' ? '👨' : '👩'} ${p.full_name} — ${p.native_district}, ${p.caste} — user_id: ${p.user_id}`))
+  TEST_PROFILES.forEach(p => console.log(`  ${p.gender === 'male' ? '👨' : '👩'} ${p.full_name} - ${p.native_district}, ${p.caste} - user_id: ${p.user_id}`))
 
   console.log('\nLogin credentials for testing:')
   console.log('  Set localStorage: my_profile_id + my_user_id to any of the IDs above')

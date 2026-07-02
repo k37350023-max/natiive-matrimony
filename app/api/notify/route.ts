@@ -4,7 +4,7 @@ export async function POST(req: NextRequest) {
   const { to, subject, html } = await req.json()
   const apiKey = process.env.RESEND_API_KEY
   if (!apiKey) {
-    // Gracefully skip — email not configured yet
+    // Gracefully skip - email not configured yet
     return NextResponse.json({ ok: true, skipped: true })
   }
   const res = await fetch('https://api.resend.com/emails', {

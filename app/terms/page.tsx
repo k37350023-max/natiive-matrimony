@@ -42,7 +42,7 @@ export default function TermsPage() {
             },
             {
               title: '6. Limitation of liability',
-              body: 'NativeMatrimony is a platform connecting people — we do not conduct background checks or guarantee the accuracy of profiles. We are not responsible for any interactions, meetings, or outcomes between members.',
+              body: 'NativeMatrimony is a platform connecting people - we do not conduct background checks or guarantee the accuracy of profiles. We are not responsible for any interactions, meetings, or outcomes between members.',
             },
             {
               title: '7. Governing law',

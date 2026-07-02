@@ -3,7 +3,7 @@ import Anthropic from '@anthropic-ai/sdk'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' })
 
-const EXTRACT_PROMPT = `You are parsing a matrimonial biodata document. Extract every field you can find and return ONLY a valid JSON object — no explanation, no markdown fences.
+const EXTRACT_PROMPT = `You are parsing a matrimonial biodata document. Extract every field you can find and return ONLY a valid JSON object - no explanation, no markdown fences.
 
 Fields to extract (use null for anything not found):
 {
@@ -41,7 +41,7 @@ Fields to extract (use null for anything not found):
   "about": string              // bio / about section, max 400 chars
 }
 
-Be liberal in extraction — guess gender from name if not stated. Convert height like "5'8\\"" to cm (172). For date_of_birth parse any format to YYYY-MM-DD.`
+Be liberal in extraction - guess gender from name if not stated. Convert height like "5'8\\"" to cm (172). For date_of_birth parse any format to YYYY-MM-DD.`
 
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {

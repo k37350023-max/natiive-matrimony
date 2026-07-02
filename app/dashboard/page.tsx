@@ -305,7 +305,7 @@ export default function DashboardPage() {
           </div>
           {viewers.length === 0 ? (
             <p style={{ fontSize: '13px', color: '#94A3B8', textAlign: 'center', padding: '20px 0' }}>
-              No views yet — complete your profile to get discovered!
+              No views yet - complete your profile to get discovered!
             </p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

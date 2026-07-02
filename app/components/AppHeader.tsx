@@ -105,7 +105,7 @@ export default function AppHeader() {
 
         <BrandLogo href={profileId ? '/browse' : '/'} />
 
-        {/* Nav links — desktop */}
+        {/* Nav links - desktop */}
         {ready && profileId && (
           <nav style={{ display: 'none', alignItems: 'center', gap: '0px' }} className="hdr-nav">
             <style>{`.hdr-nav { display: none; } @media(min-width:640px){.hdr-nav{display:flex;}}`}</style>

@@ -329,7 +329,7 @@ export default function RegisterPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div style={{ background: '#EAF3EA', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '12px', color: '#14241C' }}>
                   {devOtp
-                    ? <>Dev mode — your code is <strong>{devOtp}</strong>. (Real SMS sends automatically once a gateway key is added.)</>
+                    ? <>Dev mode - your code is <strong>{devOtp}</strong>. (Real SMS sends automatically once a gateway key is added.)</>
                     : <>We sent a 6-digit code to {phoneCode} {form.phone}. Enter it below.</>}
                 </div>
                 <div>

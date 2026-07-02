@@ -4,7 +4,7 @@ import { useState } from 'react'
 const FAQS = [
   {
     q: 'Is NativeMatrimony only for Telugu people?',
-    a: 'Yes — we are built specifically for Telugu families across Telangana, Andhra Pradesh, and the Telugu diaspora worldwide. Our filters, community understanding, and focus are all Telugu-first.',
+    a: 'Yes - we are built specifically for Telugu families across Telangana, Andhra Pradesh, and the Telugu diaspora worldwide. Our filters, community understanding, and focus are all Telugu-first.',
   },
   {
     q: 'What does "native place first" mean?',

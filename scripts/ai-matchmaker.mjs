@@ -1,5 +1,5 @@
 /**
- * AI Matchmaker — uses Claude vision to score appearance + biodata + native compatibility
+ * AI Matchmaker - uses Claude vision to score appearance + biodata + native compatibility
  * between male/female profiles, then sends "better match" notifications to top pairs.
  */
 import { createClient } from '@supabase/supabase-js'
@@ -182,7 +182,7 @@ async function main() {
 
   console.log(`\n✨ Top ${topPairs.length} matches:\n`)
   topPairs.forEach((p, i) => {
-    console.log(`  ${i + 1}. ${p.male.full_name} × ${p.female.full_name} — ${p.total}/100`)
+    console.log(`  ${i + 1}. ${p.male.full_name} × ${p.female.full_name} - ${p.total}/100`)
     console.log(`     ${p.reason}\n`)
   })
 
@@ -230,7 +230,7 @@ async function main() {
       notifications.push({
         user_id: m.user_id,
         type: 'ai_match_suggestion',
-        message: `✨ Top Pick: ${f.full_name} scored ${pair.total}/100 compatibility with you — ${pair.reason}`,
+        message: `✨ Top Pick: ${f.full_name} scored ${pair.total}/100 compatibility with you - ${pair.reason}`,
         from_profile_id: f.id,
         link: `/profile/${f.id}`,
         read: false,
@@ -240,7 +240,7 @@ async function main() {
       notifications.push({
         user_id: f.user_id,
         type: 'ai_match_suggestion',
-        message: `✨ Top Pick: ${m.full_name} scored ${pair.total}/100 compatibility with you — ${pair.reason}`,
+        message: `✨ Top Pick: ${m.full_name} scored ${pair.total}/100 compatibility with you - ${pair.reason}`,
         from_profile_id: m.id,
         link: `/profile/${m.id}`,
         read: false,

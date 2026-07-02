@@ -24,7 +24,7 @@ const REGIONS: Record<string, Record<string, string[]>> = {
   },
 }
 
-const AGE_RANGES   = ['18–24', '25–29', '30–34', '35–40', '40+']
+const AGE_RANGES   = ['18-24', '25-29', '30-34', '35-40', '40+']
 const PROFESSIONS  = ['IT / Software', 'Business', 'Government', 'Healthcare', 'Education', 'Other']
 const PROF_KW: Record<string, string[]> = {
   'IT / Software': ['software','engineer','developer','it ','tech'],
@@ -39,9 +39,9 @@ const RELIGIONS      = ['Hindu','Muslim','Christian','Sikh','Jain','Buddhist']
 const EDUCATION_LEVELS = ['Any','Graduate','Post Graduate','Doctorate','Diploma','12th / HSC']
 const HEIGHT_RANGES: { label: string; min: number; max: number }[] = [
   { label: 'Below 5\'2"', min: 0,   max: 157 },
-  { label: '5\'2"–5\'5"', min: 157, max: 165 },
-  { label: '5\'5"–5\'8"', min: 165, max: 173 },
-  { label: '5\'8"–5\'11"',min: 173, max: 181 },
+  { label: '5\'2"-5\'5"', min: 157, max: 165 },
+  { label: '5\'5"-5\'8"', min: 165, max: 173 },
+  { label: '5\'8"-5\'11"',min: 173, max: 181 },
   { label: 'Above 5\'11"',min: 181, max: 999 },
 ]
 const MARITAL_OPTIONS = [
@@ -54,7 +54,7 @@ const ACTIVE_WITHIN_OPTS = [
   { label: '7 days', hours: 168 },
   { label: '30 days', hours: 720 },
 ]
-const INCOME_RANGES = ['Below ₹3L','₹3L–6L','₹6L–10L','₹10L–20L','₹20L–50L','₹50L+']
+const INCOME_RANGES = ['Below ₹3L','₹3L-6L','₹6L-10L','₹10L-20L','₹20L-50L','₹50L+']
 const PAGE_SIZE = 18
 const POPULAR_NATIVE_PLACES = ['Guntur', 'Warangal', 'Nellore', 'Vijayawada', 'Chennai', 'Coimbatore', 'Madurai', 'Rajkot', 'Mysore']
 
@@ -341,7 +341,7 @@ function ProfileCard({
       onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 36px rgba(20,36,28,0.12)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)' }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
-      {/* Photo (4:5) — no overlays, photo stays clean */}
+      {/* Photo (4:5) - no overlays, photo stays clean */}
       <div className="browse-profile-media" style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
         {showPhoto ? (
           <img loading="lazy"
@@ -361,7 +361,7 @@ function ProfileCard({
           </div>
         )}
 
-        {/* Mint Verified pill — the only badge on the image */}
+        {/* Mint Verified pill - the only badge on the image */}
         {isVerified(p) && unlocked && (
           <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '4px 9px', borderRadius: '99px', background: '#166534', color: 'white', boxShadow: '0 2px 8px rgba(22,101,52,0.28)' }}>
@@ -372,7 +372,7 @@ function ProfileCard({
         )}
       </div>
 
-      {/* Info — all text below the photo */}
+      {/* Info - all text below the photo */}
       <div className="browse-profile-body" style={{ padding: '14px 14px 16px' }}>
         {/* Name + age */}
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
@@ -394,7 +394,7 @@ function ProfileCard({
 
         {/* Profession */}
         <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#14241C', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {p.profession || '—'}
+          {p.profession || '-'}
         </p>
         <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {p.current_city || 'Current city not set'}
@@ -772,7 +772,7 @@ export default function BrowsePage() {
     setLoading(true)
     const fourteenDaysAgo = new Date(Date.now() - 14*24*60*60*1000).toISOString()
 
-    // Secure path: fetch via server API (service_role, sanitized columns — no phone/email).
+    // Secure path: fetch via server API (service_role, sanitized columns - no phone/email).
     // Falls back to the legacy direct query if the API isn't configured yet.
     let data: Profile[] | null = null
     try {
@@ -804,7 +804,7 @@ export default function BrowsePage() {
     if (showViewed && viewedIds.size > 0) results = results.filter(p => !viewedIds.has(p.id))
 
     if (ageRange) {
-      const [minA,maxA] = ageRange==='40+'?[40,99]:ageRange.split('–').map(Number)
+      const [minA,maxA] = ageRange==='40+'?[40,99]:ageRange.split('-').map(Number)
       results = results.filter(p=>{ const a=getAge(p.date_of_birth); return a!=null&&a>=minA&&a<=maxA })
     }
     if (profCat) {
@@ -888,7 +888,7 @@ export default function BrowsePage() {
   }
 
   // Send an interest request. Stays PENDING until the recipient accepts
-  // (acceptance is what creates a match) — no auto-match here.
+  // (acceptance is what creates a match) - no auto-match here.
   async function sendInterest(p: Profile, opts: { advance?: boolean } = {}) {
     if (!myProfileId || interestMap[p.id] || sendingInterest) return
     setSendingInterest(true)
@@ -1012,7 +1012,7 @@ export default function BrowsePage() {
                 <span style={{ fontSize: '11px', color: '#5E6B62', fontWeight: 800, letterSpacing: '0.08em' }}>{memberLabel(myMemberNum)}</span>
               )}
             </div>
-            {/* Desktop filter button (hidden on mobile — chips below) */}
+            {/* Desktop filter button (hidden on mobile - chips below) */}
             <button
               className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold"
               style={activeFilterCount > 0
@@ -1117,7 +1117,7 @@ export default function BrowsePage() {
                 onClick={() => {
                   const next = !alertSet
                   setAlertSet(next)
-                  setBrowseToast(next ? 'Alert saved — we\'ll notify you when new matches appear' : 'Alert removed')
+                  setBrowseToast(next ? 'Alert saved - we\'ll notify you when new matches appear' : 'Alert removed')
                   setTimeout(() => setBrowseToast(null), 3500)
                 }}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
@@ -1282,7 +1282,7 @@ export default function BrowsePage() {
               </div>
             )}
 
-            {/* Profile grid — 2 cols on mobile, 3 on desktop */}
+            {/* Profile grid - 2 cols on mobile, 3 on desktop */}
             {(() => {
               const paged = profiles.slice(0, page * PAGE_SIZE)
               return (
@@ -1419,10 +1419,10 @@ export default function BrowsePage() {
               {/* Info rows */}
               <div className="px-5 py-1 divide-y divide-gray-100">
                 {[
-                  { svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', text: `Native: ${p.native_district||'—'}${p.current_city?` • ${p.current_city}`:''}` },
-                  { svg: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>', text: p.profession || '—' },
-                  unlocked ? { svg: '<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/>', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'—' } : null,
-                  unlocked ? { svg: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '—' } : null,
+                  { svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', text: `Native: ${p.native_district||'-'}${p.current_city?` • ${p.current_city}`:''}` },
+                  { svg: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>', text: p.profession || '-' },
+                  unlocked ? { svg: '<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/>', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'-' } : null,
+                  unlocked ? { svg: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '-' } : null,
                   seenLabel ? { dot: true, text: seenLabel } : null,
                   unlocked && p.about ? { svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', text: p.about.slice(0,120)+(p.about.length>120?'…':'') } : null,
                 ].filter(Boolean).map((row,i) => {
@@ -1546,10 +1546,10 @@ export default function BrowsePage() {
               <div style={{ marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 14px', borderRadius: '12px', background: '#EDF3ED', marginBottom: '12px' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent — contact unlocks once they accept</p>
+                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent - contact unlocks once they accept</p>
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0, lineHeight: 1.5 }}>
-                  Contact details are shared only after acceptance. We&apos;ve sent your request — you&apos;ll be notified when they accept.
+                  Contact details are shared only after acceptance. We&apos;ve sent your request - you&apos;ll be notified when they accept.
                 </p>
               </div>
             )}

@@ -254,7 +254,7 @@ export default function ChatPage() {
             <div className="flex flex-col gap-2 w-full max-w-xs">
               {[
                 'Hi, I came across your profile and would love to connect.',
-                `Your background caught my attention — would love to chat.`,
+                `Your background caught my attention - would love to chat.`,
                 'Hello! Looking forward to getting to know you.',
               ].map(starter => (
                 <button key={starter}
@@ -309,7 +309,7 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Icebreaker suggestions — shown when conversation just started (and not locked) */}
+      {/* Icebreaker suggestions - shown when conversation just started (and not locked) */}
       {!loading && !chatState?.locked && messages.filter(m => m.from_profile_id === myProfileId).length === 0 && (
         <div className="shrink-0 bg-white border-t px-4 py-3" style={{ borderColor: '#F3F4F6' }}>
           <p className="text-xs text-gray-400 mb-2 font-medium">Quick starters</p>
@@ -330,13 +330,13 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Composer — locked until the interest is accepted */}
+      {/* Composer - locked until the interest is accepted */}
       {chatState?.locked ? (
         <div className="shrink-0 bg-white border-t px-4 py-4" style={{ borderColor: '#E7E3D8' }}>
           <div className="max-w-2xl mx-auto text-center">
             {chatState.iAmSender ? (
               <>
-                <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request sent — your first message is delivered</p>
+                <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request sent - your first message is delivered</p>
                 <p className="text-xs mt-1" style={{ color: '#5E6B62' }}>
                   You can send more messages once {other?.full_name?.split(' ')[0] || 'they'} accept your request.
                 </p>

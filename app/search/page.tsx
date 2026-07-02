@@ -90,7 +90,7 @@ const DRINK_OPTS    = ['Non-Drinker','Social Drinker','Drinker']
 const FAMILY_TYPE   = ['Nuclear','Joint','Extended']
 const FAMILY_STATUS = ['Middle Class','Upper Middle Class','Rich / Affluent','High Net Worth']
 const FAMILY_VALUES = ['Orthodox','Moderate','Liberal']
-const INCOME_RANGES = ['Below 3 LPA','3–6 LPA','6–10 LPA','10–15 LPA','15–25 LPA','25–50 LPA','50 LPA+']
+const INCOME_RANGES = ['Below 3 LPA','3-6 LPA','6-10 LPA','10-15 LPA','15-25 LPA','25-50 LPA','50 LPA+']
 const COUNTRIES     = ['India','USA','UK','Canada','Australia','UAE','Singapore','New Zealand','Germany','Other']
 const RESIDENCY     = ['Citizen','Permanent Resident','Work Visa / H1B','Student Visa','Visit Visa']
 const STARS         = ['Ashwini','Bharani','Krittika','Rohini','Mrigashira','Ardra','Punarvasu','Pushya','Ashlesha','Magha','Purva Phalguni','Uttara Phalguni','Hasta','Chitra','Swati','Vishakha','Anuradha','Jyeshtha','Mula','Purva Ashadha','Uttara Ashadha','Shravana','Dhanishta','Shatabhisha','Purva Bhadrapada','Uttara Bhadrapada','Revati']
@@ -294,7 +294,7 @@ export default function SearchPage() {
     if (religion.length)  parts.push(religion.join('/'))
     if (castes.length)    parts.push(castes.join('/'))
     if (tongues.length)   parts.push(tongues.join('+'))
-    parts.push(`${ageMin}–${ageMax}yrs`)
+    parts.push(`${ageMin}-${ageMax}yrs`)
     if (region)           parts.push(region)
     if (country.length)   parts.push(country.join('/'))
     if (incomeRange.length) parts.push(incomeRange[0])
@@ -340,7 +340,7 @@ export default function SearchPage() {
     if (education.length) r = r.filter(p => education.some(e => p.education?.toLowerCase().includes(e.toLowerCase())))
     // Profession
     if (profession.length) r = r.filter(p => profession.some(pr => { const kws = PROF_KW[pr]||[]; return kws.some(k => p.profession?.toLowerCase().includes(k)) }))
-    // Income — rough keyword match
+    // Income - rough keyword match
     if (incomeRange.length) r = r.filter(p => incomeRange.some(ir => p.annual_income?.includes(ir.split(' ')[0]) || !p.annual_income))
     // Diet
     if (diet.length)      r = r.filter(p => diet.some(d => p.diet?.toLowerCase() === d.toLowerCase()))
@@ -649,7 +649,7 @@ export default function SearchPage() {
           {Sidebar}
         </aside>
 
-        {/* Right — results */}
+        {/* Right - results */}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
             display: 'flex',
@@ -715,7 +715,7 @@ export default function SearchPage() {
             </div>
           )}
 
-          {/* Empty — not searched */}
+          {/* Empty - not searched */}
           {!loading && !searched && (
             <div style={{ textAlign: 'center', padding: '72px 20px' }}>
               <div style={{ width: '68px', height: '68px', borderRadius: '18px', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
@@ -737,7 +737,7 @@ export default function SearchPage() {
           {!loading && searched && profiles.length === 0 && (
             <div style={{ textAlign: 'center', padding: '60px 20px' }}>
               <p style={{ fontSize: '16px', fontWeight: 600, color: '#333', margin: '0 0 8px' }}>No profiles match your filters</p>
-              <p style={{ fontSize: '13.5px', color: '#999', margin: '0 0 16px' }}>Try relaxing a few filters — fewer criteria means more results.</p>
+              <p style={{ fontSize: '13.5px', color: '#999', margin: '0 0 16px' }}>Try relaxing a few filters - fewer criteria means more results.</p>
               <button onClick={resetAll} style={{ padding: '10px 20px', borderRadius: '8px', border: '1.5px solid #DDDDD8', background: 'white', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#555' }}>
                 Reset all filters
               </button>

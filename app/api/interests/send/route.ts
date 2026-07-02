@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { getSessionProfileId } from '@/lib/session'
 
-/* Send an interest. The sender is taken from the trusted session cookie —
+/* Send an interest. The sender is taken from the trusted session cookie -
    the client cannot send "as" someone else. Stays pending until accepted. */
 export async function POST(req: Request) {
   try {

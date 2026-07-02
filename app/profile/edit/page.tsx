@@ -362,7 +362,7 @@ function EditProfilePageInner() {
       email: userEmail, token: otpCode.trim(), type: 'email'
     })
     if (error) {
-      setError('Invalid code — check your email and try again')
+      setError('Invalid code - check your email and try again')
     } else {
       await supabase.from('profiles').update({ phone_verified: true }).eq('id', profileId)
       setVerified(true)
@@ -446,7 +446,7 @@ function EditProfilePageInner() {
             ...(data.drinking ? { drinking: String(data.drinking) } : {}),
             ...(data.about ? { about: String(data.about).slice(0, 400) } : {}),
           }))
-          setSuccess('Profile fields filled from your biodata — review below and save!')
+          setSuccess('Profile fields filled from your biodata - review below and save!')
           window.scrollTo({ top: 0, behavior: 'smooth' })
         }} />
 
@@ -528,7 +528,7 @@ function EditProfilePageInner() {
           </div>
 
           <div className="pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
-            <p className="form-label mb-1">Privacy — what do you want to hide?</p>
+            <p className="form-label mb-1">Privacy - what do you want to hide?</p>
             <p className="text-xs text-gray-400 mb-3">Photos are visible by default. Hidden fields show as blurred on your profile, and visitors can request access for you to approve or decline.</p>
             <div className="space-y-2">
               {HIDEABLE_FIELDS.map(f => {
@@ -714,25 +714,25 @@ function EditProfilePageInner() {
                   <option value="">Prefer not to say</option>
                   <optgroup label="India (LPA)">
                     <option value="Below 3 LPA">Below 3 LPA</option>
-                    <option value="3–6 LPA">3–6 LPA</option>
-                    <option value="6–10 LPA">6–10 LPA</option>
-                    <option value="10–15 LPA">10–15 LPA</option>
-                    <option value="15–25 LPA">15–25 LPA</option>
-                    <option value="25–50 LPA">25–50 LPA</option>
+                    <option value="3-6 LPA">3-6 LPA</option>
+                    <option value="6-10 LPA">6-10 LPA</option>
+                    <option value="10-15 LPA">10-15 LPA</option>
+                    <option value="15-25 LPA">15-25 LPA</option>
+                    <option value="25-50 LPA">25-50 LPA</option>
                     <option value="50+ LPA">50+ LPA</option>
                   </optgroup>
                   <optgroup label="USA / Canada (USD)">
                     <option value="USD &lt;50k">USD &lt;50k</option>
-                    <option value="USD 50–80k">USD 50–80k</option>
-                    <option value="USD 80–120k">USD 80–120k</option>
-                    <option value="USD 120–160k">USD 120–160k</option>
-                    <option value="USD 160–200k">USD 160–200k</option>
+                    <option value="USD 50-80k">USD 50-80k</option>
+                    <option value="USD 80-120k">USD 80-120k</option>
+                    <option value="USD 120-160k">USD 120-160k</option>
+                    <option value="USD 160-200k">USD 160-200k</option>
                     <option value="USD 200k+">USD 200k+</option>
                   </optgroup>
                   <optgroup label="UK (GBP)">
                     <option value="GBP &lt;30k">GBP &lt;30k</option>
-                    <option value="GBP 30–60k">GBP 30–60k</option>
-                    <option value="GBP 60–100k">GBP 60–100k</option>
+                    <option value="GBP 30-60k">GBP 30-60k</option>
+                    <option value="GBP 60-100k">GBP 60-100k</option>
                     <option value="GBP 100k+">GBP 100k+</option>
                   </optgroup>
                 </select>
@@ -877,7 +877,7 @@ function EditProfilePageInner() {
           </div>
         </CollapsibleCard>
 
-        {/* Astrology — optional */}
+        {/* Astrology - optional */}
         <CollapsibleCard title="Astrology" badge="Optional" subtitle="Fill if your family values horoscope matching">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
@@ -908,7 +908,7 @@ function EditProfilePageInner() {
           </div>
         </CollapsibleCard>
 
-        {/* Lifestyle — optional */}
+        {/* Lifestyle - optional */}
         <CollapsibleCard title="Lifestyle" badge="Optional" subtitle="Helps find compatible matches">
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -1039,7 +1039,7 @@ function EditProfilePageInner() {
             <div className="space-y-3">
               {devOtp && (
                 <div className="text-xs px-3 py-2 rounded-lg" style={{background: '#EDF3ED', color: '#14241C'}}>
-                  Dev mode — OTP: <span className="font-bold font-mono">{devOtp}</span> (SMS not configured)
+                  Dev mode - OTP: <span className="font-bold font-mono">{devOtp}</span> (SMS not configured)
                 </div>
               )}
               <p className="text-sm text-gray-600">

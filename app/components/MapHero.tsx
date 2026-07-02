@@ -137,7 +137,7 @@ export default function MapHero() {
               transition: 'transform 1.2s cubic-bezier(0.4,0,0.2,1)',
             }}
           >
-            {/* All states — base layer */}
+            {/* All states - base layer */}
             {IndiaData.locations.map(loc => {
               const isTeluguAP = loc.id === 'ap'
               const isTeluguTG = loc.id === 'tg'

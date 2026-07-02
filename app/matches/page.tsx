@@ -217,7 +217,7 @@ export default function MatchesPage() {
                     {p.last_message ? (
                       <p style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.last_message}</p>
                     ) : p.is_mutual ? (
-                      <p style={{ fontSize: '12px', color: '#2E7D32', fontWeight: 500, marginTop: '3px' }}>Say hello — you're connected!</p>
+                      <p style={{ fontSize: '12px', color: '#2E7D32', fontWeight: 500, marginTop: '3px' }}>Say hello - you're connected!</p>
                     ) : (
                       <p style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px' }}>{seenLabel || `Native: ${p.native_district}`}</p>
                     )}

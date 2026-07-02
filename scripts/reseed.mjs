@@ -57,7 +57,7 @@ const profiles = [
     email: 'arjun.vemula@ntvtest.com', phone: '9876543210',
     pref_age_min: 23, pref_age_max: 28, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(5), member_number: 1,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Sai Teja Boddupalli', gender: 'male', date_of_birth: '1994-01-30',
@@ -71,7 +71,7 @@ const profiles = [
     email: 'saiteja.boddupalli@ntvtest.com', phone: '9876543211',
     pref_age_min: 23, pref_age_max: 29, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(1), member_number: 2,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
   {
     full_name: 'Rahul Naidu Cherukuri', gender: 'male', date_of_birth: '1993-08-22',
@@ -85,7 +85,7 @@ const profiles = [
     email: 'rahul.cherukuri@ntvtest.com', phone: '9876543212',
     pref_age_min: 25, pref_age_max: 30, profile_created_by: 'parent',
     last_login_at: daysAgo(1), created_at: daysAgo(7), member_number: 3,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
   {
     full_name: 'Varun Kapu Marella', gender: 'male', date_of_birth: '1996-05-10',
@@ -99,7 +99,7 @@ const profiles = [
     email: 'varun.marella@ntvtest.com', phone: '9876543213',
     pref_age_min: 22, pref_age_max: 27, profile_created_by: 'self',
     last_login_at: daysAgo(2), created_at: daysAgo(3), member_number: 4,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Aditya Velama Koduri', gender: 'male', date_of_birth: '1992-11-15',
@@ -113,7 +113,7 @@ const profiles = [
     email: 'aditya.koduri@ntvtest.com', phone: '9876543214',
     pref_age_min: 24, pref_age_max: 30, profile_created_by: 'parent',
     last_login_at: daysAgo(3), created_at: daysAgo(12), member_number: 5,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
 
   // ══════════════ ANDHRA PRADESH GROOMS (4) ══════════════
@@ -129,7 +129,7 @@ const profiles = [
     email: 'karthik.naidu@ntvtest.com', phone: '9876543215',
     pref_age_min: 24, pref_age_max: 30, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(8), member_number: 6,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
   {
     full_name: 'Rohit Varma Challa', gender: 'male', date_of_birth: '1996-11-05',
@@ -143,7 +143,7 @@ const profiles = [
     email: 'rohit.challa@ntvtest.com', phone: '9876543216',
     pref_age_min: 22, pref_age_max: 27, profile_created_by: 'parent',
     last_login_at: daysAgo(2), created_at: daysAgo(3), member_number: 7,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Vikram Rao Annavarapu', gender: 'male', date_of_birth: '1992-09-18',
@@ -157,7 +157,7 @@ const profiles = [
     email: 'vikram.annavarapu@ntvtest.com', phone: '9876543217',
     pref_age_min: 24, pref_age_max: 30, profile_created_by: 'parent',
     last_login_at: daysAgo(3), created_at: daysAgo(12), member_number: 8,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
   {
     full_name: 'Suresh Reddy Namburi', gender: 'male', date_of_birth: '1994-04-12',
@@ -171,7 +171,7 @@ const profiles = [
     email: 'suresh.namburi@ntvtest.com', phone: '9876543218',
     pref_age_min: 24, pref_age_max: 29, profile_created_by: 'self',
     last_login_at: daysAgo(5), created_at: daysAgo(15), member_number: 9,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
 
   // ══════════════ KARNATAKA GROOMS (3) ══════════════
@@ -187,7 +187,7 @@ const profiles = [
     email: 'nikhil.gowda@ntvtest.com', phone: '9876543219',
     pref_age_min: 23, pref_age_max: 28, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(4), member_number: 10,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Ravi Lingayat Hosamani', gender: 'male', date_of_birth: '1993-02-14',
@@ -201,7 +201,7 @@ const profiles = [
     email: 'ravi.hosamani@ntvtest.com', phone: '9876543220',
     pref_age_min: 25, pref_age_max: 31, profile_created_by: 'self',
     last_login_at: daysAgo(2), created_at: daysAgo(9), member_number: 11,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Deepak Vokkaligar Kumar', gender: 'male', date_of_birth: '1994-10-30',
@@ -215,7 +215,7 @@ const profiles = [
     email: 'deepak.kumar@ntvtest.com', phone: '9876543221',
     pref_age_min: 24, pref_age_max: 30, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(6), member_number: 12,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
 
   // ══════════════ TAMIL NADU GROOMS (3) ══════════════
@@ -231,7 +231,7 @@ const profiles = [
     email: 'arun.krishnan@ntvtest.com', phone: '9876543222',
     pref_age_min: 23, pref_age_max: 28, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(10), member_number: 13,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
   {
     full_name: 'Vijay Pillai Annamalai', gender: 'male', date_of_birth: '1992-12-05',
@@ -245,7 +245,7 @@ const profiles = [
     email: 'vijay.annamalai@ntvtest.com', phone: '9876543223',
     pref_age_min: 25, pref_age_max: 30, profile_created_by: 'parent',
     last_login_at: daysAgo(4), created_at: daysAgo(14), member_number: 14,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Kiran Thevar Muthukumar', gender: 'male', date_of_birth: '1995-03-28',
@@ -259,7 +259,7 @@ const profiles = [
     email: 'kiran.muthukumar@ntvtest.com', phone: '9876543224',
     pref_age_min: 23, pref_age_max: 28, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(2), member_number: 15,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
 
   // ══════════════ MAHARASHTRA GROOMS (3) ══════════════
@@ -275,7 +275,7 @@ const profiles = [
     email: 'akash.patil@ntvtest.com', phone: '9876543225',
     pref_age_min: 24, pref_age_max: 29, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(7), member_number: 16,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Rohan Deshmukh Rane', gender: 'male', date_of_birth: '1994-06-20',
@@ -289,7 +289,7 @@ const profiles = [
     email: 'rohan.deshmukh@ntvtest.com', phone: '9876543226',
     pref_age_min: 23, pref_age_max: 28, profile_created_by: 'parent',
     last_login_at: daysAgo(3), created_at: daysAgo(11), member_number: 17,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
   {
     full_name: 'Siddharth Jain Mehta', gender: 'male', date_of_birth: '1992-01-08',
@@ -314,12 +314,12 @@ const profiles = [
     native_district: 'New Delhi', native_state: 'Delhi', native_region: '',
     current_city: 'Gurgaon', marital_status: 'Never Married', family_type: 'Nuclear',
     diet: 'Non-Vegetarian', star: 'Ashwini',
-    about: 'Software engineer at Google Gurgaon. Delhi boy who loves North Indian food and Bollywood. Open to partnering with someone from any state — love transcends boundaries!',
+    about: 'Software engineer at Google Gurgaon. Delhi boy who loves North Indian food and Bollywood. Open to partnering with someone from any state - love transcends boundaries!',
     photo_url: m(8), photo_visibility: 'public', status: 'approved', verified: true,
     email: 'rajat.kapoor@ntvtest.com', phone: '9876543228',
     pref_age_min: 23, pref_age_max: 28, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(3), member_number: 19,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
   {
     full_name: 'Manish Gupta Agarwal', gender: 'male', date_of_birth: '1993-04-16',
@@ -333,7 +333,7 @@ const profiles = [
     email: 'manish.agarwal@ntvtest.com', phone: '9876543229',
     pref_age_min: 25, pref_age_max: 30, profile_created_by: 'parent',
     last_login_at: daysAgo(1), created_at: daysAgo(5), member_number: 20,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
   {
     full_name: 'Anurag Singh Chauhan', gender: 'male', date_of_birth: '1995-07-04',
@@ -347,7 +347,7 @@ const profiles = [
     email: 'anurag.chauhan@ntvtest.com', phone: '9876543230',
     pref_age_min: 24, pref_age_max: 29, profile_created_by: 'self',
     last_login_at: daysAgo(4), created_at: daysAgo(13), member_number: 21,
-    annual_income: '₹3L–6L',
+    annual_income: '₹3L-6L',
   },
 
   // ══════════════ GUJARAT GROOMS (2) ══════════════
@@ -377,7 +377,7 @@ const profiles = [
     email: 'harsh.doshi@ntvtest.com', phone: '9876543232',
     pref_age_min: 22, pref_age_max: 27, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(4), member_number: 23,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
 
   // ══════════════ TELANGANA BRIDES (5) ══════════════
@@ -393,7 +393,7 @@ const profiles = [
     email: 'priya.gudipati@ntvtest.com', phone: '9876543233',
     pref_age_min: 26, pref_age_max: 32, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(4), member_number: 24,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Keerthi Vardhini Pasala', gender: 'female', date_of_birth: '1995-12-20',
@@ -407,7 +407,7 @@ const profiles = [
     email: 'keerthi.pasala@ntvtest.com', phone: '9876543234',
     pref_age_min: 27, pref_age_max: 34, profile_created_by: 'self',
     last_login_at: daysAgo(2), created_at: daysAgo(9), member_number: 25,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Swathi Nandini Yerramilli', gender: 'female', date_of_birth: '1997-04-08',
@@ -421,7 +421,7 @@ const profiles = [
     email: 'swathi.yerramilli@ntvtest.com', phone: '9876543235',
     pref_age_min: 25, pref_age_max: 31, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(1), member_number: 26,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Manasa Kamma Polavarapu', gender: 'female', date_of_birth: '1998-02-14',
@@ -435,7 +435,7 @@ const profiles = [
     email: 'manasa.polavarapu@ntvtest.com', phone: '9876543236',
     pref_age_min: 26, pref_age_max: 33, profile_created_by: 'parent',
     last_login_at: daysAgo(1), created_at: daysAgo(5), member_number: 27,
-    annual_income: '₹3L–6L',
+    annual_income: '₹3L-6L',
   },
   {
     full_name: 'Laxmi Velama Bandaru', gender: 'female', date_of_birth: '1996-08-30',
@@ -449,7 +449,7 @@ const profiles = [
     email: 'laxmi.bandaru@ntvtest.com', phone: '9876543237',
     pref_age_min: 27, pref_age_max: 33, profile_created_by: 'parent',
     last_login_at: daysAgo(4), created_at: daysAgo(16), member_number: 28,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
 
   // ══════════════ ANDHRA PRADESH BRIDES (4) ══════════════
@@ -465,7 +465,7 @@ const profiles = [
     email: 'ananya.kakarlapudi@ntvtest.com', phone: '9876543238',
     pref_age_min: 27, pref_age_max: 33, profile_created_by: 'parent',
     last_login_at: daysAgo(1), created_at: daysAgo(6), member_number: 29,
-    annual_income: '₹3L–6L',
+    annual_income: '₹3L-6L',
   },
   {
     full_name: 'Divya Sri Mangipudi', gender: 'female', date_of_birth: '1998-09-03',
@@ -479,7 +479,7 @@ const profiles = [
     email: 'divya.mangipudi@ntvtest.com', phone: '9876543239',
     pref_age_min: 26, pref_age_max: 32, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(2), member_number: 30,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
   {
     full_name: 'Sravani Kapu Mekala', gender: 'female', date_of_birth: '1997-11-15',
@@ -493,7 +493,7 @@ const profiles = [
     email: 'sravani.mekala@ntvtest.com', phone: '9876543240',
     pref_age_min: 25, pref_age_max: 31, profile_created_by: 'parent',
     last_login_at: daysAgo(3), created_at: daysAgo(11), member_number: 31,
-    annual_income: '₹3L–6L',
+    annual_income: '₹3L-6L',
   },
   {
     full_name: 'Pavani Reddy Chintala', gender: 'female', date_of_birth: '1995-05-22',
@@ -507,7 +507,7 @@ const profiles = [
     email: 'pavani.chintala@ntvtest.com', phone: '9876543241',
     pref_age_min: 26, pref_age_max: 31, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(7), member_number: 32,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
 
   // ══════════════ KARNATAKA BRIDES (3) ══════════════
@@ -523,7 +523,7 @@ const profiles = [
     email: 'sneha.krishnamurthy@ntvtest.com', phone: '9876543242',
     pref_age_min: 25, pref_age_max: 31, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(3), member_number: 33,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Kavitha Lingayat Basavaraj', gender: 'female', date_of_birth: '1995-10-06',
@@ -537,7 +537,7 @@ const profiles = [
     email: 'kavitha.basavaraj@ntvtest.com', phone: '9876543243',
     pref_age_min: 26, pref_age_max: 32, profile_created_by: 'parent',
     last_login_at: daysAgo(5), created_at: daysAgo(18), member_number: 34,
-    annual_income: '₹3L–6L',
+    annual_income: '₹3L-6L',
   },
   {
     full_name: 'Pooja Brahmin Raghavendra', gender: 'female', date_of_birth: '1997-07-24',
@@ -551,7 +551,7 @@ const profiles = [
     email: 'pooja.raghavendra@ntvtest.com', phone: '9876543244',
     pref_age_min: 26, pref_age_max: 32, profile_created_by: 'self',
     last_login_at: daysAgo(2), created_at: daysAgo(8), member_number: 35,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
 
   // ══════════════ TAMIL NADU BRIDES (3) ══════════════
@@ -567,7 +567,7 @@ const profiles = [
     email: 'preethi.venkataraman@ntvtest.com', phone: '9876543245',
     pref_age_min: 27, pref_age_max: 33, profile_created_by: 'parent',
     last_login_at: daysAgo(1), created_at: daysAgo(6), member_number: 36,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Nithya Pillai Ramasamy', gender: 'female', date_of_birth: '1997-05-30',
@@ -581,7 +581,7 @@ const profiles = [
     email: 'nithya.ramasamy@ntvtest.com', phone: '9876543246',
     pref_age_min: 25, pref_age_max: 30, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(2), member_number: 37,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
   {
     full_name: 'Revathi Mudaliar Sundaram', gender: 'female', date_of_birth: '1995-09-18',
@@ -595,7 +595,7 @@ const profiles = [
     email: 'revathi.sundaram@ntvtest.com', phone: '9876543247',
     pref_age_min: 27, pref_age_max: 32, profile_created_by: 'parent',
     last_login_at: daysAgo(3), created_at: daysAgo(12), member_number: 38,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
 
   // ══════════════ MAHARASHTRA BRIDES (3) ══════════════
@@ -611,7 +611,7 @@ const profiles = [
     email: 'riya.kulkarni@ntvtest.com', phone: '9876543248',
     pref_age_min: 26, pref_age_max: 31, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(5), member_number: 39,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
   {
     full_name: 'Shruti Maratha Bhosale', gender: 'female', date_of_birth: '1997-03-22',
@@ -625,7 +625,7 @@ const profiles = [
     email: 'shruti.bhosale@ntvtest.com', phone: '9876543249',
     pref_age_min: 25, pref_age_max: 31, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(3), member_number: 40,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
   {
     full_name: 'Aarti Jain Shah', gender: 'female', date_of_birth: '1995-06-08',
@@ -639,7 +639,7 @@ const profiles = [
     email: 'aarti.shah@ntvtest.com', phone: '9876543250',
     pref_age_min: 27, pref_age_max: 33, profile_created_by: 'self',
     last_login_at: daysAgo(2), created_at: daysAgo(10), member_number: 41,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
 
   // ══════════════ DELHI / NORTH INDIA BRIDES (3) ══════════════
@@ -655,7 +655,7 @@ const profiles = [
     email: 'neha.verma@ntvtest.com', phone: '9876543251',
     pref_age_min: 25, pref_age_max: 30, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(2), member_number: 42,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Pooja Agarwal Mittal', gender: 'female', date_of_birth: '1995-02-28',
@@ -669,7 +669,7 @@ const profiles = [
     email: 'pooja.mittal@ntvtest.com', phone: '9876543252',
     pref_age_min: 27, pref_age_max: 33, profile_created_by: 'parent',
     last_login_at: daysAgo(1), created_at: daysAgo(4), member_number: 43,
-    annual_income: '₹20L–50L',
+    annual_income: '₹20L-50L',
   },
   {
     full_name: 'Ritika Singh Rajput', gender: 'female', date_of_birth: '1997-10-10',
@@ -683,7 +683,7 @@ const profiles = [
     email: 'ritika.rajput@ntvtest.com', phone: '9876543253',
     pref_age_min: 25, pref_age_max: 30, profile_created_by: 'self',
     last_login_at: daysAgo(3), created_at: daysAgo(9), member_number: 44,
-    annual_income: '₹6L–10L',
+    annual_income: '₹6L-10L',
   },
 
   // ══════════════ GUJARAT / OTHER BRIDES (4) ══════════════
@@ -699,7 +699,7 @@ const profiles = [
     email: 'hiral.desai@ntvtest.com', phone: '9876543254',
     pref_age_min: 26, pref_age_max: 31, profile_created_by: 'parent',
     last_login_at: daysAgo(2), created_at: daysAgo(7), member_number: 45,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Dimple Jain Sheth', gender: 'female', date_of_birth: '1997-07-16',
@@ -713,7 +713,7 @@ const profiles = [
     email: 'dimple.sheth@ntvtest.com', phone: '9876543255',
     pref_age_min: 25, pref_age_max: 31, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(5), member_number: 46,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Ankita Punjabi Bhatia', gender: 'female', date_of_birth: '1994-04-02',
@@ -727,7 +727,7 @@ const profiles = [
     email: 'ankita.bhatia@ntvtest.com', phone: '9876543256',
     pref_age_min: 27, pref_age_max: 33, profile_created_by: 'self',
     last_login_at: daysAgo(0), created_at: daysAgo(1), member_number: 47,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Sunita Reddy Borra', gender: 'female', date_of_birth: '1993-12-18',
@@ -736,7 +736,7 @@ const profiles = [
     native_district: 'Hyderabad', native_state: 'Telangana', native_region: 'Telangana',
     current_city: 'San Jose, USA', marital_status: 'Never Married', family_type: 'Nuclear',
     diet: 'Non-Vegetarian', star: 'Ashwini',
-    about: 'Senior engineer at Google San Jose. IIIT Hyderabad alumna. Looking to settle down — open to relocating to India or staying in the US. Love hiking, reading, and cooking Telugu food.',
+    about: 'Senior engineer at Google San Jose. IIIT Hyderabad alumna. Looking to settle down - open to relocating to India or staying in the US. Love hiking, reading, and cooking Telugu food.',
     photo_url: f(4), photo_visibility: 'public', status: 'approved', verified: true,
     email: 'sunita.borra@ntvtest.com', phone: '9876543257',
     pref_age_min: 28, pref_age_max: 35, profile_created_by: 'self',
@@ -751,12 +751,12 @@ const profiles = [
     native_district: 'Tirunelveli', native_state: 'Tamil Nadu', native_region: '',
     current_city: 'Hyderabad', marital_status: 'Never Married', family_type: 'Joint',
     diet: 'Vegetarian', star: 'Hasta',
-    about: 'Data scientist at a Hyderabad AI startup. IIT Bombay grad from Tirunelveli. I bridge the data and human worlds — love both equations and poetry. Looking for a thoughtful, kind partner.',
+    about: 'Data scientist at a Hyderabad AI startup. IIT Bombay grad from Tirunelveli. I bridge the data and human worlds - love both equations and poetry. Looking for a thoughtful, kind partner.',
     photo_url: f(5), photo_visibility: 'public', status: 'approved', verified: true,
     email: 'meera.iyer@ntvtest.com', phone: '9876543258',
     pref_age_min: 26, pref_age_max: 32, profile_created_by: 'self',
     last_login_at: daysAgo(2), created_at: daysAgo(6), member_number: 49,
-    annual_income: '₹10L–20L',
+    annual_income: '₹10L-20L',
   },
   {
     full_name: 'Kavya Nair Menon', gender: 'female', date_of_birth: '1997-01-28',
@@ -770,7 +770,7 @@ const profiles = [
     email: 'kavya.menon@ntvtest.com', phone: '9876543259',
     pref_age_min: 26, pref_age_max: 32, profile_created_by: 'self',
     last_login_at: daysAgo(1), created_at: daysAgo(4), member_number: 50,
-    annual_income: '₹3L–6L',
+    annual_income: '₹3L-6L',
   },
 ]
 
@@ -852,7 +852,7 @@ if (matches?.length) {
     msgs.push(
       { match_id: m1.id, from_profile_id: m1.user1, content: 'Hi Priya! I came across your profile and was really impressed. Would love to connect!', created_at: new Date(Date.now() - 3*24*60*60*1000).toISOString() },
       { match_id: m1.id, from_profile_id: m1.user2, content: 'Hi Arjun! Thank you, your profile is lovely too 😊 Which part of Hyderabad are you from?', created_at: new Date(Date.now() - 3*24*60*60*1000 + 30*60*1000).toISOString() },
-      { match_id: m1.id, from_profile_id: m1.user1, content: 'I am from Banjara Hills. I saw you work at Microsoft — that is amazing! What team are you in?', created_at: new Date(Date.now() - 3*24*60*60*1000 + 60*60*1000).toISOString() },
+      { match_id: m1.id, from_profile_id: m1.user1, content: 'I am from Banjara Hills. I saw you work at Microsoft - that is amazing! What team are you in?', created_at: new Date(Date.now() - 3*24*60*60*1000 + 60*60*1000).toISOString() },
       { match_id: m1.id, from_profile_id: m1.user2, content: 'Azure cloud team! And you are in software too right? Would be great to catch up over coffee sometime.', created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString() },
       { match_id: m1.id, from_profile_id: m1.user1, content: 'That sounds wonderful! Are you free this weekend? There is a nice place in Jubilee Hills.', created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString() },
       { match_id: m1.id, from_profile_id: m1.user2, content: 'Saturday works perfectly for me! 😊', created_at: new Date(Date.now() - 2*60*60*1000).toISOString() },
@@ -861,14 +861,14 @@ if (matches?.length) {
   if (m2) {
     msgs.push(
       { match_id: m2.id, from_profile_id: m2.user1, content: 'Namaste! Fellow data person here. Really liked your profile and research work.', created_at: new Date(Date.now() - 2*24*60*60*1000).toISOString() },
-      { match_id: m2.id, from_profile_id: m2.user2, content: 'Thank you! IIT Hyderabad and IIT Bombay — what a combination 😄 Where are you based currently?', created_at: new Date(Date.now() - 2*24*60*60*1000 + 45*60*1000).toISOString() },
+      { match_id: m2.id, from_profile_id: m2.user2, content: 'Thank you! IIT Hyderabad and IIT Bombay - what a combination 😄 Where are you based currently?', created_at: new Date(Date.now() - 2*24*60*60*1000 + 45*60*1000).toISOString() },
       { match_id: m2.id, from_profile_id: m2.user1, content: 'Based in Pune for now, but Hyderabad is home. Are you open to Hyderabad long term?', created_at: new Date(Date.now() - 1*24*60*60*1000).toISOString() },
       { match_id: m2.id, from_profile_id: m2.user2, content: 'Absolutely! My family is in Vizag anyway. A call sometime this week?', created_at: new Date(Date.now() - 3*60*60*1000).toISOString() },
     )
   }
   if (m3) {
     msgs.push(
-      { match_id: m3.id, from_profile_id: m3.user1, content: 'Hi Keerthi! Product Manager meets Lawyer — interesting combination! I admire your work.', created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() },
+      { match_id: m3.id, from_profile_id: m3.user1, content: 'Hi Keerthi! Product Manager meets Lawyer - interesting combination! I admire your work.', created_at: new Date(Date.now() - 5*24*60*60*1000).toISOString() },
       { match_id: m3.id, from_profile_id: m3.user2, content: 'Ha! Yes we can debate anything 😄 Tell me more about what you work on at your startup.', created_at: new Date(Date.now() - 4*24*60*60*1000).toISOString() },
     )
   }

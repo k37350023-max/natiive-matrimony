@@ -1,4 +1,4 @@
-/* Profile completeness — single source of truth used by the header ring,
+/* Profile completeness - single source of truth used by the header ring,
    the profile page, and onboarding nudges.
 
    Each field carries a weight; percent = filled weight / total weight.
@@ -62,5 +62,5 @@ export function computeCompleteness(profile: ProfileLike): {
   }
 }
 
-/* Columns the completeness check reads — handy for a single Supabase select. */
+/* Columns the completeness check reads - handy for a single Supabase select. */
 export const COMPLETENESS_COLUMNS = FIELDS.map(f => f.key).join(', ')

@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
 
-/* Trusted server session — a signed, httpOnly cookie carrying the verified
+/* Trusted server session - a signed, httpOnly cookie carrying the verified
    profile_id. The browser can read nothing useful from it and cannot forge it
    (HMAC-signed with SESSION_SECRET). Secured API routes call getSessionProfileId()
    to know WHO is calling, instead of trusting a client-supplied id.

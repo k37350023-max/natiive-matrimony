@@ -3,7 +3,7 @@ import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { getSessionProfileId } from '@/lib/session'
 
 /* Unmatch / withdraw. A participant (session) removes the match, its messages,
-   and the interest(s) between the two — usable to withdraw a pending request or
+   and the interest(s) between the two - usable to withdraw a pending request or
    end an accepted match. */
 export async function POST(req: Request) {
   try {

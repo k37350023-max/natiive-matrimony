@@ -3,7 +3,7 @@ import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { getSessionProfileId } from '@/lib/session'
 
 /* Single profile read. Contact PII (phone, email) is returned ONLY to the
-   profile's owner — identity comes from the session cookie. Everyone else
+   profile's owner - identity comes from the session cookie. Everyone else
    gets it stripped, so it never reaches the browser. */
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {

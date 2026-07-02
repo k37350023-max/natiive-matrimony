@@ -21,7 +21,7 @@ export default function FounderCount() {
   return (
     <>
       <div className="founder-progress"><span style={{ width: `${pct}%` }} /></div>
-      <div className="founder-count"><strong>{joined === null ? '—' : j.toLocaleString('en-IN')}</strong> / 1,000 joined</div>
+      <div className="founder-count"><strong>{joined === null ? '-' : j.toLocaleString('en-IN')}</strong> / 1,000 joined</div>
     </>
   )
 }

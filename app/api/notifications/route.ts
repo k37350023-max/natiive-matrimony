@@ -4,7 +4,7 @@ import { getSessionProfileId } from '@/lib/session'
 
 /* Notification writes, scoped to the signed-in user (from the session cookie).
    Notifications are keyed by auth user_id, which we resolve from the session
-   profile — the client can't act on anyone else's notifications. */
+   profile - the client can't act on anyone else's notifications. */
 export async function POST(req: Request) {
   try {
     assertAdminConfigured()

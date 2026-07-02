@@ -520,7 +520,7 @@ export default function ProfilePage() {
           </Link>
         )
       }
-      return <p className="text-sm text-gray-300">—</p>
+      return <p className="text-sm text-gray-300">-</p>
     }
 
     // Hidden and not revealed
@@ -799,7 +799,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Registry badge — own profile only */}
+        {/* Registry badge - own profile only */}
         {isOwnProfile && profile.member_number && (
           <div className="card px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -817,7 +817,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Who viewed you — own profile */}
+        {/* Who viewed you - own profile */}
         {isOwnProfile && viewers.length > 0 && (
           <div className="card px-5 py-4">
             <div className="flex items-center justify-between mb-3">
@@ -857,7 +857,7 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Profile completeness — own profile only */}
+        {/* Profile completeness - own profile only */}
         {isOwnProfile && (() => {
           // Shared single-source completeness (matches header ring + browse banner)
           const { percent: pct, missing: missingFields } = computeCompleteness(profile)
@@ -879,12 +879,12 @@ export default function ProfilePage() {
                   </Link>
                 </div>
               )}
-              {pct === 100 && <p className="text-xs text-gray-400">Great job — your profile is complete!</p>}
+              {pct === 100 && <p className="text-xs text-gray-400">Great job - your profile is complete!</p>}
             </div>
           )
         })()}
 
-        {/* Incoming field requests — own profile */}
+        {/* Incoming field requests - own profile */}
         {isOwnProfile && incomingRequests.length > 0 && (
           <div className="card px-5 py-4">
             <p className="text-sm font-semibold text-gray-800 mb-3">
@@ -982,7 +982,7 @@ export default function ProfilePage() {
                 </div>
               ) : (
                 <>
-                  <div style={{ fontWeight: 600, color: '#14241C', fontSize: '13.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.value || '—'}</div>
+                  <div style={{ fontWeight: 600, color: '#14241C', fontSize: '13.5px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.value || '-'}</div>
                   {r.sub && <div style={{ fontSize: '11px', color: '#94A3B8', marginTop: '2px' }}>{r.sub}</div>}
                 </>
               )}
@@ -1000,7 +1000,7 @@ export default function ProfilePage() {
             ) : (
               <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#14241C' }}>
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Add a bio — tell people about yourself
+                Add a bio - tell people about yourself
               </Link>
             )}
           </div>
@@ -1019,7 +1019,7 @@ export default function ProfilePage() {
                   {(profile.pref_age_min || profile.pref_age_max) && (
                     <span className="text-xs font-medium px-3 py-1.5 rounded-full"
                       style={{ background: '#EDF3ED', color: '#14241C' }}>
-                      Age {profile.pref_age_min || '—'}–{profile.pref_age_max || '—'} yrs
+                      Age {profile.pref_age_min || '-'}-{profile.pref_age_max || '-'} yrs
                     </span>
                   )}
                 </div>
@@ -1081,7 +1081,7 @@ export default function ProfilePage() {
                   style={{ color: '#14241C', border: '1px solid #E7E3D8' }}>
                   {bioExpanded
                     ? 'Show less'
-                    : `Show more — ${bioSections.slice(1).map(s => s.heading).join(', ')}`}
+                    : `Show more - ${bioSections.slice(1).map(s => s.heading).join(', ')}`}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
                     style={{ transform: bioExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
                     <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -1092,7 +1092,7 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Contact — phone hidden by default */}
+        {/* Contact - phone hidden by default */}
         {(() => {
           const phoneHidden = fieldIsHidden('phone') && !isOwnProfile && !fieldIsRevealed('phone')
           const showContact = canViewBiodata
@@ -1129,7 +1129,7 @@ export default function ProfilePage() {
                         )}
                       </div>
                     ) : (
-                      <p className="font-semibold text-gray-300 text-sm">—</p>
+                      <p className="font-semibold text-gray-300 text-sm">-</p>
                     )}
                   </div>
                 )}
@@ -1174,7 +1174,7 @@ export default function ProfilePage() {
                       {p.full_name.split(' ')[0]}{age ? `, ${age}` : ''}
                     </p>
                     <p style={{ fontSize: '11px', color: '#94A3B8', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {p.native_district || p.profession || '—'}
+                      {p.native_district || p.profession || '-'}
                     </p>
                   </div>
                 </Link>

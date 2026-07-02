@@ -3,7 +3,7 @@ import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { getSessionProfileId } from '@/lib/session'
 
 /* Accept/decline an interest. Only the RECIPIENT (session) may respond, and
-   only to an interest addressed to them — enforced server-side. Accepting
+   only to an interest addressed to them - enforced server-side. Accepting
    creates the mutual match. */
 export async function POST(req: Request) {
   try {

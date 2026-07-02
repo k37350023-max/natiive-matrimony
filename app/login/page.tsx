@@ -72,7 +72,7 @@ export default function LoginPage() {
   }
 
   // One-click test sign-in (dev only). Creates/uses a stable test account and
-  // sets the session cookie — no credentials needed.
+  // sets the session cookie - no credentials needed.
   async function devLogin(role: 'groom' | 'bride') {
     setLoading(true); setError('')
     try {
@@ -104,7 +104,7 @@ export default function LoginPage() {
 
       <div style={{ flex: 1, display: 'flex' }}>
 
-        {/* Left panel — desktop only */}
+        {/* Left panel - desktop only */}
         <div className="hidden lg:flex" style={{
           flex: '0 0 420px', flexDirection: 'column', justifyContent: 'center', padding: '64px 56px',
           background: 'linear-gradient(160deg, #071527 0%, #0B2F24 58%, #075E3E 100%)',
@@ -133,7 +133,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Right — form */}
+        {/* Right - form */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', padding: '34px 16px 40px' }}>
           <div style={{ width: '100%', maxWidth: '360px' }}>
 
@@ -194,7 +194,7 @@ export default function LoginPage() {
 
             {process.env.NODE_ENV !== 'production' && (
               <div style={{ marginTop: '14px', padding: '14px', borderRadius: '12px', background: '#EDF3ED', border: '1px dashed #1B5E20' }}>
-                <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 8px', textAlign: 'center' }}>Test mode — one-click sign-in</p>
+                <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 8px', textAlign: 'center' }}>Test mode - one-click sign-in</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
                   <button onClick={() => devLogin('groom')} disabled={loading}
                     style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1.5px solid #14241C', background: 'white', color: '#14241C', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
@@ -205,7 +205,7 @@ export default function LoginPage() {
                     Sign in as Bride
                   </button>
                 </div>
-                <p style={{ fontSize: '10.5px', color: '#5E6B62', margin: '8px 0 0', textAlign: 'center' }}>Two real test accounts — connect one to the other to test the full flow. Auto-disabled in production.</p>
+                <p style={{ fontSize: '10.5px', color: '#5E6B62', margin: '8px 0 0', textAlign: 'center' }}>Two real test accounts - connect one to the other to test the full flow. Auto-disabled in production.</p>
               </div>
             )}
 

@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid token' }, { status: 400 })
   }
   if (Date.now() > parseInt(expires)) {
-    return NextResponse.json({ error: 'OTP expired — request a new one' }, { status: 400 })
+    return NextResponse.json({ error: 'OTP expired - request a new one' }, { status: 400 })
   }
   if (otp.trim() !== storedOtp) {
     return NextResponse.json({ error: 'Incorrect OTP' }, { status: 400 })

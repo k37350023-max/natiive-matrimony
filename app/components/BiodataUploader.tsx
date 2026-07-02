@@ -57,7 +57,7 @@ export default function BiodataUploader({ onParsed }: Props) {
         <p className="font-semibold text-gray-800 font-serif-display">Auto-fill from your biodata</p>
       </div>
       <p className="text-xs text-gray-400 mb-4">
-        Upload an existing biodata (PDF, Word, or photo) — we'll read it and fill your profile in seconds
+        Upload an existing biodata (PDF, Word, or photo) - we'll read it and fill your profile in seconds
       </p>
 
       {state === 'done' ? (
@@ -65,7 +65,7 @@ export default function BiodataUploader({ onParsed }: Props) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           <div>
             <p className="text-sm font-semibold text-green-800">Biodata parsed!</p>
-            <p className="text-xs text-green-700">Fields filled below — review and save</p>
+            <p className="text-xs text-green-700">Fields filled below - review and save</p>
           </div>
           <button onClick={() => setState('idle')} className="ml-auto text-xs text-green-700 underline">Upload another</button>
         </div>
@@ -91,7 +91,7 @@ export default function BiodataUploader({ onParsed }: Props) {
             <>
               <div className="w-8 h-8 border-2 border-amber-700 border-t-transparent rounded-full animate-spin" />
               <p className="text-sm font-medium text-gray-600">Reading your biodata…</p>
-              <p className="text-xs text-gray-400">Usually takes 5–10 seconds</p>
+              <p className="text-xs text-gray-400">Usually takes 5-10 seconds</p>
             </>
           ) : (
             <>

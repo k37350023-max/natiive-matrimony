@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  /* ─── Native-place registry — deep green / navy / cream (2026) ─── */
+  /* ─── Native-place registry - deep green / navy / cream (2026) ─── */
 
   /* 60% Canvas / Background */
   --bg-canvas: #FBFAF5;        /* Warm cream */
   --bg-surface: #FFFFFF;       /* Pure White for Cards */
 
   /* 20% Dominant Brand / Text */
-  --color-obsidian: #14241C;   /* Deep forest-navy — headings, main text */
-  --color-slate: #5E6B62;      /* Muted greyed-green — secondary text, labels */
+  --color-obsidian: #14241C;   /* Deep forest-navy - headings, main text */
+  --color-slate: #5E6B62;      /* Muted greyed-green - secondary text, labels */
 
-  /* 10% Interactive Accent — deep green CTAs */
-  --color-green: #1B5E20;      /* Deep green — primary buttons and CTAs */
-  --color-green-hover: #14532D;/* Deeper green — hover states */
+  /* 10% Interactive Accent - deep green CTAs */
+  --color-green: #1B5E20;      /* Deep green - primary buttons and CTAs */
+  --color-green-hover: #14532D;/* Deeper green - hover states */
   /* legacy name kept (was cyan) so existing var refs resolve to green */
   --color-cyan: #1B5E20;
   --color-cyan-hover: #14532D;
@@ -118,7 +118,7 @@ select.input {
 }
 
 /* ── Buttons ── */
-/* Primary CTA = warm golden yellow with dark text — the colour that POPS */
+/* Primary CTA = warm golden yellow with dark text - the colour that POPS */
 .btn-primary {
   background: var(--gold);
   color: var(--gold-text);

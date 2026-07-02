@@ -3,7 +3,7 @@ import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 
 /* Secured browse/search endpoint.
    Runs the profile query server-side with the service_role key and returns
-   ONLY non-sensitive columns — phone, email, and other PII never leave the
+   ONLY non-sensitive columns - phone, email, and other PII never leave the
    server. Mirrors the DB-level filters the browse page used to run directly;
    the page keeps doing its fine-grained client-side filtering on this safe set. */
 
