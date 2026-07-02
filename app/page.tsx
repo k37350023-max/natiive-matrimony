@@ -129,7 +129,7 @@ export default function Home() {
               Telugu-first matrimonial registry
             </div>
             <h1>Create your profile. Let the right Telugu family find you.</h1>
-            <p>NativeMatrimony is not trying to be every matrimony site for everyone. We are starting focused: Telugu families across Andhra, Telangana, and the diaspora who care about native place, verification, and serious family review.</p>
+            <p>NativePelli is not trying to be every matrimony site for everyone. We are starting focused: Telugu families across Andhra, Telangana, and the diaspora who care about native place, verification, and serious family review.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
@@ -301,11 +301,11 @@ export default function Home() {
             <span />
           </div>
           <div>
-            <p className="nmh-section-kicker">NativeMatrimony Select</p>
+            <p className="nmh-section-kicker">NativePelli Select</p>
             <h2>Want a trusted coordinator?</h2>
             <p>Use optional human-assisted matchmaking when your family wants profile vetting, shortlist help, and guided introductions.</p>
             <div className="nmh-check-list">
-              <span><Icon name="check" size={15} />Verified by NativeMatrimony</span>
+              <span><Icon name="check" size={15} />Verified by NativePelli</span>
               <span><Icon name="check" size={15} />Telugu community context</span>
               <span><Icon name="check" size={15} />Optional guided support</span>
             </div>

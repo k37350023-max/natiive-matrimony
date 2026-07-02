@@ -110,7 +110,7 @@ export default function LoginPage() {
           background: 'linear-gradient(160deg, #071527 0%, #0B2F24 58%, #075E3E 100%)',
           color: 'white',
         }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.7, margin: '0 0 20px' }}>NativeMatrimony</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.7, margin: '0 0 20px' }}>NativePelli</p>
           <h2 style={{ fontSize: '32px', fontWeight: 700, lineHeight: 1.2, margin: '0 0 16px', letterSpacing: '-0.02em', fontFamily: 'var(--font-playfair), Georgia, serif' }}>
             Find someone who shares your roots.
           </h2>

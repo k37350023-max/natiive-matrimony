@@ -1,7 +1,7 @@
 {
-  "name": "NativeMatrimony",
-  "short_name": "NativeMatrimony",
-  "description": "Telugu matrimony by native place",
+  "name": "NativePelli",
+  "short_name": "NativePelli",
+  "description": "Telugu matches by native place",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFBF5",

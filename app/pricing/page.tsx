@@ -10,7 +10,7 @@ export default function PricingPage() {
       <AppHeader />
       <main className="max-w-5xl mx-auto px-5 py-12">
         <div className="text-center mb-8">
-          <p className="section-label mb-3">NativeMatrimony</p>
+          <p className="section-label mb-3">NativePelli</p>
           <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             Free Telugu registry. Optional guided introductions.
           </h1>

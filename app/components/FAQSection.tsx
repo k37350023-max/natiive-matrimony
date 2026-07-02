@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 const FAQS = [
   {
-    q: 'Is NativeMatrimony only for Telugu people?',
+    q: 'Is NativePelli only for Telugu people?',
     a: 'Yes. Our launch focus is Telugu families across Telangana, Andhra Pradesh, and the Telugu diaspora. Staying focused helps us build useful profile liquidity and trust before expanding.',
   },
   {
@@ -23,7 +23,7 @@ const FAQS = [
     a: 'Yes. During registration, select "Profile managed by: Parent / Guardian". Your child can later take over the profile. This is common and fully supported.',
   },
   {
-    q: 'How is NativeMatrimony different from other matrimony sites?',
+    q: 'How is NativePelli different from other matrimony sites?',
     a: 'We are not trying to be a broad listing site. We focus on Telugu native-place discovery, practical profile signals before unlock, no cold messages, and contact sharing only after both sides agree.',
   },
 ]

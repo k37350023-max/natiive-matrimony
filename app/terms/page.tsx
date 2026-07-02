@@ -22,7 +22,7 @@ export default function TermsPage() {
           {[
             {
               title: '1. Acceptance of terms',
-              body: 'By registering on NativeMatrimony, you agree to these Terms of Service. If you do not agree, please do not use the service.',
+              body: 'By registering on NativePelli, you agree to these Terms of Service. If you do not agree, please do not use the service.',
             },
             {
               title: '2. Eligibility',
@@ -38,11 +38,11 @@ export default function TermsPage() {
             },
             {
               title: '5. Service access',
-              body: 'NativeMatrimony is currently a request-based registry. We may add paid services later, but any pricing changes will be presented clearly before they apply.',
+              body: 'NativePelli is currently a request-based registry. We may add paid services later, but any pricing changes will be presented clearly before they apply.',
             },
             {
               title: '6. Limitation of liability',
-              body: 'NativeMatrimony is a platform connecting people - we do not conduct background checks or guarantee the accuracy of profiles. We are not responsible for any interactions, meetings, or outcomes between members.',
+              body: 'NativePelli is a platform connecting people - we do not conduct background checks or guarantee the accuracy of profiles. We are not responsible for any interactions, meetings, or outcomes between members.',
             },
             {
               title: '7. Governing law',

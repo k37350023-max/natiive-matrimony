@@ -7,7 +7,7 @@ const supabase = createClient(
 )
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = 'https://nativematrimony.com'
+  const base = 'https://nativepelli.com'
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: base, priority: 1.0, changeFrequency: 'daily' },
