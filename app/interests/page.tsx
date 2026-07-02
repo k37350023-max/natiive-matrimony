@@ -181,7 +181,7 @@ function RequestsPageInner() {
   const ProfileCard = ({ i, showActions, isAccepted }: { i: Interest; showActions?: boolean; isAccepted?: boolean }) => {
     const seenLabel = lastSeenBadge(i.profile.last_login_at)
     const unlocked = !!isAccepted
-    const shownName = unlocked ? i.profile.full_name : 'Profile locked'
+    const shownName = unlocked ? i.profile.full_name : 'Verified profile'
     return (
       <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E7E3D8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
         <div className="flex items-start gap-3">
@@ -467,7 +467,7 @@ function RequestsPageInner() {
                       </div>
                     </div>
                     <div className="p-3">
-                      <p className="font-semibold text-gray-900 text-sm truncate">Profile locked</p>
+                      <p className="font-semibold text-gray-900 text-sm truncate">Verified profile</p>
                       <p className="text-xs text-gray-500">{age ? `${age} yrs` : ''}{p.profession ? ` · ${p.profession}` : ''}</p>
                       <p className="text-xs text-gray-400 mt-0.5 truncate">{[p.native_district, p.native_state].filter(Boolean).join(', ')}</p>
                     </div>

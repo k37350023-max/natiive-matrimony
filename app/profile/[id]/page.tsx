@@ -487,7 +487,7 @@ export default function ProfilePage() {
   const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
   const isOwnProfile = !previewMode && myProfileId === profile.id
   const canViewBiodata = isOwnProfile || viewerRelation === 'matched'
-  const publicName = canViewBiodata ? profile.full_name : 'Profile locked'
+  const publicName = canViewBiodata ? profile.full_name : 'Verified profile'
 
   // Photos are open by default; explicit hidden fields or legacy hidden visibility still hide them.
   const photoHidden = fieldIsHidden('photo') || profile.photo_visibility === 'hidden'

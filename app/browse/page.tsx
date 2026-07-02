@@ -90,7 +90,12 @@ function isVerified(p: Pick<Profile,'verified'|'phone_verified'>) { return p.ver
 function isAcceptedStatus(status?: string) { return status === 'matched' || status === 'accepted' }
 function displayName(p: Pick<Profile,'full_name'>, unlocked: boolean) {
   if (unlocked) return p.full_name.split(' ').slice(0,2).join(' ')
-  return 'Profile locked'
+  return 'Verified profile'
+}
+function verificationLabel(p: Pick<Profile,'verified'|'phone_verified'>) {
+  if (p.verified) return 'Community reviewed'
+  if (p.phone_verified) return 'Phone verified'
+  return 'Profile preview'
 }
 function lastSeen(ts: string | null): string | null {
   if (!ts) return null
@@ -326,6 +331,12 @@ function ProfileCard({
   const seenLabel = lastSeen(p.last_login_at)
   const isOnline = seenLabel === 'Active now'
   const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000
+  const protectedDetails = !unlocked
+  const signalTags = [
+    p.education,
+    p.religion,
+    p.mother_tongue,
+  ].filter(Boolean).slice(0, 3)
 
   return (
     <div
@@ -341,7 +352,7 @@ function ProfileCard({
       onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 36px rgba(20,36,28,0.12)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)' }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
-      {/* Photo (4:5) - no overlays, photo stays clean */}
+      {/* Photo (4:5) - visible when allowed, protected when the member chooses privacy */}
       <div className="browse-profile-media" style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
         {showPhoto ? (
           <img loading="lazy"
@@ -353,20 +364,27 @@ function ProfileCard({
             <GeometricPlaceholder name={p.full_name} />
           </div>
         )}
-        {photoHidden && (
+        {(photoHidden || (!showPhoto && protectedDetails)) && (
           <div style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(7px)', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(20,36,28,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(20,36,28,0.82)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 24px rgba(20,36,28,0.22)' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
           </div>
         )}
 
-        {/* Mint Verified pill - the only badge on the image */}
-        {isVerified(p) && unlocked && (
+        {isVerified(p) && (
           <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '4px 9px', borderRadius: '99px', background: '#166534', color: 'white', boxShadow: '0 2px 8px rgba(22,101,52,0.28)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 800, padding: '5px 9px', borderRadius: '99px', background: '#166534', color: 'white', boxShadow: '0 2px 8px rgba(22,101,52,0.28)' }}>
               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
-              Verified
+              {verificationLabel(p)}
+            </span>
+          </div>
+        )}
+        {protectedDetails && (
+          <div style={{ position: 'absolute', left: '12px', right: '12px', bottom: '12px', zIndex: 9 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', maxWidth: '100%', borderRadius: '12px', background: 'rgba(20,36,28,0.82)', color: 'white', fontSize: '11.5px', fontWeight: 800, padding: '8px 10px', boxShadow: '0 10px 24px rgba(20,36,28,0.20)' }}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Biodata and contact protected
             </span>
           </div>
         )}
@@ -394,11 +412,32 @@ function ProfileCard({
 
         {/* Profession */}
         <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#14241C', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {p.profession || '-'}
+          {p.profession || p.education || 'Profession not shared yet'}
         </p>
         <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-          {p.current_city || 'Current city not set'}
+          {p.current_city || 'Current location not shared'}
         </p>
+
+        {signalTags.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+            {signalTags.map(tag => (
+              <span key={tag} style={{ border: '1px solid #E2E8DF', background: '#F7FAF3', color: '#314057', borderRadius: '999px', fontSize: '11.5px', fontWeight: 800, lineHeight: 1, padding: '7px 9px', maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {protectedDetails && (
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', background: '#FFFCF2', border: '1px solid #EFE2BB', borderRadius: '12px', marginTop: '11px', padding: '10px' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8A6A18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <p style={{ color: '#57460F', fontSize: '11.5px', fontWeight: 700, lineHeight: 1.38, margin: 0 }}>
+              Request access to view biodata, full name, and contact.
+            </p>
+          </div>
+        )}
 
         {/* Activity meta */}
         {seenLabel && (
@@ -446,7 +485,7 @@ function ProfileCard({
                 : status === 'pending' ? 'Request Sent'
                 : status === 'rejected' ? 'Declined'
                 : sending ? 'Sending…'
-                : 'Send Request'}
+                : 'Request Biodata'}
             </button>
             {unlocked && chatHref && (
               <Link

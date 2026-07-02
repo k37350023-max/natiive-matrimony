@@ -47,6 +47,8 @@ function Icon({ name, size = 22 }: { name: string; size?: number }) {
     shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
     pin: 'M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z',
     search: 'm21 21-4.35-4.35 M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z',
+    briefcase: 'M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1 M3 8h18v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z M3 13h18',
+    card: 'M3 6h18v12H3z M3 10h18 M7 15h4',
     home: 'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
     heart: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z',
     user: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
@@ -80,10 +82,10 @@ function HeroVisual() {
       />
       <div className="nmh-profile-panel">
         <div className="nmh-panel-top">
-          <span className="nmh-avatar-lock"><Icon name="lock" size={21} /></span>
+          <span className="nmh-avatar-lock"><Icon name="shield" size={21} /></span>
           <div>
-            <p>Profile created</p>
-            <strong>Waiting for the right match</strong>
+            <p>Verified preview</p>
+            <strong>Private details unlock after acceptance</strong>
           </div>
         </div>
         <div className="nmh-preview-list">
@@ -188,8 +190,8 @@ export default function Home() {
 
         <section className="nmh-section">
           <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Built for family trust</p>
-            <h2>Less marketplace noise. More vetted Telugu family context.</h2>
+            <p className="nmh-section-kicker">Premium trust, not empty privacy</p>
+            <h2>Show enough to decide. Protect what should stay private.</h2>
           </div>
           <div className="nmh-trust-grid">
             {trustItems.map(([title, body, icon]) => (
@@ -199,6 +201,37 @@ export default function Home() {
                 <p>{body}</p>
               </article>
             ))}
+          </div>
+        </section>
+
+        <section className="nmh-section">
+          <div className="nmh-section-heading">
+            <p className="nmh-section-kicker">What a family sees first</p>
+            <h2>High-signal previews make privacy feel useful, not dead.</h2>
+          </div>
+          <div className="nmh-preview-demo">
+            <article>
+              <div className="nmh-demo-photo">
+                <span><Icon name="shield" size={22} /></span>
+              </div>
+              <div className="nmh-demo-body">
+                <div className="nmh-demo-topline">
+                  <strong>Verified profile</strong>
+                  <em>Phone checked</em>
+                </div>
+                <div className="nmh-demo-tags">
+                  <span><Icon name="briefcase" size={13} />Software engineer</span>
+                  <span><Icon name="pin" size={13} />Roots in Guntur</span>
+                  <span><Icon name="home" size={13} />Family reviewing</span>
+                </div>
+                <p>Biodata, full name, and contact stay protected until both sides accept.</p>
+              </div>
+            </article>
+            <aside>
+              <span><Icon name="lock" size={18} /> Private by default</span>
+              <span><Icon name="check" size={18} /> Enough context to request</span>
+              <span><Icon name="chat" size={18} /> No random messages</span>
+            </aside>
           </div>
         </section>
 
@@ -268,7 +301,7 @@ export default function Home() {
             <span />
           </div>
           <div>
-            <p className="nmh-section-kicker">Optional local support</p>
+            <p className="nmh-section-kicker">NativeMatrimony Select</p>
             <h2>Want a trusted coordinator?</h2>
             <p>Use optional human-assisted matchmaking when your family wants profile vetting, shortlist help, and guided introductions.</p>
             <div className="nmh-check-list">
