@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import BrandLogo from '../components/BrandLogo'
 
 export const metadata: Metadata = { title: 'Terms of Service' }
 
@@ -8,10 +9,7 @@ export default function TermsPage() {
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <header className="bg-white border-b sticky top-0 z-40" style={{ borderColor: '#E7E3D8' }}>
         <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#14241C"/><path d="M14 5C12.2 8 10 11 10 13.5C10 16.1 11.8 18 14 18.5C16.2 18 18 16.1 18 13.5C18 11 15.8 8 14 5Z" fill="white"/><path d="M9.5 21Q14 23 18.5 21" stroke="white" strokeWidth="1.6" strokeLinecap="round"/></svg>
-            <span style={{ fontSize: '15px', fontWeight: 700, color: '#111827' }}>Native<span style={{ color: '#14241C' }}>Matrimony</span></span>
-          </Link>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
           <Link href="/" className="text-sm text-gray-500 hover:text-gray-800">← Home</Link>
         </div>
       </header>

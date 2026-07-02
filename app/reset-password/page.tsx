@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -25,9 +26,7 @@ export default function ResetPasswordPage() {
     <div className="min-h-screen flex flex-col" style={{ background: '#FBFAF5' }}>
       <header className="bg-white border-b" style={{ borderColor: '#E7E3D8' }}>
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center">
-          <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Native<span style={{ color: '#14241C' }}>Matrimony</span>
-          </Link>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
         </div>
       </header>
 

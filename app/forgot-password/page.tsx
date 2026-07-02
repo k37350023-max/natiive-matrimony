@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -25,9 +26,7 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex flex-col" style={{ background: '#FBFAF5' }}>
       <header className="bg-white border-b" style={{ borderColor: '#E7E3D8' }}>
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-          <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Native<span style={{ color: '#14241C' }}>Matrimony</span>
-          </Link>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
         </div>
       </header>
 

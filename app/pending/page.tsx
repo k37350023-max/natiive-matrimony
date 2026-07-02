@@ -1,15 +1,14 @@
 'use client'
 
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
 
 export default function PendingPage() {
   return (
     <div className="min-h-screen flex flex-col" style={{background: '#FBFAF5'}}>
       <header className="bg-white border-b" style={{borderColor: '#E7E3D8'}}>
         <div className="max-w-xl mx-auto px-5 py-4">
-          <Link href="/" className="text-base font-bold text-gray-900 font-serif-display">
-            Native<span style={{color: '#14241C'}}>Matrimony</span>
-          </Link>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
         </div>
       </header>
 
