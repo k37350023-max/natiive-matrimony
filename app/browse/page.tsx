@@ -323,6 +323,7 @@ function ProfileCard({
 }) {
   const age = getAge(p.date_of_birth)
   const unlocked = isAcceptedStatus(status)
+  const photoHidden = !!(p.photo_url && p.photo_visibility === 'hidden')
   const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
   const seenLabel = lastSeen(p.last_login_at)
   const isOnline = seenLabel === 'Active now'
@@ -354,7 +355,7 @@ function ProfileCard({
             <GeometricPlaceholder name={p.full_name} />
           </div>
         )}
-        {!unlocked && (
+        {photoHidden && (
           <div style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(7px)', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(20,36,28,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -365,8 +366,8 @@ function ProfileCard({
         {/* Mint Verified pill — the only badge on the image */}
         {isVerified(p) && unlocked && (
           <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '4px 9px', borderRadius: '99px', background: '#2E7D32', color: '#14241C', boxShadow: '0 2px 8px rgba(46,125,50,0.35)' }}>
-              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 700, padding: '4px 9px', borderRadius: '99px', background: '#166534', color: 'white', boxShadow: '0 2px 8px rgba(22,101,52,0.28)' }}>
+              <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5"><polyline points="20 6 9 17 4 12"/></svg>
               Verified
             </span>
           </div>
@@ -1329,6 +1330,7 @@ export default function BrowsePage() {
         const p = quickView
         const status = interestMap[p.id]
         const unlocked = isAcceptedStatus(status)
+        const photoHidden = !!(p.photo_url && p.photo_visibility === 'hidden')
         const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
         const age = getAge(p.date_of_birth)
         const seenLabel = lastSeen(p.last_login_at)
@@ -1349,8 +1351,8 @@ export default function BrowsePage() {
                   <div className="w-full h-full flex flex-col items-center justify-center"
                     style={{ background: `linear-gradient(135deg, ${avatarBg(p.full_name)}33, ${avatarBg(p.full_name)}66)` }}>
                     <div className="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-2"
-                      style={{ background: avatarBg(p.full_name), filter: unlocked ? 'none' : 'blur(4px)' }}>{unlocked ? initials(p.full_name) : ''}</div>
-                    {!unlocked && (
+                      style={{ background: avatarBg(p.full_name) }}>{initials(p.full_name)}</div>
+                    {photoHidden && (
                       <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(20,36,28,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                       </div>
