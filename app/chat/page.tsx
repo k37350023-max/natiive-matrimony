@@ -115,6 +115,11 @@ export default function ChatInboxPage() {
       <AppHeader />
 
       <div className="max-w-2xl mx-auto">
+        <div className="px-5 pt-6 pb-3">
+          <h1 className="text-2xl font-bold text-gray-900 font-serif-display">Messages</h1>
+          <p className="text-sm text-gray-500 mt-1">Chat opens after both families accept the connection.</p>
+        </div>
+
         {loading && (
           <div className="flex flex-col gap-0">
             {[1,2,3].map(i => (
@@ -142,7 +147,7 @@ export default function ChatInboxPage() {
           <div className="flex flex-col items-center justify-center py-24 text-center px-6">
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5" style={{ background: '#EDF3ED' }}><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <p className="font-semibold text-gray-800 text-lg mb-1">No messages yet</p>
-            <p className="text-sm text-gray-400 mb-2">Messages unlock when you and another person both accept each other's interest.</p>
+            <p className="text-sm text-gray-400 mb-2">Messages unlock when you and another person both accept each other&apos;s interest.</p>
             <p className="text-sm text-gray-400 mb-6">Browse profiles, send an interest, and once they accept — you can chat here.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Profiles</Link>
           </div>

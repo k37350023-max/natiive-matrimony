@@ -314,7 +314,7 @@ export default function SearchPage() {
     if (region)   q = q.eq('native_region', region)
     if (district) q = q.eq('native_district', district)
 
-    let { data } = await q.order('last_login_at', { ascending: false, nullsFirst: false })
+    const { data } = await q.order('last_login_at', { ascending: false, nullsFirst: false })
     let r = (data || []).filter(p => p.id !== myProfileId)
 
     // Age
@@ -689,7 +689,7 @@ export default function SearchPage() {
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
               </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Find your match</h2>
+              <h1 style={{ fontSize: '18px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Find your match</h1>
               <p style={{ fontSize: '14px', color: '#999', maxWidth: '300px', margin: '0 auto 24px', lineHeight: 1.65 }}>
                 Set your preferences and click Search to see matching profiles.
               </p>

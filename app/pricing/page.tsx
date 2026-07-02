@@ -1,13 +1,13 @@
  'use client'
 
 import Link from 'next/link'
-import HomeHeader from '../components/HomeHeader'
+import AppHeader from '../components/AppHeader'
 import AppFooter from '../components/AppFooter'
 
 export default function PricingPage() {
   return (
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
-      <HomeHeader />
+      <AppHeader />
       <main className="max-w-xl mx-auto px-5 py-12">
         <div className="card px-6 py-7">
           <p className="section-label mb-3">NativeMatrimony</p>

@@ -31,7 +31,7 @@ const profilePreview = [
 
 const navItems = [
   ['/', 'Home', 'home'],
-  ['/search', 'Search', 'search'],
+  ['/browse', 'Browse', 'search'],
   ['/interests', 'Requests', 'heart'],
   ['/matches', 'Chats', 'chat'],
   ['/dashboard', 'Profile', 'user'],
@@ -244,7 +244,7 @@ export default function Home() {
               </article>
             ))}
           </div>
-          <Link href="/search" className="nmh-text-link">View All Native Places <Icon name="arrow" size={18} /></Link>
+          <Link href="/browse" className="nmh-text-link">View All Native Places <Icon name="arrow" size={18} /></Link>
         </section>
 
         <section className="nmh-consultant">
