@@ -162,7 +162,7 @@ function Avatar({ name }: { name: string }) {
 function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?: string; onView: () => void }) {
   const age = getAge(p.date_of_birth)
   const seenLabel = lastSeen(p.last_login_at)
-  const showPhoto = !!(p.photo_url && p.photo_visibility === 'public')
+  const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
   const heightStr = p.height_cm ? (() => { const t = p.height_cm / 2.54; return `${Math.floor(t/12)}'${Math.round(t%12)}"` })() : null
 
   const tags = [p.religion, p.caste, p.mother_tongue, p.profession, p.education, p.diet].filter(Boolean)
@@ -360,7 +360,7 @@ export default function SearchPage() {
     // Profile by
     if (profileBy.length) r = r.filter(p => profileBy.some(pb => p.profile_created_by?.toLowerCase().includes(pb.split('/')[0].trim().toLowerCase())))
     // Photo
-    if (photoOnly)    r = r.filter(p => p.photo_url && p.photo_visibility === 'public')
+    if (photoOnly)    r = r.filter(p => p.photo_url && p.photo_visibility !== 'hidden')
     // Hide viewed
     if (hideViewed && viewedIds.size > 0) r = r.filter(p => !viewedIds.has(p.id))
     // Recent

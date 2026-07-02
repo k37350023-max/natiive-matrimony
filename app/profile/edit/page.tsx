@@ -20,7 +20,7 @@ const REGIONS: Record<string, Record<string, string[]>> = {
 }
 
 const HIDEABLE_FIELDS: { key: string; label: string; desc: string }[] = [
-  { key: 'photo', label: 'Profile photo', desc: 'Others see initials instead; they can request to see your photo' },
+  { key: 'photo', label: 'Profile photo', desc: 'Visible by default; hide it if you want people to request access first' },
   { key: 'phone', label: 'Phone number', desc: 'Hidden from everyone; they can request it' },
   { key: 'gotra', label: 'Gotra', desc: 'Blurred on your profile; requestable' },
   { key: 'native_location', label: 'Native district & region', desc: 'Only your state is shown; district is hidden' },
@@ -529,7 +529,7 @@ function EditProfilePageInner() {
 
           <div className="pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-1">Privacy — what do you want to hide?</p>
-            <p className="text-xs text-gray-400 mb-3">Hidden fields show as blurred on your profile. Visitors can request to see them — you approve or decline.</p>
+            <p className="text-xs text-gray-400 mb-3">Photos are visible by default. Hidden fields show as blurred on your profile, and visitors can request access for you to approve or decline.</p>
             <div className="space-y-2">
               {HIDEABLE_FIELDS.map(f => {
                 const checked = hiddenFields.includes(f.key)

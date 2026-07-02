@@ -32,7 +32,7 @@ export default function PrivacyPage() {
             },
             {
               title: '3. Profile visibility',
-              body: 'Your profile is visible to other registered members. You can control which fields are visible using the Privacy settings on your profile. Photos are hidden by default until both parties connect.',
+              body: 'Your profile is visible to other registered members. Photos are visible by default so families can recognize real profiles, and you can hide your photo or other fields anytime from Privacy settings.',
             },
             {
               title: '4. Data security',

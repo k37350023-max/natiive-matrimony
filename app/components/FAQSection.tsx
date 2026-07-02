@@ -16,7 +16,7 @@ const FAQS = [
   },
   {
     q: 'How private are my photos and contact details?',
-    a: 'Completely private by default. Your photo is shown only after both parties accept an interest. Phone numbers and email are shared only after a mutual match. You control what\'s visible at every step.',
+    a: 'Photos are visible by default so profiles feel real, but you can hide your photo anytime from Privacy settings. Phone numbers and email are shared only after a mutual match. You control what stays private.',
   },
   {
     q: 'Can parents register on behalf of their child?',

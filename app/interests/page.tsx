@@ -186,7 +186,7 @@ function RequestsPageInner() {
       <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E7E3D8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
         <div className="flex items-start gap-3">
           <Link href={`/profile/${i.profile.id}`} className="shrink-0">
-            {unlocked && i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
+            {i.profile.photo_url && i.profile.photo_visibility !== 'hidden' ? (
               <img loading="lazy" src={i.profile.photo_url} alt={shownName}
                 style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E7E3D8' }} />
             ) : (

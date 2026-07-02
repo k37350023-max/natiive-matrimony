@@ -489,18 +489,10 @@ export default function ProfilePage() {
   const canViewBiodata = isOwnProfile || viewerRelation === 'matched'
   const publicName = canViewBiodata ? profile.full_name : 'Profile locked'
 
-  // Photo visibility: use hidden_fields first, fall back to old photo_visibility
-  const photoHidden = fieldIsHidden('photo')
+  // Photos are open by default; explicit hidden fields or legacy hidden visibility still hide them.
+  const photoHidden = fieldIsHidden('photo') || profile.photo_visibility === 'hidden'
   const photoRevealed = fieldIsRevealed('photo')
-  const showPhoto = !!profile.photo_url && (isOwnProfile || canViewBiodata) && (!photoHidden || isOwnProfile || photoRevealed ||
-    (!fieldIsHidden('photo') && (() => {
-      const v = profile.photo_visibility || 'after_match'
-      if (v === 'hidden') return false
-      if (v === 'public') return true
-      if (v === 'after_match') return viewerRelation === 'matched'
-      if (v === 'after_interest') return viewerRelation === 'matched' || viewerRelation === 'interested' || viewerRelation === 'received'
-      return false
-    })()))
+  const showPhoto = !!profile.photo_url && (isOwnProfile || photoRevealed || !photoHidden)
 
   // Helper: render a potentially-hidden bio row value
   function renderFieldValue(fieldKey: string | undefined, value: string | null, label?: string) {
@@ -719,7 +711,7 @@ export default function ProfilePage() {
                           const { error: upErr } = await supabase.storage.from('profile-photos').upload(fileName, file, { upsert: true })
                           if (!upErr) {
                             const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(fileName)
-                            await supabase.from('profiles').update({ photo_url: urlData.publicUrl }).eq('id', myId)
+                            await supabase.from('profiles').update({ photo_url: urlData.publicUrl, photo_visibility: 'public' }).eq('id', myId)
                             window.location.reload()
                           }
                           setUploadingPhoto(false)
@@ -836,7 +828,7 @@ export default function ProfilePage() {
               {viewers.slice(0, 8).map(v => (
                 <Link key={v.viewer_id} href={`/profile/${v.viewer_id}`}
                   className="flex items-center gap-3 group">
-                  {v.photo_url && v.photo_visibility === 'public' ? (
+                  {v.photo_url && v.photo_visibility !== 'hidden' ? (
                     <img loading="lazy" src={v.photo_url} alt={v.full_name}
                       className="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 shrink-0" />
                   ) : (
@@ -904,7 +896,7 @@ export default function ProfilePage() {
             <div className="space-y-3">
               {incomingRequests.map(req => (
                 <div key={req.id} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: '#FBFAF5', border: '1px solid #E7E3D8' }}>
-                  {req.photo_url && req.photo_visibility === 'public' ? (
+                  {req.photo_url && req.photo_visibility !== 'hidden' ? (
                     <img loading="lazy" src={req.photo_url} alt={req.full_name}
                       className="w-9 h-9 rounded-full object-cover shrink-0" />
                   ) : (
@@ -1163,7 +1155,7 @@ export default function ProfilePage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
             {similarProfiles.map(p => {
               const age = getAge(p.date_of_birth)
-              const showPhoto = !!(p.photo_url && p.photo_visibility === 'public')
+              const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
               return (
                 <Link key={p.id} href={`/profile/${p.id}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '10px', border: '1px solid #F3F4F6', textDecoration: 'none', transition: 'background 0.15s' }}
                   onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = '#FBFAF5'}

@@ -48,7 +48,7 @@ export async function POST(req: Request) {
       native_state, native_district, native_region: native_state,
       current_city: String(current_city).trim(),
       marital_status: 'never_married', religion: 'Hindu', mother_tongue: 'Telugu',
-      profile_created_by, photo_url: '', photo_visibility: 'private',
+      profile_created_by, photo_url: '', photo_visibility: 'public',
       status: 'approved', verified: false,
     }).select('id').maybeSingle()
     if (pErr || !profile) {

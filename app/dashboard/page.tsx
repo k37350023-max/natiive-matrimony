@@ -78,7 +78,7 @@ function timeAgo(ts: string | null) {
 
 /* ─── Small avatar ───────────────────────────────────────────── */
 function MiniAvatar({ p, size = 40 }: { p: ViewerProfile; size?: number }) {
-  const show = !!(p.photo_url && p.photo_visibility === 'public')
+  const show = !!(p.photo_url && p.photo_visibility !== 'hidden')
   const colors = ['#14241C','#1D4E7F','#1D7F4E','#7F5A1D','#4E1D7F']
   const bg = colors[(p.full_name?.charCodeAt(0) || 0) % colors.length]
   const init = p.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'

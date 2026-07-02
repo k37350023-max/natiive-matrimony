@@ -278,10 +278,14 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
 function Chip({ active, onClick, label }: { active: boolean; onClick: ()=>void; label: string }) {
   return (
     <button onClick={onClick}
-      className="text-xs px-2.5 py-1.5 rounded-full border font-medium transition-all whitespace-nowrap"
-      style={active
-        ? { background: '#14241C', color: 'white', borderColor: '#14241C' }
-        : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }}>
+      className="text-xs px-3 py-2 rounded-full border font-medium transition-all whitespace-nowrap"
+      style={{
+        minHeight: '36px',
+        ...(active
+          ? { background: '#14241C', color: 'white', borderColor: '#14241C' }
+          : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white' }),
+      }}
+    >
       {label}
     </button>
   )
@@ -319,7 +323,7 @@ function ProfileCard({
 }) {
   const age = getAge(p.date_of_birth)
   const unlocked = isAcceptedStatus(status)
-  const showPhoto = unlocked && !!(p.photo_url && p.photo_visibility === 'public')
+  const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
   const seenLabel = lastSeen(p.last_login_at)
   const isOnline = seenLabel === 'Active now'
   const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000
@@ -1001,12 +1005,12 @@ export default function BrowsePage() {
         {/* ── Greeting + filter toggle ─────────────────────────── */}
         <div className="browse-command mb-3">
           <div className="flex items-center justify-between mb-2">
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '7px' }}>
+            <div className="browse-title-row" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
               <h1 className="browse-page-title" style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: 0, letterSpacing: 0, fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif' }}>
                 Native-place registry
               </h1>
               {myMemberNum && (
-                <span style={{ fontSize: '11px', color: '#5E6B62', fontWeight: 700 }}>{memberLabel(myMemberNum)}</span>
+                <span style={{ fontSize: '11px', color: '#5E6B62', fontWeight: 800, letterSpacing: '0.08em' }}>{memberLabel(myMemberNum)}</span>
               )}
             </div>
             {/* Desktop filter button (hidden on mobile — chips below) */}
@@ -1325,7 +1329,7 @@ export default function BrowsePage() {
         const p = quickView
         const status = interestMap[p.id]
         const unlocked = isAcceptedStatus(status)
-        const showPhoto = unlocked && !!(p.photo_url && p.photo_visibility === 'public')
+        const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
         const age = getAge(p.date_of_birth)
         const seenLabel = lastSeen(p.last_login_at)
 

@@ -23,11 +23,13 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         .order('created_at', { ascending: false }).limit(1).maybeSingle()
       isAccepted = interest?.status === 'accepted'
     }
+    const hiddenFields = Array.isArray(data.hidden_fields) ? data.hidden_fields : []
+    const photoHidden = hiddenFields.includes('photo') || data.photo_visibility === 'hidden'
     if (!isOwner && !isAccepted) {
       data.full_name = 'Name hidden'
       data.phone = null
       data.email = null
-      data.photo_url = null
+      if (photoHidden) data.photo_url = null
       data.about = null
       data.birth_time = null
       data.birth_place = null

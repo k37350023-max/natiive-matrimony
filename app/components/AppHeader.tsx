@@ -39,7 +39,7 @@ export default function AppHeader() {
           return
         }
         setProfileName(data.full_name || '')
-        setPhotoUrl(data.photo_visibility === 'public' ? data.photo_url : null)
+        setPhotoUrl(data.photo_visibility !== 'hidden' ? data.photo_url : null)
         setMemberNumber(data.member_number ?? null)
         setCompleteness(computeCompleteness(data).percent)
       })

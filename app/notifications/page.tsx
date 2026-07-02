@@ -79,7 +79,7 @@ function notifAction(type: string, fromProfileId: string | null): { label: strin
 }
 
 function Avatar({ profile, size = 44 }: { profile: FromProfile | null; size?: number }) {
-  const showPhoto = !!(profile?.photo_url && profile.photo_visibility === 'public')
+  const showPhoto = !!(profile?.photo_url && profile.photo_visibility !== 'hidden')
   const colors = ['#14241C','#1D4E7F','#1D7F4E','#7F5A1D']
   const bg = colors[(profile?.full_name?.charCodeAt(0) || 0) % colors.length]
   const initials = profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
@@ -183,14 +183,16 @@ export default function NotificationsPage() {
         {/* Page header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div>
-            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 2px', letterSpacing: '-0.02em' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 2px', letterSpacing: 0 }}>
               Notifications
-              {unread > 0 && (
-                <span style={{ marginLeft: '8px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px', borderRadius: '99px', background: '#14241C', color: 'white', fontSize: '11px', fontWeight: 700, padding: '0 5px', verticalAlign: 'middle' }}>
-                  {unread}
-                </span>
-              )}
             </h1>
+            {unread > 0 && (
+              <span aria-label={`${unread} unread notifications`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px', borderRadius: '99px', background: '#14241C', color: 'white', fontSize: '11px', fontWeight: 700, padding: '0 5px' }}>
+                {unread}
+              </span>
+            )}
+            </div>
             <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Activity on your profile</p>
           </div>
           {notifs.some(n => !n.read) && (
