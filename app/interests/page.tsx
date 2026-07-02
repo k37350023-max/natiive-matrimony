@@ -323,7 +323,7 @@ function RequestsPageInner() {
   ]
 
   return (
-    <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
+    <div className="min-h-screen pb-28 sm:pb-0" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       {/* Accepted match banner */}
       {acceptedMatch && (
@@ -348,7 +348,10 @@ function RequestsPageInner() {
       )}
 
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold text-gray-900 font-serif-display mb-4">Requests</h1>
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 font-serif-display">Requests</h1>
+          <p className="text-sm text-gray-500 mt-1">Review interests, sent requests, accepted connections, and saved profiles.</p>
+        </div>
 
         <div className="flex rounded-xl p-1 mb-5" style={{ background: '#F3F4F6' }}>
           {tabs.map(({ key, label, count }) => (

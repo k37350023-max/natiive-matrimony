@@ -53,7 +53,8 @@ export default function MobileNav() {
       href: '/browse', label: 'Browse', active: path.startsWith('/browse'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+          <path d="M12 21s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/>
+          <circle cx="12" cy="9" r="2.4"/>
         </svg>
       ),
     },

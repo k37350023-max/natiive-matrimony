@@ -60,7 +60,9 @@ const REGIONS: Record<string, string[]> = {
 }
 const HEIGHTS_CM = [147,150,152,155,157,160,163,165,168,170,173,175,178,180,183,185,188,191]
 const ftIn = (cm: number) => {
-  const totalIn = cm / 2.54; const ft = Math.floor(totalIn / 12); const inc = Math.round(totalIn % 12)
+  const totalIn = Math.round(cm / 2.54)
+  const ft = Math.floor(totalIn / 12)
+  const inc = totalIn % 12
   return `${ft}'${inc}" (${cm}cm)`
 }
 const CASTES        = ['Reddy','Kamma','Kapu','Brahmin','Velama','Yadav','Naidu','Chettiar','Mudaliar','SC/ST','OBC','Caste No Bar']
@@ -649,6 +651,38 @@ export default function SearchPage() {
 
         {/* Right — results */}
         <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '18px',
+            marginBottom: '16px',
+            padding: '18px',
+            borderRadius: '14px',
+            border: '1px solid #E4EADC',
+            background: 'radial-gradient(circle at 0% 0%, rgba(237, 243, 237, 0.96), transparent 18rem), #FFFFFF',
+            boxShadow: '0 14px 34px rgba(20,36,28,0.07)',
+          }} className="search-context-card">
+            <div>
+              <p className="section-label mb-2">Preference search</p>
+              <h1 style={{
+                color: '#101828',
+                fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif',
+                fontSize: '28px',
+                fontWeight: 800,
+                letterSpacing: 0,
+                lineHeight: 1.08,
+                margin: 0,
+              }}>Find your match</h1>
+              <p style={{ color: '#667085', fontSize: '14px', lineHeight: 1.5, margin: '8px 0 0', maxWidth: '620px' }}>
+                Use filters when you want to go beyond native place and narrow by age, height, community, education, and lifestyle.
+              </p>
+            </div>
+            <button onClick={doSearch} className="btn-primary" style={{ flexShrink: 0, minHeight: '44px', padding: '0 18px' }}>
+              Search defaults
+            </button>
+          </div>
 
           {/* Mobile filter panel */}
           <div className="sm:hidden mb-4">{Sidebar}</div>
@@ -689,7 +723,7 @@ export default function SearchPage() {
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
               </div>
-              <h1 style={{ fontSize: '18px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Find your match</h1>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Start with your preferred filters</h2>
               <p style={{ fontSize: '14px', color: '#999', maxWidth: '300px', margin: '0 auto 24px', lineHeight: 1.65 }}>
                 Set your preferences and click Search to see matching profiles.
               </p>

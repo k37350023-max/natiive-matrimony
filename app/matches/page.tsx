@@ -134,7 +134,7 @@ export default function MatchesPage() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-5">
           <h1 className="text-2xl font-bold text-gray-900">Accepted Connections</h1>
-          <p className="text-gray-500 text-sm mt-0.5">View biodata, contact, WhatsApp, and secondary chat after acceptance.</p>
+          <p className="text-gray-500 text-sm mt-0.5">View biodata, contact details, WhatsApp, and chat after both sides accept.</p>
         </div>
 
         {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}
