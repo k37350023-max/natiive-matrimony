@@ -1,7 +1,7 @@
 {
   "name": "NativeMatrimony.com",
   "short_name": "NativeMatrimony",
-  "description": "Independent Telugu native-place registry",
+  "description": "Independent native-place registry",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#FFFBF5",

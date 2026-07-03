@@ -19,7 +19,7 @@ export default function ConsultantsPage() {
             <p className="section-label mb-3">Guided introductions</p>
             <h2>Human-assisted matching</h2>
             <p>For families who want more than software, NativeMatrimony.com can coordinate vetted introductions, shortlist review, and next-step guidance while private contact still unlocks only after acceptance.</p>
-            {['Profile and intent review', 'Telugu community context', 'Shortlist and introduction support', 'Optional premium service'].map(item => (
+            {['Profile and intent review', 'Native-place context', 'Shortlist and introduction support', 'Optional premium service'].map(item => (
               <div className="consultant-bullet" key={item}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M20 6 9 17l-5-5" />

@@ -11,7 +11,7 @@ export default function PricingPage() {
         <div className="text-center mb-8">
           <p className="section-label mb-3">NativeMatrimony</p>
           <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-            Free Telugu registry. Optional guided introductions.
+            Free native-place registry. Optional guided introductions.
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
             Start free with native-place search, requests, and private contact unlocks. Families who want extra support can use guided introductions for human-assisted shortlisting.
@@ -32,9 +32,10 @@ export default function PricingPage() {
             </p>
             <div className="space-y-3 mb-6">
               {[
-                'Search Telugu native places first.',
+                'Search native places first.',
                 'Photo visible by default, hide option available.',
                 'Biodata and contact unlock after acceptance.',
+                'Save alerts when your place is still growing.',
                 'No random messages before mutual interest.',
               ].map(item => (
                 <div key={item} className="flex items-start gap-3 text-sm text-gray-700">
@@ -62,7 +63,7 @@ export default function PricingPage() {
                 'Manual profile and intent review.',
                 'Curated shortlist based on roots and preferences.',
                 'Family-level introduction support.',
-                'Priority help for serious Telugu diaspora families.',
+                'Priority help for serious families in growing native-place corridors.',
               ].map(item => (
                 <div key={item} className="flex items-start gap-3 text-sm" style={{ color: 'rgba(255,255,255,0.84)' }}>
                   <span className="mt-0.5 h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: '#E7C76D', color: '#14241C' }}>✓</span>

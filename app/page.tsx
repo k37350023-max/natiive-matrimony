@@ -5,7 +5,7 @@ import BrandLogo from './components/BrandLogo'
 const popularPlaces = ['Karimnagar', 'Warangal', 'Guntur', 'Nellore', 'Rajahmundry', 'Nizamabad', 'Vijayawada', 'Vizag']
 
 const trustItems = [
-  ['Telugu-first launch', 'Focused on Andhra, Telangana, and Telugu diaspora families first.', 'pin'],
+  ['Native-place first', 'Focused on families who care about roots, hometowns, and serious introductions.', 'pin'],
   ['Useful before unlock', 'Photos and key profile signals stay visible so the registry feels alive.', 'check'],
   ['No Random Messages', 'Chat starts only when both sides accept.', 'chat'],
   ['Family Friendly', 'Built around native place, parents, and serious family review.', 'family'],
@@ -14,7 +14,7 @@ const trustItems = [
 
 const journey = [
   ['Create your profile', 'Add native place, work, education, photo preference, and contact verification.'],
-  ['Join the Telugu registry', 'Your profile becomes discoverable to families searching by roots and location.'],
+  ['Join the native registry', 'Your profile becomes discoverable to families searching by roots and location.'],
   ['Send or accept interest', 'Both families choose before biodata and contact unlock.'],
   ['Talk with confidence', 'Accepted connections can continue with profile, chat, and contact.'],
 ]
@@ -126,23 +126,23 @@ export default function Home() {
           <div className="nmh-hero-copy">
             <div className="nmh-eyebrow">
               <Icon name="pin" size={17} />
-              Independent Telugu native-place registry
+              Independent native-place registry
             </div>
-            <h1>Create your profile. Let the right Telugu family find you.</h1>
-            <p>NativeMatrimony.com is an independent Telugu registry for families who care about native place, verification, and serious review.</p>
+            <h1>Create your profile. Let the right native family find you.</h1>
+            <p>Browse native profiles by roots and hometown. If you cannot find the right one yet, create your profile and we will notify you as matching families join.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
                 Create Free Profile
               </Link>
               <Link href="/browse" className="nmh-secondary">
-                Browse Registry
+                Browse Native Profiles
               </Link>
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
-              <span>Telugu first</span>
+              <span>Native-place first</span>
               <span>Verified profiles</span>
-              <span>Human help</span>
+              <span>Join alerts</span>
             </div>
             <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
           </div>
@@ -152,7 +152,7 @@ export default function Home() {
         <section className="nmh-search-panel" aria-labelledby="native-search-heading">
           <div>
             <p className="nmh-section-kicker">Start with hometown</p>
-            <h2 id="native-search-heading">Search Telugu Native Places</h2>
+            <h2 id="native-search-heading">Search Native Places</h2>
           </div>
           <form action="/browse" className="nmh-search-form">
             <input name="native_place" placeholder="Village, town, district, or city" aria-label="Native place" />
@@ -243,7 +243,7 @@ export default function Home() {
           </div>
           <div className="nmh-trust-grid">
             {[
-              ['Focused launch', 'We are built around Telugu native-place search first, not a generic pan-India listing board.', 'pin'],
+              ['Focused launch', 'We are built around native-place search first, not a generic listing board.', 'pin'],
               ['High-signal previews', 'Profiles show practical details like roots, work, location, and photo choice before private biodata unlocks.', 'search'],
               ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
@@ -307,7 +307,7 @@ export default function Home() {
             <p>Use optional human-assisted matchmaking when your family wants profile vetting, shortlist help, and guided introductions.</p>
             <div className="nmh-check-list">
               <span><Icon name="check" size={15} />Native-place and profile review</span>
-              <span><Icon name="check" size={15} />Telugu community context</span>
+              <span><Icon name="check" size={15} />Native-place context</span>
               <span><Icon name="check" size={15} />Optional guided support</span>
             </div>
           </div>
@@ -318,11 +318,11 @@ export default function Home() {
           <div>
             <p className="nmh-section-kicker">Create now, match when ready</p>
             <h2>Be visible to the right family before they search elsewhere.</h2>
-            <p>Start your free Telugu registry profile today. Native place comes first, high-signal details help families decide, and private contact stays locked until acceptance.</p>
+            <p>Start your free native-place profile today. Native place comes first, high-signal details help families decide, and we can notify you when new matching families join.</p>
           </div>
           <div className="nmh-actions">
             <Link href="/register" className="nmh-primary">Create Free Profile</Link>
-            <Link href="/browse" className="nmh-secondary">Browse Profiles</Link>
+            <Link href="/browse" className="nmh-secondary">Browse Native Profiles</Link>
           </div>
         </section>
       </div>

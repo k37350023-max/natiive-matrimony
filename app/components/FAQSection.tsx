@@ -3,12 +3,12 @@ import { useState } from 'react'
 
 const FAQS = [
   {
-    q: 'Is NativeMatrimony only for Telugu people?',
-    a: 'Yes. Our launch focus is Telugu families across Telangana, Andhra Pradesh, and the Telugu diaspora. Staying focused helps us build useful profile liquidity and trust before expanding.',
+    q: 'Is NativeMatrimony only for one community?',
+    a: 'No. The product is built around native-place matching. We may launch community by community so each place has useful profile liquidity instead of feeling empty.',
   },
   {
     q: 'What does "native place first" mean?',
-    a: 'Native place is the primary way people browse and match on our platform. You can filter by state, district, and even specific native villages. Many Telugu families consider native place compatibility very important.',
+    a: 'Native place is the primary way people browse and match on our platform. You can filter by state, district, and specific native places, then save alerts when a place is still growing.',
   },
   {
     q: 'Is the service free?',
@@ -24,7 +24,7 @@ const FAQS = [
   },
   {
     q: 'How is NativeMatrimony different from other matrimony sites?',
-    a: 'We are not trying to be a broad listing site. We focus on Telugu native-place discovery, practical profile signals before unlock, no cold messages, and contact sharing only after both sides agree.',
+    a: 'We are not trying to be a broad listing site. We focus on native-place discovery, practical profile signals before unlock, join alerts for growing places, no cold messages, and contact sharing only after both sides agree.',
   },
 ]
 
