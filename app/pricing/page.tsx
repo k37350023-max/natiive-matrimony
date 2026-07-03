@@ -40,7 +40,7 @@ export default function PricingPage() {
           <section className="card px-6 py-7">
             <p className="section-label mb-3">Free</p>
             <h2 className="font-serif-display text-2xl font-bold text-gray-900 mb-2">Always free</h2>
-            <p className="text-sm text-gray-500 mb-5">For families who want to create a profile and be discoverable.</p>
+            <p className="text-sm text-gray-500 mb-5">For families who want to try real matches without paying first.</p>
             <div className="mb-6">
               <span className="text-4xl font-bold text-gray-900">₹0</span>
               <span className="text-sm text-gray-500 ml-1">forever</span>
@@ -49,6 +49,7 @@ export default function PricingPage() {
               <Benefit>Create and edit your profile</Benefit>
               <Benefit>Browse native-place profiles</Benefit>
               <Benefit>Receive match requests</Benefit>
+              <Benefit>View biodata and chat for up to 5 accepted profiles per month</Benefit>
               <Benefit>Save places and get alerts</Benefit>
             </div>
             <Link href="/register" className="btn-ghost text-sm px-5 py-3 w-full justify-center">Start Free</Link>
@@ -58,7 +59,7 @@ export default function PricingPage() {
             <span className="absolute right-5 top-5 badge badge-approved">Most useful</span>
             <p className="section-label mb-3">Premium</p>
             <h2 className="font-serif-display text-2xl font-bold text-gray-900 mb-2">Free trial included</h2>
-            <p className="text-sm text-gray-500 mb-5">For families actively shortlisting and speaking after mutual acceptance.</p>
+            <p className="text-sm text-gray-500 mb-5">For families who want more conversations and profile access while actively shortlisting.</p>
             <div className="mb-6">
               <span className="text-4xl font-bold text-gray-900">Free</span>
               <span className="text-sm text-gray-500 ml-1">for launch users</span>
@@ -66,8 +67,8 @@ export default function PricingPage() {
             <div className="space-y-3 mb-7">
               <Benefit>2 years free for district founding members</Benefit>
               <Benefit>3 months free for everyone else</Benefit>
+              <Benefit>More accepted-profile biodata views and chats</Benefit>
               <Benefit>Unlock contact after both sides accept</Benefit>
-              <Benefit>View accepted biodata and chat</Benefit>
               <Benefit>Photo controls: show or hide anytime</Benefit>
             </div>
             <Link href="/register" className="btn-primary text-sm px-5 py-3 w-full justify-center">Claim Premium Trial</Link>
