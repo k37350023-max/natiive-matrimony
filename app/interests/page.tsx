@@ -78,11 +78,19 @@ function RequestsPageInner() {
   const [sent, setSent] = useState<Interest[]>([])
   const [saved, setSaved] = useState<SavedProfile[]>([])
   const [loading, setLoading] = useState(true)
-  const myId = typeof window !== 'undefined' ? localStorage.getItem('my_profile_id') : null
+  const [myId, setMyId] = useState<string | null>(null)
+  const [sessionChecked, setSessionChecked] = useState(false)
 
   useEffect(() => {
-    if (myId) { loadAll() } else { setLoading(false) }
+    const id = localStorage.getItem('my_profile_id')
+    setMyId(id)
+    setSessionChecked(true)
   }, [])
+
+  useEffect(() => {
+    if (!sessionChecked) return
+    if (myId) { loadAll() } else { setLoading(false) }
+  }, [sessionChecked, myId])
 
   async function loadAll() {
     setLoading(true)
@@ -166,6 +174,15 @@ function RequestsPageInner() {
     setReceived(i => i.filter(r => r.id !== interestId))
     if (accept) loadAccepted()
   }
+
+  if (!sessionChecked) return (
+    <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
+      <AppHeader />
+      <div className="flex flex-col items-center justify-center py-24 text-center px-4">
+        <p className="font-semibold text-gray-700 mb-2">Loading requests…</p>
+      </div>
+    </div>
+  )
 
   if (!myId) return (
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>

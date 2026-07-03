@@ -247,72 +247,83 @@ export default function RegisterPage() {
           )}
           <p style={{ fontSize: '13.5px', color: '#94A3B8', margin: '0 0 22px' }}>{STEP_META.sub}</p>
 
-          <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #DCE9D7',
-            borderRadius: '14px',
-            boxShadow: '0 14px 34px rgba(20,36,28,0.08)',
-            marginBottom: '16px',
-            overflow: 'hidden',
-          }}>
-            <div style={{ padding: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
-                <div>
-                  <p style={{ color: '#075E3E', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 5px', textTransform: 'uppercase' }}>
-                    Launch benefit
-                  </p>
-                  <p style={{ color: '#14241C', fontSize: '18px', fontWeight: 900, lineHeight: 1.15, margin: 0 }}>
-                    Free to start. Premium is included.
-                  </p>
+          {step === 1 ? (
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #DCE9D7',
+              borderRadius: '14px',
+              boxShadow: '0 14px 34px rgba(20,36,28,0.08)',
+              marginBottom: '16px',
+              overflow: 'hidden',
+            }}>
+              <div style={{ padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <p style={{ color: '#075E3E', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 5px', textTransform: 'uppercase' }}>
+                      Launch benefit
+                    </p>
+                    <p style={{ color: '#14241C', fontSize: '18px', fontWeight: 900, lineHeight: 1.15, margin: 0 }}>
+                      Free to start. Premium is included.
+                    </p>
+                  </div>
+                  <span style={{ background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '99px', color: '#075E3E', flexShrink: 0, fontSize: '11px', fontWeight: 900, padding: '5px 9px' }}>
+                    No payment now
+                  </span>
                 </div>
-                <span style={{ background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '99px', color: '#075E3E', flexShrink: 0, fontSize: '11px', fontWeight: 900, padding: '5px 9px' }}>
-                  No payment now
-                </span>
-              </div>
 
-              <div style={{ display: 'grid', gap: '10px', marginBottom: '13px' }}>
-                <div>
-                  <Label>Native state</Label>
-                  <select style={inputStyle} value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }}>
-                    <option value="">Select state</option>
-                    {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <Label>Native place</Label>
-                  {districts.length > 0 ? (
-                    <select style={inputStyle} value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
-                      <option value="">Select native place</option>
-                      {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                <div style={{ display: 'grid', gap: '10px', marginBottom: '13px' }}>
+                  <div>
+                    <Label>Native state</Label>
+                    <select style={inputStyle} value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }}>
+                      <option value="">Select state</option>
+                      {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
-                  ) : (
-                    <input style={inputStyle} placeholder="Type your native place" value={form.native_district} onChange={e => set('native_district', e.target.value)} />
-                  )}
+                  </div>
+                  <div>
+                    <Label>Native place</Label>
+                    {districts.length > 0 ? (
+                      <select style={inputStyle} value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
+                        <option value="">Select native place</option>
+                        {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    ) : (
+                      <select style={{ ...inputStyle, color: '#94A3B8' }} value="" disabled>
+                        <option>Select state first</option>
+                      </select>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <p style={{ color: '#5E6B62', fontSize: '12.5px', lineHeight: 1.55, margin: '0 0 11px' }}>
-                {selectedDistrict
-                  ? districtCount === null
-                    ? `Checking founding spots for ${selectedDistrict}...`
-                    : foundingRemaining > 0
-                      ? `${foundingRemaining.toLocaleString('en-IN')} founding spots still open in ${selectedDistrict}. You get 2 years premium free after signup.`
-                      : `Founding spots are full in ${selectedDistrict}; your free profile still includes 3 months premium.`
-                  : 'Choose your native place to check district founding spots.'}
-              </p>
-              <div style={{ height: '7px', background: '#EEF4EA', borderRadius: '99px', overflow: 'hidden' }}>
-                <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#075E3E', borderRadius: '99px', transition: 'width 0.35s ease' }} />
+                <p style={{ color: '#5E6B62', fontSize: '12.5px', lineHeight: 1.55, margin: '0 0 11px' }}>
+                  {selectedDistrict
+                    ? districtCount === null
+                      ? `Checking founding spots for ${selectedDistrict}...`
+                      : foundingRemaining > 0
+                        ? `${foundingRemaining.toLocaleString('en-IN')} founding spots still open in ${selectedDistrict}. You get 2 years premium free after signup.`
+                        : `Founding spots are full in ${selectedDistrict}; your free profile still includes 3 months premium.`
+                    : 'Choose your native place to check district founding spots.'}
+                </p>
+                <div style={{ height: '7px', background: '#EEF4EA', borderRadius: '99px', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#075E3E', borderRadius: '99px', transition: 'width 0.35s ease' }} />
+                </div>
+              </div>
+              <div style={{ background: '#FBFAF5', borderTop: '1px solid #EEF0EA', display: 'grid', gap: '8px', padding: '12px 16px' }}>
+                {PREMIUM_PERKS.map((perk) => (
+                  <div key={perk} style={{ alignItems: 'flex-start', display: 'flex', gap: '8px' }}>
+                    <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '10px', fontWeight: 900, height: '17px', justifyContent: 'center', marginTop: '1px', width: '17px' }}>✓</span>
+                    <span style={{ color: '#475569', fontSize: '12px', lineHeight: 1.4 }}>{perk}</span>
+                  </div>
+                ))}
               </div>
             </div>
-            <div style={{ background: '#FBFAF5', borderTop: '1px solid #EEF0EA', display: 'grid', gap: '8px', padding: '12px 16px' }}>
-              {PREMIUM_PERKS.map((perk) => (
-                <div key={perk} style={{ alignItems: 'flex-start', display: 'flex', gap: '8px' }}>
-                  <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '10px', fontWeight: 900, height: '17px', justifyContent: 'center', marginTop: '1px', width: '17px' }}>✓</span>
-                  <span style={{ color: '#475569', fontSize: '12px', lineHeight: 1.4 }}>{perk}</span>
-                </div>
-              ))}
+          ) : selectedDistrict ? (
+            <div style={{ alignItems: 'center', background: '#FFFFFF', border: '1px solid #DCE9D7', borderRadius: '12px', display: 'flex', gap: '10px', marginBottom: '16px', padding: '12px 14px' }}>
+              <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '11px', fontWeight: 900, height: '22px', justifyContent: 'center', width: '22px' }}>✓</span>
+              <p style={{ color: '#475569', fontSize: '12.5px', lineHeight: 1.45, margin: 0 }}>
+                Native place: <strong style={{ color: '#14241C' }}>{selectedDistrict}</strong>. {foundingApplied ? '2 years premium will be applied.' : 'Premium trial will be applied.'}
+              </p>
             </div>
-          </div>
+          ) : null}
 
           <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '20px' }}>
             {error && (
