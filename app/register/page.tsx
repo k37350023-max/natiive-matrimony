@@ -121,15 +121,15 @@ export default function RegisterPage() {
   const selectedDistrict = form.native_district.trim()
   const foundingApplied = !!selectedDistrict && districtCount !== null && foundingRemaining > 0
   const offerTitle = foundingApplied
-    ? 'FOUNDING-2Y coupon applied'
+    ? 'FOUNDING-2Y benefit applied'
     : entryOffer === 'free'
       ? 'Free plan selected'
-      : 'PREMIUM-3M coupon applied'
+      : 'PREMIUM-3M benefit applied'
   const offerBody = foundingApplied
     ? `Your ${selectedDistrict} district founding spot is open, so this profile gets 2 years of premium free after signup.`
     : entryOffer === 'free'
-      ? 'You are registering on the always-free plan. We still include 3 months of premium free for new members after signup.'
-      : 'Your 3 months premium-free launch coupon will be applied after mobile verification.'
+      ? 'Your 3-month premium trial is included automatically after signup.'
+      : 'Your 3 months of premium free will be applied after mobile verification.'
 
   useEffect(() => {
     if (!selectedDistrict) {
@@ -216,7 +216,8 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(data.error || 'Something went wrong')
       localStorage.setItem('my_user_id', data.userId)
       localStorage.setItem('my_profile_id', data.profileId)
-      router.push('/browse?new=1')
+      const benefit = data.foundingMemberEligible ? 'founding_2y' : 'premium_3m'
+      router.push(`/browse?new=1&benefit=${benefit}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)

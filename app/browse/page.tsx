@@ -704,6 +704,13 @@ export default function BrowsePage() {
     const location = searchParams.get('current_location') || ''
     if (place) setNativePlace(place)
     if (location) setCurrentLocation(location)
+    if (searchParams.get('new') === '1') {
+      const benefit = searchParams.get('benefit')
+      setBrowseToast(benefit === 'founding_2y'
+        ? 'Welcome. Your 2-year founding premium benefit is active.'
+        : 'Welcome. Your 3-month premium trial is active.')
+      setTimeout(() => setBrowseToast(null), 4200)
+    }
   }, [searchParams])
 
   const availableStates    = region ? Object.keys(REGIONS[region]||{}) : []
