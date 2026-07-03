@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import AppHeader from '../components/AppHeader'
 
@@ -22,6 +23,12 @@ function Benefit({ children, dark = false }: { children: React.ReactNode; dark?:
 }
 
 export default function PricingPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    setIsLoggedIn(Boolean(localStorage.getItem('my_profile_id')))
+  }, [])
+
   return (
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <AppHeader />
@@ -43,7 +50,7 @@ export default function PricingPage() {
             <p className="text-sm text-gray-500 mb-5">For families who want to try real matches without paying first.</p>
             <div className="mb-6">
               <span className="text-4xl font-bold text-gray-900">₹0</span>
-              <span className="text-sm text-gray-500 ml-1">forever</span>
+              <span className="text-sm text-gray-500 ml-1"> forever</span>
             </div>
             <div className="space-y-3 mb-7">
               <Benefit>Create and edit your profile</Benefit>
@@ -52,7 +59,9 @@ export default function PricingPage() {
               <Benefit>View biodata and chat for up to 5 accepted profiles per month</Benefit>
               <Benefit>Save places and get alerts</Benefit>
             </div>
-            <Link href="/register?plan=free" className="btn-ghost text-sm px-5 py-3 w-full justify-center">Start Free</Link>
+            <Link href={isLoggedIn ? '/browse' : '/register?plan=free'} className="btn-ghost text-sm px-5 py-3 w-full justify-center">
+              {isLoggedIn ? 'Browse Profiles' : 'Start Free'}
+            </Link>
           </section>
 
           <section className="card px-6 py-7 relative" style={{ borderColor: '#7FB17F', boxShadow: '0 22px 54px rgba(20,36,28,0.14)' }}>
@@ -62,7 +71,7 @@ export default function PricingPage() {
             <p className="text-sm text-gray-500 mb-5">For families who want more conversations and profile access while actively shortlisting.</p>
             <div className="mb-6">
               <span className="text-4xl font-bold text-gray-900">Free</span>
-              <span className="text-sm text-gray-500 ml-1">for launch users</span>
+              <span className="text-sm text-gray-500 ml-1"> for launch users</span>
             </div>
             <div className="space-y-3 mb-7">
               <Benefit>2 years free for district founding members</Benefit>
@@ -71,7 +80,9 @@ export default function PricingPage() {
               <Benefit>Unlock contact after both sides accept</Benefit>
               <Benefit>Photo controls: show or hide anytime</Benefit>
             </div>
-            <Link href="/register?offer=premium_trial" className="btn-primary text-sm px-5 py-3 w-full justify-center">Claim Premium Trial</Link>
+            <Link href={isLoggedIn ? '/browse' : '/register?offer=premium_trial'} className="btn-primary text-sm px-5 py-3 w-full justify-center">
+              {isLoggedIn ? 'Use Premium Access' : 'Claim Premium Trial'}
+            </Link>
           </section>
 
           <section className="card px-6 py-7" style={{ background: '#14241C', borderColor: '#203A2C', color: 'white', boxShadow: '0 24px 60px rgba(20,36,28,0.20)' }}>
@@ -80,7 +91,7 @@ export default function PricingPage() {
             <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.68)' }}>For families who want help reviewing profiles and making serious introductions.</p>
             <div className="mb-6">
               <span className="text-4xl font-bold">Custom</span>
-              <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.62)' }}>optional</span>
+              <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.62)' }}> optional</span>
             </div>
             <div className="space-y-3 mb-7">
               <Benefit dark>Profile and intent review</Benefit>

@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "NativeMatrimony.com - Matches by native place",
-    description: "Start free, browse native profiles, and connect only through accepted requests. Premium starts free for every new member.",
+    description: "Start free, browse native profiles, and connect only through accepted requests. Founders get 2 years premium free; others get 3 months free.",
   },
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "NativeMatrimony.com" },

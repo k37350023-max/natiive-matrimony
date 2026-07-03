@@ -243,7 +243,7 @@ export default function Home() {
           </div>
           <div className="nmh-trust-grid">
             {[
-              ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Premium starts free so each corridor can build real activity before paid plans matter.', 'pin'],
+              ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
               ['High-signal previews', 'Profiles show practical details like roots, work, location, and photo choice before private biodata unlocks.', 'search'],
               ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
