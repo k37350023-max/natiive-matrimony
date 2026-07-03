@@ -52,7 +52,7 @@ export default function PricingPage() {
               <Benefit>View biodata and chat for up to 5 accepted profiles per month</Benefit>
               <Benefit>Save places and get alerts</Benefit>
             </div>
-            <Link href="/register" className="btn-ghost text-sm px-5 py-3 w-full justify-center">Start Free</Link>
+            <Link href="/register?plan=free" className="btn-ghost text-sm px-5 py-3 w-full justify-center">Start Free</Link>
           </section>
 
           <section className="card px-6 py-7 relative" style={{ borderColor: '#7FB17F', boxShadow: '0 22px 54px rgba(20,36,28,0.14)' }}>
@@ -71,7 +71,7 @@ export default function PricingPage() {
               <Benefit>Unlock contact after both sides accept</Benefit>
               <Benefit>Photo controls: show or hide anytime</Benefit>
             </div>
-            <Link href="/register" className="btn-primary text-sm px-5 py-3 w-full justify-center">Claim Premium Trial</Link>
+            <Link href="/register?offer=premium_trial" className="btn-primary text-sm px-5 py-3 w-full justify-center">Claim Premium Trial</Link>
           </section>
 
           <section className="card px-6 py-7" style={{ background: '#14241C', borderColor: '#203A2C', color: 'white', boxShadow: '0 24px 60px rgba(20,36,28,0.20)' }}>

@@ -90,6 +90,7 @@ export default function RegisterPage() {
   const [devOtp, setDevOtp] = useState('')   // shown only in dev mode (no SMS key)
   const [sending, setSending] = useState(false)
   const [districtCount, setDistrictCount] = useState<number | null>(null)
+  const [entryOffer, setEntryOffer] = useState<'free' | 'premium_trial' | 'direct'>('direct')
   const otpRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
@@ -99,8 +100,11 @@ export default function RegisterPage() {
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
 
   useEffect(() => {
-    const place = new URLSearchParams(window.location.search).get('native_place')?.trim()
+    const params = new URLSearchParams(window.location.search)
+    const place = params.get('native_place')?.trim()
     if (place) setForm(f => f.native_district ? f : ({ ...f, native_district: place }))
+    if (params.get('offer') === 'premium_trial') setEntryOffer('premium_trial')
+    else if (params.get('plan') === 'free') setEntryOffer('free')
   }, [])
 
   useEffect(() => {
@@ -115,6 +119,17 @@ export default function RegisterPage() {
   const foundingRemaining = Math.max(FOUNDING_MEMBER_LIMIT - foundingClaimed, 0)
   const foundingPct = districtCount === null ? 0 : Math.min(Math.round((foundingClaimed / FOUNDING_MEMBER_LIMIT) * 100), 100)
   const selectedDistrict = form.native_district.trim()
+  const foundingApplied = !!selectedDistrict && districtCount !== null && foundingRemaining > 0
+  const offerTitle = foundingApplied
+    ? 'FOUNDING-2Y coupon applied'
+    : entryOffer === 'free'
+      ? 'Free plan selected'
+      : 'PREMIUM-3M coupon applied'
+  const offerBody = foundingApplied
+    ? `Your ${selectedDistrict} district founding spot is open, so this profile gets 2 years of premium free after signup.`
+    : entryOffer === 'free'
+      ? 'You are registering on the always-free plan. We still include 3 months of premium free for new members after signup.'
+      : 'Your 3 months premium-free launch coupon will be applied after mobile verification.'
 
   useEffect(() => {
     if (!selectedDistrict) {
@@ -266,6 +281,33 @@ export default function RegisterPage() {
               </p>
               <div style={{ height: '7px', background: 'rgba(255,255,255,0.16)', borderRadius: '99px', marginTop: '13px', overflow: 'hidden' }}>
                 <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#D8EFC9', borderRadius: '99px', transition: 'width 0.35s ease' }} />
+              </div>
+            </div>
+            <div style={{
+              alignItems: 'flex-start',
+              background: 'rgba(216,239,201,0.12)',
+              borderTop: '1px solid rgba(255,255,255,0.12)',
+              display: 'flex',
+              gap: '10px',
+              padding: '12px 16px',
+            }}>
+              <span style={{
+                alignItems: 'center',
+                background: '#D8EFC9',
+                borderRadius: '50%',
+                color: '#075E3E',
+                display: 'inline-flex',
+                flexShrink: 0,
+                fontSize: '11px',
+                fontWeight: 900,
+                height: '22px',
+                justifyContent: 'center',
+                marginTop: '1px',
+                width: '22px',
+              }}>✓</span>
+              <div>
+                <p style={{ color: '#F3FFE8', fontSize: '12px', fontWeight: 900, lineHeight: 1.35, margin: 0 }}>{offerTitle}</p>
+                <p style={{ color: 'rgba(255,255,255,0.76)', fontSize: '11.5px', lineHeight: 1.45, margin: '3px 0 0' }}>{offerBody}</p>
               </div>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.08)', borderTop: '1px solid rgba(255,255,255,0.12)', display: 'grid', gap: '8px', padding: '12px 16px' }}>
