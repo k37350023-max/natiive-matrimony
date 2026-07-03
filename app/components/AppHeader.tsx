@@ -247,7 +247,7 @@ export default function AppHeader() {
                 Login
               </Link>
               <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px' }}>
-                Create Profile
+                Join Free
               </Link>
             </>
           )}

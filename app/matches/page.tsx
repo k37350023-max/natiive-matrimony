@@ -64,13 +64,28 @@ export default function MatchesPage() {
 
   async function respond(interestId: string, accept: boolean, matchId: string) {
     setResponding(interestId)
-    await supabase.from('interests').update({ status: accept ? 'accepted' : 'rejected' }).eq('id', interestId)
-    setMatches(prev => prev.map(m =>
-      m.match_id === matchId
-        ? { ...m, is_mutual: accept, pending_interest_id: null }
-        : m
-    ))
-    setResponding(null)
+    try {
+      const res = await fetch('/api/interests/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interestId, accept }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || 'Could not respond to this interest')
+
+      setMatches(prev => accept
+        ? prev.map(m =>
+            m.match_id === matchId
+              ? { ...m, is_mutual: true, pending_interest_id: null, match_id: json.matchId || m.match_id }
+              : m
+          )
+        : prev.filter(m => m.match_id !== matchId)
+      )
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Could not respond to this interest')
+    } finally {
+      setResponding(null)
+    }
   }
 
   const router = useRouter()
@@ -148,7 +163,7 @@ export default function MatchesPage() {
             </div>
             <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No accepted connections yet</p>
             <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from native-place search. Biodata and contact unlock after acceptance.</p>
-            <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Registry</Link>
+            <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Native Profiles</Link>
           </div>
         )}
 

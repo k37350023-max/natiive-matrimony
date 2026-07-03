@@ -48,7 +48,7 @@ export default function HomeHeader() {
           ) : (
             <>
               <Link href="/login" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Login</Link>
-              <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px', marginLeft: '4px' }}>Create Profile</Link>
+              <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px', marginLeft: '4px' }}>Join Free</Link>
             </>
           )}
         </div>

@@ -64,11 +64,11 @@ export async function POST(req: Request) {
         native_state: acct.native_state, native_district: acct.native_district,
         native_region: acct.native_state, current_city: acct.native_district,
         profession: acct.profession, about: acct.about, height_cm: acct.height_cm,
-        religion: 'Hindu', mother_tongue: 'Telugu', marital_status: 'never_married',
+        religion: 'Hindu', mother_tongue: null, marital_status: 'never_married',
         profile_created_by: 'self', photo_url: acct.photo_url, photo_visibility: 'public',
         status: 'approved', verified: true,
         last_login_at: new Date().toISOString(),
-        premium_expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+        premium_expires_at: new Date(Date.now() + 730 * 24 * 60 * 60 * 1000).toISOString(),
       }).select('id, user_id').maybeSingle()
       profile = inserted
     }

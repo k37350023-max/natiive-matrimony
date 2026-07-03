@@ -115,9 +115,9 @@ export default function Home() {
             <Link href="/browse">Browse</Link>
             <Link href="/interests">Requests</Link>
             <Link href="/login">Login</Link>
-            <Link href="/register" className="nmh-nav-cta">Create Profile</Link>
+            <Link href="/register" className="nmh-nav-cta">Join Free</Link>
           </nav>
-          <Link href="/register" className="nmh-menu" aria-label="Create profile">
+          <Link href="/register" className="nmh-menu" aria-label="Join free">
             <Icon name="user" size={24} />
           </Link>
         </header>

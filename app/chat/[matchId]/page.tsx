@@ -119,11 +119,11 @@ export default function ChatPage() {
     await loadMessages()
     loadChatState()
     // Mark received messages as read
-    supabase.from('messages')
-      .update({ read: true })
-      .eq('match_id', matchId)
-      .neq('from_profile_id', myId)
-      .then(() => {})
+    fetch('/api/chat/read', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ matchId }),
+    }).catch(() => {})
 
     setLoading(false)
 
@@ -137,7 +137,11 @@ export default function ChatPage() {
       }, (payload) => {
         setMessages(prev => [...prev, payload.new as Message])
         if ((payload.new as Message).from_profile_id !== myId) {
-          supabase.from('messages').update({ read: true }).eq('id', payload.new.id).then(() => {})
+          fetch('/api/chat/read', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ matchId, messageId: payload.new.id }),
+          }).catch(() => {})
         }
       })
       .subscribe()

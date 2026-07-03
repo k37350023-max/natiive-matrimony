@@ -121,17 +121,18 @@ export default function AdminPage() {
     const blob = new Blob([csv], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a'); a.href = url
-    a.download = `natiive-${filter}-profiles-${new Date().toISOString().slice(0,10)}.csv`
+    a.download = `native-${filter}-profiles-${new Date().toISOString().slice(0,10)}.csv`
     a.click(); URL.revokeObjectURL(url)
   }
 
   async function sendAnnouncement() {
     if (!announcementText.trim()) return
     setAnnouncementSending(true)
-    const { data: allProfiles } = await supabase.from('profiles').select('id').eq('status','approved')
+    const { data: allProfiles } = await supabase.from('profiles').select('user_id').eq('status','approved').not('user_id', 'is', null)
     if (allProfiles?.length) {
       const notifications = allProfiles.map(p => ({
-        profile_id: p.id,
+        user_id: p.user_id,
+        type: 'system',
         message: announcementText.trim(),
         link: '/',
         read: false,

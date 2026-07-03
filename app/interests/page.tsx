@@ -302,8 +302,12 @@ function RequestsPageInner() {
           <div className="mt-2 flex justify-end">
             <button
               onClick={async () => {
-                await supabase.from('interests').delete().eq('id', i.id)
-                setSent(prev => prev.filter(x => x.id !== i.id))
+                const res = await fetch('/api/interests/withdraw', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ interestId: i.id }),
+                })
+                if (res.ok) setSent(prev => prev.filter(x => x.id !== i.id))
               }}
               className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1">
               Withdraw request

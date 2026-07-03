@@ -252,29 +252,11 @@ export default function ProfilePage() {
   }
 
   async function logView(myId: string) {
-    await supabase.from('profile_views').insert({ viewer_id: myId, viewed_id: id as string }).then(() => {})
-    // Notify the profile owner (throttle: only once per 12h per viewer)
-    const { data: existingView } = await supabase.from('profile_views')
-      .select('viewed_at').eq('viewer_id', myId).eq('viewed_id', id as string)
-      .gte('viewed_at', new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString())
-      .limit(1)
-    const isFirstViewRecently = !existingView || existingView.length <= 1
-    if (isFirstViewRecently) {
-      const [{ data: viewer }, { data: owner }] = await Promise.all([
-        supabase.from('profiles').select('full_name').eq('id', myId).maybeSingle(),
-        supabase.from('profiles').select('user_id').eq('id', id as string).maybeSingle(),
-      ])
-      if (owner?.user_id && viewer?.full_name) {
-        supabase.from('notifications').insert({
-          user_id: owner.user_id,
-          type: 'profile_view',
-          message: `${viewer.full_name} viewed your profile`,
-          from_profile_id: myId,
-          read: false,
-          link: `/profile/${myId}`,
-        }).then(() => {})
-      }
-    }
+    await fetch('/api/profiles/view', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ viewedId: id as string }),
+    })
   }
 
   async function loadFieldRequest(myId: string) {
@@ -366,50 +348,40 @@ export default function ProfilePage() {
   async function requestFields(fields: string[]) {
     if (!myProfileId || !profile) return
     setSendingFieldReq(true)
-    if (fieldRequest) {
-      const merged = [...new Set([...fieldRequest.fields, ...fields])]
-      await supabase.from('field_requests').update({ fields: merged, status: 'pending' }).eq('id', fieldRequest.id)
-      setFieldRequest({ ...fieldRequest, fields: merged, status: 'pending' })
-    } else {
-      const { data } = await supabase.from('field_requests')
-        .insert({ from_user: myProfileId, to_user: profile.id, fields })
-        .select().maybeSingle()
-      setFieldRequest(data)
+    try {
+      const res = await fetch('/api/field-requests/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toProfileId: profile.id, fields }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || 'Could not send request')
+      if (json.request) setFieldRequest(json.request)
+    } catch (err) {
+      setToast(err instanceof Error ? err.message : 'Could not send request')
+      setTimeout(() => setToast(null), 3500)
+    } finally {
+      setSendingFieldReq(false)
     }
-    // Notify owner
-    const { data: me } = await supabase.from('profiles').select('full_name').eq('id', myProfileId).maybeSingle()
-    await supabase.from('notifications').insert({
-      user_id: profile.user_id,
-      type: 'field_request',
-      message: `${me?.full_name || 'Someone'} requested to see your ${fields.map(f => HIDEABLE[f] || f).join(', ')}`,
-      from_profile_id: myProfileId,
-      read: false,
-    }).then(() => {})
-    setSendingFieldReq(false)
   }
 
   async function respondToRequest(reqId: string, fromUser: string, approve: boolean) {
     setApprovingReq(reqId)
-    await supabase.from('field_requests').update({ status: approve ? 'approved' : 'declined' }).eq('id', reqId)
-    setIncomingRequests(prev => prev.filter(r => r.id !== reqId))
-    if (approve && profile) {
-      // Notify requester
-      const { data: me } = await supabase.from('profiles').select('full_name, user_id').eq('id', myProfileId!).maybeSingle()
-      const fromProfile = incomingRequests.find(r => r.id === reqId)
-      if (fromProfile) {
-        const { data: fromUser2 } = await supabase.from('profiles').select('user_id').eq('id', fromUser).maybeSingle()
-        if (fromUser2) {
-          await supabase.from('notifications').insert({
-            user_id: fromUser2.user_id,
-            type: 'field_request_approved',
-            message: `${me?.full_name || 'Someone'} approved your request to see their private info`,
-            from_profile_id: myProfileId,
-            read: false,
-          }).then(() => {})
-        }
-      }
+    try {
+      const res = await fetch('/api/field-requests/respond', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId: reqId, approve }),
+      })
+      const json = await res.json()
+      if (!res.ok) throw new Error(json?.error || 'Could not respond to request')
+      setIncomingRequests(prev => prev.filter(r => r.id !== reqId))
+    } catch (err) {
+      setToast(err instanceof Error ? err.message : 'Could not respond to request')
+      setTimeout(() => setToast(null), 3500)
+    } finally {
+      setApprovingReq(null)
     }
-    setApprovingReq(null)
   }
 
   function fieldIsHidden(key: string): boolean {
@@ -1271,7 +1243,17 @@ export default function ProfilePage() {
                         setTimeout(() => setToast(null), 3500)
                         return
                       }
-                      await supabase.from('reports').insert({ reporter: myId, reported: id as string, reason: reportReason }).then(() => {})
+                      const res = await fetch('/api/reports', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reported: id as string, reason: reportReason }),
+                      })
+                      if (!res.ok) {
+                        const json = await res.json()
+                        setToast(json?.error || 'Could not submit report')
+                        setTimeout(() => setToast(null), 3500)
+                        return
+                      }
                       sessionStorage.setItem('report_count', String(reportCount + 1))
                       setReportSent(true)
                     }}

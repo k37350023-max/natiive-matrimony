@@ -221,7 +221,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           <BrandLogo className="app-brand-compact" showTagline={false} />
           <div className="flex items-center gap-1.5 shrink-0">
             <Link href="/login" className="text-sm font-medium text-gray-600 px-2 py-1.5 rounded-lg hover:bg-gray-50">Login</Link>
-            <Link href="/register" className="btn-primary text-sm px-3 py-1.5 whitespace-nowrap">Create Profile</Link>
+            <Link href="/register" className="btn-primary text-sm px-3 py-1.5 whitespace-nowrap">Join Free</Link>
           </div>
         </div>
       </header>
@@ -266,7 +266,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see practical signals first. Full names, biodata, and contact unlock only after acceptance.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
-              Create Profile
+              Join Free
             </Link>
             <Link href="/login" className="btn-ghost px-8 py-3 text-sm">Sign in</Link>
           </div>
@@ -714,7 +714,7 @@ export default function BrowsePage() {
     const myId = localStorage.getItem('my_profile_id')
     setMyProfileId(myId)
     if (!myId) { setSessionChecked(true); return }
-    supabase.from('profiles').update({ last_login_at: new Date().toISOString() }).eq('id', myId).then(()=>{})
+    fetch('/api/profiles/touch', { method: 'POST' }).catch(() => {})
 
     Promise.all([
       supabase.from('profiles').select('member_number, full_name, gender, date_of_birth, native_state, native_district, photo_url, about, profession, education, height_cm, religion, current_city, caste, annual_income, mother_tongue, family_type, company, diet, star, rashi').eq('id', myId).maybeSingle(),

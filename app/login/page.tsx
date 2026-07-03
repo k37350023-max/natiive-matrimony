@@ -98,7 +98,7 @@ export default function LoginPage() {
       <header style={{ background: '#FFFFFF', borderBottom: '1px solid #E8E8E8' }}>
         <div style={{ maxWidth: '390px', margin: '0 auto', padding: '0 16px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <BrandLogo className="app-brand-compact" showTagline={false} />
-          <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 14px', whiteSpace: 'nowrap' }}>Create Profile</Link>
+          <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 14px', whiteSpace: 'nowrap' }}>Join Free</Link>
         </div>
       </header>
 
@@ -211,7 +211,7 @@ export default function LoginPage() {
 
             <p style={{ textAlign: 'center', fontSize: '13.5px', color: '#999', marginTop: '20px' }}>
               No account yet?{' '}
-              <Link href="/register" style={{ fontWeight: 600, color: '#14241C', textDecoration: 'none' }}>Create profile</Link>
+              <Link href="/register" style={{ fontWeight: 600, color: '#14241C', textDecoration: 'none' }}>Join free</Link>
             </p>
 
             {/* Trust badges */}
