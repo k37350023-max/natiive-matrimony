@@ -685,6 +685,7 @@ export default function BrowsePage() {
 
   const [showSidebar,     setShowSidebar]     = useState(false)
   const [alertSet,        setAlertSet]        = useState(false)
+  const [alertSaving,     setAlertSaving]     = useState(false)
   const [browseToast,     setBrowseToast]     = useState<string|null>(null)
   const [interestMap,     setInterestMap]     = useState<Record<string,string>>({})
   const [matchIdMap,      setMatchIdMap]      = useState<Record<string,string>>({})
@@ -717,6 +718,57 @@ export default function BrowsePage() {
   const availableStates    = region ? Object.keys(REGIONS[region]||{}) : []
   const availableDistricts = state  ? (REGIONS[region]?.[state] || []) : []
   const oppositeGender     = myGender === 'male' ? 'female' : myGender === 'female' ? 'male' : null
+
+  useEffect(() => {
+    const place = nativePlace.trim() || district || state || region
+    if (!myProfileId || !place) {
+      setAlertSet(false)
+      return
+    }
+    const params = new URLSearchParams({ nativePlace: place })
+    const location = currentLocation.trim()
+    if (location) params.set('currentLocation', location)
+    let cancelled = false
+    fetch(`/api/place-alerts?${params.toString()}`)
+      .then(r => r.ok ? r.json() : { saved: false })
+      .then(data => { if (!cancelled) setAlertSet(Boolean(data.saved)) })
+      .catch(() => { if (!cancelled) setAlertSet(false) })
+    return () => { cancelled = true }
+  }, [myProfileId, nativePlace, currentLocation, district, state, region])
+
+  async function savePlaceAlert(forceSave = false) {
+    const place = nativePlace.trim() || district || state || region
+    if (!place) {
+      setBrowseToast('Choose a native place before saving an alert')
+      setTimeout(() => setBrowseToast(null), 3500)
+      return
+    }
+
+    const next = forceSave ? true : !alertSet
+    setAlertSaving(true)
+    try {
+      const res = await fetch('/api/place-alerts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: next ? 'save' : 'remove',
+          nativePlace: place,
+          currentLocation: currentLocation.trim(),
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Could not update alert')
+      setAlertSet(next)
+      setBrowseToast(next
+        ? `Alert saved for ${place}. Check Notifications when matching families join.`
+        : `Alert removed for ${place}.`)
+    } catch (err) {
+      setBrowseToast(err instanceof Error ? err.message : 'Could not update alert')
+    } finally {
+      setAlertSaving(false)
+      setTimeout(() => setBrowseToast(null), 4500)
+    }
+  }
 
   useEffect(() => {
     const myId = localStorage.getItem('my_profile_id')
@@ -1163,17 +1215,13 @@ export default function BrowsePage() {
                 <option value="best_match">Best match</option>
               </select>
               <button
-                onClick={() => {
-                  const next = !alertSet
-                  setAlertSet(next)
-                  setBrowseToast(next ? 'Alert saved - we\'ll notify you when new matches appear' : 'Alert removed')
-                  setTimeout(() => setBrowseToast(null), 3500)
-                }}
+                onClick={() => savePlaceAlert()}
+                disabled={alertSaving}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
                 style={alertSet
                   ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px', padding: '0 14px' }
                   : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px' }}>
-                {alertSet ? 'Alert set' : '+ Save search'}
+                {alertSaving ? 'Saving…' : alertSet ? 'Alert set' : '+ Save alert'}
               </button>
             </div>
             {/* Suggested profiles */}
@@ -1291,19 +1339,21 @@ export default function BrowsePage() {
                 ) : nativePlace ? (
                   <>
                     <p className="font-semibold text-gray-800 mb-1">No profiles from {nativePlace} yet.</p>
-                    <p className="text-sm text-gray-500 mb-5">Be early for {nativePlace}. The free version stays free; claim 2 years premium if founding spots are open, or get 3 months premium free.</p>
+                    <p className="text-sm text-gray-500 mb-5">
+                      Save a place alert for {nativePlace}. We&apos;ll add it to Notifications and let you know when matching families join this native-place search.
+                    </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Link href="/register" className="btn-primary px-5 py-2 text-sm">Start Free</Link>
                       <button
-                        onClick={() => {
-                          setAlertSet(true)
-                          setBrowseToast(`We'll notify you when profiles from ${nativePlace} join`)
-                          setTimeout(() => setBrowseToast(null), 3500)
-                        }}
+                        onClick={() => savePlaceAlert(true)}
+                        disabled={alertSaving}
                         className="btn-ghost px-5 py-2 text-sm">
-                        Notify Me
+                        {alertSaving ? 'Saving alert…' : alertSet ? 'Alert saved' : 'Save Place Alert'}
                       </button>
                     </div>
+                    <p className="text-xs text-gray-400 mt-4">
+                      You can review saved place alerts on the Notifications page.
+                    </p>
                   </>
                 ) : (
                   <>

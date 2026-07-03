@@ -27,6 +27,8 @@ function notifIcon(type: string) {
     interest_accepted:      { color: '#2E7D32', bg: '#EAF3EA', d: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' },
     field_request_approved: { color: '#2E7D32', bg: '#EAF3EA', d: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' },
     profile_view:           { color: '#0369A1', bg: '#E0F2FE', d: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>' },
+    place_alert_saved:      { color: '#075E3E', bg: '#EDF3ED', d: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M16 3.8 19 2l3 1.8v3.4L19 9l-3-1.8z"/>' },
+    place_match_joined:     { color: '#2E7D32', bg: '#EAF3EA', d: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M9 18h6"/>' },
     field_request:          { color: '#14241C', bg: '#EDF3ED', d: '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>' },
   }
   const i = paths[type] || { color: '#5E6B62', bg: '#EFF1EC', d: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>' }
@@ -139,7 +141,7 @@ export default function NotificationBell() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             <div className="flex-1">
               <p className="font-semibold text-white text-xs">Enable notifications</p>
-              <p className="text-gray-400 text-xs">Get alerts when someone likes your profile</p>
+              <p className="text-gray-400 text-xs">Get interests, views, and native-place alerts</p>
             </div>
             <button onClick={enablePush}
               className="text-xs font-bold px-3 py-1.5 rounded-lg shrink-0"
@@ -197,7 +199,7 @@ export default function NotificationBell() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                   </span>
                   <p className="text-sm text-gray-400">No notifications yet</p>
-                  <p className="text-xs text-gray-300 mt-1">We'll alert you when someone shows interest</p>
+                  <p className="text-xs text-gray-300 mt-1">We'll alert you about interests, views, and saved places</p>
                 </div>
               ) : notifs.map(n => {
                 const link = notifLink(n)
@@ -237,6 +239,14 @@ export default function NotificationBell() {
                           className="mt-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg"
                           style={{ background: '#2E7D32', color: 'white' }}>
                           Open chat →
+                        </button>
+                      )}
+                      {(n.type === 'place_alert_saved' || n.type === 'place_match_joined') && link && (
+                        <button
+                          onClick={e => { e.stopPropagation(); router.push(link); setOpen(false) }}
+                          className="mt-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg"
+                          style={{ background: '#14241C', color: 'white' }}>
+                          Open saved search →
                         </button>
                       )}
                     </div>

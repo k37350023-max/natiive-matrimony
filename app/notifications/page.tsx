@@ -30,6 +30,7 @@ const TAB_FILTERS: Record<string, string[]> = {
   Interests: ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
   Views:     ['profile_view'],
   Matches:   ['interest_accepted'],
+  'Place Alerts': ['place_alert_saved','place_match_joined'],
   System:    ['system','field_request','field_request_approved'],
 }
 
@@ -49,6 +50,8 @@ function typeLabel(type: string) {
   if (type === 'interest_declined')        return { label: 'Declined', color: '#5E6B62', bg: '#F3F4F6' }
   if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#5E6B62', bg: '#F3F4F6' }
   if (type === 'profile_view')             return { label: 'Profile View', color: '#1E40AF', bg: '#EFF6FF' }
+  if (type === 'place_alert_saved')        return { label: 'Place Alert Saved', color: '#075E3E', bg: '#EDF3ED' }
+  if (type === 'place_match_joined')       return { label: 'New Place Match', color: '#065F46', bg: '#ECFDF5' }
   if (type === 'field_request')            return { label: 'Contact Request', color: '#7C3AED', bg: '#F5F3FF' }
   if (type === 'field_request_approved')   return { label: 'Contact Shared', color: '#065F46', bg: '#ECFDF5' }
   return { label: 'Notification', color: '#5E6B62', bg: '#F3F4F6' }
@@ -62,18 +65,21 @@ function notifIcon(type: string) {
     interest_declined:      '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
     interest_withdrawn:     '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
     profile_view:           '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+    place_alert_saved:      '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M16 3.8 19 2l3 1.8v3.4L19 9l-3-1.8z"/>',
+    place_match_joined:     '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M9 18h6"/>',
     field_request:          '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
   }
   const path = d[type] || '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'
   return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: path }} />
 }
 
-function notifAction(type: string, fromProfileId: string | null): { label: string; href: string } | null {
+function notifAction(type: string, fromProfileId: string | null, link?: string | null): { label: string; href: string } | null {
   if (type === 'interest_received')  return { label: 'Review interest →', href: '/interests?tab=received' }
   if (type === 'interest_accepted')  return { label: 'Open chat →', href: '/matches' }
   if (type === 'profile_view' && fromProfileId) return { label: 'View their profile →', href: `/profile/${fromProfileId}` }
   if (type === 'field_request' && fromProfileId) return { label: 'View profile →', href: `/profile/${fromProfileId}` }
   if (type === 'field_request_approved') return { label: 'Go to matches →', href: '/interests?tab=matched' }
+  if (type === 'place_alert_saved' || type === 'place_match_joined') return { label: 'Open saved search →', href: link || '/browse' }
   return null
 }
 
@@ -192,7 +198,7 @@ export default function NotificationsPage() {
               </span>
             )}
             </div>
-            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Activity on your profile</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Interests, views, matches, and native-place alerts</p>
           </div>
           {notifs.some(n => !n.read) && (
             <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#14241C', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
@@ -245,7 +251,7 @@ export default function NotificationsPage() {
             </p>
             <p style={{ fontSize: '13.5px', color: '#94A3B8', maxWidth: '280px', margin: '0 auto', lineHeight: 1.6 }}>
               {tab === 'All'
-                ? 'When someone shows interest or views your profile, you\'ll see it here.'
+                ? 'When someone shows interest, views your profile, accepts a request, or when a saved place alert is updated, you will see it here.'
                 : 'Nothing in this category yet.'}
             </p>
           </div>
@@ -260,7 +266,7 @@ export default function NotificationsPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {group.items.map(n => {
                 const from = n.from_profile_id ? profiles[n.from_profile_id] : null
-                const action = notifAction(n.type, n.from_profile_id)
+                const action = notifAction(n.type, n.from_profile_id, n.link)
                 const badge = typeLabel(n.type)
 
                 return (
