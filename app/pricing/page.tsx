@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import AppHeader from '../components/AppHeader'
-import AppFooter from '../components/AppFooter'
 
 export default function PricingPage() {
   return (
@@ -10,7 +9,7 @@ export default function PricingPage() {
       <AppHeader />
       <main className="max-w-5xl mx-auto px-5 py-12">
         <div className="text-center mb-8">
-          <p className="section-label mb-3">NativePelli</p>
+          <p className="section-label mb-3">NativeMatrimony</p>
           <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             Free Telugu registry. Optional guided introductions.
           </h1>
@@ -77,7 +76,6 @@ export default function PricingPage() {
           </section>
         </div>
       </main>
-      <AppFooter />
     </div>
   )
 }

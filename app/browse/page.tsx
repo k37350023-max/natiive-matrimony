@@ -8,7 +8,6 @@ import { useSearchParams } from 'next/navigation'
 import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
-import AppFooter from '../components/AppFooter'
 import BrandLogo from '../components/BrandLogo'
 
 /* ─── Constants ─────────────────────────────────────────────── */
@@ -1359,7 +1358,6 @@ export default function BrowsePage() {
         </div>
       </div>
 
-      <AppFooter />
       <MobileNav />
 
       {/* ── Quick-view modal ─────────────────────────────────── */}

@@ -8,12 +8,12 @@ type BrandLogoProps = {
 
 export default function BrandLogo({ href = '/', className = '', showTagline = true }: BrandLogoProps) {
   return (
-    <Link href={href} className={`app-brand ${className}`.trim()} aria-label="NativePelli home">
+    <Link href={href} className={`app-brand ${className}`.trim()} aria-label="NativeMatrimony home">
       <span className="app-brand-mark" aria-hidden="true">
-        <span>p</span>
+        <span>n</span>
       </span>
       <span className="app-brand-copy">
-        <span><strong>native</strong>pelli</span>
+        <span><strong>native</strong>matrimony</span>
         {showTagline && <small>Telugu matches by native place</small>}
       </span>
     </Link>

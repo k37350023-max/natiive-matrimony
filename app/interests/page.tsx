@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
-import AppFooter from '../components/AppFooter'
 
 type Interest = {
   id: string
@@ -478,7 +477,6 @@ function RequestsPageInner() {
           )
         )}
       </div>
-      <AppFooter />
       <MobileNav />
     </div>
   )

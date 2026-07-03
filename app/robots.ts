@@ -5,6 +5,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       { userAgent: '*', allow: ['/', '/browse', '/profile/'], disallow: ['/admin', '/profile/edit', '/matches', '/interests', '/chat'] },
     ],
-    sitemap: 'https://nativepelli.com/sitemap.xml',
+    sitemap: 'https://nativematrimony.com/sitemap.xml',
   }
 }

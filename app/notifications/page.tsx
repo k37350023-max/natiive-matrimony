@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import AppHeader from '../components/AppHeader'
 import MobileNav from '../components/MobileNav'
-import AppFooter from '../components/AppFooter'
 
 type Notif = {
   id: string
@@ -331,7 +330,6 @@ export default function NotificationsPage() {
         ))}
 
       </div>
-      <AppFooter />
       <MobileNav />
     </div>
   )

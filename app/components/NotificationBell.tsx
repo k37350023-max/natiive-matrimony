@@ -80,7 +80,7 @@ export default function NotificationBell() {
       }, ({ new: n }) => {
         setNotifs(p => [n as Notif, ...p])
         if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
-          new Notification('NativePelli', { body: (n as Notif).message, icon: '/favicon.ico' })
+          new Notification('NativeMatrimony', { body: (n as Notif).message, icon: '/favicon.ico' })
         }
       })
       .subscribe()

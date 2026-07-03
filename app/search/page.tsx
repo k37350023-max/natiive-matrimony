@@ -5,7 +5,6 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import AppHeader from '../components/AppHeader'
 import MobileNav from '../components/MobileNav'
-import AppFooter from '../components/AppFooter'
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface Profile {
@@ -754,7 +753,6 @@ export default function SearchPage() {
           )}
         </div>
       </div>
-      <AppFooter />
       <MobileNav />
       <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}`}</style>
     </div>

@@ -38,7 +38,7 @@ export default function PrivacyPage() {
             },
             {
               title: '5. Data retention',
-              body: 'Your data is retained as long as your account is active. You may request deletion of your account and all associated data by contacting us at support@nativepelli.com.',
+              body: 'Your data is retained as long as your account is active. You may request deletion of your account and all associated data by contacting us at support@nativematrimony.com.',
             },
             {
               title: '6. Cookies',
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
             },
             {
               title: '7. Contact',
-              body: 'For privacy-related queries, contact us at support@nativepelli.com.',
+              body: 'For privacy-related queries, contact us at support@nativematrimony.com.',
             },
           ].map(s => (
             <section key={s.title}>
