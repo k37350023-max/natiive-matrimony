@@ -14,7 +14,7 @@ export default function PricingPage() {
             Free Telugu registry. Optional guided introductions.
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            Start free with native-place search, requests, and private contact unlocks. Families who want extra trust can use Select for human-assisted shortlisting and introductions.
+            Start free with native-place search, requests, and private contact unlocks. Families who want extra support can use guided introductions for human-assisted shortlisting.
           </p>
         </div>
 
@@ -49,13 +49,13 @@ export default function PricingPage() {
           <section className="card px-6 py-7" style={{ background: 'linear-gradient(145deg, #101828 0%, #14241C 100%)', borderColor: '#2D3C34', color: 'white', boxShadow: '0 24px 60px rgba(20,36,28,0.18)' }}>
             <div className="flex items-center justify-between gap-3 mb-5">
               <div>
-                <p className="section-label mb-2" style={{ color: '#E7C76D' }}>Select</p>
+                <p className="section-label mb-2" style={{ color: '#E7C76D' }}>Guided help</p>
                 <h2 className="font-serif-display text-2xl font-bold">Human-assisted</h2>
               </div>
               <span style={{ border: '1px solid rgba(231,199,109,0.45)', color: '#E7C76D', borderRadius: 999, padding: '6px 10px', fontSize: 11, fontWeight: 800 }}>Concierge</span>
             </div>
             <p className="text-sm leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.72)' }}>
-              For families who want a trusted coordinator to review profiles, prepare shortlists, and help with introductions.
+              For families who want a careful coordinator to review profiles, prepare shortlists, and help with introductions.
             </p>
             <div className="space-y-3 mb-6">
               {[

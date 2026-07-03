@@ -24,7 +24,7 @@ export default function AppFooter() {
             </Link>
           ))}
         </div>
-        <p style={{ flexBasis: '100%', fontSize: '11px', lineHeight: 1.6, color: '#94A3B8', margin: '10px 0 0' }}>
+        <p style={{ flexBasis: '100%', fontSize: '12px', lineHeight: 1.6, color: '#5E6B62', margin: '10px 0 0', fontWeight: 600 }}>
           NativeMatrimony.com is an independent platform and has no affiliation with Matrimony.com Limited or any of its subsidiaries.
         </p>
       </div>

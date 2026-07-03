@@ -16,9 +16,9 @@ export default function ConsultantsPage() {
 
         <section className="consultant-card" style={{ alignItems: 'center' }}>
           <div className="consultant-copy">
-            <p className="section-label mb-3">NativeMatrimony Select</p>
-            <h2>Human-Assisted Matching</h2>
-            <p>For families who want more than software, NativeMatrimony can coordinate vetted introductions, shortlist review, and next-step guidance while private contact still unlocks only after acceptance.</p>
+            <p className="section-label mb-3">Guided introductions</p>
+            <h2>Human-assisted matching</h2>
+            <p>For families who want more than software, NativeMatrimony.com can coordinate vetted introductions, shortlist review, and next-step guidance while private contact still unlocks only after acceptance.</p>
             {['Profile and intent review', 'Telugu community context', 'Shortlist and introduction support', 'Optional premium service'].map(item => (
               <div className="consultant-bullet" key={item}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -30,7 +30,7 @@ export default function ConsultantsPage() {
           </div>
           <div className="consultant-actions">
             <Link href="/register" className="landing-primary compact">Create Free Profile</Link>
-            <Link href="/pricing" className="landing-secondary compact">See Select</Link>
+            <Link href="/pricing" className="landing-secondary compact">See guided help</Link>
           </div>
         </section>
       </div>

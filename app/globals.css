@@ -2503,6 +2503,15 @@ select.input {
   margin-bottom: 5px;
 }
 
+.nmh-independent-note {
+  color: #5E6B62;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 12px 0 0;
+  max-width: 560px;
+}
+
 .nmh-hero-visual {
   aspect-ratio: 4 / 3.45;
   background:
@@ -3026,6 +3035,12 @@ select.input {
 .app-brand-copy strong {
   color: #14241C;
   font-weight: 800;
+}
+
+.app-brand-copy i {
+  color: #5E6B62;
+  font-style: normal;
+  font-weight: 700;
 }
 
 .app-brand-copy small {

@@ -13,8 +13,8 @@ export default function BrandLogo({ href = '/', className = '', showTagline = tr
         <span>n</span>
       </span>
       <span className="app-brand-copy">
-        <span><strong>native</strong>matrimony</span>
-        {showTagline && <small>Telugu matches by native place</small>}
+        <span><strong>native</strong>matrimony<i>.com</i></span>
+        {showTagline && <small>Independent Telugu native-place registry</small>}
       </span>
     </Link>
   )
