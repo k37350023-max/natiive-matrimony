@@ -30,6 +30,7 @@ export const supabaseAdmin = createClient(
 
 export function assertAdminConfigured() {
   if (!serviceKey) {
-    throw new Error('Server not configured: SUPABASE_SERVICE_ROLE_KEY missing')
+    console.error('[supabaseAdmin] Missing SUPABASE_SERVICE_ROLE_KEY')
+    throw new Error('Registration is temporarily unavailable. Please try again shortly.')
   }
 }

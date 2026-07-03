@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createHmac } from 'crypto'
 
-const SECRET = process.env.OTP_SECRET || 'natiive-matrimony-otp'
+const SECRET = process.env.OTP_SECRET || (process.env.NODE_ENV !== 'production' ? 'natiive-matrimony-otp' : '')
+const devSmsAllowed = process.env.NODE_ENV !== 'production' || process.env.DEV_SMS_ENABLED === 'true'
 
 function sign(payload: string) {
   return createHmac('sha256', SECRET).update(payload).digest('hex').slice(0, 20)
@@ -10,6 +11,12 @@ function sign(payload: string) {
 export async function POST(req: NextRequest) {
   const { phone } = await req.json()
   if (!phone) return NextResponse.json({ error: 'Phone required' }, { status: 400 })
+  if (!SECRET) {
+    return NextResponse.json(
+      { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
+      { status: 503 },
+    )
+  }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString()
   const expires = Date.now() + 10 * 60 * 1000 // 10 min
@@ -17,8 +24,14 @@ export async function POST(req: NextRequest) {
 
   const apiKey = process.env.FAST2SMS_API_KEY
   if (!apiKey) {
-    // Dev mode - return OTP in response so you can test without SMS credits
-    return NextResponse.json({ token, dev_otp: otp })
+    if (devSmsAllowed) {
+      // Dev mode - return OTP in response so you can test without SMS credits.
+      return NextResponse.json({ token, dev_otp: otp })
+    }
+    return NextResponse.json(
+      { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
+      { status: 503 },
+    )
   }
 
   // Strip to last 10 digits (Fast2SMS expects Indian 10-digit numbers)

@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
 
-const OTP_SECRET = process.env.OTP_SECRET || 'natiive-matrimony-otp'
+const OTP_SECRET = process.env.OTP_SECRET || (process.env.NODE_ENV !== 'production' ? 'natiive-matrimony-otp' : '')
 function otpSign(payload: string) {
   return createHmac('sha256', OTP_SECRET).update(payload).digest('hex').slice(0, 20)
 }
@@ -17,6 +17,12 @@ export async function POST(req: Request) {
     const { email, password, phone, otp, token } = await req.json()
 
     if (phone || otp || token) {
+      if (!OTP_SECRET) {
+        return NextResponse.json(
+          { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
+          { status: 503 },
+        )
+      }
       if (!phone || !otp || !token) {
         return NextResponse.json({ error: 'Phone verification required' }, { status: 400 })
       }

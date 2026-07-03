@@ -3,7 +3,7 @@ import { createHmac } from 'crypto'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
 
-const OTP_SECRET = process.env.OTP_SECRET || 'natiive-matrimony-otp'
+const OTP_SECRET = process.env.OTP_SECRET || (process.env.NODE_ENV !== 'production' ? 'natiive-matrimony-otp' : '')
 const FOUNDING_MEMBER_LIMIT = 1000
 const FOUNDING_MEMBER_YEARS = 2
 const PREMIUM_BOOST_DAYS = 100
@@ -22,6 +22,12 @@ export async function POST(req: Request) {
 
     if (!full_name || !gender || !phone || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+    if (!OTP_SECRET) {
+      return NextResponse.json(
+        { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
+        { status: 503 },
+      )
     }
 
     // Re-verify the OTP token server-side (never trust the client's "verified" claim).

@@ -70,7 +70,7 @@ const FOUNDING_MEMBER_LIMIT = 1000
 
 const PREMIUM_PERKS = [
   '100 days of premium for every new member',
-  '2 years of premium for eligible district Founding Members',
+  '2 years premium if your district founding spots are open',
   'Native-place alerts when matching families join',
   'Biodata and contact unlock after accepted requests',
   'Photo privacy controls and high-signal profile previews',
