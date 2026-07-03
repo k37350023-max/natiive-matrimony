@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 const GOAL = 1000
-const PERKS = ['Native-place search', 'Request-based biodata unlock', 'Contact gating', 'Photo privacy controls']
+const PERKS = ['2 years premium', 'Native-place alerts', 'Biodata unlock after acceptance', 'Photo privacy controls']
 
 export default function FounderTracker() {
   const [count, setCount] = useState<number | null>(null)
@@ -28,10 +28,10 @@ export default function FounderTracker() {
 
       {/* Header */}
       <div className="px-6 pt-6 pb-5" style={{ background: 'linear-gradient(135deg, #14241C 0%, #14241C 100%)' }}>
-        <p className="text-xs font-bold uppercase tracking-widest text-red-300 mb-1">Founder Member Offer</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-red-300 mb-1">District Founding Member Offer</p>
         <p className="text-white font-bold text-xl leading-snug font-serif-display">
-          First 1,000 profiles get<br />
-          <span className="text-red-200">free founder access</span>
+          First 1,000 profiles per district get<br />
+          <span className="text-red-200">2 years free premium</span>
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export default function FounderTracker() {
         <p className="text-xs text-gray-500 mt-2">
           {isFull
             ? <span>Founder spots are full. <Link href="/pricing" className="font-semibold underline" style={{ color: '#14241C' }}>See pricing →</Link></span>
-            : <>Only <span className="font-semibold text-gray-800">{remaining.toLocaleString()} spots left</span> in the founder registry launch.</>
+            : <>Only <span className="font-semibold text-gray-800">{remaining.toLocaleString()} spots left</span> in this founding launch counter.</>
           }
         </p>
       </div>

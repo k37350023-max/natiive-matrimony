@@ -34,9 +34,10 @@ export default function PricingPage() {
               {[
                 'Search native places first.',
                 'First 1,000 profiles per district get 2 years of free premium.',
+                'Native-place alerts when matching families join.',
                 'Photo visible by default, hide option available.',
                 'Biodata and contact unlock after acceptance.',
-                'Save alerts when your place is still growing.',
+                'Priority eligibility for guided introduction review.',
                 'No random messages before mutual interest.',
               ].map(item => (
                 <div key={item} className="flex items-start gap-3 text-sm text-gray-700">

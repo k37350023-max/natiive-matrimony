@@ -4,6 +4,9 @@ import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
 
 const OTP_SECRET = process.env.OTP_SECRET || 'natiive-matrimony-otp'
+const FOUNDING_MEMBER_LIMIT = 1000
+const FOUNDING_MEMBER_YEARS = 2
+
 function otpSign(payload: string) {
   return createHmac('sha256', OTP_SECRET).update(payload).digest('hex').slice(0, 20)
 }
@@ -41,22 +44,38 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: dup ? 'This mobile number is already registered' : (cErr?.message || 'Signup failed') }, { status: 400 })
     }
 
+    const { count: districtCount } = await supabaseAdmin.from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('native_state', native_state)
+      .eq('native_district', native_district)
+      .eq('status', 'approved')
+
+    const foundingMemberEligible = (districtCount ?? 0) < FOUNDING_MEMBER_LIMIT
+    const premiumExpiresAt = new Date()
+    premiumExpiresAt.setFullYear(premiumExpiresAt.getFullYear() + FOUNDING_MEMBER_YEARS)
+
     const { data: profile, error: pErr } = await supabaseAdmin.from('profiles').insert({
       user_id: created.user.id,
       full_name: String(full_name).trim(),
       gender, phone, date_of_birth,
       native_state, native_district, native_region: native_state,
       current_city: String(current_city).trim(),
-      marital_status: 'never_married', religion: 'Hindu', mother_tongue: 'Telugu',
+      marital_status: 'never_married', religion: 'Hindu', mother_tongue: null,
       profile_created_by, photo_url: '', photo_visibility: 'public',
       status: 'approved', verified: false,
+      premium_expires_at: foundingMemberEligible ? premiumExpiresAt.toISOString() : null,
     }).select('id').maybeSingle()
     if (pErr || !profile) {
       return NextResponse.json({ error: pErr?.message || 'Could not create profile' }, { status: 400 })
     }
 
     await setSession(profile.id)
-    return NextResponse.json({ profileId: profile.id, userId: created.user.id })
+    return NextResponse.json({
+      profileId: profile.id,
+      userId: created.user.id,
+      foundingMemberEligible,
+      premiumExpiresAt: foundingMemberEligible ? premiumExpiresAt.toISOString() : null,
+    })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Signup failed'
     return NextResponse.json({ error: msg }, { status: 500 })

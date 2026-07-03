@@ -66,6 +66,15 @@ const inputStyle: React.CSSProperties = {
   background: 'white', color: '#111', transition: 'border-color 0.15s',
 }
 
+const FOUNDING_MEMBER_LIMIT = 1000
+
+const PREMIUM_PERKS = [
+  '2 years of premium for eligible district Founding Members',
+  'Native-place alerts when matching families join',
+  'Biodata and contact unlock after accepted requests',
+  'Photo privacy controls and high-signal profile previews',
+]
+
 /* ─── Main ───────────────────────────────────────────────────── */
 export default function RegisterPage() {
   const router = useRouter()
@@ -78,6 +87,7 @@ export default function RegisterPage() {
   const [otpToken, setOtpToken] = useState('')
   const [devOtp, setDevOtp] = useState('')   // shown only in dev mode (no SMS key)
   const [sending, setSending] = useState(false)
+  const [districtCount, setDistrictCount] = useState<number | null>(null)
   const otpRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
@@ -99,6 +109,25 @@ export default function RegisterPage() {
   useEffect(() => { if (step === 2) setTimeout(() => otpRef.current?.focus(), 100) }, [step])
 
   const districts = form.native_state ? (INDIA_STATES[form.native_state] || []) : []
+  const foundingClaimed = Math.min(districtCount ?? 0, FOUNDING_MEMBER_LIMIT)
+  const foundingRemaining = Math.max(FOUNDING_MEMBER_LIMIT - foundingClaimed, 0)
+  const foundingPct = districtCount === null ? 0 : Math.min(Math.round((foundingClaimed / FOUNDING_MEMBER_LIMIT) * 100), 100)
+  const selectedDistrict = form.native_district.trim()
+
+  useEffect(() => {
+    if (!selectedDistrict) {
+      setDistrictCount(null)
+      return
+    }
+    let cancelled = false
+    supabase.from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('native_state', form.native_state)
+      .eq('native_district', selectedDistrict)
+      .eq('status', 'approved')
+      .then(({ count }) => { if (!cancelled) setDistrictCount(count ?? 0) })
+    return () => { cancelled = true }
+  }, [selectedDistrict, form.native_state])
 
   /* Step 1 → send a real OTP (dev mode returns the code in the response) */
   async function sendOtp() {
@@ -208,6 +237,44 @@ export default function RegisterPage() {
             <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 4px', letterSpacing: 0 }}>{STEP_META.title}</h2>
           )}
           <p style={{ fontSize: '13.5px', color: '#94A3B8', margin: '0 0 22px' }}>{STEP_META.sub}</p>
+
+          <div style={{
+            background: 'linear-gradient(145deg, #10241B 0%, #075E3E 100%)',
+            borderRadius: '14px',
+            boxShadow: '0 14px 34px rgba(7, 94, 62, 0.18)',
+            color: 'white',
+            marginBottom: '16px',
+            overflow: 'hidden',
+          }}>
+            <div style={{ padding: '16px 16px 14px' }}>
+              <p style={{ color: '#BFE8CB', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 6px', textTransform: 'uppercase' }}>
+                District Founding Member offer
+              </p>
+              <p style={{ fontSize: '19px', fontWeight: 900, lineHeight: 1.14, margin: 0 }}>
+                First 1,000 profiles per district get 2 years of free premium.
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.76)', fontSize: '12.5px', lineHeight: 1.55, margin: '9px 0 0' }}>
+                {selectedDistrict
+                  ? districtCount === null
+                    ? `Checking founding spots for ${selectedDistrict}...`
+                    : foundingRemaining > 0
+                      ? `${foundingRemaining.toLocaleString('en-IN')} founding spots still open in ${selectedDistrict}.`
+                      : `Founding spots are full in ${selectedDistrict}; you can still create a free profile.`
+                  : 'Choose your native place to check district founding spots.'}
+              </p>
+              <div style={{ height: '7px', background: 'rgba(255,255,255,0.16)', borderRadius: '99px', marginTop: '13px', overflow: 'hidden' }}>
+                <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#D8EFC9', borderRadius: '99px', transition: 'width 0.35s ease' }} />
+              </div>
+            </div>
+            <div style={{ background: 'rgba(255,255,255,0.08)', borderTop: '1px solid rgba(255,255,255,0.12)', display: 'grid', gap: '8px', padding: '12px 16px' }}>
+              {PREMIUM_PERKS.map((perk) => (
+                <div key={perk} style={{ alignItems: 'flex-start', display: 'flex', gap: '8px' }}>
+                  <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '10px', fontWeight: 900, height: '17px', justifyContent: 'center', marginTop: '1px', width: '17px' }}>✓</span>
+                  <span style={{ color: 'rgba(255,255,255,0.86)', fontSize: '12px', lineHeight: 1.4 }}>{perk}</span>
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '20px' }}>
             {error && (
