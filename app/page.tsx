@@ -129,7 +129,7 @@ export default function Home() {
               Independent Telugu native-place registry
             </div>
             <h1>Create your profile. Let the right Telugu family find you.</h1>
-            <p>NativeMatrimony.com is not trying to be every matrimony site for everyone. We are starting focused: Telugu families across Andhra, Telangana, and the diaspora who care about native place, verification, and serious family review.</p>
+            <p>NativeMatrimony.com is an independent Telugu registry for families who care about native place, verification, and serious review.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
@@ -140,11 +140,11 @@ export default function Home() {
               </Link>
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
-              <span><strong>Telugu</strong> first</span>
-              <span><strong>Verified</strong> profiles</span>
-              <span><strong>Human</strong> help</span>
+              <span>Telugu first</span>
+              <span>Verified profiles</span>
+              <span>Human help</span>
             </div>
-            <p className="nmh-independent-note">Independent platform. No affiliation with Matrimony.com Limited or any of its subsidiaries.</p>
+            <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
           </div>
           <HeroVisual />
         </section>
