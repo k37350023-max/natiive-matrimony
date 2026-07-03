@@ -33,6 +33,9 @@ export async function POST(req: Request) {
     if (Object.keys(clean).length === 0) {
       return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
     }
+    if ('photo_url' in clean && typeof clean.photo_url === 'string' && clean.photo_url.trim().length === 0) {
+      return NextResponse.json({ error: 'Please upload one profile photo. You can hide it until access is accepted.' }, { status: 400 })
+    }
 
     const { error } = await supabaseAdmin.from('profiles').update(clean).eq('id', meId)
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })

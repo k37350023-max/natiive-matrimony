@@ -670,6 +670,7 @@ export default function BrowsePage() {
   const [recentOnly,      setRecentOnly]      = useState(false)
   const [showViewed, setShowViewed] = useState(false)
   const [completenessPercent, setCompletenessPercent] = useState<number|null>(null)
+  const [myHasPhoto, setMyHasPhoto] = useState(true)
   const [bannerDismissed, setBannerDismissed] = useState(false)
   const [ignorePrefs,     setIgnorePrefs]     = useState(false)
   const [viewedIds,       setViewedIds]       = useState<Set<string>>(new Set())
@@ -739,6 +740,7 @@ export default function BrowsePage() {
       setMyName(prof?.full_name ?? '')
       setMyMemberNum(prof?.member_number ?? null)
       setMyNativeDistrict(prof?.native_district ?? '')
+      setMyHasPhoto(Boolean(prof?.photo_url))
       if (prof) {
         setCompletenessPercent(computeCompleteness(prof).percent)
         setBannerDismissed(sessionStorage.getItem('completeness_banner_dismissed') === '1')
@@ -1010,14 +1012,16 @@ export default function BrowsePage() {
       <div className="max-w-6xl mx-auto px-4 py-4">
 
         {/* ── Profile completeness banner ─────────────────────── */}
-        {completenessPercent !== null && completenessPercent < 50 && !bannerDismissed && (
+        {completenessPercent !== null && (!myHasPhoto || completenessPercent < 50) && !bannerDismissed && (
           <div className="mb-4 rounded-xl px-4 py-3 flex items-center gap-3 text-sm"
             style={{ background: '#EAF3EA', border: '1px solid #7FB17F' }}>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
               <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
             </svg>
             <span className="flex-1 text-amber-800">
-              Your profile is only <strong>{completenessPercent}% complete</strong>. Complete it to get more visibility.
+              {!myHasPhoto
+                ? <>Add one profile photo to complete your profile. You can keep it hidden until access is accepted.</>
+                : <>Your profile is only <strong>{completenessPercent}% complete</strong>. Complete it to get more visibility.</>}
             </span>
             <Link href="/profile/edit" className="font-semibold text-amber-900 underline shrink-0">Complete now</Link>
             <button onClick={() => { sessionStorage.setItem('completeness_banner_dismissed','1'); setBannerDismissed(true) }}

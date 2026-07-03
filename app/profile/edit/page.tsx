@@ -229,6 +229,7 @@ function EditProfilePageInner() {
       !form.profession.trim() && 'Profession',
       !form.education.trim() && 'Education',
       !form.family_type && 'Family type',
+      !photo && !currentPhotoUrl && 'Profile photo',
     ].filter(Boolean)
     if (missing.length) {
       setError(`Please fill required fields: ${missing.join(', ')}`)
@@ -463,7 +464,14 @@ function EditProfilePageInner() {
 
         {/* Photo */}
         <div className="card p-5">
-          <p className="font-semibold text-gray-800 mb-4 font-serif-display">Profile Photo</p>
+          <div className="mb-4">
+            <p className="font-semibold text-gray-800 font-serif-display">
+              Profile Photo <span className="ml-0.5 font-bold" style={{ color: '#DC2626' }}>*</span>
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              One real photo is required for trust. You can keep it hidden until someone requests access and you accept.
+            </p>
+          </div>
           <div className="flex items-center gap-4 mb-4">
             {(photoPreview || currentPhotoUrl) ? (
               <img loading="lazy" src={photoPreview || currentPhotoUrl} alt="Photo"
@@ -485,7 +493,7 @@ function EditProfilePageInner() {
                   if (file) { setPhoto(file); setPhotoPreview(URL.createObjectURL(file)) }
                 }} />
               </label>
-              <p className="text-xs text-gray-400 mt-1">JPG or PNG, max 5MB</p>
+              <p className="text-xs text-gray-400 mt-1">JPG or PNG, max 5MB. Required to complete your profile.</p>
             </div>
           </div>
 
@@ -529,7 +537,7 @@ function EditProfilePageInner() {
 
           <div className="pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-1">Privacy - what do you want to hide?</p>
-            <p className="text-xs text-gray-400 mb-3">Photos are visible by default. Hidden fields show as blurred on your profile, and visitors can request access for you to approve or decline.</p>
+            <p className="text-xs text-gray-400 mb-3">A photo is required, but it does not have to be public. Hide it here if you want visitors to request access first.</p>
             <div className="space-y-2">
               {HIDEABLE_FIELDS.map(f => {
                 const checked = hiddenFields.includes(f.key)
