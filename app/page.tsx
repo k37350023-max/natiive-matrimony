@@ -126,10 +126,10 @@ export default function Home() {
           <div className="nmh-hero-copy">
             <div className="nmh-eyebrow">
               <Icon name="pin" size={17} />
-              Free launch access
+              Always free to start
             </div>
             <h1>Create your profile. Let the right native family find you.</h1>
-            <p>Create a profile for free, browse native profiles, and use premium features during your first 100 days. The first 1,000 profiles per district get 2 years of free premium as Founding Members.</p>
+            <p>Create a profile and use the free version for as long as you need. Founding members get 2 years of premium free; everyone else gets 3 months of premium free.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
@@ -141,7 +141,7 @@ export default function Home() {
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
               <span>Native-place first</span>
-              <span>100 days premium boost</span>
+              <span>3 months premium free</span>
               <span>Place alerts</span>
             </div>
             <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
@@ -178,8 +178,8 @@ export default function Home() {
             </article>
             <article>
               <Icon name="lock" size={25} />
-              <h3>Try premium while searching</h3>
-              <p>Everyone starts with free basics and a first-100-days premium boost, so serious families have enough time to browse, request, and evaluate matches.</p>
+              <h3>Free stays free</h3>
+              <p>Basic profile creation, native-place search, and receiving requests stay free. Premium is free for 2 years for founders, and 3 months for everyone else.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
@@ -318,7 +318,7 @@ export default function Home() {
           <div>
             <p className="nmh-section-kicker">Create now, match when ready</p>
             <h2>Be visible to the right family before they search elsewhere.</h2>
-            <p>Join free, use premium features for your first 100 days, and claim 2 years of free premium if your district founding spots are still open.</p>
+            <p>Join the always-free version today. Claim 2 years of free premium if district founding spots are open, or get 3 months of premium free.</p>
           </div>
           <div className="nmh-actions">
             <Link href="/register" className="nmh-primary">Join Free</Link>

@@ -75,9 +75,9 @@ export default function LaunchBanner() {
 
         {/* Text */}
         <div className="flex-1 min-w-0">
-          <p className="font-extrabold text-sm leading-snug" style={{ color: '#14241C' }}>Free Premium Launch</p>
+          <p className="font-extrabold text-sm leading-snug" style={{ color: '#14241C' }}>Always Free + Premium Trial</p>
           <p className="text-xs mt-0.5 leading-snug" style={{ color: '#14241C' }}>
-            100 days for everyone.<br />2 years for district founders.
+            Free version stays free.<br />Premium: 2 years for founders, 3 months for others.
           </p>
           {count !== null && (
             <div className="mt-2 flex items-center gap-2">

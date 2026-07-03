@@ -11,10 +11,10 @@ export default function PricingPage() {
         <div className="text-center mb-8">
           <p className="section-label mb-3">NativeMatrimony</p>
           <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-            Free basics. First 100 days premium. Founding Members get more.
+            Free version stays free. Premium starts free too.
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            Create a profile, search native places, and receive requests for free. New members get a 100-day premium boost; first 1,000 profiles per district get 2 years.
+            Create a profile, search native places, and receive requests for free. District founding members get 2 years of premium free; everyone else gets 3 months free.
           </p>
         </div>
 
@@ -22,10 +22,10 @@ export default function PricingPage() {
           <section className="card px-6 py-7">
             <div className="flex items-center justify-between gap-3 mb-5">
               <div>
-                <p className="section-label mb-2">Launch Access</p>
-                <h2 className="font-serif-display text-2xl font-bold text-gray-900">Freemium + premium boost</h2>
+                <p className="section-label mb-2">Always Free</p>
+                <h2 className="font-serif-display text-2xl font-bold text-gray-900">Free basics + premium trial</h2>
               </div>
-              <span className="badge badge-approved">100 days free</span>
+              <span className="badge badge-approved">3 months premium</span>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed mb-6">
               For serious families who need enough time to build a profile, browse by roots, request access, and wait for the right native-place matches.
@@ -33,7 +33,7 @@ export default function PricingPage() {
             <div className="space-y-3 mb-6">
               {[
                 'Always free: profile creation, basic search, and receiving requests.',
-                'First 100 days: premium messaging, contact unlocks after acceptance, and photo access controls.',
+                'Premium free for 3 months for non-founding members.',
                 'District Founding Member bonus: first 1,000 profiles per district get 2 years of free premium.',
                 'Native-place alerts when matching families join.',
                 'Photo visible by default, hide option available.',

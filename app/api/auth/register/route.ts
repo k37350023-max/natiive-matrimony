@@ -6,7 +6,7 @@ import { setSession } from '@/lib/session'
 const OTP_SECRET = process.env.OTP_SECRET || (process.env.NODE_ENV !== 'production' ? 'natiive-matrimony-otp' : '')
 const FOUNDING_MEMBER_LIMIT = 1000
 const FOUNDING_MEMBER_YEARS = 2
-const PREMIUM_BOOST_DAYS = 100
+const PREMIUM_TRIAL_MONTHS = 3
 
 function otpSign(payload: string) {
   return createHmac('sha256', OTP_SECRET).update(payload).digest('hex').slice(0, 20)
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     if (foundingMemberEligible) {
       premiumExpiresAt.setFullYear(premiumExpiresAt.getFullYear() + FOUNDING_MEMBER_YEARS)
     } else {
-      premiumExpiresAt.setDate(premiumExpiresAt.getDate() + PREMIUM_BOOST_DAYS)
+      premiumExpiresAt.setMonth(premiumExpiresAt.getMonth() + PREMIUM_TRIAL_MONTHS)
     }
 
     const { data: profile, error: pErr } = await supabaseAdmin.from('profiles').insert({
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       profileId: profile.id,
       userId: created.user.id,
       foundingMemberEligible,
-      premiumBoostDays: foundingMemberEligible ? null : PREMIUM_BOOST_DAYS,
+      premiumTrialMonths: foundingMemberEligible ? null : PREMIUM_TRIAL_MONTHS,
       premiumExpiresAt: premiumExpiresAt.toISOString(),
     })
   } catch (err) {

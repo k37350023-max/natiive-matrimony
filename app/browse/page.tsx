@@ -165,7 +165,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
               No one from {searchedPlace} yet.
             </h1>
             <p className="nm-muted" style={{ fontSize: '15px', lineHeight: 1.7, margin: '18px 0 0', maxWidth: '300px' }}>
-              Join free and seed this native-place corridor. New members get a 100-day premium boost; the first 1,000 profiles per district get 2 years of free premium.
+              Join the always-free version and seed this native-place corridor. Founding members get 2 years of premium free; everyone else gets 3 months free.
             </p>
 
             <div aria-hidden="true" style={{ position: 'relative', height: '210px', margin: '24px -18px 0', overflow: 'hidden' }}>
@@ -234,7 +234,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           <p className="text-gray-500 text-sm">
             {searchedPlace
               ? 'Create a profile to see high-signal details and request biodata after acceptance.'
-              : 'Join free to browse native profiles, save place alerts, and unlock biodata after acceptance. New members get a 100-day premium boost; first 1,000 profiles per district get 2 years.'}
+              : 'Join the always-free version to browse native profiles, save place alerts, and unlock biodata after acceptance. Founders get 2 years premium free; others get 3 months.'}
           </p>
         </div>
 
@@ -1280,7 +1280,7 @@ export default function BrowsePage() {
                 ) : nativePlace ? (
                   <>
                     <p className="font-semibold text-gray-800 mb-1">No profiles from {nativePlace} yet.</p>
-                    <p className="text-sm text-gray-500 mb-5">Be early for {nativePlace}. Start with a 100-day premium boost, and claim 2 years free if district founding spots are still open.</p>
+                    <p className="text-sm text-gray-500 mb-5">Be early for {nativePlace}. The free version stays free; claim 2 years premium if founding spots are open, or get 3 months premium free.</p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Link href="/register" className="btn-primary px-5 py-2 text-sm">Start Free</Link>
                       <button
