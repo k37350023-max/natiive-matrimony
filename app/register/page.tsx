@@ -321,6 +321,42 @@ export default function RegisterPage() {
             </div>
           </div>
 
+          <div style={{
+            background: '#FFFFFF',
+            border: '1px solid #DCE9D7',
+            borderRadius: '12px',
+            boxShadow: '0 10px 28px rgba(20,36,28,0.07)',
+            marginBottom: '16px',
+            padding: '14px',
+          }}>
+            <p style={{ color: '#075E3E', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 6px', textTransform: 'uppercase' }}>
+              Native place for founding benefit
+            </p>
+            <p style={{ color: '#475569', fontSize: '12.5px', lineHeight: 1.45, margin: '0 0 12px' }}>
+              Select the family&apos;s native place now so we can show the correct founding member premium offer.
+            </p>
+            <div style={{ display: 'grid', gap: '10px' }}>
+              <div>
+                <Label>Native state</Label>
+                <select style={inputStyle} value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }}>
+                  <option value="">Select state</option>
+                  {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label>Native place</Label>
+                {districts.length > 0 ? (
+                  <select style={inputStyle} value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
+                    <option value="">Select native place</option>
+                    {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                ) : (
+                  <input style={inputStyle} placeholder="Type your native place" value={form.native_district} onChange={e => set('native_district', e.target.value)} />
+                )}
+              </div>
+            </div>
+          </div>
+
           <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '20px' }}>
             {error && (
               <div style={{ marginBottom: '16px', padding: '12px 16px', borderRadius: '8px', fontSize: '13.5px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
@@ -393,24 +429,6 @@ export default function RegisterPage() {
                 <div>
                   <Label>Date of birth</Label>
                   <input style={inputStyle} type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
-                </div>
-                <div>
-                  <Label>Native state</Label>
-                  <select style={inputStyle} value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }}>
-                    <option value="">Select state</option>
-                    {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <Label>Native place</Label>
-                  {districts.length > 0 ? (
-                    <select style={inputStyle} value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
-                      <option value="">Select native place</option>
-                      {districts.map(d => <option key={d} value={d}>{d}</option>)}
-                    </select>
-                  ) : (
-                    <input style={inputStyle} placeholder="Type your native place" value={form.native_district} onChange={e => set('native_district', e.target.value)} />
-                  )}
                 </div>
                 <div>
                   <Label>Current city</Label>
