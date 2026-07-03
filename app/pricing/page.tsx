@@ -11,10 +11,10 @@ export default function PricingPage() {
         <div className="text-center mb-8">
           <p className="section-label mb-3">NativeMatrimony</p>
           <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-            Free native-place registry. Optional guided introductions.
+            Free Founding Member launch. Optional guided introductions.
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            Start free with native-place search, requests, and private contact unlocks. Families who want extra support can use guided introductions for human-assisted shortlisting.
+            Create a profile, browse by native place, save alerts, and help seed your corridor while launch access is free.
           </p>
         </div>
 
@@ -22,17 +22,18 @@ export default function PricingPage() {
           <section className="card px-6 py-7">
             <div className="flex items-center justify-between gap-3 mb-5">
               <div>
-                <p className="section-label mb-2">Registry</p>
-                <h2 className="font-serif-display text-2xl font-bold text-gray-900">Free</h2>
+                <p className="section-label mb-2">Founding Member</p>
+                <h2 className="font-serif-display text-2xl font-bold text-gray-900">Free launch access</h2>
               </div>
-              <span className="badge badge-approved">Launch access</span>
+              <span className="badge badge-approved">No hard trial</span>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed mb-6">
-              For families who want to create a verified profile, browse by roots, and send requests at their own pace.
+              For early families who want to create a verified profile, browse by roots, and get notified as matching profiles join.
             </p>
             <div className="space-y-3 mb-6">
               {[
                 'Search native places first.',
+                'Join as a Founding Member while your corridor grows.',
                 'Photo visible by default, hide option available.',
                 'Biodata and contact unlock after acceptance.',
                 'Save alerts when your place is still growing.',
@@ -44,7 +45,7 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-            <Link href="/register" className="btn-primary text-sm px-5 py-3 w-full justify-center">Create free profile</Link>
+            <Link href="/register" className="btn-primary text-sm px-5 py-3 w-full justify-center">Join Founding Members</Link>
           </section>
 
           <section className="card px-6 py-7" style={{ background: 'linear-gradient(145deg, #101828 0%, #14241C 100%)', borderColor: '#2D3C34', color: 'white', boxShadow: '0 24px 60px rgba(20,36,28,0.18)' }}>
@@ -64,6 +65,7 @@ export default function PricingPage() {
                 'Curated shortlist based on roots and preferences.',
                 'Family-level introduction support.',
                 'Priority help for serious families in growing native-place corridors.',
+                'Paid plans can start later after a corridor has real activity.',
               ].map(item => (
                 <div key={item} className="flex items-start gap-3 text-sm" style={{ color: 'rgba(255,255,255,0.84)' }}>
                   <span className="mt-0.5 h-5 w-5 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: '#E7C76D', color: '#14241C' }}>✓</span>

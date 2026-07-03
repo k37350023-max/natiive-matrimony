@@ -165,7 +165,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
               No one from {searchedPlace} yet.
             </h1>
             <p className="nm-muted" style={{ fontSize: '15px', lineHeight: 1.7, margin: '18px 0 0', maxWidth: '300px' }}>
-              Create your profile and seed this native-place corridor. If someone from {searchedPlace} joins later, we will notify you so your family is not starting from zero.
+              Join free as a Founding Member and seed this native-place corridor. If someone from {searchedPlace} joins later, we will notify you so your family is not starting from zero.
             </p>
 
             <div aria-hidden="true" style={{ position: 'relative', height: '210px', margin: '24px -18px 0', overflow: 'hidden' }}>
@@ -234,7 +234,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           <p className="text-gray-500 text-sm">
             {searchedPlace
               ? 'Create a profile to see high-signal details and request biodata after acceptance.'
-              : 'Create a profile to browse serious native profiles and unlock biodata after acceptance. If your place is quiet today, save an alert and we will notify you when people join.'}
+              : 'Join free as a Founding Member to browse native profiles, save place alerts, and unlock biodata after acceptance. If your place is quiet today, we will notify you when people join.'}
           </p>
         </div>
 
@@ -1280,9 +1280,9 @@ export default function BrowsePage() {
                 ) : nativePlace ? (
                   <>
                     <p className="font-semibold text-gray-800 mb-1">No profiles from {nativePlace} yet.</p>
-                    <p className="text-sm text-gray-500 mb-5">Be the first person from {nativePlace} to join. People are joining as the registry grows, and we&apos;ll notify you when new members from {nativePlace} appear.</p>
+                    <p className="text-sm text-gray-500 mb-5">Be a Founding Member for {nativePlace}. People are joining as the registry grows, and we&apos;ll notify you when new members from {nativePlace} appear.</p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <Link href="/register" className="btn-primary px-5 py-2 text-sm">Create Profile</Link>
+                      <Link href="/register" className="btn-primary px-5 py-2 text-sm">Join Founding Members</Link>
                       <button
                         onClick={() => {
                           setAlertSet(true)

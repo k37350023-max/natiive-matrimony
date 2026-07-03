@@ -2378,7 +2378,7 @@ select.input {
   .nmh-final {
     align-items: center;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 390px;
+    grid-template-columns: minmax(0, 1fr) minmax(460px, 520px);
     padding: 26px;
     text-align: left;
   }

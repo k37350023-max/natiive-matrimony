@@ -18,10 +18,10 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: { default: "NativeMatrimony.com - Matches by native place", template: "%s | NativeMatrimony.com" },
-  description: "An independent native-place registry where families browse native profiles, see real profile signals, send requests, and get notified when people from their place join.",
+  description: "Join NativeMatrimony as a free Founding Member. Browse native profiles by place, save alerts for growing corridors, and get notified when matching families join.",
   openGraph: {
     title: "NativeMatrimony.com - Matches by native place",
-    description: "Browse native profiles by roots first. If no one from your place is listed yet, create a profile and get notified when someone joins.",
+    description: "Join free as a Founding Member. Browse native profiles by roots first and get notified when matching families from your place join.",
     siteName: "NativeMatrimony.com",
     locale: "en_IN",
     type: "website",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "NativeMatrimony.com - Matches by native place",
-    description: "Browse native profiles by native place. Connect only through accepted requests.",
+    description: "Join free as a Founding Member. Browse native profiles by native place and connect only through accepted requests.",
   },
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "NativeMatrimony.com" },

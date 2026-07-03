@@ -126,14 +126,14 @@ export default function Home() {
           <div className="nmh-hero-copy">
             <div className="nmh-eyebrow">
               <Icon name="pin" size={17} />
-              Independent native-place registry
+              Free Founding Member launch
             </div>
             <h1>Create your profile. Let the right native family find you.</h1>
-            <p>Browse native profiles by roots and hometown. If you cannot find the right one yet, create your profile and we will notify you as matching families join.</p>
+            <p>Join free as a Founding Member. Browse native profiles now, save alerts for growing places, and we will notify you when matching families join.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
-                Create Free Profile
+                Join Free
               </Link>
               <Link href="/browse" className="nmh-secondary">
                 Browse Native Profiles
@@ -141,8 +141,8 @@ export default function Home() {
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
               <span>Native-place first</span>
-              <span>Verified profiles</span>
-              <span>Join alerts</span>
+              <span>Free launch access</span>
+              <span>Place alerts</span>
             </div>
             <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
           </div>
@@ -168,23 +168,23 @@ export default function Home() {
         <section className="nmh-section nmh-intent-section">
           <div className="nmh-section-heading">
             <p className="nmh-section-kicker">Why families join now</p>
-            <h2>A focused registry only works when serious families join early.</h2>
+            <h2>Founding Members make each native-place corridor useful.</h2>
           </div>
           <div className="nmh-intent-grid">
             <article>
               <Icon name="upload" size={25} />
-              <h3>Seed your community</h3>
-              <p>Start with the details families actually ask for: native place, age, current city, work, education, and verification.</p>
+              <h3>Seed your corridor</h3>
+              <p>Create the first high-signal profile for your native place so future families have someone real to discover.</p>
             </article>
             <article>
               <Icon name="lock" size={25} />
-              <h3>Stay visible, stay private</h3>
-              <p>Show enough signal to feel real while full biodata and contact stay locked until acceptance.</p>
+              <h3>Stay free while it grows</h3>
+              <p>Founding Members get launch access while we build useful liquidity place by place, without a rushed trial clock.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
-              <h3>Wait with purpose</h3>
-              <p>When a serious family from the right roots joins or sends interest, your profile is already ready.</p>
+              <h3>Get notified later</h3>
+              <p>If the right profile is not here yet, save your place and we will notify you as matching families join.</p>
             </article>
           </div>
         </section>
@@ -243,7 +243,7 @@ export default function Home() {
           </div>
           <div className="nmh-trust-grid">
             {[
-              ['Focused launch', 'We are built around native-place search first, not a generic listing board.', 'pin'],
+              ['Founding Member launch', 'Early users get free launch access so each native-place corridor can build real activity before paid plans matter.', 'pin'],
               ['High-signal previews', 'Profiles show practical details like roots, work, location, and photo choice before private biodata unlocks.', 'search'],
               ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
@@ -318,10 +318,10 @@ export default function Home() {
           <div>
             <p className="nmh-section-kicker">Create now, match when ready</p>
             <h2>Be visible to the right family before they search elsewhere.</h2>
-            <p>Start your free native-place profile today. Native place comes first, high-signal details help families decide, and we can notify you when new matching families join.</p>
+            <p>Join free as a Founding Member. Your profile helps seed your native-place corridor, and we can notify you when new matching families join.</p>
           </div>
           <div className="nmh-actions">
-            <Link href="/register" className="nmh-primary">Create Free Profile</Link>
+            <Link href="/register" className="nmh-primary">Join Free</Link>
             <Link href="/browse" className="nmh-secondary">Browse Native Profiles</Link>
           </div>
         </section>
