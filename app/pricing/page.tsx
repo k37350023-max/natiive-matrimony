@@ -14,7 +14,7 @@ export default function PricingPage() {
             Free Founding Member launch. Optional guided introductions.
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            Create a profile, browse by native place, save alerts, and help seed your corridor while launch access is free.
+            First 1,000 profiles per district get 2 years of free premium while each native-place corridor grows.
           </p>
         </div>
 
@@ -25,15 +25,15 @@ export default function PricingPage() {
                 <p className="section-label mb-2">Founding Member</p>
                 <h2 className="font-serif-display text-2xl font-bold text-gray-900">Free launch access</h2>
               </div>
-              <span className="badge badge-approved">No hard trial</span>
+              <span className="badge badge-approved">2 years free</span>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed mb-6">
-              For early families who want to create a verified profile, browse by roots, and get notified as matching profiles join.
+              For early families who want to create a verified profile, browse by roots, and get 2 years of premium access as a district Founding Member.
             </p>
             <div className="space-y-3 mb-6">
               {[
                 'Search native places first.',
-                'Join as a Founding Member while your corridor grows.',
+                'First 1,000 profiles per district get 2 years of free premium.',
                 'Photo visible by default, hide option available.',
                 'Biodata and contact unlock after acceptance.',
                 'Save alerts when your place is still growing.',

@@ -129,7 +129,7 @@ export default function Home() {
               Free Founding Member launch
             </div>
             <h1>Create your profile. Let the right native family find you.</h1>
-            <p>Join free as a Founding Member. Browse native profiles now, save alerts for growing places, and we will notify you when matching families join.</p>
+            <p>First 1,000 profiles per district get 2 years of free premium. Browse native profiles now, save alerts for growing places, and we will notify you when matching families join.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
@@ -141,7 +141,7 @@ export default function Home() {
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
               <span>Native-place first</span>
-              <span>Free launch access</span>
+              <span>2 years free premium</span>
               <span>Place alerts</span>
             </div>
             <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
@@ -179,7 +179,7 @@ export default function Home() {
             <article>
               <Icon name="lock" size={25} />
               <h3>Stay free while it grows</h3>
-              <p>Founding Members get launch access while we build useful liquidity place by place, without a rushed trial clock.</p>
+              <p>The first 1,000 profiles in each district get 2 years of free premium while we build useful liquidity place by place.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
@@ -318,7 +318,7 @@ export default function Home() {
           <div>
             <p className="nmh-section-kicker">Create now, match when ready</p>
             <h2>Be visible to the right family before they search elsewhere.</h2>
-            <p>Join free as a Founding Member. Your profile helps seed your native-place corridor, and we can notify you when new matching families join.</p>
+            <p>Join free as a Founding Member. The first 1,000 profiles per district get 2 years of free premium while each corridor grows.</p>
           </div>
           <div className="nmh-actions">
             <Link href="/register" className="nmh-primary">Join Free</Link>
