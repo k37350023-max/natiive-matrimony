@@ -11,10 +11,10 @@ export default function PricingPage() {
         <div className="text-center mb-8">
           <p className="section-label mb-3">NativeMatrimony</p>
           <h1 className="font-serif-display text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
-            Free Founding Member launch. Optional guided introductions.
+            Free basics. First 100 days premium. Founding Members get more.
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed max-w-2xl mx-auto">
-            First 1,000 profiles per district get 2 years of free premium while each native-place corridor grows.
+            Create a profile, search native places, and receive requests for free. New members get a 100-day premium boost; first 1,000 profiles per district get 2 years.
           </p>
         </div>
 
@@ -22,22 +22,21 @@ export default function PricingPage() {
           <section className="card px-6 py-7">
             <div className="flex items-center justify-between gap-3 mb-5">
               <div>
-                <p className="section-label mb-2">Founding Member</p>
-                <h2 className="font-serif-display text-2xl font-bold text-gray-900">Free launch access</h2>
+                <p className="section-label mb-2">Launch Access</p>
+                <h2 className="font-serif-display text-2xl font-bold text-gray-900">Freemium + premium boost</h2>
               </div>
-              <span className="badge badge-approved">2 years free</span>
+              <span className="badge badge-approved">100 days free</span>
             </div>
             <p className="text-sm text-gray-600 leading-relaxed mb-6">
-              For early families who want to create a verified profile, browse by roots, and get 2 years of premium access as a district Founding Member.
+              For serious families who need enough time to build a profile, browse by roots, request access, and wait for the right native-place matches.
             </p>
             <div className="space-y-3 mb-6">
               {[
-                'Search native places first.',
-                'First 1,000 profiles per district get 2 years of free premium.',
+                'Always free: profile creation, basic search, and receiving requests.',
+                'First 100 days: premium messaging, contact unlocks after acceptance, and photo access controls.',
+                'District Founding Member bonus: first 1,000 profiles per district get 2 years of free premium.',
                 'Native-place alerts when matching families join.',
                 'Photo visible by default, hide option available.',
-                'Biodata and contact unlock after acceptance.',
-                'Priority eligibility for guided introduction review.',
                 'No random messages before mutual interest.',
               ].map(item => (
                 <div key={item} className="flex items-start gap-3 text-sm text-gray-700">
@@ -46,7 +45,7 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-            <Link href="/register" className="btn-primary text-sm px-5 py-3 w-full justify-center">Join Founding Members</Link>
+            <Link href="/register" className="btn-primary text-sm px-5 py-3 w-full justify-center">Start Free</Link>
           </section>
 
           <section className="card px-6 py-7" style={{ background: 'linear-gradient(145deg, #101828 0%, #14241C 100%)', borderColor: '#2D3C34', color: 'white', boxShadow: '0 24px 60px rgba(20,36,28,0.18)' }}>

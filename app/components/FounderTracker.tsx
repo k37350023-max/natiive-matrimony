@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 const GOAL = 1000
-const PERKS = ['2 years premium', 'Native-place alerts', 'Biodata unlock after acceptance', 'Photo privacy controls']
+const PERKS = ['100 days premium for all', '2 years for district founders', 'Native-place alerts', 'Biodata unlock after acceptance']
 
 export default function FounderTracker() {
   const [count, setCount] = useState<number | null>(null)
@@ -28,10 +28,10 @@ export default function FounderTracker() {
 
       {/* Header */}
       <div className="px-6 pt-6 pb-5" style={{ background: 'linear-gradient(135deg, #14241C 0%, #14241C 100%)' }}>
-        <p className="text-xs font-bold uppercase tracking-widest text-red-300 mb-1">District Founding Member Offer</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-red-300 mb-1">Free Premium Launch</p>
         <p className="text-white font-bold text-xl leading-snug font-serif-display">
-          First 1,000 profiles per district get<br />
-          <span className="text-red-200">2 years free premium</span>
+          100 days premium for every new member.<br />
+          <span className="text-red-200">2 years for district founders.</span>
         </p>
       </div>
 

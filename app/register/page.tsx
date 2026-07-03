@@ -69,6 +69,7 @@ const inputStyle: React.CSSProperties = {
 const FOUNDING_MEMBER_LIMIT = 1000
 
 const PREMIUM_PERKS = [
+  '100 days of premium for every new member',
   '2 years of premium for eligible district Founding Members',
   'Native-place alerts when matching families join',
   'Biodata and contact unlock after accepted requests',
@@ -248,10 +249,10 @@ export default function RegisterPage() {
           }}>
             <div style={{ padding: '16px 16px 14px' }}>
               <p style={{ color: '#BFE8CB', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 6px', textTransform: 'uppercase' }}>
-                District Founding Member offer
+                Launch premium offer
               </p>
               <p style={{ fontSize: '19px', fontWeight: 900, lineHeight: 1.14, margin: 0 }}>
-                First 1,000 profiles per district get 2 years of free premium.
+                Start with 100 days premium. First 1,000 profiles per district get 2 years.
               </p>
               <p style={{ color: 'rgba(255,255,255,0.76)', fontSize: '12.5px', lineHeight: 1.55, margin: '9px 0 0' }}>
                 {selectedDistrict

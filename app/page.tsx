@@ -126,10 +126,10 @@ export default function Home() {
           <div className="nmh-hero-copy">
             <div className="nmh-eyebrow">
               <Icon name="pin" size={17} />
-              Free Founding Member launch
+              Free launch access
             </div>
             <h1>Create your profile. Let the right native family find you.</h1>
-            <p>First 1,000 profiles per district get 2 years of free premium. Browse native profiles now, save alerts for growing places, and we will notify you when matching families join.</p>
+            <p>Create a profile for free, browse native profiles, and use premium features during your first 100 days. The first 1,000 profiles per district get 2 years of free premium as Founding Members.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
@@ -141,7 +141,7 @@ export default function Home() {
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
               <span>Native-place first</span>
-              <span>2 years free premium</span>
+              <span>100 days premium boost</span>
               <span>Place alerts</span>
             </div>
             <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
@@ -178,8 +178,8 @@ export default function Home() {
             </article>
             <article>
               <Icon name="lock" size={25} />
-              <h3>Stay free while it grows</h3>
-              <p>The first 1,000 profiles in each district get 2 years of free premium while we build useful liquidity place by place.</p>
+              <h3>Try premium while searching</h3>
+              <p>Everyone starts with free basics and a first-100-days premium boost, so serious families have enough time to browse, request, and evaluate matches.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
@@ -243,7 +243,7 @@ export default function Home() {
           </div>
           <div className="nmh-trust-grid">
             {[
-              ['Founding Member launch', 'Early users get free launch access so each native-place corridor can build real activity before paid plans matter.', 'pin'],
+              ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Premium starts free so each corridor can build real activity before paid plans matter.', 'pin'],
               ['High-signal previews', 'Profiles show practical details like roots, work, location, and photo choice before private biodata unlocks.', 'search'],
               ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
@@ -318,7 +318,7 @@ export default function Home() {
           <div>
             <p className="nmh-section-kicker">Create now, match when ready</p>
             <h2>Be visible to the right family before they search elsewhere.</h2>
-            <p>Join free as a Founding Member. The first 1,000 profiles per district get 2 years of free premium while each corridor grows.</p>
+            <p>Join free, use premium features for your first 100 days, and claim 2 years of free premium if your district founding spots are still open.</p>
           </div>
           <div className="nmh-actions">
             <Link href="/register" className="nmh-primary">Join Free</Link>

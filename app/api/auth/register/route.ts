@@ -6,6 +6,7 @@ import { setSession } from '@/lib/session'
 const OTP_SECRET = process.env.OTP_SECRET || 'natiive-matrimony-otp'
 const FOUNDING_MEMBER_LIMIT = 1000
 const FOUNDING_MEMBER_YEARS = 2
+const PREMIUM_BOOST_DAYS = 100
 
 function otpSign(payload: string) {
   return createHmac('sha256', OTP_SECRET).update(payload).digest('hex').slice(0, 20)
@@ -52,7 +53,11 @@ export async function POST(req: Request) {
 
     const foundingMemberEligible = (districtCount ?? 0) < FOUNDING_MEMBER_LIMIT
     const premiumExpiresAt = new Date()
-    premiumExpiresAt.setFullYear(premiumExpiresAt.getFullYear() + FOUNDING_MEMBER_YEARS)
+    if (foundingMemberEligible) {
+      premiumExpiresAt.setFullYear(premiumExpiresAt.getFullYear() + FOUNDING_MEMBER_YEARS)
+    } else {
+      premiumExpiresAt.setDate(premiumExpiresAt.getDate() + PREMIUM_BOOST_DAYS)
+    }
 
     const { data: profile, error: pErr } = await supabaseAdmin.from('profiles').insert({
       user_id: created.user.id,
@@ -63,7 +68,7 @@ export async function POST(req: Request) {
       marital_status: 'never_married', religion: 'Hindu', mother_tongue: null,
       profile_created_by, photo_url: '', photo_visibility: 'public',
       status: 'approved', verified: false,
-      premium_expires_at: foundingMemberEligible ? premiumExpiresAt.toISOString() : null,
+      premium_expires_at: premiumExpiresAt.toISOString(),
     }).select('id').maybeSingle()
     if (pErr || !profile) {
       return NextResponse.json({ error: pErr?.message || 'Could not create profile' }, { status: 400 })
@@ -74,7 +79,8 @@ export async function POST(req: Request) {
       profileId: profile.id,
       userId: created.user.id,
       foundingMemberEligible,
-      premiumExpiresAt: foundingMemberEligible ? premiumExpiresAt.toISOString() : null,
+      premiumBoostDays: foundingMemberEligible ? null : PREMIUM_BOOST_DAYS,
+      premiumExpiresAt: premiumExpiresAt.toISOString(),
     })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Signup failed'

@@ -165,7 +165,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
               No one from {searchedPlace} yet.
             </h1>
             <p className="nm-muted" style={{ fontSize: '15px', lineHeight: 1.7, margin: '18px 0 0', maxWidth: '300px' }}>
-              Join free as a Founding Member and seed this native-place corridor. The first 1,000 profiles per district get 2 years of free premium, and we will notify you when someone from {searchedPlace} joins.
+              Join free and seed this native-place corridor. New members get a 100-day premium boost; the first 1,000 profiles per district get 2 years of free premium.
             </p>
 
             <div aria-hidden="true" style={{ position: 'relative', height: '210px', margin: '24px -18px 0', overflow: 'hidden' }}>
@@ -234,7 +234,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           <p className="text-gray-500 text-sm">
             {searchedPlace
               ? 'Create a profile to see high-signal details and request biodata after acceptance.'
-              : 'Join free as a Founding Member to browse native profiles, save place alerts, and unlock biodata after acceptance. First 1,000 profiles per district get 2 years of free premium.'}
+              : 'Join free to browse native profiles, save place alerts, and unlock biodata after acceptance. New members get a 100-day premium boost; first 1,000 profiles per district get 2 years.'}
           </p>
         </div>
 
@@ -1280,9 +1280,9 @@ export default function BrowsePage() {
                 ) : nativePlace ? (
                   <>
                     <p className="font-semibold text-gray-800 mb-1">No profiles from {nativePlace} yet.</p>
-                    <p className="text-sm text-gray-500 mb-5">Be a Founding Member for {nativePlace}. The first 1,000 profiles per district get 2 years of free premium, and we&apos;ll notify you when new members from {nativePlace} appear.</p>
+                    <p className="text-sm text-gray-500 mb-5">Be early for {nativePlace}. Start with a 100-day premium boost, and claim 2 years free if district founding spots are still open.</p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <Link href="/register" className="btn-primary px-5 py-2 text-sm">Join Founding Members</Link>
+                      <Link href="/register" className="btn-primary px-5 py-2 text-sm">Start Free</Link>
                       <button
                         onClick={() => {
                           setAlertSet(true)
