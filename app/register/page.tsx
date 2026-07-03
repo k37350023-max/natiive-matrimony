@@ -69,12 +69,9 @@ const inputStyle: React.CSSProperties = {
 const FOUNDING_MEMBER_LIMIT = 1000
 
 const PREMIUM_PERKS = [
-  'Free version stays free',
-  '3 months of premium free for non-founding members',
-  '2 years premium if your district founding spots are open',
-  'Native-place alerts when matching families join',
-  'Biodata and contact unlock after accepted requests',
-  'Photo privacy controls and high-signal profile previews',
+  'Free forever basics',
+  'Premium trial included',
+  'Private biodata unlocks after acceptance',
 ]
 
 /* ─── Main ───────────────────────────────────────────────────── */
@@ -90,7 +87,6 @@ export default function RegisterPage() {
   const [devOtp, setDevOtp] = useState('')   // shown only in dev mode (no SMS key)
   const [sending, setSending] = useState(false)
   const [districtCount, setDistrictCount] = useState<number | null>(null)
-  const [entryOffer, setEntryOffer] = useState<'free' | 'premium_trial' | 'direct'>('direct')
   const otpRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
@@ -103,8 +99,6 @@ export default function RegisterPage() {
     const params = new URLSearchParams(window.location.search)
     const place = params.get('native_place')?.trim()
     if (place) setForm(f => f.native_district ? f : ({ ...f, native_district: place }))
-    if (params.get('offer') === 'premium_trial') setEntryOffer('premium_trial')
-    else if (params.get('plan') === 'free') setEntryOffer('free')
   }, [])
 
   useEffect(() => {
@@ -120,17 +114,6 @@ export default function RegisterPage() {
   const foundingPct = districtCount === null ? 0 : Math.min(Math.round((foundingClaimed / FOUNDING_MEMBER_LIMIT) * 100), 100)
   const selectedDistrict = form.native_district.trim()
   const foundingApplied = !!selectedDistrict && districtCount !== null && foundingRemaining > 0
-  const offerTitle = foundingApplied
-    ? 'FOUNDING-2Y benefit applied'
-    : entryOffer === 'free'
-      ? 'Free plan selected'
-      : 'PREMIUM-3M benefit applied'
-  const offerBody = foundingApplied
-    ? `Your ${selectedDistrict} district founding spot is open, so this profile gets 2 years of premium free after signup.`
-    : entryOffer === 'free'
-      ? 'Your 3-month premium trial is included automatically after signup.'
-      : 'Your 3 months of premium free will be applied after mobile verification.'
-
   useEffect(() => {
     if (!selectedDistrict) {
       setDistrictCount(null)
@@ -224,8 +207,16 @@ export default function RegisterPage() {
     }
   }
 
+  function continueFromOwnerStep() {
+    if (!form.native_state) return setError('Please select your native state')
+    if (!form.native_district) return setError('Please select your native place')
+    if (!form.profile_created_by) return setError('Please select who this profile is for')
+    setError('')
+    setStep(2)
+  }
+
   const STEP_META = [
-    { n: 1, title: 'This profile is for', sub: 'Select whose profile you are creating.' },
+    { n: 1, title: 'Create your free profile', sub: 'Start with native place. We will apply the best launch benefit automatically.' },
     { n: 2, title: 'Basic details', sub: 'Only the essentials needed to start.' },
     { n: 3, title: 'Verify your mobile', sub: `We sent a code to ${phoneCode} ${form.phone}` },
   ][step - 1]
@@ -257,103 +248,69 @@ export default function RegisterPage() {
           <p style={{ fontSize: '13.5px', color: '#94A3B8', margin: '0 0 22px' }}>{STEP_META.sub}</p>
 
           <div style={{
-            background: 'linear-gradient(145deg, #10241B 0%, #075E3E 100%)',
+            background: '#FFFFFF',
+            border: '1px solid #DCE9D7',
             borderRadius: '14px',
-            boxShadow: '0 14px 34px rgba(7, 94, 62, 0.18)',
-            color: 'white',
+            boxShadow: '0 14px 34px rgba(20,36,28,0.08)',
             marginBottom: '16px',
             overflow: 'hidden',
           }}>
-            <div style={{ padding: '16px 16px 14px' }}>
-              <p style={{ color: '#BFE8CB', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 6px', textTransform: 'uppercase' }}>
-                Free and premium offer
-              </p>
-              <p style={{ fontSize: '19px', fontWeight: 900, lineHeight: 1.14, margin: 0 }}>
-                Free version is always free. Founders get 2 years premium; others get 3 months.
-              </p>
-              <p style={{ color: 'rgba(255,255,255,0.76)', fontSize: '12.5px', lineHeight: 1.55, margin: '9px 0 0' }}>
+            <div style={{ padding: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
+                <div>
+                  <p style={{ color: '#075E3E', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 5px', textTransform: 'uppercase' }}>
+                    Launch benefit
+                  </p>
+                  <p style={{ color: '#14241C', fontSize: '18px', fontWeight: 900, lineHeight: 1.15, margin: 0 }}>
+                    Free to start. Premium is included.
+                  </p>
+                </div>
+                <span style={{ background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '99px', color: '#075E3E', flexShrink: 0, fontSize: '11px', fontWeight: 900, padding: '5px 9px' }}>
+                  No payment now
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gap: '10px', marginBottom: '13px' }}>
+                <div>
+                  <Label>Native state</Label>
+                  <select style={inputStyle} value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }}>
+                    <option value="">Select state</option>
+                    {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <Label>Native place</Label>
+                  {districts.length > 0 ? (
+                    <select style={inputStyle} value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
+                      <option value="">Select native place</option>
+                      {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                    </select>
+                  ) : (
+                    <input style={inputStyle} placeholder="Type your native place" value={form.native_district} onChange={e => set('native_district', e.target.value)} />
+                  )}
+                </div>
+              </div>
+
+              <p style={{ color: '#5E6B62', fontSize: '12.5px', lineHeight: 1.55, margin: '0 0 11px' }}>
                 {selectedDistrict
                   ? districtCount === null
                     ? `Checking founding spots for ${selectedDistrict}...`
                     : foundingRemaining > 0
-                      ? `${foundingRemaining.toLocaleString('en-IN')} founding spots still open in ${selectedDistrict}.`
-                      : `Founding spots are full in ${selectedDistrict}; you can still create a free profile.`
+                      ? `${foundingRemaining.toLocaleString('en-IN')} founding spots still open in ${selectedDistrict}. You get 2 years premium free after signup.`
+                      : `Founding spots are full in ${selectedDistrict}; your free profile still includes 3 months premium.`
                   : 'Choose your native place to check district founding spots.'}
               </p>
-              <div style={{ height: '7px', background: 'rgba(255,255,255,0.16)', borderRadius: '99px', marginTop: '13px', overflow: 'hidden' }}>
-                <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#D8EFC9', borderRadius: '99px', transition: 'width 0.35s ease' }} />
+              <div style={{ height: '7px', background: '#EEF4EA', borderRadius: '99px', overflow: 'hidden' }}>
+                <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#075E3E', borderRadius: '99px', transition: 'width 0.35s ease' }} />
               </div>
             </div>
-            <div style={{
-              alignItems: 'flex-start',
-              background: 'rgba(216,239,201,0.12)',
-              borderTop: '1px solid rgba(255,255,255,0.12)',
-              display: 'flex',
-              gap: '10px',
-              padding: '12px 16px',
-            }}>
-              <span style={{
-                alignItems: 'center',
-                background: '#D8EFC9',
-                borderRadius: '50%',
-                color: '#075E3E',
-                display: 'inline-flex',
-                flexShrink: 0,
-                fontSize: '11px',
-                fontWeight: 900,
-                height: '22px',
-                justifyContent: 'center',
-                marginTop: '1px',
-                width: '22px',
-              }}>✓</span>
-              <div>
-                <p style={{ color: '#F3FFE8', fontSize: '12px', fontWeight: 900, lineHeight: 1.35, margin: 0 }}>{offerTitle}</p>
-                <p style={{ color: 'rgba(255,255,255,0.76)', fontSize: '11.5px', lineHeight: 1.45, margin: '3px 0 0' }}>{offerBody}</p>
-              </div>
-            </div>
-            <div style={{ background: 'rgba(255,255,255,0.08)', borderTop: '1px solid rgba(255,255,255,0.12)', display: 'grid', gap: '8px', padding: '12px 16px' }}>
+            <div style={{ background: '#FBFAF5', borderTop: '1px solid #EEF0EA', display: 'grid', gap: '8px', padding: '12px 16px' }}>
               {PREMIUM_PERKS.map((perk) => (
                 <div key={perk} style={{ alignItems: 'flex-start', display: 'flex', gap: '8px' }}>
                   <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '10px', fontWeight: 900, height: '17px', justifyContent: 'center', marginTop: '1px', width: '17px' }}>✓</span>
-                  <span style={{ color: 'rgba(255,255,255,0.86)', fontSize: '12px', lineHeight: 1.4 }}>{perk}</span>
+                  <span style={{ color: '#475569', fontSize: '12px', lineHeight: 1.4 }}>{perk}</span>
                 </div>
               ))}
-            </div>
-          </div>
-
-          <div style={{
-            background: '#FFFFFF',
-            border: '1px solid #DCE9D7',
-            borderRadius: '12px',
-            boxShadow: '0 10px 28px rgba(20,36,28,0.07)',
-            marginBottom: '16px',
-            padding: '14px',
-          }}>
-            <p style={{ color: '#075E3E', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 6px', textTransform: 'uppercase' }}>
-              Native place for founding benefit
-            </p>
-            <p style={{ color: '#475569', fontSize: '12.5px', lineHeight: 1.45, margin: '0 0 12px' }}>
-              Select the family&apos;s native place now so we can show the correct founding member premium offer.
-            </p>
-            <div style={{ display: 'grid', gap: '10px' }}>
-              <div>
-                <Label>Native state</Label>
-                <select style={inputStyle} value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }}>
-                  <option value="">Select state</option>
-                  {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-              <div>
-                <Label>Native place</Label>
-                {districts.length > 0 ? (
-                  <select style={inputStyle} value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
-                    <option value="">Select native place</option>
-                    {districts.map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
-                ) : (
-                  <input style={inputStyle} placeholder="Type your native place" value={form.native_district} onChange={e => set('native_district', e.target.value)} />
-                )}
-              </div>
             </div>
           </div>
 
@@ -399,7 +356,7 @@ export default function RegisterPage() {
                     ))}
                   </div>
                 </div>
-                <button onClick={() => setStep(2)} className="btn-primary" style={{ padding: '13px', fontSize: '15px' }}>
+                <button onClick={continueFromOwnerStep} className="btn-primary" style={{ padding: '13px', fontSize: '15px' }}>
                   Continue
                 </button>
               </div>
