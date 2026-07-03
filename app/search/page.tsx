@@ -396,13 +396,9 @@ export default function SearchPage() {
   const Sidebar = (
     <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', overflow: 'hidden' }}>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #E8E8E8' }}>
-        {['Basic Search', 'Profile ID'].map((t, i) => (
-          <button key={t} style={{ flex: 1, padding: '11px 8px', fontSize: '12px', fontWeight: 600, background: i===0?'#14241C':'white', color: i===0?'white':'#777', border: 'none', cursor: 'pointer' }}>
-            {t}
-          </button>
-        ))}
+      <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid #E8E8E8', background: '#FBFAF5' }}>
+        <p style={{ fontSize: '10.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#075E3E', margin: '0 0 4px' }}>Preference search</p>
+        <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.45, margin: 0 }}>Start with native place and age. Open advanced filters only when you need to narrow the list.</p>
       </div>
 
       <div style={{ padding: '0 14px', maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
@@ -423,6 +419,22 @@ export default function SearchPage() {
           </div>
         )}
 
+        {/* Location */}
+        <Section title="Native place" defaultOpen>
+          <select value={region} onChange={e=>{ setRegion(e.target.value); setDistrict('') }}
+            style={{ width: '100%', minHeight: '40px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none', marginBottom: '8px', background: 'white' }}>
+            <option value="">Any state or region</option>
+            {Object.keys(REGIONS).map(r=><option key={r} value={r}>{r}</option>)}
+          </select>
+          {region && districtList.length > 0 && (
+            <select value={district} onChange={e=>setDistrict(e.target.value)}
+              style={{ width: '100%', minHeight: '40px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none', background: 'white' }}>
+              <option value="">All districts in {region}</option>
+              {districtList.map(d=><option key={d} value={d}>{d}</option>)}
+            </select>
+          )}
+        </Section>
+
         {/* Age */}
         <Section title="Age">
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -436,7 +448,7 @@ export default function SearchPage() {
         </Section>
 
         {/* Height */}
-        <Section title="Height">
+        <Section title="Height" defaultOpen={false}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <select value={heightMin} onChange={e=>setHeightMin(Number(e.target.value))}
               style={{ flex: 1, minHeight: '38px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 8px', fontSize: '12px', outline: 'none', background: 'white' }}>
@@ -451,35 +463,35 @@ export default function SearchPage() {
         </Section>
 
         {/* Marital Status */}
-        <Section title="Marital Status">
+        <Section title="Marital Status" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {MARITAL.map(m=><Chip key={m} label={m} active={marital.includes(MARITAL_VALS[m])} onClick={()=>tog(marital,MARITAL_VALS[m],setMarital)} />)}
           </div>
         </Section>
 
         {/* Religion */}
-        <Section title="Religion">
+        <Section title="Religion" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {RELIGIONS.map(r=><Chip key={r} label={r} active={religion.includes(r)} onClick={()=>tog(religion,r,setReligion)} />)}
           </div>
         </Section>
 
         {/* Mother Tongue */}
-        <Section title="Mother Tongue">
+        <Section title="Mother Tongue" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {TONGUES.map(t=><Chip key={t} label={t} active={tongues.includes(t)} onClick={()=>tog(tongues,t,setTongues)} />)}
           </div>
         </Section>
 
         {/* Caste */}
-        <Section title="Community / Caste">
+        <Section title="Community / Caste" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {CASTES.map(c=><Chip key={c} label={c} active={castes.includes(c)} onClick={()=>tog(castes,c,setCastes)} />)}
           </div>
         </Section>
 
         {/* Manglik */}
-        <Section title="Manglik / Chevvai Dosham">
+        <Section title="Manglik / Chevvai Dosham" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {MANGLIK_OPTS.map(m=><Chip key={m} label={m} active={manglik===m} onClick={()=>setManglik(m)} />)}
           </div>
@@ -498,23 +510,7 @@ export default function SearchPage() {
           </div>
         </Section>
 
-        {/* Location */}
-        <Section title="Native State / Region">
-          <select value={region} onChange={e=>{ setRegion(e.target.value); setDistrict('') }}
-            style={{ width: '100%', minHeight: '40px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none', marginBottom: '8px', background: 'white' }}>
-            <option value="">Any State / Region</option>
-            {Object.keys(REGIONS).map(r=><option key={r} value={r}>{r}</option>)}
-          </select>
-          {region && districtList.length > 0 && (
-            <select value={district} onChange={e=>setDistrict(e.target.value)}
-              style={{ width: '100%', minHeight: '40px', border: '1.5px solid #DDDDD8', borderRadius: '8px', padding: '0 10px', fontSize: '13px', outline: 'none', background: 'white' }}>
-              <option value="">All districts in {region}</option>
-              {districtList.map(d=><option key={d} value={d}>{d}</option>)}
-            </select>
-          )}
-        </Section>
-
-        <Section title="Country Living In">
+        <Section title="Country Living In" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {COUNTRIES.map(c=><Chip key={c} label={c} active={country.includes(c)} onClick={()=>tog(country,c,setCountry)} />)}
           </div>
@@ -527,26 +523,26 @@ export default function SearchPage() {
         </Section>
 
         {/* Career */}
-        <Section title="Education">
+        <Section title="Education" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {EDUCATION_LVL.map(e=><Chip key={e} label={e} active={education.includes(e)} onClick={()=>tog(education,e,setEducation)} />)}
           </div>
         </Section>
 
-        <Section title="Profession">
+        <Section title="Profession" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {PROFESSIONS.map(p=><Chip key={p} label={p} active={profession.includes(p)} onClick={()=>tog(profession,p,setProfession)} />)}
           </div>
         </Section>
 
-        <Section title="Annual Income">
+        <Section title="Annual Income" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {INCOME_RANGES.map(i=><Chip key={i} label={i} active={incomeRange.includes(i)} onClick={()=>tog(incomeRange,i,setIncomeRange)} />)}
           </div>
         </Section>
 
         {/* Lifestyle */}
-        <Section title="Diet">
+        <Section title="Diet" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {DIET_OPTS.map(d=><Chip key={d} label={d} active={diet.includes(d)} onClick={()=>tog(diet,d,setDiet)} />)}
           </div>
@@ -565,7 +561,7 @@ export default function SearchPage() {
         </Section>
 
         {/* Family */}
-        <Section title="Family Type">
+        <Section title="Family Type" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {FAMILY_TYPE.map(f=><Chip key={f} label={f} active={familyType.includes(f)} onClick={()=>tog(familyType,f,setFamilyType)} />)}
           </div>
@@ -627,7 +623,7 @@ export default function SearchPage() {
         {/* Actions */}
         <div style={{ padding: '14px 0 16px', display: 'flex', gap: '8px' }}>
           <button onClick={doSearch} className="btn-primary" style={{ flex: 1, minHeight: '44px', padding: '10px', fontSize: '13.5px' }}>
-            Search{activeCount > 0 ? ` (${activeCount})` : ''}
+            Show matches{activeCount > 0 ? ` (${activeCount})` : ''}
           </button>
           <button onClick={resetAll} style={{ minHeight: '44px', padding: '10px 16px', border: '1.5px solid #DDDDD8', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '13px', color: '#777', fontWeight: 700 }}>
             Reset
@@ -673,13 +669,23 @@ export default function SearchPage() {
                 letterSpacing: 0,
                 lineHeight: 1.08,
                 margin: 0,
-              }}>Find your match</h1>
+              }}>Find profiles that fit your family</h1>
               <p style={{ color: '#667085', fontSize: '14px', lineHeight: 1.5, margin: '8px 0 0', maxWidth: '620px' }}>
-                Use filters when you want to go beyond native place and narrow by age, height, community, education, and lifestyle.
+                Start broad with native place and age. Add community, education, lifestyle, or family filters only when the list is too wide.
               </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginTop: '12px' }}>
+                {[
+                  region || 'Any native place',
+                  district || 'All districts',
+                  `${ageMin}-${ageMax} yrs`,
+                  activeCount > 0 ? `${activeCount} filters active` : 'No advanced filters',
+                ].map(item => (
+                  <span key={item} style={{ fontSize: '11.5px', fontWeight: 700, color: '#14241C', background: '#EDF3ED', border: '1px solid #DCE9D7', borderRadius: '99px', padding: '5px 9px' }}>{item}</span>
+                ))}
+              </div>
             </div>
             <button onClick={doSearch} className="btn-primary" style={{ flexShrink: 0, minHeight: '44px', padding: '0 18px' }}>
-              Search defaults
+              Show Matches
             </button>
           </div>
 
@@ -722,12 +728,12 @@ export default function SearchPage() {
                   <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
                 </svg>
               </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Start with your preferred filters</h2>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Start broad, then refine</h2>
               <p style={{ fontSize: '14px', color: '#999', maxWidth: '300px', margin: '0 auto 24px', lineHeight: 1.65 }}>
-                Set your preferences and click Search to see matching profiles.
+                Use native place and age first. If there are too many profiles, open advanced filters.
               </p>
               <button onClick={doSearch} className="btn-primary" style={{ padding: '12px 28px', fontSize: '14px' }}>
-                Search with default filters
+                Show matches
               </button>
             </div>
           )}
