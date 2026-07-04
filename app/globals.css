@@ -3008,10 +3008,10 @@ select.input {
 
 .app-brand-mark {
   align-items: center;
-  background: linear-gradient(145deg, #143C2B 0%, #0A2118 100%);
-  border: 1px solid rgba(255,255,255,0.45);
-  border-radius: 10px;
-  box-shadow: 0 10px 24px rgba(20, 36, 28, 0.16), inset 0 1px 0 rgba(255,255,255,0.18);
+  background: linear-gradient(145deg, #FFFFFF 0%, #F8FBF2 100%);
+  border: 1px solid rgba(188, 204, 176, 0.74);
+  border-radius: 11px;
+  box-shadow: 0 10px 22px rgba(20, 36, 28, 0.12), inset 0 1px 0 rgba(255,255,255,0.88);
   display: inline-flex;
   height: 38px;
   justify-content: center;
@@ -3021,22 +3021,34 @@ select.input {
 
 .app-brand-mark svg {
   display: block;
-  height: 28px;
-  width: 28px;
+  height: 34px;
+  width: 34px;
+}
+
+.app-brand-leaf {
+  fill: none;
+  stroke: #19A23A;
+  stroke-linecap: round;
+  stroke-width: 2;
 }
 
 .app-brand-stem {
   fill: none;
-  stroke: #F8FFF1;
+  stroke: #0FA43B;
   stroke-linecap: round;
-  stroke-width: 2.5;
+  stroke-width: 1.8;
+}
+
+.app-brand-stem-side {
+  stroke: #21B64A;
+  stroke-width: 1.45;
 }
 
 .app-brand-grain {
-  fill: #F1D06B;
-  stroke: rgba(255,255,255,0.72);
+  fill: #F5B719;
+  stroke: #D88D00;
   stroke-linejoin: round;
-  stroke-width: 0.85;
+  stroke-width: 0.65;
 }
 
 .app-brand-copy {
@@ -3084,8 +3096,13 @@ select.input {
 }
 
 .app-brand-home .app-brand-mark {
-  height: 44px;
-  width: 44px;
+  height: 46px;
+  width: 46px;
+}
+
+.app-brand-home .app-brand-mark svg {
+  height: 40px;
+  width: 40px;
 }
 
 .app-brand-home .app-brand-native {
@@ -3105,14 +3122,14 @@ select.input {
 }
 
 .app-brand-compact .app-brand-mark {
-  border-radius: 8px;
+  border-radius: 9px;
   height: 32px;
   width: 32px;
 }
 
 .app-brand-compact .app-brand-mark svg {
-  height: 24px;
-  width: 24px;
+  height: 29px;
+  width: 29px;
 }
 
 .app-brand-compact .app-brand-native {
@@ -3233,14 +3250,29 @@ select.input {
     width: 36px;
   }
 
+  .app-brand-mark svg {
+    height: 32px;
+    width: 32px;
+  }
+
   .app-brand-compact .app-brand-mark {
     height: 30px;
     width: 30px;
   }
 
+  .app-brand-compact .app-brand-mark svg {
+    height: 27px;
+    width: 27px;
+  }
+
   .app-brand-home .app-brand-mark {
-    height: 38px;
-    width: 38px;
+    height: 40px;
+    width: 40px;
+  }
+
+  .app-brand-home .app-brand-mark svg {
+    height: 35px;
+    width: 35px;
   }
 
   .app-brand-native {
@@ -3337,5 +3369,41 @@ select.input {
 
   .browse-profile-body {
     padding: 16px !important;
+  }
+}
+
+/* Final brand mark override: light paddy-grain badge */
+.app-brand .app-brand-paddy-mark {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(194, 210, 184, 0.86) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 18px rgba(20, 36, 28, 0.09), inset 0 1px 0 rgba(255,255,255,0.95) !important;
+  overflow: hidden;
+}
+
+.app-brand .app-brand-paddy-mark svg {
+  height: 37px !important;
+  width: 37px !important;
+}
+
+.app-brand-home .app-brand-paddy-mark svg {
+  height: 43px !important;
+  width: 43px !important;
+}
+
+.app-brand-compact .app-brand-paddy-mark svg {
+  height: 32px !important;
+  width: 32px !important;
+}
+
+@media (max-width: 639px) {
+  .app-brand .app-brand-paddy-mark svg {
+    height: 34px !important;
+    width: 34px !important;
+  }
+
+  .app-brand-compact .app-brand-paddy-mark svg {
+    height: 30px !important;
+    width: 30px !important;
   }
 }
