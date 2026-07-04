@@ -15,7 +15,7 @@ const trustItems = [
 const journey = [
   ['Create your profile', 'Add native place, work, education, photo preference, and contact verification.'],
   ['Join the native registry', 'Your profile becomes discoverable to families searching by roots and location.'],
-  ['Send or accept interest', 'Both families choose before family profile and contact unlock.'],
+  ['Send or accept interest', 'Both families choose before full profile and contact unlock.'],
   ['Talk with confidence', 'Accepted connections can continue with profile, chat, and contact.'],
 ]
 
@@ -228,7 +228,7 @@ export default function Home() {
                   <span><Icon name="pin" size={13} />Roots in Guntur</span>
                   <span><Icon name="home" size={13} />Family reviewing</span>
                 </div>
-                <p>Family profile, full name, and contact stay protected until both sides accept.</p>
+                <p>Full details and contact stay protected until both sides accept.</p>
               </div>
             </article>
             <aside>
@@ -247,7 +247,7 @@ export default function Home() {
           <div className="nmh-trust-grid">
             {[
               ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
-              ['Useful previews', 'Profiles show practical details like roots, work, location, and photo choice before private family profile access unlocks.', 'search'],
+              ['Useful previews', 'Profiles show practical details like roots, work, location, and photo choice before full profile access unlocks.', 'search'],
               ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
               <article key={title} className="nmh-trust-card">

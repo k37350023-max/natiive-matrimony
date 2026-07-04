@@ -433,7 +433,7 @@ export default function ProfilePage() {
     setViewerRelation('interested')
     setSending(false)
     setShowNoteModal(false)
-    showToast('Request sent. Family profile and contact unlock after they accept.')
+    showToast('Request sent. Full profile and contact unlock after they accept.')
   }
 
   function showToast(msg: string) {
@@ -781,7 +781,7 @@ export default function ProfilePage() {
               <div>
                 <p className="text-sm font-semibold text-gray-800">Registry Profile #{profile.member_number}</p>
                 <p className="text-xs text-gray-400">
-                  Family profile and contact unlock only after an accepted request.
+                  Full profile and contact unlock only after an accepted request.
                 </p>
               </div>
             </div>
@@ -913,8 +913,8 @@ export default function ProfilePage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Family profile unlocks after acceptance.</p>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request to unlock the full family profile, contact details, WhatsApp, and chat after acceptance.</p>
+                <p className="text-sm font-semibold text-gray-800">Full profile unlocks after acceptance.</p>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request to unlock the full profile, contact details, WhatsApp, and chat after acceptance.</p>
               </div>
             </div>
           </div>
@@ -1005,13 +1005,13 @@ export default function ProfilePage() {
           )
         })()}
 
-        {/* Full family profile */}
+        {/* Full profile */}
         <div className="card px-6 py-5">
           <div className="flex items-center justify-between gap-3" style={{ marginBottom: '16px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: 0 }}>Family Profile</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: 0 }}>Full Profile</p>
             {canViewBiodata && (
               <button onClick={() => window.print()} className="text-xs font-semibold px-3 py-1.5 rounded-lg border" style={{ borderColor: '#CADFCA', color: '#0F5E3E', background: '#F7FBF7' }}>
-                Print / Download Family Profile
+                Print / Download Full Profile
               </button>
             )}
           </div>
@@ -1020,7 +1020,7 @@ export default function ProfilePage() {
               <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#E6F1E8', color: '#0F5E3E', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
-              <p className="font-semibold text-gray-800 mb-1">Full family profile is locked.</p>
+              <p className="font-semibold text-gray-800 mb-1">Full profile is locked.</p>
               <p className="text-sm text-gray-500 mb-4">Send a request to unlock full details after acceptance.</p>
               {interestSent && <p className="text-sm font-semibold" style={{ color: '#0F5E3E' }}>Request sent. Waiting for acceptance.</p>}
             </div>
@@ -1167,7 +1167,7 @@ export default function ProfilePage() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-bold text-gray-900 font-serif-display">Send Request</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want. Family profile unlocks only after acceptance.</p>
+                <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want. Full profile unlocks only after acceptance.</p>
               </div>
               <button onClick={() => setShowNoteModal(false)} className="text-gray-300 hover:text-gray-500 ml-3 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1341,7 +1341,7 @@ export default function ProfilePage() {
                 {canViewBiodata ? (
                   <>
                     <button onClick={() => window.print()} className="flex-1 btn-primary py-3 text-sm">
-                      View / Print Family Profile
+                      View / Print Full Profile
                     </button>
                     {profile.phone && (
                       <a href={`https://wa.me/${String(profile.phone).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="px-4 py-3 rounded-lg font-semibold text-sm border text-center" style={{ background: 'white', color: '#0F5E3E', borderColor: '#DDE6DA', textDecoration: 'none' }}>
@@ -1381,7 +1381,7 @@ export default function ProfilePage() {
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
                     style={{ background: '#EDF3ED', color: '#14241C' }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Family profile and contact unlock when they accept your request
+                    Full profile and contact unlock when they accept your request
                   </span>
                 </div>
               )}
@@ -1398,7 +1398,7 @@ export default function ProfilePage() {
                   Login
                 </Link>
               </div>
-              <p className="text-center text-xs text-gray-400 mt-2">Family profile and contact unlock only after acceptance.</p>
+              <p className="text-center text-xs text-gray-400 mt-2">Full profile and contact unlock only after acceptance.</p>
             </>
           )}
         </div>

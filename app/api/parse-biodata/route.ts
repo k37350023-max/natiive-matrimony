@@ -45,7 +45,7 @@ Be liberal in extraction - guess gender from name if not stated. Convert height 
 
 export async function POST(req: NextRequest) {
   if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: 'Biodata parsing is not configured yet. Please contact support.' }, { status: 503 })
+    return NextResponse.json({ error: 'Profile document parsing is not configured yet. Please contact support.' }, { status: 503 })
   }
   try {
     const formData = await req.formData()
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
     const msg = (err as { error?: { type?: string } })?.error?.type === 'invalid_request_error' &&
       JSON.stringify(err).includes('credit balance')
       ? 'Auto-fill service is temporarily unavailable. Please fill in your details manually.'
-      : 'Failed to parse biodata. Please try again.'
+      : 'Failed to read the profile document. Please try again.'
     return NextResponse.json({ error: msg }, { status: 500 })
   }
 }

@@ -34,8 +34,8 @@ export default function PendingPage() {
               {[
                 { icon: '✓', text: 'Search by native place and current location' },
                 { icon: '✓', text: 'Send requests without showing contact details' },
-                { icon: '✓', text: 'Family profile unlocks only after acceptance' },
-                { icon: '✓', text: 'Print family profile for accepted connections' },
+                { icon: '✓', text: 'Full profile unlocks only after acceptance' },
+                { icon: '✓', text: 'Print full profile for accepted connections' },
               ].map(f => (
                 <p key={f.text} className="text-sm text-gray-700 flex items-center gap-2">
                   <span className="font-bold" style={{ color: '#2E7D32' }}>{f.icon}</span>

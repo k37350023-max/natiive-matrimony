@@ -387,12 +387,12 @@ function EditProfilePageInner() {
       <div className="max-w-xl mx-auto px-4 py-5 space-y-4">
         {isNewProfile && (
           <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EDF3ED', border: '1px solid #CADFCA', color: '#14241C' }}>
-            Fill the essentials first. Family profile and contact unlock only after acceptance.
+            Fill the essentials first. Full profile and contact unlock only after acceptance.
           </div>
         )}
         <div className="mb-2">
           <h1 className="text-xl font-bold text-gray-900 font-serif-display">Edit Profile</h1>
-          <p className="text-sm text-gray-400 mt-0.5">Keep your native place and family profile accurate.</p>
+          <p className="text-sm text-gray-400 mt-0.5">Keep your native place and profile details accurate.</p>
         </div>
 
         <BiodataUploader onParsed={data => {

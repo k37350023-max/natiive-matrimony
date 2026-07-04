@@ -149,7 +149,7 @@ export default function MatchesPage() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-5">
           <h1 className="text-2xl font-bold text-gray-900">Accepted Connections</h1>
-          <p className="text-gray-500 text-sm mt-0.5">View family profile, contact details, WhatsApp, and chat after both sides accept.</p>
+          <p className="text-gray-500 text-sm mt-0.5">View full profile, contact details, WhatsApp, and chat after both sides accept.</p>
         </div>
 
         {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}
@@ -162,7 +162,7 @@ export default function MatchesPage() {
               </svg>
             </div>
             <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No accepted connections yet</p>
-            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from native-place search. Family profile and contact unlock after acceptance.</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from native-place search. Full profile and contact unlock after acceptance.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Native Profiles</Link>
           </div>
         )}
@@ -261,7 +261,7 @@ export default function MatchesPage() {
                   <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
                     <Link href={`/profile/${p.id}`}
                       style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600, borderRadius: '99px', border: '1px solid #E7E3D8', color: '#334155', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                      View Family Profile
+                      View Full Profile
                     </Link>
                     <Link href={`/chat/${p.match_id}`}
                       style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 700, borderRadius: '99px', border: '1px solid #E7E3D8', background: 'white', color: '#5E6B62', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>

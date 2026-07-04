@@ -195,7 +195,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
                   <strong>Details unlock after acceptance.</strong><br />
-                  Create your registry profile now. Key profile details stay visible, while the family profile and contact stay locked until a request is accepted.
+                  Create your registry profile now. Key details stay visible, while the full profile and contact stay locked until a request is accepted.
                 </p>
               </div>
             </div>
@@ -233,8 +233,8 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           </h1>
           <p className="text-gray-500 text-sm">
             {searchedPlace
-              ? 'Create a profile to see useful details and request family profile access after acceptance.'
-              : 'Join the always-free version to browse native profiles, save place alerts, and unlock family profiles after acceptance. Founders get 2 years premium free; others get 3 months.'}
+              ? 'Create a profile to see useful details and request full profile access after acceptance.'
+              : 'Join the always-free version to browse native profiles, save place alerts, and unlock full profiles after acceptance. Founders get 2 years premium free; others get 3 months.'}
           </p>
         </div>
 
@@ -263,7 +263,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
           <p className="font-bold text-gray-900 text-lg mb-2">Useful previews before private details unlock</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see useful details first. Full names, family profile, and contact unlock only after acceptance.</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see useful details first. Full details and contact unlock only after acceptance.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
               Join Free
@@ -383,7 +383,7 @@ function ProfileCard({
           <div style={{ position: 'absolute', left: '12px', right: '12px', bottom: '12px', zIndex: 9 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', maxWidth: '100%', borderRadius: '12px', background: 'rgba(20,36,28,0.82)', color: 'white', fontSize: '11.5px', fontWeight: 800, padding: '8px 10px', boxShadow: '0 10px 24px rgba(20,36,28,0.20)' }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              Family profile and contact protected
+              Full profile and contact protected
             </span>
           </div>
         )}
@@ -433,7 +433,7 @@ function ProfileCard({
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <p style={{ color: '#57460F', fontSize: '11.5px', fontWeight: 700, lineHeight: 1.38, margin: 0 }}>
-              Request access to view the family profile, full name, and contact.
+              Request access to view full details and contact.
             </p>
           </div>
         )}
@@ -479,8 +479,8 @@ function ProfileCard({
               }}
               onMouseEnter={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#14532D') }}
               onMouseLeave={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#1B5E20') }}>
-              {status === 'matched' ? 'View Family Profile'
-                : status === 'accepted' ? 'View Family Profile'
+              {status === 'matched' ? 'View Full Profile'
+                : status === 'accepted' ? 'View Full Profile'
                 : status === 'pending' ? 'Request Sent'
                 : status === 'rejected' ? 'Declined'
                 : sending ? 'Sending…'
@@ -1562,7 +1562,7 @@ export default function BrowsePage() {
                       : status
                       ? { background: '#ECFDF5', color: '#2E7D32' }
                       : { background: '#1B5E20', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(27,94,32,0.35)' }}>
-                    {status==='matched'  ? 'View Family Profile →' :
+                    {status==='matched'  ? 'View Full Profile →' :
                      status==='accepted' ? 'Accepted' :
                      status==='pending'  ? 'Request Sent ✓' :
                      status==='rejected' ? 'Declined' :
@@ -1580,7 +1580,7 @@ export default function BrowsePage() {
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1.5"
                     style={{ borderColor: '#E7E3D8', color: '#4B5563' }}
                     onClick={()=>setQuickView(null)}>
-                    {unlocked ? 'View family profile' : 'View locked profile'}
+                    {unlocked ? 'View full profile' : 'View locked profile'}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                   </Link>
                   <button
