@@ -434,7 +434,7 @@ export default function ProfilePage() {
     setViewerRelation('interested')
     setSending(false)
     setShowNoteModal(false)
-    showToast('Request sent. Full profile and contact are shown after they accept.')
+    showToast('Request sent. Contact opens after they accept.')
   }
 
   function showToast(msg: string) {
@@ -459,8 +459,10 @@ export default function ProfilePage() {
 
   const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
   const isOwnProfile = !previewMode && myProfileId === profile.id
-  const canViewBiodata = isOwnProfile || viewerRelation === 'matched'
-  const nameHidden = fieldIsHidden('name') && !isOwnProfile && !canViewBiodata
+  const canViewContact = isOwnProfile || viewerRelation === 'matched'
+  const fullProfileHidden = fieldIsHidden('full_profile') && !isOwnProfile && !canViewContact
+  const canViewFullProfile = isOwnProfile || canViewContact || !fullProfileHidden
+  const nameHidden = fieldIsHidden('name') && !isOwnProfile && !canViewContact
   const publicName = nameHidden ? 'Name hidden' : profile.full_name
 
   // Photos are open by default; explicit hidden fields or legacy hidden visibility still hide them.
@@ -720,15 +722,15 @@ export default function ProfilePage() {
                 <p className="text-gray-500 mt-0.5 text-sm">
                   {[
                     getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs` : null,
-                    canViewBiodata && profile.height_cm ? cmToFeet(profile.height_cm).split(' ')[0] : null,
+                    canViewFullProfile && profile.height_cm ? cmToFeet(profile.height_cm).split(' ')[0] : null,
                     profile.gender === 'male' ? 'Groom' : 'Bride',
                   ].filter(Boolean).join(' · ')}
                 </p>
-                {canViewBiodata && lastSeenLabel(profile.last_login_at) && (
+                {canViewFullProfile && lastSeenLabel(profile.last_login_at) && (
                   <p className="text-xs text-gray-400 mt-0.5">{lastSeenLabel(profile.last_login_at)}</p>
                 )}
               </div>
-              {(canViewBiodata && (profile.verified || profile.phone_verified)) ? (
+              {(canViewFullProfile && (profile.verified || profile.phone_verified)) ? (
                 <div className="relative shrink-0 mt-1">
                   <button onClick={() => setVerifiedOpen(v => !v)}
                     className="badge badge-verified cursor-pointer select-none">✓ Verified</button>
@@ -758,7 +760,7 @@ export default function ProfilePage() {
                   {fieldIsHidden('native_location') && !isOwnProfile && !fieldIsRevealed('native_location')
                     ? profile.native_state
                     : profile.native_district}
-                  {canViewBiodata && profile.current_city && (
+                  {canViewFullProfile && profile.current_city && (
                     <span className="text-gray-400"> | {profile.current_city}</span>
                   )}
                 </span>
@@ -783,7 +785,7 @@ export default function ProfilePage() {
               <div>
                 <p className="text-sm font-semibold text-gray-800">Profile #{profile.member_number}</p>
                 <p className="text-xs text-gray-400">
-                  Full profile and contact are shown only after an accepted request.
+                  Contact is shown only after an accepted request.
                 </p>
               </div>
             </div>
@@ -908,15 +910,15 @@ export default function ProfilePage() {
         )}
 
         {/* Locked notice */}
-        {!canViewBiodata && !isOwnProfile && (
+        {!canViewFullProfile && !isOwnProfile && (
           <div className="card px-5 py-4">
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: '#E6F1E8', color: '#0F5E3E' }}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Connect first to see full profile.</p>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Contact details open only after you connect.</p>
+                <p className="text-sm font-semibold text-gray-800">This member hid their full profile.</p>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Connect first to see all details.</p>
               </div>
             </div>
           </div>
@@ -930,10 +932,10 @@ export default function ProfilePage() {
             {
               label: 'Current city',
               fieldKey: 'current_city',
-              value: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city') && canViewBiodata
+              value: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city')
                 ? null
                 : `${profile.current_city}${profile.current_state ? ', ' + profile.current_state : ''}`,
-              hidden: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city') && canViewBiodata,
+              hidden: fieldIsHidden('current_city') && !isOwnProfile && !fieldIsRevealed('current_city'),
             },
             { label: 'Profession', fieldKey: undefined, value: profile.profession, sub: profile.education, hidden: false },
           ].map((r) => (
@@ -966,7 +968,7 @@ export default function ProfilePage() {
         </div>
 
         {/* About */}
-        {((profile.about && canViewBiodata) || isOwnProfile) && (
+        {((profile.about && canViewFullProfile) || isOwnProfile) && (
           <div className="card px-6 py-5">
             <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: '0 0 10px' }}>About</p>
             {profile.about ? (
@@ -983,7 +985,7 @@ export default function ProfilePage() {
         {/* Looking for / Partner preferences */}
         {(() => {
           const hasPrefs = profile.pref_age_min || profile.pref_age_max
-          if (!canViewBiodata && !isOwnProfile) return null
+          if (!canViewFullProfile && !isOwnProfile) return null
           if (!hasPrefs && !isOwnProfile) return null
           return (
             <div className="card px-6 py-5">
@@ -1011,19 +1013,19 @@ export default function ProfilePage() {
         <div className="card px-6 py-5">
           <div className="flex items-center justify-between gap-3" style={{ marginBottom: '16px' }}>
             <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#14241C', margin: 0 }}>Full Profile</p>
-            {canViewBiodata && (
+            {canViewFullProfile && (
               <button onClick={() => window.print()} className="text-xs font-semibold px-3 py-1.5 rounded-lg border" style={{ borderColor: '#CADFCA', color: '#0F5E3E', background: '#F7FBF7' }}>
                 Print / Download Full Profile
               </button>
             )}
           </div>
-          {!canViewBiodata ? (
+          {!canViewFullProfile ? (
             <div style={{ padding: '20px', borderRadius: '14px', background: '#F7FBF7', border: '1px solid #DDE6DA', textAlign: 'center' }}>
               <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#E6F1E8', color: '#0F5E3E', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
-              <p className="font-semibold text-gray-800 mb-1">Full profile is locked.</p>
-              <p className="text-sm text-gray-500 mb-4">Connect first to see full profile.</p>
+              <p className="font-semibold text-gray-800 mb-1">Full profile is hidden.</p>
+              <p className="text-sm text-gray-500 mb-4">Connect first to see all details.</p>
               {interestSent && <p className="text-sm font-semibold" style={{ color: '#0F5E3E' }}>Request sent. Waiting for acceptance.</p>}
             </div>
           ) : (
@@ -1069,7 +1071,7 @@ export default function ProfilePage() {
         {/* Contact - phone hidden by default */}
         {(() => {
           const phoneHidden = fieldIsHidden('phone') && !isOwnProfile && !fieldIsRevealed('phone')
-          const showContact = canViewBiodata
+          const showContact = canViewContact
           if (!showContact && !profile.phone && !profile.email) return null
           return (
             <div className="card px-6 py-5">
@@ -1171,7 +1173,7 @@ export default function ProfilePage() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-bold text-gray-900 font-serif-display">Send Request</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want. Full profile is shown only after acceptance.</p>
+                <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want.</p>
               </div>
               <button onClick={() => setShowNoteModal(false)} className="text-gray-300 hover:text-gray-500 ml-3 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1342,7 +1344,7 @@ export default function ProfilePage() {
           ) : isLoggedIn ? (
             <>
               <div className="flex gap-2.5">
-                {canViewBiodata ? (
+                {canViewContact ? (
                   <>
                     <button onClick={() => window.print()} className="flex-1 btn-primary py-3 text-sm">
                       View / Print Full Profile
@@ -1358,18 +1360,27 @@ export default function ProfilePage() {
                       </Link>
                     )}
                   </>
-                ) : interestSent ? (
-                  <button disabled className="flex-1 btn-primary py-3 text-sm" style={{ opacity: 0.72 }}>
-                    Request Sent
-                  </button>
                 ) : (
-                  <button
-                    onClick={openNoteModal}
-                    disabled={sending}
-                    className="flex-1 btn-primary py-3 text-sm"
-                  >
-                    {sending ? 'Sending...' : 'Send Request'}
-                  </button>
+                  <>
+                    {canViewFullProfile && (
+                      <button onClick={() => window.print()} className="px-4 py-3 rounded-lg font-semibold text-sm border" style={{ background: 'white', color: '#0F5E3E', borderColor: '#DDE6DA' }}>
+                        Print Profile
+                      </button>
+                    )}
+                    {interestSent ? (
+                      <button disabled className="flex-1 btn-primary py-3 text-sm" style={{ opacity: 0.72 }}>
+                        Request Sent
+                      </button>
+                    ) : (
+                      <button
+                        onClick={openNoteModal}
+                        disabled={sending}
+                        className="flex-1 btn-primary py-3 text-sm"
+                      >
+                        {sending ? 'Sending...' : 'Send Request'}
+                      </button>
+                    )}
+                  </>
                 )}
                 <button
                   onClick={() => setShortlisted(s => !s)}
@@ -1380,12 +1391,12 @@ export default function ProfilePage() {
                   {shortlisted ? '★ Saved' : '☆ Save'}
                 </button>
               </div>
-              {!interestSent && !canViewBiodata && (
+              {!interestSent && fullProfileHidden && (
                 <div className="flex justify-center mt-2">
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
                     style={{ background: '#EDF3ED', color: '#14241C' }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Full profile and contact are shown when they accept your request
+                    This member hid full profile until connection
                   </span>
                 </div>
               )}
@@ -1402,7 +1413,7 @@ export default function ProfilePage() {
                   Login
                 </Link>
               </div>
-              <p className="text-center text-xs text-gray-400 mt-2">Full profile and contact are shown only after acceptance.</p>
+              <p className="text-center text-xs text-gray-400 mt-2">Send a request to connect and see contact details.</p>
             </>
           )}
         </div>

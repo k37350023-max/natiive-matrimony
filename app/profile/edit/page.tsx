@@ -20,6 +20,7 @@ const REGIONS: Record<string, Record<string, string[]>> = {
 }
 
 const HIDEABLE_FIELDS: { key: string; label: string; desc: string }[] = [
+  { key: 'full_profile', label: 'Full profile', desc: 'Visible by default; hide it if you want people to connect first' },
   { key: 'name', label: 'Name', desc: 'Visible by default; hide it if you want to appear as Name hidden' },
   { key: 'photo', label: 'Profile photo', desc: 'Visible by default; hide it if you want people to request access first' },
   { key: 'phone', label: 'Phone number', desc: 'Hidden from everyone; they can request it' },
@@ -388,7 +389,7 @@ function EditProfilePageInner() {
       <div className="max-w-xl mx-auto px-4 py-5 space-y-4">
         {isNewProfile && (
           <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EDF3ED', border: '1px solid #CADFCA', color: '#14241C' }}>
-            Fill the essentials first. Full profile and contact are shown only after acceptance.
+            Fill the essentials first. Your profile is visible by default; contact opens after connection.
           </div>
         )}
         <div className="mb-2">
@@ -538,7 +539,7 @@ function EditProfilePageInner() {
 
           <div className="pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-1">Privacy - what do you want to hide?</p>
-            <p className="text-xs text-gray-400 mb-3">A photo is required, but it does not have to be public. Hide it here if you want visitors to request access first.</p>
+            <p className="text-xs text-gray-400 mb-3">Your profile is visible by default. Hide only the parts you want people to request first.</p>
             <div className="space-y-2">
               {HIDEABLE_FIELDS.map(f => {
                 const checked = hiddenFields.includes(f.key)

@@ -88,6 +88,9 @@ function isAcceptedStatus(status?: string) { return status === 'matched' || stat
 function nameIsHidden(p: Pick<Profile,'hidden_fields'>) {
   return Array.isArray(p.hidden_fields) && p.hidden_fields.includes('name')
 }
+function fullProfileIsHidden(p: Pick<Profile,'hidden_fields'>) {
+  return Array.isArray(p.hidden_fields) && p.hidden_fields.includes('full_profile')
+}
 function displayName(p: Pick<Profile,'full_name'|'hidden_fields'>, unlocked: boolean) {
   if (!unlocked && nameIsHidden(p)) return 'Name hidden'
   return p.full_name.split(' ').slice(0,2).join(' ')
@@ -326,18 +329,19 @@ function ProfileCard({
 }) {
   const age = getAge(p.date_of_birth)
   const unlocked = isAcceptedStatus(status)
-  const photoHidden = !!(p.photo_url && p.photo_visibility === 'hidden')
-  const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
+  const photoHidden = !!(p.photo_url && (p.photo_visibility === 'hidden' || (Array.isArray(p.hidden_fields) && p.hidden_fields.includes('photo'))))
+  const showPhoto = !!(p.photo_url && !photoHidden)
   const seenLabel = lastSeen(p.last_login_at)
   const isOnline = seenLabel === 'Active now'
   const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000
-  const protectedDetails = !unlocked
+  const contactLocked = !unlocked
+  const profileOpen = unlocked || !fullProfileIsHidden(p)
   const visibleName = displayName(p, unlocked)
-  const signalTags = [
+  const signalTags = profileOpen ? [
     p.education,
     p.religion,
     p.mother_tongue,
-  ].filter(Boolean).slice(0, 3)
+  ].filter(Boolean).slice(0, 3) : []
 
   return (
     <div
@@ -365,7 +369,7 @@ function ProfileCard({
             <GeometricPlaceholder name={p.full_name} />
           </div>
         )}
-        {(photoHidden || (!showPhoto && protectedDetails)) && (
+        {photoHidden && (
           <div style={{ position: 'absolute', inset: 0, backdropFilter: 'blur(7px)', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(20,36,28,0.82)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 10px 24px rgba(20,36,28,0.22)' }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -381,7 +385,7 @@ function ProfileCard({
             </span>
           </div>
         )}
-        {protectedDetails && (
+        {contactLocked && (
           <div style={{ position: 'absolute', left: '12px', right: '12px', bottom: '12px', zIndex: 9 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', maxWidth: '100%', borderRadius: '12px', background: 'rgba(20,36,28,0.82)', color: 'white', fontSize: '11.5px', fontWeight: 800, padding: '8px 10px', boxShadow: '0 10px 24px rgba(20,36,28,0.20)' }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1391,8 +1395,9 @@ export default function BrowsePage() {
         const p = quickView
         const status = interestMap[p.id]
         const unlocked = isAcceptedStatus(status)
-        const photoHidden = !!(p.photo_url && p.photo_visibility === 'hidden')
-        const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
+        const profileOpen = unlocked || !fullProfileIsHidden(p)
+        const photoHidden = !!(p.photo_url && (p.photo_visibility === 'hidden' || (Array.isArray(p.hidden_fields) && p.hidden_fields.includes('photo'))))
+        const showPhoto = !!(p.photo_url && !photoHidden)
         const age = getAge(p.date_of_birth)
         const seenLabel = lastSeen(p.last_login_at)
 
@@ -1484,10 +1489,10 @@ export default function BrowsePage() {
                 {[
                   { svg: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>', text: `Native: ${p.native_district||'-'}${p.current_city?` • ${p.current_city}`:''}` },
                   { svg: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>', text: p.profession || '-' },
-                  unlocked ? { svg: '<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/>', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'-' } : null,
-                  unlocked ? { svg: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '-' } : null,
+                  profileOpen ? { svg: '<path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/>', text: [p.religion,p.caste].filter(Boolean).join(' · ')||'-' } : null,
+                  profileOpen ? { svg: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>', text: p.family_type ? p.family_type.charAt(0).toUpperCase()+p.family_type.slice(1)+' family' : '-' } : null,
                   seenLabel ? { dot: true, text: seenLabel } : null,
-                  unlocked && p.about ? { svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', text: p.about.slice(0,120)+(p.about.length>120?'…':'') } : null,
+                  profileOpen && p.about ? { svg: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>', text: p.about.slice(0,120)+(p.about.length>120?'…':'') } : null,
                 ].filter(Boolean).map((row,i) => {
                   const r = row as { svg?: string; dot?: boolean; text: string }
                   return (
