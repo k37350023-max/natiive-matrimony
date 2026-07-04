@@ -1050,7 +1050,7 @@ export default function BrowsePage() {
     photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':'',
     activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter,nativePlace,currentLocation].filter(Boolean).length
 
-  const genderLabel = oppositeGender === 'female' ? 'bride-side families' : oppositeGender === 'male' ? 'groom-side families' : 'registry profiles'
+  const genderLabel = oppositeGender === 'female' ? 'bride profiles' : oppositeGender === 'male' ? 'groom profiles' : 'registry profiles'
 
   /* ── Not logged in ── */
   if (!sessionChecked) return (
