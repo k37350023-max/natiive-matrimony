@@ -237,8 +237,8 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           </h1>
           <p className="text-gray-500 text-sm">
             {searchedPlace
-              ? 'Create a profile to see useful details and request full profile access after acceptance.'
-              : 'Join the always-free version to browse native profiles, save place alerts, and see full profiles after both sides accept. Founders get 2 years premium free; others get 3 months.'}
+              ? 'Create a profile to see useful details, send requests, and connect when both sides agree.'
+              : 'Join the always-free version to browse native profiles, save place alerts, and connect when both sides agree. Founders get 2 years premium free; others get 3 months.'}
           </p>
         </div>
 
@@ -266,7 +266,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
         </div>
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
-          <p className="font-bold text-gray-900 text-lg mb-2">Useful previews before private details are shown</p>
+          <p className="font-bold text-gray-900 text-lg mb-2">Useful profiles with private contact</p>
           <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see useful details first. Full details and contact are shown only after both sides accept.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
@@ -583,7 +583,7 @@ function Filters({
         <div className="flex flex-wrap gap-1">{RELIGIONS.map(r=>chip(religionFilter===r,()=>setReligionFilter(religionFilter===r?'':r),r))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Family community</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Community</p>
         <div className="flex flex-wrap gap-1">{CASTES.map(c=>chip(casteFilter===c,()=>setCasteFilter(casteFilter===c?'':c),c))}</div>
       </div>
       <div>
@@ -1616,7 +1616,7 @@ export default function BrowsePage() {
                   <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent. Contact is shown after they accept.</p>
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0, lineHeight: 1.5 }}>
-                  Contact details are shared only after acceptance. We&apos;ve sent your request - you&apos;ll be notified when they accept.
+                  Contact details are shared only after connection. We&apos;ve sent your request - you&apos;ll be notified when they accept.
                 </p>
               </div>
             )}

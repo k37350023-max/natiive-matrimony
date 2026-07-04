@@ -169,7 +169,7 @@ export default function MatchesPage() {
               </svg>
             </div>
             <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No connected profiles yet</p>
-            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from Browse. Contact opens after acceptance.</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from Browse. Contact opens after connection.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Native Profiles</Link>
           </div>
         )}

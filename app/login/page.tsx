@@ -115,7 +115,7 @@ export default function LoginPage() {
             Find someone who shares your roots.
           </h2>
           <p style={{ fontSize: '15px', opacity: 0.8, margin: '0 0 40px', lineHeight: 1.65 }}>
-            Search by native place first. Photos are visible unless hidden, while full profile and contact are shown only after acceptance.
+            Search by native place first. Names, photos, and profile details are visible unless hidden. Contact opens after connection.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[

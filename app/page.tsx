@@ -15,8 +15,8 @@ const trustItems = [
 const journey = [
   ['Create your profile', 'Add native place, work, education, photo preference, and contact verification.'],
   ['Browse native profiles', 'Your profile becomes discoverable to families searching by roots and location.'],
-  ['Send or accept request', 'Both families choose before full profile and contact are shown.'],
-  ['Talk with confidence', 'Connected profiles can continue with profile, chat, and contact.'],
+  ['Send or accept request', 'Both families choose before chat and contact are shown.'],
+  ['Talk with confidence', 'Connected profiles can continue with chat, phone, or email.'],
 ]
 
 const regions: Array<[string, string[]]> = [
@@ -85,7 +85,7 @@ function HeroVisual() {
           <span className="nmh-avatar-lock"><Icon name="shield" size={21} /></span>
           <div>
             <p>Verified preview</p>
-            <strong>Private details are shown after acceptance</strong>
+            <strong>Contact is shown after connection</strong>
           </div>
         </div>
         <div className="nmh-preview-list">
@@ -194,7 +194,7 @@ export default function Home() {
 
         <section className="nmh-section">
           <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Premium trust, not empty privacy</p>
+            <p className="nmh-section-kicker">Simple privacy</p>
             <h2>Show enough to decide. Protect what should stay private.</h2>
           </div>
           <div className="nmh-trust-grid">
@@ -228,11 +228,11 @@ export default function Home() {
                   <span><Icon name="pin" size={13} />Roots in Guntur</span>
                   <span><Icon name="home" size={13} />Family reviewing</span>
                 </div>
-                <p>Connect first to see full details and contact.</p>
+                <p>See the profile first. Connect to chat or view contact.</p>
               </div>
             </article>
             <aside>
-              <span><Icon name="lock" size={18} /> Private by default</span>
+              <span><Icon name="lock" size={18} /> Contact stays private</span>
               <span><Icon name="check" size={18} /> Enough context to request</span>
               <span><Icon name="chat" size={18} /> No random messages</span>
             </aside>
@@ -247,7 +247,7 @@ export default function Home() {
           <div className="nmh-trust-grid">
             {[
               ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
-              ['Useful previews', 'Profiles show practical details like roots, work, location, and photo choice before full profile access is shown.', 'search'],
+              ['Useful profiles', 'Profiles show practical details like roots, work, location, and photo choice before a family sends a request.', 'search'],
               ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
               <article key={title} className="nmh-trust-card">

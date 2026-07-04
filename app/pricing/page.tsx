@@ -56,7 +56,7 @@ export default function PricingPage() {
               <Benefit>Create and edit your profile</Benefit>
               <Benefit>Browse native profiles</Benefit>
               <Benefit>Receive match requests</Benefit>
-              <Benefit>View full profile and chat for up to 5 accepted profiles per month</Benefit>
+              <Benefit>Chat and view contact for up to 5 connected profiles per month</Benefit>
               <Benefit>Save places and get alerts</Benefit>
             </div>
             <Link href={isLoggedIn ? '/browse' : '/register?plan=free'} className="btn-ghost text-sm px-5 py-3 w-full justify-center">
@@ -76,7 +76,7 @@ export default function PricingPage() {
             <div className="space-y-3 mb-7">
               <Benefit>2 years free for district founding members</Benefit>
               <Benefit>3 months free for everyone else</Benefit>
-              <Benefit>More full profile views and chats after acceptance</Benefit>
+              <Benefit>More chats and contact views after connection</Benefit>
               <Benefit>See contact after both sides accept</Benefit>
               <Benefit>Photo controls: show or hide anytime</Benefit>
             </div>

@@ -486,7 +486,7 @@ export default function SearchPage() {
         </Section>
 
         {/* Caste */}
-        <Section title="Family community" defaultOpen={false}>
+        <Section title="Community" defaultOpen={false}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
             {CASTES.map(c=><Chip key={c} label={c} active={castes.includes(c)} onClick={()=>tog(castes,c,setCastes)} />)}
           </div>
