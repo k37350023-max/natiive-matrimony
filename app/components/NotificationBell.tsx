@@ -145,7 +145,7 @@ export default function NotificationBell() {
             </div>
             <button onClick={enablePush}
               className="text-xs font-bold px-3 py-1.5 rounded-lg shrink-0"
-              style={{ background: '#14241C', color: 'white' }}>
+              style={{ background: 'white', color: '#14241C' }}>
               Allow
             </button>
             <button onClick={() => { setShowPushBanner(false); sessionStorage.setItem('push_asked','1') }}

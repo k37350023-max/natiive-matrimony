@@ -55,7 +55,7 @@ function typeLabel(type: string) {
   if (type === 'interest_declined')        return { label: 'Declined', color: '#5E6B62', bg: '#F3F4F6' }
   if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#5E6B62', bg: '#F3F4F6' }
   if (type === 'profile_view')             return { label: 'Profile View', color: '#1E40AF', bg: '#EFF6FF' }
-  if (type === 'place_alert_saved')        return { label: 'Place Alert Saved', color: '#075E3E', bg: '#EDF3ED' }
+  if (type === 'place_alert_saved')        return { label: 'Place Alert On', color: '#075E3E', bg: '#EDF3ED' }
   if (type === 'place_match_joined')       return { label: 'New Native Place Profile', color: '#065F46', bg: '#ECFDF5' }
   if (type === 'field_request')            return { label: 'Contact Request', color: '#7C3AED', bg: '#F5F3FF' }
   if (type === 'field_request_approved')   return { label: 'Contact Shared', color: '#065F46', bg: '#ECFDF5' }
@@ -294,7 +294,7 @@ export default function NotificationsPage() {
             </p>
             <p style={{ fontSize: '13.5px', color: '#94A3B8', maxWidth: '280px', margin: '0 auto', lineHeight: 1.6 }}>
               {tab === 'All'
-                ? 'When someone sends a request, views your profile, accepts a request, or when a saved place alert is updated, you will see it here.'
+                ? 'When someone sends a request, views your profile, accepts a request, or a saved place has new profiles, you will see it here.'
                 : 'Nothing in this category yet.'}
             </p>
           </div>

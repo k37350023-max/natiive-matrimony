@@ -37,8 +37,8 @@ export async function POST(req: Request) {
     }
 
     const message = location
-      ? `Alert saved for ${place}. We will notify you when matching families join near ${location}.`
-      : `Alert saved for ${place}. We will notify you when matching families join.`
+      ? `Alert is on for ${place}. We will notify you when matching families join near ${location}.`
+      : `Alert is on for ${place}. We will notify you when matching families join.`
 
     const { data: existing } = await supabaseAdmin
       .from('notifications')
