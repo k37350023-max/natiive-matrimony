@@ -1312,13 +1312,13 @@ export default function BrowsePage() {
                       Save a place alert for {nativePlace}. We&apos;ll add it to Notifications and let you know when matching families join this native-place search.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <Link href="/register" className="btn-primary px-5 py-2 text-sm">Start Free</Link>
                       <button
                         onClick={() => savePlaceAlert(true)}
                         disabled={alertSaving}
-                        className="btn-ghost px-5 py-2 text-sm">
+                        className="btn-primary px-5 py-2 text-sm">
                         {alertSaving ? 'Saving alert…' : alertSet ? 'Alert saved' : 'Save Place Alert'}
                       </button>
+                      <button onClick={clearAll} className="btn-ghost px-5 py-2 text-sm">Show all profiles</button>
                     </div>
                     <p className="text-xs text-gray-400 mt-4">
                       You can review saved place alerts on the Notifications page.
