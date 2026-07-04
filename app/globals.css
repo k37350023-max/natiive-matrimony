@@ -3008,32 +3008,35 @@ select.input {
 
 .app-brand-mark {
   align-items: center;
-  background: linear-gradient(145deg, #153829 0%, #0A2118 100%);
+  background: linear-gradient(145deg, #143C2B 0%, #0A2118 100%);
   border: 1px solid rgba(255,255,255,0.45);
   border-radius: 10px;
   box-shadow: 0 10px 24px rgba(20, 36, 28, 0.16), inset 0 1px 0 rgba(255,255,255,0.18);
-  color: #FFFFFF;
   display: inline-flex;
-  font-family: var(--font-space-grotesk), var(--font-inter), sans-serif;
-  font-size: 22px;
-  font-weight: 800;
   height: 38px;
   justify-content: center;
-  letter-spacing: -0.05em;
-  line-height: 1;
   position: relative;
   width: 38px;
 }
 
-.app-brand-mark::after {
-  background: #B7D9B8;
-  border-radius: 99px;
-  bottom: 7px;
-  content: "";
-  height: 6px;
-  position: absolute;
-  right: 7px;
-  width: 6px;
+.app-brand-mark svg {
+  display: block;
+  height: 28px;
+  width: 28px;
+}
+
+.app-brand-stem {
+  fill: none;
+  stroke: #F8FFF1;
+  stroke-linecap: round;
+  stroke-width: 2.5;
+}
+
+.app-brand-grain {
+  fill: #F1D06B;
+  stroke: rgba(255,255,255,0.72);
+  stroke-linejoin: round;
+  stroke-width: 0.85;
 }
 
 .app-brand-copy {
@@ -3103,16 +3106,13 @@ select.input {
 
 .app-brand-compact .app-brand-mark {
   border-radius: 8px;
-  font-size: 18px;
   height: 32px;
   width: 32px;
 }
 
-.app-brand-compact .app-brand-mark::after {
-  bottom: 6px;
-  height: 5px;
-  right: 6px;
-  width: 5px;
+.app-brand-compact .app-brand-mark svg {
+  height: 24px;
+  width: 24px;
 }
 
 .app-brand-compact .app-brand-native {
@@ -3229,13 +3229,11 @@ select.input {
 
   .app-brand-mark {
     border-radius: 9px;
-    font-size: 20px;
     height: 36px;
     width: 36px;
   }
 
   .app-brand-compact .app-brand-mark {
-    font-size: 17px;
     height: 30px;
     width: 30px;
   }
