@@ -195,7 +195,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
                   <strong>Details unlock after acceptance.</strong><br />
-                  Create your registry profile now. Key profile signals stay visible, while biodata and contact stay locked until a request is accepted.
+                  Create your registry profile now. Key profile signals stay visible, while the family profile and contact stay locked until a request is accepted.
                 </p>
               </div>
             </div>
@@ -233,8 +233,8 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           </h1>
           <p className="text-gray-500 text-sm">
             {searchedPlace
-              ? 'Create a profile to see high-signal details and request biodata after acceptance.'
-              : 'Join the always-free version to browse native profiles, save place alerts, and unlock biodata after acceptance. Founders get 2 years premium free; others get 3 months.'}
+              ? 'Create a profile to see high-signal details and request family profile access after acceptance.'
+              : 'Join the always-free version to browse native profiles, save place alerts, and unlock family profiles after acceptance. Founders get 2 years premium free; others get 3 months.'}
           </p>
         </div>
 
@@ -263,7 +263,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
           <p className="font-bold text-gray-900 text-lg mb-2">Useful previews before private details unlock</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see practical signals first. Full names, biodata, and contact unlock only after acceptance.</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see practical signals first. Full names, family profile, and contact unlock only after acceptance.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
               Join Free
@@ -383,7 +383,7 @@ function ProfileCard({
           <div style={{ position: 'absolute', left: '12px', right: '12px', bottom: '12px', zIndex: 9 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', maxWidth: '100%', borderRadius: '12px', background: 'rgba(20,36,28,0.82)', color: 'white', fontSize: '11.5px', fontWeight: 800, padding: '8px 10px', boxShadow: '0 10px 24px rgba(20,36,28,0.20)' }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              Biodata and contact protected
+              Family profile and contact protected
             </span>
           </div>
         )}
@@ -433,7 +433,7 @@ function ProfileCard({
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <p style={{ color: '#57460F', fontSize: '11.5px', fontWeight: 700, lineHeight: 1.38, margin: 0 }}>
-              Request access to view biodata, full name, and contact.
+              Request access to view the family profile, full name, and contact.
             </p>
           </div>
         )}
@@ -479,12 +479,12 @@ function ProfileCard({
               }}
               onMouseEnter={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#14532D') }}
               onMouseLeave={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#1B5E20') }}>
-              {status === 'matched' ? 'View Biodata'
-                : status === 'accepted' ? 'View Biodata'
+              {status === 'matched' ? 'View Family Profile'
+                : status === 'accepted' ? 'View Family Profile'
                 : status === 'pending' ? 'Request Sent'
                 : status === 'rejected' ? 'Declined'
                 : sending ? 'Sending…'
-                : 'Request Biodata'}
+                : 'Request Access'}
             </button>
             {unlocked && chatHref && (
               <Link
@@ -506,7 +506,7 @@ function ProfileCard({
   )
 }
 
-/* ─── Sidebar Filters ────────────────────────────────────────── */
+/* ─── Match Signals ────────────────────────────────────────── */
 function Filters({
   region, state, district, ageRange, profCat, maritalFilter, heightRange,
   motherTongues, casteFilter, religionFilter, educationFilter, photoOnly, recentOnly,
@@ -540,9 +540,14 @@ function Filters({
 
   return (
     <div className="space-y-4 text-sm">
+      <div>
+        <p className="text-xs font-black uppercase tracking-wider mb-1" style={{ color: '#14241C' }}>Match Signals</p>
+        <p className="text-xs leading-relaxed" style={{ color: '#7A837A' }}>Start with roots. Add only the details your family truly needs.</p>
+      </div>
+
       {/* Region map */}
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Region</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Roots corridor</p>
         <IndiaMap mode="filter" selectedRegion={region} onRegionClick={handleMapRegion} compact />
         <div className="mt-2 flex flex-wrap gap-1.5">
           {['All','Telangana','Coastal Andhra','Rayalaseema'].map(r => (
@@ -567,47 +572,47 @@ function Filters({
       )}
 
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Age</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Life stage</p>
         <div className="flex flex-wrap gap-1">{AGE_RANGES.map(a=>chip(ageRange===a,()=>setAgeRange(ageRange===a?'':a),a))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Height</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Height comfort</p>
         <div className="flex flex-wrap gap-1">{HEIGHT_RANGES.map(h=>chip(heightRange===h.label,()=>setHeightRange(heightRange===h.label?'':h.label),h.label))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Marital Status</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Status</p>
         <div className="flex flex-wrap gap-1">{MARITAL_OPTIONS.map(o=>chip(maritalFilter===o.value,()=>setMaritalFilter(maritalFilter===o.value?'':o.value),o.label))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Religion</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Faith</p>
         <div className="flex flex-wrap gap-1">{RELIGIONS.map(r=>chip(religionFilter===r,()=>setReligionFilter(religionFilter===r?'':r),r))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Caste</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Family community</p>
         <div className="flex flex-wrap gap-1">{CASTES.map(c=>chip(casteFilter===c,()=>setCasteFilter(casteFilter===c?'':c),c))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Mother Tongue</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Home language</p>
         <div className="flex flex-wrap gap-1">{MOTHER_TONGUES.map(m=>chip(motherTongues.includes(m),()=>toggleMotherTongue(m),m))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Profession</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Work field</p>
         <div className="flex flex-wrap gap-1">{PROFESSIONS.map(pr=>chip(profCat===pr,()=>setProfCat(profCat===pr?'':pr),pr))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Education</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Learning</p>
         <div className="flex flex-wrap gap-1">{EDUCATION_LEVELS.map(e=>chip(educationFilter===e,()=>setEducationFilter(educationFilter===e?'':e),e))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Annual Income</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Financial range</p>
         <div className="flex flex-wrap gap-1">{INCOME_RANGES.map(r=>chip(incomeFilter===r,()=>setIncomeFilter(incomeFilter===r?'':r),r))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Active within</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Recently active</p>
         <div className="flex flex-wrap gap-1">{ACTIVE_WITHIN_OPTS.map(o=>chip(activeWithin===o.label,()=>setActiveWithin(activeWithin===o.label?'':o.label),o.label))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Profile by</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Managed by</p>
         <div className="flex flex-wrap gap-1">
           {chip(profileByFilter==='self',()=>setProfileByFilter(profileByFilter==='self'?'':'self'),'Self')}
           {chip(profileByFilter==='parent',()=>setProfileByFilter(profileByFilter==='parent'?'':'parent'),'Parent')}
@@ -616,11 +621,11 @@ function Filters({
 
       <div className="pt-1 space-y-2 border-t" style={{ borderColor: '#F3F4F6' }}>
         {[
-          [photoOnly, setPhotoOnly, 'With photo only'],
-          [verifiedOnly, setVerifiedOnly, 'Verified only'],
-          [recentOnly, setRecentOnly, 'Joined last 30 days'],
-          [showViewed, setShowViewed, 'Hide profiles I\'ve viewed'],
-          [ignorePrefs, setIgnorePrefs, 'Ignore age/height prefs'],
+          [photoOnly, setPhotoOnly, 'Photo visible'],
+          [verifiedOnly, setVerifiedOnly, 'Verified signal'],
+          [recentOnly, setRecentOnly, 'New families'],
+          [showViewed, setShowViewed, 'Hide seen profiles'],
+          [ignorePrefs, setIgnorePrefs, 'Show outside stated preferences'],
         ].map(([val, set, label]) => (
           <label key={label as string} className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={val as boolean}
@@ -634,7 +639,7 @@ function Filters({
       {activeFilterCount > 0 && (
         <button onClick={clearAll} className="text-xs font-semibold text-red-700 hover:underline flex items-center gap-1">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          Clear all filters ({activeFilterCount})
+          Reset signals ({activeFilterCount})
         </button>
       )}
     </div>
@@ -1045,7 +1050,7 @@ export default function BrowsePage() {
     photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':'',
     activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter,nativePlace,currentLocation].filter(Boolean).length
 
-  const genderLabel = oppositeGender === 'female' ? 'brides' : oppositeGender === 'male' ? 'grooms' : 'profiles'
+  const genderLabel = oppositeGender === 'female' ? 'bride-side families' : oppositeGender === 'male' ? 'groom-side families' : 'registry profiles'
 
   /* ── Not logged in ── */
   if (!sessionChecked) return (
@@ -1123,7 +1128,7 @@ export default function BrowsePage() {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
               </svg>
-              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+              Match Signals{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
             </button>
           </div>
           <form
@@ -1164,7 +1169,7 @@ export default function BrowsePage() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
               </svg>
-              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+              Signals{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
             </button>
             <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
               {['All','Telangana','Coastal Andhra','Rayalaseema'].map(r => (
@@ -1201,7 +1206,7 @@ export default function BrowsePage() {
                   <>
                     <span style={{ fontWeight: 800, color: '#14241C', fontSize: '18px', letterSpacing: 0 }}>
                       {profiles.length.toLocaleString('en-IN')}
-                    </span> {genderLabel} found
+                    </span> {genderLabel} to review
                   </>
                 )}
               </p>
@@ -1357,9 +1362,9 @@ export default function BrowsePage() {
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-gray-700 mb-1">No profiles match these filters</p>
-                    <p className="text-sm text-gray-400 mb-4">Try removing some filters.</p>
-                    <button onClick={clearAll} className="btn-primary px-5 py-2 text-sm">Clear filters</button>
+                    <p className="font-semibold text-gray-700 mb-1">No profiles match these signals</p>
+                    <p className="text-sm text-gray-400 mb-4">Try relaxing one or two signals.</p>
+                    <button onClick={clearAll} className="btn-primary px-5 py-2 text-sm">Reset signals</button>
                   </>
                 )}
               </div>
@@ -1557,7 +1562,7 @@ export default function BrowsePage() {
                       : status
                       ? { background: '#ECFDF5', color: '#2E7D32' }
                       : { background: '#1B5E20', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(27,94,32,0.35)' }}>
-                    {status==='matched'  ? 'View Biodata →' :
+                    {status==='matched'  ? 'View Family Profile →' :
                      status==='accepted' ? 'Accepted' :
                      status==='pending'  ? 'Request Sent ✓' :
                      status==='rejected' ? 'Declined' :
@@ -1575,7 +1580,7 @@ export default function BrowsePage() {
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1.5"
                     style={{ borderColor: '#E7E3D8', color: '#4B5563' }}
                     onClick={()=>setQuickView(null)}>
-                    {unlocked ? 'View biodata' : 'View locked profile'}
+                    {unlocked ? 'View family profile' : 'View locked profile'}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                   </Link>
                   <button
