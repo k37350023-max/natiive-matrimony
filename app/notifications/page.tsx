@@ -16,6 +16,11 @@ type Notif = {
   link: string | null
 }
 
+type DisplayNotif = Notif & {
+  count: number
+  ids: string[]
+}
+
 type FromProfile = {
   id: string
   full_name: string
@@ -81,6 +86,35 @@ function notifAction(type: string, fromProfileId: string | null, link?: string |
   if (type === 'field_request_approved') return { label: 'Go to matches →', href: '/interests?tab=matched' }
   if (type === 'place_alert_saved' || type === 'place_match_joined') return { label: 'Open saved search →', href: link || '/browse' }
   return null
+}
+
+function compactNotifications(items: Notif[]): DisplayNotif[] {
+  const compacted: DisplayNotif[] = []
+  const seen = new Map<string, DisplayNotif>()
+
+  for (const n of items) {
+    if (n.type !== 'profile_view' || !n.from_profile_id) {
+      compacted.push({ ...n, count: 1, ids: [n.id] })
+      continue
+    }
+
+    const day = new Date(n.created_at).toISOString().slice(0, 10)
+    const key = `${n.type}:${n.from_profile_id}:${day}`
+    const existing = seen.get(key)
+
+    if (existing) {
+      existing.count += 1
+      existing.ids.push(n.id)
+      existing.read = existing.read && n.read
+      continue
+    }
+
+    const display = { ...n, count: 1, ids: [n.id] }
+    seen.set(key, display)
+    compacted.push(display)
+  }
+
+  return compacted
 }
 
 function Avatar({ profile, size = 44 }: { profile: FromProfile | null; size?: number }) {
@@ -155,15 +189,23 @@ export default function NotificationsPage() {
     setNotifs(p => p.filter(n => n.id !== id))
   }
 
+  async function dismissNotifications(ids: string[]) {
+    await Promise.all(ids.map(id =>
+      fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'dismiss', id }) })
+    ))
+    setNotifs(p => p.filter(n => !ids.includes(n.id)))
+  }
+
   const tabs = Object.keys(TAB_FILTERS)
   const unread = notifs.filter(n => !n.read).length
 
-  const filtered = tab === 'All'
+  const filteredRaw = tab === 'All'
     ? notifs
     : notifs.filter(n => TAB_FILTERS[tab].includes(n.type))
+  const filtered = compactNotifications(filteredRaw)
 
   // Group by date
-  const grouped: { date: string; items: Notif[] }[] = []
+  const grouped: { date: string; items: DisplayNotif[] }[] = []
   filtered.forEach(n => {
     const d = new Date(n.created_at)
     const now = new Date()
@@ -176,7 +218,8 @@ export default function NotificationsPage() {
 
   const tabCounts: Record<string, number> = {}
   Object.entries(TAB_FILTERS).forEach(([t, types]) => {
-    tabCounts[t] = t === 'All' ? notifs.length : notifs.filter(n => types.includes(n.type)).length
+    const raw = t === 'All' ? notifs : notifs.filter(n => types.includes(n.type))
+    tabCounts[t] = compactNotifications(raw).length
   })
 
   return (
@@ -268,6 +311,9 @@ export default function NotificationsPage() {
                 const from = n.from_profile_id ? profiles[n.from_profile_id] : null
                 const action = notifAction(n.type, n.from_profile_id, n.link)
                 const badge = typeLabel(n.type)
+                const message = n.type === 'profile_view' && n.count > 1
+                  ? `${from?.full_name || 'This profile'} viewed your profile ${n.count} times today`
+                  : n.message
 
                 return (
                   <div key={n.id} style={{
@@ -305,7 +351,7 @@ export default function NotificationsPage() {
                       </div>
 
                       <p style={{ fontSize: '13.5px', color: '#14241C', margin: '0 0 4px', lineHeight: 1.5 }}>
-                        {n.message}
+                        {message}
                       </p>
 
                       {from && (
@@ -323,7 +369,7 @@ export default function NotificationsPage() {
                     </div>
 
                     {/* Dismiss */}
-                    <button onClick={() => dismissNotif(n.id)}
+                    <button onClick={() => n.ids.length > 1 ? dismissNotifications(n.ids) : dismissNotif(n.id)}
                       style={{ position: 'absolute', bottom: '12px', right: '14px', background: 'none', border: 'none', cursor: 'pointer', color: '#CCC', fontSize: '11px', padding: '2px 6px' }}
                       title="Dismiss">
                       ✕
