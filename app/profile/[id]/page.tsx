@@ -915,8 +915,8 @@ export default function ProfilePage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Full profile is shown after acceptance.</p>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request to connect. Full details and contact are shown after both sides accept.</p>
+                <p className="text-sm font-semibold text-gray-800">Connect first to see full profile.</p>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Contact details open only after you connect.</p>
               </div>
             </div>
           </div>
@@ -1023,7 +1023,7 @@ export default function ProfilePage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <p className="font-semibold text-gray-800 mb-1">Full profile is locked.</p>
-              <p className="text-sm text-gray-500 mb-4">Send a request to connect. Full details are shown after both sides accept.</p>
+              <p className="text-sm text-gray-500 mb-4">Connect first to see full profile.</p>
               {interestSent && <p className="text-sm font-semibold" style={{ color: '#0F5E3E' }}>Request sent. Waiting for acceptance.</p>}
             </div>
           ) : (

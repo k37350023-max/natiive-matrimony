@@ -429,17 +429,6 @@ function ProfileCard({
           </div>
         )}
 
-        {protectedDetails && (
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', background: '#FFFCF2', border: '1px solid #EFE2BB', borderRadius: '12px', marginTop: '11px', padding: '10px' }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8A6A18" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 1 }}>
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <p style={{ color: '#57460F', fontSize: '11.5px', fontWeight: 700, lineHeight: 1.38, margin: 0 }}>
-              Send a request to connect. Full details and contact are shown after both sides accept.
-            </p>
-          </div>
-        )}
-
         {/* Activity meta */}
         {seenLabel && (
           <p style={{ fontSize: '11.5px', fontWeight: 600, margin: '6px 0 0', display: 'flex', alignItems: 'center', gap: '5px', color: isOnline ? '#2E7D32' : '#8A938A' }}>
