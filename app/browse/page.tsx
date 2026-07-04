@@ -1190,7 +1190,7 @@ export default function BrowsePage() {
                 style={alertSet
                   ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px', padding: '0 14px' }
                   : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px' }}>
-                {alertSaving ? 'Saving…' : alertSet ? 'Alert set' : '+ Save alert'}
+                {alertSaving ? 'Updating…' : alertSet ? 'Remove alert' : '+ Save alert'}
               </button>
             </div>
             {/* Suggested profiles */}
@@ -1313,10 +1313,10 @@ export default function BrowsePage() {
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <button
-                        onClick={() => savePlaceAlert(true)}
+                        onClick={() => savePlaceAlert()}
                         disabled={alertSaving}
-                        className="btn-primary px-5 py-2 text-sm">
-                        {alertSaving ? 'Saving alert…' : alertSet ? 'Alert saved' : 'Save Place Alert'}
+                        className={alertSet ? 'btn-ghost px-5 py-2 text-sm' : 'btn-primary px-5 py-2 text-sm'}>
+                        {alertSaving ? 'Updating alert…' : alertSet ? 'Remove Alert' : 'Save Place Alert'}
                       </button>
                       <button onClick={clearAll} className="btn-ghost px-5 py-2 text-sm">Show all profiles</button>
                     </div>
