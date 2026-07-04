@@ -228,7 +228,7 @@ export default function Home() {
                   <span><Icon name="pin" size={13} />Roots in Guntur</span>
                   <span><Icon name="home" size={13} />Family reviewing</span>
                 </div>
-                <p>Full details and contact stay protected until both sides accept.</p>
+                <p>Connect first to see full details and contact.</p>
               </div>
             </article>
             <aside>
