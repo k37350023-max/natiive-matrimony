@@ -3382,28 +3382,28 @@ select.input {
 }
 
 .app-brand .app-brand-paddy-mark svg {
-  height: 37px !important;
-  width: 37px !important;
+  height: 39px !important;
+  width: 39px !important;
 }
 
 .app-brand-home .app-brand-paddy-mark svg {
-  height: 43px !important;
-  width: 43px !important;
+  height: 45px !important;
+  width: 45px !important;
 }
 
 .app-brand-compact .app-brand-paddy-mark svg {
-  height: 32px !important;
-  width: 32px !important;
+  height: 34px !important;
+  width: 34px !important;
 }
 
 @media (max-width: 639px) {
   .app-brand .app-brand-paddy-mark svg {
-    height: 34px !important;
-    width: 34px !important;
+    height: 36px !important;
+    width: 36px !important;
   }
 
   .app-brand-compact .app-brand-paddy-mark svg {
-    height: 30px !important;
-    width: 30px !important;
+    height: 32px !important;
+    width: 32px !important;
   }
 }
