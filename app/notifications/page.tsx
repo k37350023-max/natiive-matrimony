@@ -241,7 +241,7 @@ export default function NotificationsPage() {
               </span>
             )}
             </div>
-            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Requests, views, connected profiles, and native-place alerts</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Requests, views, connected profiles, and native place alerts</p>
           </div>
           {notifs.some(n => !n.read) && (
             <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#14241C', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>

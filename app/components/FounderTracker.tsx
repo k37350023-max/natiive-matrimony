@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 
 const GOAL = 1000
-const PERKS = ['Free version stays free', '3 months premium for non-founders', '2 years for district founders', 'Native-place alerts']
+const PERKS = ['Free version stays free', '3 months premium for non-founders', '2 years for district founders', 'Native place alerts']
 
 export default function FounderTracker() {
   const [count, setCount] = useState<number | null>(null)

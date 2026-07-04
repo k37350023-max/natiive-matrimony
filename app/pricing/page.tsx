@@ -54,7 +54,7 @@ export default function PricingPage() {
             </div>
             <div className="space-y-3 mb-7">
               <Benefit>Create and edit your profile</Benefit>
-              <Benefit>Browse native-place profiles</Benefit>
+              <Benefit>Browse native profiles</Benefit>
               <Benefit>Receive match requests</Benefit>
               <Benefit>View full profile and chat for up to 5 accepted profiles per month</Benefit>
               <Benefit>Save places and get alerts</Benefit>
@@ -95,7 +95,7 @@ export default function PricingPage() {
             </div>
             <div className="space-y-3 mb-7">
               <Benefit dark>Profile and intent review</Benefit>
-              <Benefit dark>Native-place shortlist support</Benefit>
+              <Benefit dark>Native place shortlist support</Benefit>
               <Benefit dark>Family introduction coordination</Benefit>
               <Benefit dark>Priority support for serious searches</Benefit>
             </div>
@@ -109,7 +109,7 @@ export default function PricingPage() {
         <section className="mt-8 grid sm:grid-cols-3 gap-3">
           {[
             ['Contact stays private', 'Profile details are visible by default. Phone, email, chat, and WhatsApp open after connection.'],
-            ['Native-place first', 'Search by hometown, district, city, or family roots.'],
+            ['Native place first', 'Search by hometown, district, city, or family roots.'],
             ['No random messages', 'Chat opens only after both families accept.'],
           ].map(([title, body]) => (
             <article key={title} className="rounded-xl border bg-white px-5 py-4" style={{ borderColor: '#E7E3D8' }}>

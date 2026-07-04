@@ -246,9 +246,9 @@ export default function DashboardPage() {
 
         <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', overflow: 'hidden', marginBottom: '14px' }}>
           {[
-            { label: 'Requests Received', sub: 'Accept or decline families who requested your full profile.', href: '/interests?tab=received' },
-            { label: 'Requests Sent', sub: 'Track pending requests you sent from native-place search.', href: '/interests?tab=sent' },
-            { label: 'Connected Profiles', sub: 'View full profile, contact, WhatsApp, and optional chat.', href: '/matches' },
+            { label: 'Requests Received', sub: 'Accept or decline families who want to connect.', href: '/interests?tab=received' },
+            { label: 'Requests Sent', sub: 'Track pending requests you sent from native place search.', href: '/interests?tab=sent' },
+            { label: 'Connected Profiles', sub: 'View contact, WhatsApp, and optional chat.', href: '/matches' },
             { label: 'My Profile', sub: 'Edit your native place, phone, photo, and family details.', href: '/profile/edit' },
           ].map((item, i, arr) => (
             <Link key={item.label} href={item.href} style={{

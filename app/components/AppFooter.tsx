@@ -7,7 +7,7 @@ export default function AppFooter() {
     <footer style={{ borderTop: '1px solid #E7E3D8', padding: '32px 20px 24px', marginTop: '40px' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center', justifyContent: 'space-between' }}>
         <p style={{ fontSize: '12px', color: '#94A3B8', margin: 0 }}>
-          © 2026 <span style={{ fontWeight: 600, color: '#334155' }}>NativeMatrimony.com</span> · Built for native-place families
+          © 2026 <span style={{ fontWeight: 600, color: '#334155' }}>NativeMatrimony.com</span> · Built for native families
         </p>
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {[

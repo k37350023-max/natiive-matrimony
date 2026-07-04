@@ -5,7 +5,7 @@ import BrandLogo from './components/BrandLogo'
 const popularPlaces = ['Karimnagar', 'Warangal', 'Guntur', 'Nellore', 'Rajahmundry', 'Nizamabad', 'Vijayawada', 'Vizag']
 
 const trustItems = [
-  ['Native-place first', 'Focused on families who care about roots, hometowns, and serious introductions.', 'pin'],
+  ['Native place first', 'Focused on families who care about roots, hometowns, and serious introductions.', 'pin'],
   ['Useful preview', 'Photos and key profile details stay visible so browsing feels real.', 'check'],
   ['No Random Messages', 'Chat starts only when both sides accept.', 'chat'],
   ['Family Friendly', 'Built around native place, parents, and serious family review.', 'family'],
@@ -27,7 +27,7 @@ const regions: Array<[string, string[]]> = [
 const profilePreview = [
   ['Roots', 'Karimnagar'],
   ['Work', 'Engineer in Austin'],
-  ['Contact', 'Locked until accepted'],
+  ['Contact', 'Shown after connection'],
 ]
 
 const navItems = [
@@ -143,7 +143,7 @@ export default function Home() {
               </Link>
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
-              <span>Native-place first</span>
+              <span>Native place first</span>
               <span>3 months premium free</span>
               <span>Place alerts</span>
             </div>
@@ -171,7 +171,7 @@ export default function Home() {
         <section className="nmh-section nmh-intent-section">
           <div className="nmh-section-heading">
             <p className="nmh-section-kicker">Why families join now</p>
-            <h2>Founding Members make each native-place corridor useful.</h2>
+            <h2>Founding Members make each native place useful.</h2>
           </div>
           <div className="nmh-intent-grid">
             <article>
@@ -182,7 +182,7 @@ export default function Home() {
             <article>
               <Icon name="lock" size={25} />
               <h3>Free stays free</h3>
-              <p>Basic profile creation, native-place search, and receiving requests stay free. Premium is free for 2 years for founders, and 3 months for everyone else.</p>
+              <p>Basic profile creation, native place search, and receiving requests stay free. Premium is free for 2 years for founders, and 3 months for everyone else.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
@@ -309,8 +309,8 @@ export default function Home() {
             <h2>Want a family coordinator?</h2>
             <p>Use optional human-assisted matchmaking when your family wants profile vetting, shortlist help, and guided introductions.</p>
             <div className="nmh-check-list">
-              <span><Icon name="check" size={15} />Native-place and profile review</span>
-              <span><Icon name="check" size={15} />Native-place context</span>
+              <span><Icon name="check" size={15} />Native place and profile review</span>
+              <span><Icon name="check" size={15} />Native place context</span>
               <span><Icon name="check" size={15} />Optional guided support</span>
             </div>
           </div>

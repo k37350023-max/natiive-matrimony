@@ -757,7 +757,7 @@ export default function BrowsePage() {
       if (!res.ok) throw new Error(data.error || 'Could not update alert')
       setAlertSet(next)
       setBrowseToast(next
-        ? `Alert saved for ${place}. Check Notifications when matching families join.`
+        ? `Alert on for ${place}. Check Notifications when matching families join.`
         : `Alert removed for ${place}.`)
     } catch (err) {
       setBrowseToast(err instanceof Error ? err.message : 'Could not update alert')
@@ -1309,7 +1309,7 @@ export default function BrowsePage() {
                   <>
                     <p className="font-semibold text-gray-800 mb-1">No profiles from {nativePlace} yet.</p>
                     <p className="text-sm text-gray-500 mb-5">
-                      Save a place alert for {nativePlace}. We&apos;ll add it to Notifications and let you know when matching families join this native-place search.
+                      Save a place alert for {nativePlace}. We&apos;ll add it to Notifications and let you know when matching families join this native place search.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <button

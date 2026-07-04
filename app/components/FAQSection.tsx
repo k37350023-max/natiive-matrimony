@@ -4,7 +4,7 @@ import { useState } from 'react'
 const FAQS = [
   {
     q: 'Is NativeMatrimony only for one community?',
-    a: 'No. The product is built around native-place matching. We may launch community by community so each place has useful profile liquidity instead of feeling empty.',
+    a: 'No. The product is built around native place matching. We may launch community by community so each place has useful profile liquidity instead of feeling empty.',
   },
   {
     q: 'What does "native place first" mean?',
@@ -24,7 +24,7 @@ const FAQS = [
   },
   {
     q: 'How is NativeMatrimony different from other matrimony sites?',
-    a: 'We are not trying to be a broad listing site. We focus on native-place discovery, useful profile previews, join alerts for growing places, no cold messages, and contact sharing only after both sides agree.',
+    a: 'We are not trying to be a broad listing site. We focus on native place discovery, useful profile previews, join alerts for growing places, no cold messages, and contact sharing only after both sides agree.',
   },
 ]
 
