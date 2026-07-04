@@ -56,7 +56,7 @@ export default function PricingPage() {
               <Benefit>Create and edit your profile</Benefit>
               <Benefit>Browse native-place profiles</Benefit>
               <Benefit>Receive match requests</Benefit>
-              <Benefit>View biodata and chat for up to 5 accepted profiles per month</Benefit>
+              <Benefit>View family profile and chat for up to 5 accepted profiles per month</Benefit>
               <Benefit>Save places and get alerts</Benefit>
             </div>
             <Link href={isLoggedIn ? '/browse' : '/register?plan=free'} className="btn-ghost text-sm px-5 py-3 w-full justify-center">
@@ -76,7 +76,7 @@ export default function PricingPage() {
             <div className="space-y-3 mb-7">
               <Benefit>2 years free for district founding members</Benefit>
               <Benefit>3 months free for everyone else</Benefit>
-              <Benefit>More accepted-profile biodata views and chats</Benefit>
+              <Benefit>More accepted-profile family views and chats</Benefit>
               <Benefit>Unlock contact after both sides accept</Benefit>
               <Benefit>Photo controls: show or hide anytime</Benefit>
             </div>
@@ -108,7 +108,7 @@ export default function PricingPage() {
 
         <section className="mt-8 grid sm:grid-cols-3 gap-3">
           {[
-            ['Private by default', 'Full biodata and contact details unlock only after an accepted request.'],
+            ['Private by default', 'Full family profile and contact details unlock only after an accepted request.'],
             ['Native-place first', 'Search by hometown, district, city, or diaspora corridor.'],
             ['No random messages', 'Chat opens only after both families show mutual interest.'],
           ].map(([title, body]) => (

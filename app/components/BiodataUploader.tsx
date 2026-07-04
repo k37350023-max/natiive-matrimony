@@ -54,17 +54,17 @@ export default function BiodataUploader({ onParsed }: Props) {
     <div className="card p-5">
       <div className="flex items-center gap-2 mb-1">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="#1B5E20" stroke="none" style={{ flexShrink: 0 }}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        <p className="font-semibold text-gray-800 font-serif-display">Auto-fill from your biodata</p>
+        <p className="font-semibold text-gray-800 font-serif-display">Auto-fill from your profile document</p>
       </div>
       <p className="text-xs text-gray-400 mb-4">
-        Upload an existing biodata (PDF, Word, or photo) - we'll read it and fill your profile in seconds
+        Upload an existing profile document (PDF, Word, or photo) and we will fill your profile in seconds
       </p>
 
       {state === 'done' ? (
         <div className="flex items-center gap-3 px-4 py-3 rounded-lg" style={{ background: '#F0FDF4', border: '1px solid #BBF7D0' }}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
           <div>
-            <p className="text-sm font-semibold text-green-800">Biodata parsed!</p>
+            <p className="text-sm font-semibold text-green-800">Profile document read!</p>
             <p className="text-xs text-green-700">Fields filled below - review and save</p>
           </div>
           <button onClick={() => setState('idle')} className="ml-auto text-xs text-green-700 underline">Upload another</button>
@@ -90,7 +90,7 @@ export default function BiodataUploader({ onParsed }: Props) {
           {state === 'parsing' ? (
             <>
               <div className="w-8 h-8 border-2 border-amber-700 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-medium text-gray-600">Reading your biodata…</p>
+              <p className="text-sm font-medium text-gray-600">Reading your profile document…</p>
               <p className="text-xs text-gray-400">Usually takes 5-10 seconds</p>
             </>
           ) : (
@@ -100,7 +100,7 @@ export default function BiodataUploader({ onParsed }: Props) {
                 <polyline points="17 8 12 3 7 8"/>
                 <line x1="12" y1="3" x2="12" y2="15"/>
               </svg>
-              <p className="text-sm font-semibold text-gray-700">Drop your biodata here</p>
+              <p className="text-sm font-semibold text-gray-700">Drop your profile document here</p>
               <p className="text-xs text-gray-400">PDF · Word (.docx) · Photo (JPG / PNG)</p>
               <p className="text-xs font-medium px-4 py-1.5 rounded-lg mt-1" style={{ background: '#EDF3ED', color: '#14241C' }}>
                 or tap to choose file

@@ -81,7 +81,6 @@ export async function POST(req: NextRequest) {
 
     // --- PDF → extract text → Claude text ---
     } else if (mime === 'application/pdf' || name.endsWith('.pdf')) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const pdfModule = await import('pdf-parse') as any
       const pdfParse = pdfModule.default ?? pdfModule
       const pdfData = await pdfParse(buffer)

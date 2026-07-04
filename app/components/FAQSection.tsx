@@ -24,7 +24,7 @@ const FAQS = [
   },
   {
     q: 'How is NativeMatrimony different from other matrimony sites?',
-    a: 'We are not trying to be a broad listing site. We focus on native-place discovery, practical profile signals before unlock, join alerts for growing places, no cold messages, and contact sharing only after both sides agree.',
+    a: 'We are not trying to be a broad listing site. We focus on native-place discovery, useful profile details before unlock, join alerts for growing places, no cold messages, and contact sharing only after both sides agree.',
   },
 ]
 
