@@ -444,7 +444,7 @@ function ProfileCard({
         {/* Contact + Connect row */}
         {onSendInterest && (
           <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
-            {/* Contact is shown only after acceptance. */}
+            {/* Contact is shown only after connection. */}
             {onContact && unlocked && (
               <button
                 onClick={e => { e.stopPropagation(); onContact() }}
@@ -1613,7 +1613,7 @@ export default function BrowsePage() {
               <div style={{ marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 14px', borderRadius: '12px', background: '#EDF3ED', marginBottom: '12px' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent. Contact is shown after they accept.</p>
+                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent. Contact is shown after connection.</p>
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0, lineHeight: 1.5 }}>
                   Contact details are shared only after connection. We&apos;ve sent your request - you&apos;ll be notified when they accept.
