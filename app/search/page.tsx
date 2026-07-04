@@ -19,6 +19,7 @@ interface Profile {
   diet: string | null; smoking: string | null; drinking: string | null
   family_type: string | null; star: string | null; gotra: string | null
   rashi: string | null; visa_status: string | null; native_country: string | null
+  hidden_fields: string[] | null
 }
 
 /* ─── Constants ─────────────────────────────────────────────── */
@@ -162,6 +163,7 @@ function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?
   const age = getAge(p.date_of_birth)
   const seenLabel = lastSeen(p.last_login_at)
   const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
+  const shownName = Array.isArray(p.hidden_fields) && p.hidden_fields.includes('name') ? 'Name hidden' : p.full_name
   const heightStr = p.height_cm ? (() => { const t = p.height_cm / 2.54; return `${Math.floor(t/12)}'${Math.round(t%12)}"` })() : null
 
   const tags = [p.religion, p.caste, p.mother_tongue, p.profession, p.education, p.diet].filter(Boolean)
@@ -174,14 +176,14 @@ function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?
 
       <div onClick={onView} style={{ width: '92px', height: '92px', borderRadius: '10px', overflow: 'hidden', flexShrink: 0, cursor: 'pointer', background: '#FBFAF5' }}>
         {showPhoto
-          ? <img loading="lazy" src={p.photo_url!} alt={p.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
+          ? <img loading="lazy" src={p.photo_url!} alt={shownName} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} />
           : <Avatar name={p.full_name} />}
       </div>
 
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: '3px' }}>
           <button onClick={onView} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', textAlign: 'left' }}>
-            <p style={{ fontSize: '15px', fontWeight: 700, color: '#111', margin: 0 }}>{p.full_name}</p>
+            <p style={{ fontSize: '15px', fontWeight: 700, color: '#111', margin: 0 }}>{shownName}</p>
           </button>
           {seenLabel && (
             <span style={{ fontSize: '10.5px', fontWeight: 600, color: '#2E7D32', flexShrink: 0, background: '#ECFDF5', padding: '2px 8px', borderRadius: '99px' }}>{seenLabel}</span>

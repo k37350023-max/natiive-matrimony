@@ -20,6 +20,7 @@ const REGIONS: Record<string, Record<string, string[]>> = {
 }
 
 const HIDEABLE_FIELDS: { key: string; label: string; desc: string }[] = [
+  { key: 'name', label: 'Name', desc: 'Visible by default; hide it if you want to appear as Name hidden' },
   { key: 'photo', label: 'Profile photo', desc: 'Visible by default; hide it if you want people to request access first' },
   { key: 'phone', label: 'Phone number', desc: 'Hidden from everyone; they can request it' },
   { key: 'gotra', label: 'Gotra', desc: 'Blurred on your profile; requestable' },

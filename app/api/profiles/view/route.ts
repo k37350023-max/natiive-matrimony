@@ -22,14 +22,17 @@ export async function POST(req: Request) {
 
     if (!recentCount) {
       const [{ data: viewer }, { data: owner }] = await Promise.all([
-        supabaseAdmin.from('profiles').select('full_name').eq('id', viewerId).maybeSingle(),
+        supabaseAdmin.from('profiles').select('full_name, hidden_fields').eq('id', viewerId).maybeSingle(),
         supabaseAdmin.from('profiles').select('user_id').eq('id', viewedId).maybeSingle(),
       ])
       if (owner?.user_id && viewer?.full_name) {
+        const viewerName = Array.isArray(viewer.hidden_fields) && viewer.hidden_fields.includes('name')
+          ? 'Name hidden'
+          : viewer.full_name
         await supabaseAdmin.from('notifications').insert({
           user_id: owner.user_id,
           type: 'profile_view',
-          message: `${viewer.full_name} viewed your profile`,
+          message: `${viewerName} viewed your profile`,
           from_profile_id: viewerId,
           read: false,
           link: `/profile/${viewerId}`,

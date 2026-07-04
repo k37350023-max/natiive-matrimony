@@ -14,7 +14,7 @@ const SAFE_COLUMNS = [
   'current_city', 'current_state', 'height_cm', 'religion', 'caste',
   'mother_tongue', 'family_type', 'verified', 'status', 'created_at',
   'photo_url', 'photo_visibility', 'last_login_at', 'marital_status',
-  'profile_created_by', 'member_number',
+  'profile_created_by', 'member_number', 'hidden_fields',
 ].join(', ')
 
 export async function POST(req: Request) {

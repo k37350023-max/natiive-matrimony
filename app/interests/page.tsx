@@ -25,6 +25,7 @@ type Interest = {
     last_login_at: string | null
     photo_url: string | null
     photo_visibility: string | null
+    hidden_fields: string[] | null
   }
 }
 
@@ -67,6 +68,16 @@ type SavedProfile = {
   verified: boolean
   photo_url: string | null
   photo_visibility: string | null
+  hidden_fields: string[] | null
+}
+
+function nameIsHidden(p: { hidden_fields?: string[] | null }) {
+  return Array.isArray(p.hidden_fields) && p.hidden_fields.includes('name')
+}
+
+function displayProfileName(p: { full_name: string; hidden_fields?: string[] | null }, unlocked: boolean) {
+  if (!unlocked && nameIsHidden(p)) return 'Name hidden'
+  return p.full_name
 }
 
 function RequestsPageInner() {
@@ -101,7 +112,7 @@ function RequestsPageInner() {
   async function loadSaved() {
     const { data } = await supabase
       .from('shortlists')
-      .select('profile_id, profiles:profile_id(id, full_name, date_of_birth, profession, native_district, native_state, current_city, verified, photo_url, photo_visibility)')
+      .select('profile_id, profiles:profile_id(id, full_name, date_of_birth, profession, native_district, native_state, current_city, verified, photo_url, photo_visibility, hidden_fields)')
       .eq('by_profile_id', myId)
       .order('created_at', { ascending: false })
     if (data) setSaved(data.map((r: any) => r.profiles).filter(Boolean))
@@ -197,7 +208,7 @@ function RequestsPageInner() {
   const ProfileCard = ({ i, showActions, isAccepted }: { i: Interest; showActions?: boolean; isAccepted?: boolean }) => {
     const seenLabel = lastSeenBadge(i.profile.last_login_at)
     const unlocked = !!isAccepted
-    const shownName = unlocked ? i.profile.full_name : 'Verified profile'
+    const shownName = displayProfileName(i.profile, unlocked)
     return (
       <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E7E3D8', boxShadow: '0 1px 4px rgba(0,0,0,0.04)', padding: '16px' }}>
         <div className="flex items-start gap-3">
@@ -207,7 +218,7 @@ function RequestsPageInner() {
                 style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E7E3D8' }} />
             ) : (
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '15px', fontWeight: 700, background: avatarBg(i.profile.full_name) }}>
-                {unlocked ? initials(i.profile.full_name) : (
+                {!nameIsHidden(i.profile) || unlocked ? initials(i.profile.full_name) : (
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 )}
               </div>
@@ -474,6 +485,7 @@ function RequestsPageInner() {
             <div className="grid grid-cols-2 gap-3">
               {saved.map(p => {
                 const age = p.date_of_birth ? Math.floor((Date.now() - new Date(p.date_of_birth + 'T00:00:00').getTime()) / (1000 * 60 * 60 * 24 * 365.25)) : null
+                const savedName = displayProfileName(p, false)
                 return (
                   <Link key={p.id} href={`/profile/${p.id}`}
                     className="bg-white overflow-hidden shadow-sm border hover:shadow-md transition-shadow"
@@ -487,7 +499,7 @@ function RequestsPageInner() {
                       </div>
                     </div>
                     <div className="p-3">
-                      <p className="font-semibold text-gray-900 text-sm truncate">Verified profile</p>
+                      <p className="font-semibold text-gray-900 text-sm truncate">{savedName}</p>
                       <p className="text-xs text-gray-500">{age ? `${age} yrs` : ''}{p.profession ? ` · ${p.profession}` : ''}</p>
                       <p className="text-xs text-gray-400 mt-0.5 truncate">{[p.native_district, p.native_state].filter(Boolean).join(', ')}</p>
                     </div>

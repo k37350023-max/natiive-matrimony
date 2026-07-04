@@ -27,14 +27,17 @@ export async function POST(req: Request) {
       .maybeSingle()
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
 
-    const { data: me } = await supabaseAdmin.from('profiles').select('full_name').eq('id', fromId).maybeSingle()
+    const { data: me } = await supabaseAdmin.from('profiles').select('full_name, hidden_fields').eq('id', fromId).maybeSingle()
+    const senderName = Array.isArray(me?.hidden_fields) && me.hidden_fields.includes('name')
+      ? 'Name hidden'
+      : me?.full_name || 'Someone'
 
     // Best-effort notification to the recipient.
     const { data: target } = await supabaseAdmin.from('profiles').select('user_id').eq('id', toProfileId).maybeSingle()
     if (target?.user_id) {
       supabaseAdmin.from('notifications').insert({
         user_id: target.user_id, type: 'interest_received',
-        message: `${me?.full_name || 'Someone'} sent you an interest request`,
+        message: `${senderName} sent you a request`,
         from_profile_id: fromId, read: false, link: '/interests',
       }).then(() => {})
     }

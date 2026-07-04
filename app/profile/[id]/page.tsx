@@ -144,6 +144,7 @@ const REQUIRED_FIELD_LABELS = new Set(['Height', 'Religion', 'Profession', 'Educ
 const RECOMMENDED_FIELD_LABELS = new Set(['Caste', 'Star / Nakshatra', 'Rashi', 'Diet', 'Father', 'Mother', 'About'])
 
 const HIDEABLE: Record<string, string> = {
+  name: 'Name',
   photo: 'Profile photo',
   phone: 'Phone number',
   gotra: 'Gotra',
@@ -184,7 +185,7 @@ export default function ProfilePage() {
   const [incomingRequests, setIncomingRequests] = useState<IncomingRequest[]>([])
   const [approvingReq, setApprovingReq] = useState<string | null>(null)
   // Similar profiles & compatibility
-  const [similarProfiles, setSimilarProfiles] = useState<{id:string;full_name:string;profession:string;native_district:string;date_of_birth:string;photo_url:string|null;photo_visibility:string|null}[]>([])
+  const [similarProfiles, setSimilarProfiles] = useState<{id:string;full_name:string;profession:string;native_district:string;date_of_birth:string;photo_url:string|null;photo_visibility:string|null;hidden_fields:string[]|null}[]>([])
   const [myAge, setMyAge] = useState<number|null>(null)
   const [compatScore, setCompatScore] = useState<{match:number;total:number}|null>(null)
 
@@ -221,7 +222,7 @@ export default function ProfilePage() {
     // Similar profiles: same district or profession, different person
     if (data) {
       const { data: similar } = await supabase.from('profiles')
-        .select('id,full_name,profession,native_district,date_of_birth,photo_url,photo_visibility')
+        .select('id,full_name,profession,native_district,date_of_birth,photo_url,photo_visibility,hidden_fields')
         .eq('status', 'approved')
         .eq('gender', data.gender)
         .or(`native_district.eq.${data.native_district},profession.ilike.%${(data.profession||'').split(' ')[0]}%`)
@@ -459,7 +460,8 @@ export default function ProfilePage() {
   const cap = (s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : ''
   const isOwnProfile = !previewMode && myProfileId === profile.id
   const canViewBiodata = isOwnProfile || viewerRelation === 'matched'
-  const publicName = canViewBiodata ? profile.full_name : 'Verified profile'
+  const nameHidden = fieldIsHidden('name') && !isOwnProfile && !canViewBiodata
+  const publicName = nameHidden ? 'Name hidden' : profile.full_name
 
   // Photos are open by default; explicit hidden fields or legacy hidden visibility still hide them.
   const photoHidden = fieldIsHidden('photo') || profile.photo_visibility === 'hidden'
@@ -658,9 +660,9 @@ export default function ProfilePage() {
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <div className="w-28 h-28 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
                       style={{ background: avatarBg(profile.full_name) }}>
-                      {canViewBiodata ? initials(profile.full_name) : ''}
+                      {!nameHidden ? initials(profile.full_name) : ''}
                     </div>
-                    {!canViewBiodata && !isOwnProfile && (
+                    {nameHidden && !isOwnProfile && (
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(20,36,28,0.82)' }}>
                           <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1128,22 +1130,24 @@ export default function ProfilePage() {
             {similarProfiles.map(p => {
               const age = getAge(p.date_of_birth)
               const showPhoto = !!(p.photo_url && p.photo_visibility !== 'hidden')
+              const similarNameHidden = Array.isArray(p.hidden_fields) && p.hidden_fields.includes('name')
+              const similarName = similarNameHidden ? 'Name hidden' : p.full_name.split(' ')[0]
               return (
                 <Link key={p.id} href={`/profile/${p.id}`} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px', borderRadius: '10px', border: '1px solid #F3F4F6', textDecoration: 'none', transition: 'background 0.15s' }}
                   onMouseEnter={e => (e.currentTarget as HTMLAnchorElement).style.background = '#FBFAF5'}
                   onMouseLeave={e => (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'}>
                   <div style={{ width: '40px', height: '40px', borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: '#F3F4F6' }}>
                     {showPhoto ? (
-                      <img loading="lazy" src={p.photo_url!} alt={p.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <img loading="lazy" src={p.photo_url!} alt={similarName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     ) : (
                       <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#14241C', color: 'white', fontSize: '14px', fontWeight: 700 }}>
-                        {p.full_name.slice(0,2).toUpperCase()}
+                        {similarNameHidden ? '' : p.full_name.slice(0,2).toUpperCase()}
                       </div>
                     )}
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <p style={{ fontSize: '13px', fontWeight: 700, color: '#0F0F0F', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {p.full_name.split(' ')[0]}{age ? `, ${age}` : ''}
+                      {similarName}{age ? `, ${age}` : ''}
                     </p>
                     <p style={{ fontSize: '11px', color: '#94A3B8', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {p.native_district || p.profession || '-'}

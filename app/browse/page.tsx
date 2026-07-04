@@ -85,9 +85,12 @@ const AVATAR_COLORS = ['#14241C','#0369A1','#047857','#6D28D9','#BE185D']
 function avatarBg(name: string) { return AVATAR_COLORS[(name?.charCodeAt(0)||0) % AVATAR_COLORS.length] }
 function isVerified(p: Pick<Profile,'verified'|'phone_verified'>) { return p.verified || p.phone_verified }
 function isAcceptedStatus(status?: string) { return status === 'matched' || status === 'accepted' }
-function displayName(p: Pick<Profile,'full_name'>, unlocked: boolean) {
-  if (unlocked) return p.full_name.split(' ').slice(0,2).join(' ')
-  return 'Verified profile'
+function nameIsHidden(p: Pick<Profile,'hidden_fields'>) {
+  return Array.isArray(p.hidden_fields) && p.hidden_fields.includes('name')
+}
+function displayName(p: Pick<Profile,'full_name'|'hidden_fields'>, unlocked: boolean) {
+  if (!unlocked && nameIsHidden(p)) return 'Name hidden'
+  return p.full_name.split(' ').slice(0,2).join(' ')
 }
 function verificationLabel(p: Pick<Profile,'verified'|'phone_verified'>) {
   if (p.verified) return 'Community reviewed'
@@ -329,6 +332,7 @@ function ProfileCard({
   const isOnline = seenLabel === 'Active now'
   const isNew = p.created_at && (Date.now() - new Date(p.created_at).getTime()) < 7 * 24 * 60 * 60 * 1000
   const protectedDetails = !unlocked
+  const visibleName = displayName(p, unlocked)
   const signalTags = [
     p.education,
     p.religion,
@@ -353,7 +357,7 @@ function ProfileCard({
       <div className="browse-profile-media" style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
         {showPhoto ? (
           <img loading="lazy"
-            src={p.photo_url} alt={p.full_name}
+            src={p.photo_url} alt={visibleName}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
           />
         ) : (
@@ -392,7 +396,7 @@ function ProfileCard({
         {/* Name + age */}
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px' }}>
           <p style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 600, color: '#14241C', fontSize: '17px', lineHeight: 1.25, letterSpacing: '-0.01em', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-            {displayName(p, unlocked)}
+            {visibleName}
           </p>
           {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>{p.gender === 'male' ? 'Male' : 'Female'}, {age}</span>}
         </div>
@@ -1414,12 +1418,12 @@ export default function BrowsePage() {
               {/* Photo header */}
               <div className="relative shrink-0" style={{ height: '220px' }}>
                 {showPhoto ? (
-                  <img loading="lazy" src={p.photo_url} alt={p.full_name} className="w-full h-full object-cover" />
+                  <img loading="lazy" src={p.photo_url} alt={displayName(p, unlocked)} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center"
                     style={{ background: `linear-gradient(135deg, ${avatarBg(p.full_name)}33, ${avatarBg(p.full_name)}66)` }}>
                     <div className="w-20 h-20 rounded-full flex items-center justify-center text-white text-3xl font-bold mb-2"
-                      style={{ background: avatarBg(p.full_name) }}>{initials(p.full_name)}</div>
+                      style={{ background: avatarBg(p.full_name) }}>{nameIsHidden(p) && !unlocked ? '' : initials(p.full_name)}</div>
                     {photoHidden && (
                       <div style={{ width: '34px', height: '34px', borderRadius: '50%', background: 'rgba(20,36,28,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>

@@ -26,7 +26,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const hiddenFields = Array.isArray(data.hidden_fields) ? data.hidden_fields : []
     const photoHidden = hiddenFields.includes('photo') || data.photo_visibility === 'hidden'
     if (!isOwner && !isAccepted) {
-      data.full_name = 'Name hidden'
+      if (hiddenFields.includes('name')) data.full_name = 'Name hidden'
       data.phone = null
       data.email = null
       if (photoHidden) data.photo_url = null

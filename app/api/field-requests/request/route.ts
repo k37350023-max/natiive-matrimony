@@ -3,6 +3,7 @@ import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { getSessionProfileId } from '@/lib/session'
 
 const HIDEABLE: Record<string, string> = {
+  name: 'name',
   photo: 'photo',
   phone: 'phone number',
   email: 'email',
