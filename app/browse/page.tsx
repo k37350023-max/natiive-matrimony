@@ -402,7 +402,7 @@ function ProfileCard({
           <p style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 600, color: '#14241C', fontSize: '17px', lineHeight: 1.25, letterSpacing: '-0.01em', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {visibleName}
           </p>
-          {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>{p.gender === 'male' ? 'Male' : 'Female'}, {age}</span>}
+          {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>{age} yrs</span>}
         </div>
 
         {/* Location */}
@@ -1457,8 +1457,7 @@ export default function BrowsePage() {
                     <div>
                       <h2 className="text-white font-bold text-lg leading-tight">{displayName(p, unlocked)}</h2>
                       <p className="text-white/80 text-sm">
-                        {age?`${age} yrs`:''}
-                        {p.gender?` • ${p.gender==='male'?'Groom':'Bride'}`:''}
+                        {age ? `${age} yrs` : ''}
                       </p>
                     </div>
                     <div className="flex flex-col items-end gap-1">

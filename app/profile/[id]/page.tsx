@@ -723,7 +723,6 @@ export default function ProfilePage() {
                   {[
                     getAge(profile.date_of_birth) != null ? `${getAge(profile.date_of_birth)} yrs` : null,
                     canViewFullProfile && profile.height_cm ? cmToFeet(profile.height_cm).split(' ')[0] : null,
-                    profile.gender === 'male' ? 'Groom' : 'Bride',
                   ].filter(Boolean).join(' · ')}
                 </p>
                 {canViewFullProfile && lastSeenLabel(profile.last_login_at) && (
