@@ -695,7 +695,7 @@ export default function BrowsePage() {
   const [shortlists,      setShortlists]      = useState<Set<string>>(new Set())
   const [quickView,       setQuickView]       = useState<Profile|null>(null)
   const [quickViewIdx,    setQuickViewIdx]    = useState<number>(0)
-  const [sendingInterest, setSendingInterest] = useState(false)
+  const [sendingProfileIds, setSendingProfileIds] = useState<Set<string>>(new Set())
   const [interestSent,    setInterestSent]    = useState(false)
   const [newArrivals,     setNewArrivals]     = useState<Profile[]>([])
   const [sinceLastVisit,  setSinceLastVisit]  = useState<Profile[]>([])
@@ -976,8 +976,12 @@ export default function BrowsePage() {
   // Send a request. Stays pending until the recipient accepts.
   // (acceptance is what creates a match) - no auto-match here.
   async function sendInterest(p: Profile, opts: { advance?: boolean } = {}) {
-    if (!myProfileId || interestMap[p.id] || sendingInterest) return
-    setSendingInterest(true)
+    if (!myProfileId || interestMap[p.id] || sendingProfileIds.has(p.id)) return
+    setSendingProfileIds(ids => {
+      const next = new Set(ids)
+      next.add(p.id)
+      return next
+    })
     setInterestSent(false)
 
     try {
@@ -986,7 +990,7 @@ export default function BrowsePage() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ toProfileId: p.id }),
       })
-      if (!res.ok) { setSendingInterest(false); return }
+      if (!res.ok) return
       setInterestMap(m => ({ ...m, [p.id]: 'pending' }))
       setInterestSent(true)
       // Modal flow only: auto-advance to the next profile so the user can keep going.
@@ -1004,7 +1008,11 @@ export default function BrowsePage() {
         }, 700)
       }
     } finally {
-      setSendingInterest(false)
+      setSendingProfileIds(ids => {
+        const next = new Set(ids)
+        next.delete(p.id)
+        return next
+      })
     }
   }
 
@@ -1260,7 +1268,7 @@ export default function BrowsePage() {
                       shortlisted={shortlists.has(p.id)}
                       onToggleShortlist={() => toggleShortlist(p.id)}
                       onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingInterest} />
+                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingProfileIds.has(p.id)} />
                   ))}
                 </div>
                 <hr className="my-4 border-gray-100" />
@@ -1279,7 +1287,7 @@ export default function BrowsePage() {
                       shortlisted={shortlists.has(p.id)}
                       onToggleShortlist={() => toggleShortlist(p.id)}
                       onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingInterest} />
+                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingProfileIds.has(p.id)} />
                   ))}
                 </div>
                 <hr className="my-4 border-gray-100" />
@@ -1359,7 +1367,7 @@ export default function BrowsePage() {
                         shortlisted={shortlists.has(p.id)}
                         onToggleShortlist={() => toggleShortlist(p.id)}
                         onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                        onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingInterest}
+                        onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingProfileIds.has(p.id)}
                       />
                     ))}
                   </div>
@@ -1514,7 +1522,7 @@ export default function BrowsePage() {
                 {myProfileId && myProfileId !== p.id && !interestSent && (
                   <button
                     onClick={() => { if (status==='matched' || status==='accepted') { window.location.href = `/profile/${p.id}` } else if (!status) { handleInterestFromModal(p) } }}
-                    disabled={(!!status && status!=='matched') || sendingInterest}
+                    disabled={(!!status && status!=='matched') || sendingProfileIds.has(p.id)}
                     className="w-full py-3 rounded-xl text-sm font-bold transition-all"
                     style={status==='matched'
                       ? { background: '#1B5E20', color: '#FFFFFF', cursor: 'pointer' }
@@ -1525,7 +1533,7 @@ export default function BrowsePage() {
                      status==='accepted' ? 'Accepted' :
                      status==='pending'  ? 'Request Sent ✓' :
                      status==='rejected' ? 'Declined' :
-                     sendingInterest ? 'Sending…' : 'Send Request'}
+                     sendingProfileIds.has(p.id) ? 'Sending…' : 'Send Request'}
                   </button>
                 )}
 
