@@ -29,7 +29,7 @@ export default function ConsultantsPage() {
             ))}
           </div>
           <div className="consultant-actions">
-            <Link href="/register" className="landing-primary compact">Start Free</Link>
+            <Link href="/browse" className="landing-primary compact">Browse profiles</Link>
             <Link href="/pricing" className="landing-secondary compact">See guided help</Link>
           </div>
         </section>

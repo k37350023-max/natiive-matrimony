@@ -286,7 +286,7 @@ function RequestsPageInner() {
             {((i.profile as any).phone || (i.profile as any).email) && (
               <div className="mt-3 px-3 py-2.5 rounded-xl flex flex-wrap gap-3"
                 style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
-                <span className="text-xs font-semibold text-green-700">Full profile and contact shown</span>
+                <span className="text-xs font-semibold text-green-700">Contact shown</span>
                 {(i.profile as any).phone && (
                   <a href={`tel:${(i.profile as any).phone}`}
                     className="text-xs font-semibold flex items-center gap-1"
@@ -317,7 +317,7 @@ function RequestsPageInner() {
               <Link href={`/profile/${i.profile.id}`}
                 className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
                 style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
-                View locked profile
+                View profile
               </Link>
               <Link href="/matches"
                 style={{ flex: 1, padding: '9px', textAlign: 'center', fontSize: '13px', fontWeight: 700, borderRadius: '12px', background: '#14241C', color: 'white', textDecoration: 'none', display: 'block' }}>
@@ -365,7 +365,7 @@ function RequestsPageInner() {
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <div className="flex-1">
               <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request accepted with {acceptedMatch.name}!</p>
-              <p className="text-xs text-green-600 mt-0.5">Full profile and contact are now shown.</p>
+              <p className="text-xs text-green-600 mt-0.5">Contact details are now shown.</p>
             </div>
             <Link href="/matches"
               className="text-xs font-bold px-3 py-2 rounded-xl text-white shrink-0"

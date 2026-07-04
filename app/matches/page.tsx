@@ -61,6 +61,7 @@ export default function MatchesPage() {
   const [matches, setMatches] = useState<MatchEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [responding, setResponding] = useState<string | null>(null)
+  const [error, setError] = useState('')
 
   async function respond(interestId: string, accept: boolean, matchId: string) {
     setResponding(interestId)
@@ -82,7 +83,8 @@ export default function MatchesPage() {
         : prev.filter(m => m.match_id !== matchId)
       )
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Could not respond to this interest')
+      setError(err instanceof Error ? err.message : 'Could not respond to this request')
+      setTimeout(() => setError(''), 3500)
     } finally {
       setResponding(null)
     }
@@ -149,8 +151,13 @@ export default function MatchesPage() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-5">
           <h1 className="text-2xl font-bold text-gray-900">Connected Profiles</h1>
-          <p className="text-gray-500 text-sm mt-0.5">View full profile, contact details, WhatsApp, and chat after both sides accept.</p>
+          <p className="text-gray-500 text-sm mt-0.5">View contact details, WhatsApp, and chat after both sides accept.</p>
         </div>
+        {error && (
+          <div className="mb-4 rounded-xl px-4 py-3 text-sm font-semibold" style={{ background: '#FEF2F2', color: '#B91C1C', border: '1px solid #FECACA' }}>
+            {error}
+          </div>
+        )}
 
         {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}
 
@@ -162,7 +169,7 @@ export default function MatchesPage() {
               </svg>
             </div>
             <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No connected profiles yet</p>
-            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from Browse. Full profile and contact are shown after acceptance.</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from Browse. Contact opens after acceptance.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Native Profiles</Link>
           </div>
         )}

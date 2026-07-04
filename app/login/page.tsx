@@ -198,11 +198,11 @@ export default function LoginPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
                   <button onClick={() => devLogin('groom')} disabled={loading}
                     style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1.5px solid #14241C', background: 'white', color: '#14241C', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
-                    Sign in as Groom
+                    Sign in as Test Profile 1
                   </button>
                   <button onClick={() => devLogin('bride')} disabled={loading}
                     style={{ flex: 1, padding: '10px', borderRadius: '8px', border: '1.5px solid #14241C', background: 'white', color: '#14241C', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}>
-                    Sign in as Bride
+                    Sign in as Test Profile 2
                   </button>
                 </div>
                 <p style={{ fontSize: '10.5px', color: '#5E6B62', margin: '8px 0 0', textAlign: 'center' }}>Two real test accounts - connect one to the other to test the full flow. Auto-disabled in production.</p>

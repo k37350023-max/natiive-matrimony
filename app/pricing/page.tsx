@@ -108,7 +108,7 @@ export default function PricingPage() {
 
         <section className="mt-8 grid sm:grid-cols-3 gap-3">
           {[
-            ['Private by default', 'Full profile and contact details are shown only after an accepted request.'],
+            ['Contact stays private', 'Profile details are visible by default. Phone, email, chat, and WhatsApp open after connection.'],
             ['Native-place first', 'Search by hometown, district, city, or family roots.'],
             ['No random messages', 'Chat opens only after both families accept.'],
           ].map(([title, body]) => (
