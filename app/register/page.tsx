@@ -71,7 +71,7 @@ const FOUNDING_MEMBER_LIMIT = 1000
 const PREMIUM_PERKS = [
   'Free forever basics',
   'Premium trial included',
-  'Private details unlock after acceptance',
+  'Private details shown after acceptance',
 ]
 
 /* ─── Main ───────────────────────────────────────────────────── */
@@ -453,7 +453,7 @@ export default function RegisterPage() {
             <Link href="/login" style={{ fontWeight: 600, color: '#14241C', textDecoration: 'none' }}>Sign in</Link>
           </p>
           <p style={{ textAlign: 'center', fontSize: '12px', color: '#8A93A6', marginTop: '8px', lineHeight: 1.6 }}>
-            Your full profile and contact details unlock only after an accepted request.<br />
+            Your full profile and contact details are shown only after an accepted request.<br />
             By registering you agree to our{' '}
             <Link href="/terms" style={{ textDecoration: 'underline', color: 'inherit' }}>Terms</Link>
             {' '}&amp;{' '}

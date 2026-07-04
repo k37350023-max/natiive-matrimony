@@ -59,14 +59,6 @@ export default function MobileNav() {
       ),
     },
     {
-      href: '/search', label: 'Search', active: path.startsWith('/search'),
-      icon: (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-      ),
-    },
-    {
       href: '/interests', label: 'Requests', active: path.startsWith('/interests'), badge: pendingInterests,
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -75,7 +67,7 @@ export default function MobileNav() {
       ),
     },
     {
-      href: '/matches', label: 'Connections', active: inboxActive, badge: unreadMessages,
+      href: '/matches', label: 'Connected', active: inboxActive, badge: unreadMessages,
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
@@ -83,7 +75,7 @@ export default function MobileNav() {
       ),
     },
     {
-      href: '/dashboard', label: 'Profile', active: profileActive,
+      href: '/dashboard', label: 'My Profile', active: profileActive || path.startsWith('/dashboard'),
       icon: (
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>

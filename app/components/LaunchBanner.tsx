@@ -43,7 +43,7 @@ export default function LaunchBanner() {
           </svg>
           <div>
             <p className="text-xs font-bold" style={{ color: '#14241C' }}>Founder Access Active</p>
-            <p className="text-[11px]" style={{ color: '#057A5B' }}>Registry access active until {formatted}</p>
+            <p className="text-[11px]" style={{ color: '#057A5B' }}>Premium access active until {formatted}</p>
           </div>
         </div>
         <button

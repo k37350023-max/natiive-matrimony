@@ -194,7 +194,7 @@ export default function ChatPage() {
     <div className="min-h-screen flex items-center justify-center" style={{ background: '#FBFAF5' }}>
       <div className="text-center">
         <p className="text-gray-600 mb-4">{error}</p>
-        <Link href="/matches" className="btn-primary px-6 py-2.5">Back to Matches</Link>
+        <Link href="/matches" className="btn-primary px-6 py-2.5">Back to Connected</Link>
       </div>
     </div>
   )
@@ -334,7 +334,7 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Composer - locked until the interest is accepted */}
+      {/* Composer is available after the request is accepted. */}
       {chatState?.locked ? (
         <div className="shrink-0 bg-white border-t px-4 py-4" style={{ borderColor: '#E7E3D8' }}>
           <div className="max-w-2xl mx-auto text-center">

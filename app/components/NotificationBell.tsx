@@ -141,7 +141,7 @@ export default function NotificationBell() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
             <div className="flex-1">
               <p className="font-semibold text-white text-xs">Enable notifications</p>
-              <p className="text-gray-400 text-xs">Get interests, views, and native-place alerts</p>
+              <p className="text-gray-400 text-xs">Get requests, views, and native-place alerts</p>
             </div>
             <button onClick={enablePush}
               className="text-xs font-bold px-3 py-1.5 rounded-lg shrink-0"
@@ -199,7 +199,7 @@ export default function NotificationBell() {
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                   </span>
                   <p className="text-sm text-gray-400">No notifications yet</p>
-                  <p className="text-xs text-gray-300 mt-1">We'll alert you about interests, views, and saved places</p>
+                  <p className="text-xs text-gray-300 mt-1">We'll alert you about requests, views, and saved places</p>
                 </div>
               ) : notifs.map(n => {
                 const link = notifLink(n)
@@ -230,7 +230,7 @@ export default function NotificationBell() {
                           onClick={e => { e.stopPropagation(); router.push('/interests?tab=received'); setOpen(false) }}
                           className="mt-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg"
                           style={{ background: '#14241C', color: 'white' }}>
-                          Review interest →
+                          Review request →
                         </button>
                       )}
                       {n.type === 'interest_accepted' && (

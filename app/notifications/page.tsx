@@ -32,9 +32,9 @@ type FromProfile = {
 
 const TAB_FILTERS: Record<string, string[]> = {
   All:       [],
-  Interests: ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
+  Requests:  ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
   Views:     ['profile_view'],
-  Matches:   ['interest_accepted'],
+  Connected: ['interest_accepted'],
   'Place Alerts': ['place_alert_saved','place_match_joined'],
   System:    ['system','field_request','field_request_approved'],
 }
@@ -50,13 +50,13 @@ function timeAgo(d: string) {
 }
 
 function typeLabel(type: string) {
-  if (type === 'interest_received')        return { label: 'Interest Received', color: '#14241C', bg: '#EDF3ED' }
-  if (type === 'interest_accepted')        return { label: 'Match!', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'interest_received')        return { label: 'Request Received', color: '#14241C', bg: '#EDF3ED' }
+  if (type === 'interest_accepted')        return { label: 'Connected', color: '#065F46', bg: '#ECFDF5' }
   if (type === 'interest_declined')        return { label: 'Declined', color: '#5E6B62', bg: '#F3F4F6' }
   if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#5E6B62', bg: '#F3F4F6' }
   if (type === 'profile_view')             return { label: 'Profile View', color: '#1E40AF', bg: '#EFF6FF' }
   if (type === 'place_alert_saved')        return { label: 'Place Alert Saved', color: '#075E3E', bg: '#EDF3ED' }
-  if (type === 'place_match_joined')       return { label: 'New Place Match', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'place_match_joined')       return { label: 'New Native Place Profile', color: '#065F46', bg: '#ECFDF5' }
   if (type === 'field_request')            return { label: 'Contact Request', color: '#7C3AED', bg: '#F5F3FF' }
   if (type === 'field_request_approved')   return { label: 'Contact Shared', color: '#065F46', bg: '#ECFDF5' }
   return { label: 'Notification', color: '#5E6B62', bg: '#F3F4F6' }
@@ -79,7 +79,7 @@ function notifIcon(type: string) {
 }
 
 function notifAction(type: string, fromProfileId: string | null, link?: string | null): { label: string; href: string } | null {
-  if (type === 'interest_received')  return { label: 'Review interest →', href: '/interests?tab=received' }
+  if (type === 'interest_received')  return { label: 'Review request →', href: '/interests?tab=received' }
   if (type === 'interest_accepted')  return { label: 'Open chat →', href: '/matches' }
   if (type === 'profile_view' && fromProfileId) return { label: 'View their profile →', href: `/profile/${fromProfileId}` }
   if (type === 'field_request' && fromProfileId) return { label: 'View profile →', href: `/profile/${fromProfileId}` }
@@ -241,7 +241,7 @@ export default function NotificationsPage() {
               </span>
             )}
             </div>
-            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Interests, views, matches, and native-place alerts</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Requests, views, connected profiles, and native-place alerts</p>
           </div>
           {notifs.some(n => !n.read) && (
             <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#14241C', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
@@ -294,7 +294,7 @@ export default function NotificationsPage() {
             </p>
             <p style={{ fontSize: '13.5px', color: '#94A3B8', maxWidth: '280px', margin: '0 auto', lineHeight: 1.6 }}>
               {tab === 'All'
-                ? 'When someone shows interest, views your profile, accepts a request, or when a saved place alert is updated, you will see it here.'
+                ? 'When someone sends a request, views your profile, accepts a request, or when a saved place alert is updated, you will see it here.'
                 : 'Nothing in this category yet.'}
             </p>
           </div>

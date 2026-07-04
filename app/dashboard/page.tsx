@@ -226,11 +226,11 @@ export default function DashboardPage() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px' }}>
               <div>
-                <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: '0 0 3px', letterSpacing: 0 }}>My registry profile</h1>
+                <h1 style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: '0 0 3px', letterSpacing: 0 }}>My Profile</h1>
                 <p style={{ fontSize: '12.5px', color: '#777', margin: 0 }}>
                   {[age ? `${age} yrs` : null, profile.profession, profile.native_district].filter(Boolean).join(' · ')}
                 </p>
-                {memberLabel && <p style={{ fontSize: '11px', color: '#5E6B62', margin: '3px 0 0', fontWeight: 700 }}>Registry Profile #{profile.member_number}</p>}
+                {memberLabel && <p style={{ fontSize: '11px', color: '#5E6B62', margin: '3px 0 0', fontWeight: 700 }}>Profile #{profile.member_number}</p>}
               </div>
             </div>
             <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
@@ -248,7 +248,7 @@ export default function DashboardPage() {
           {[
             { label: 'Requests Received', sub: 'Accept or decline families who requested your full profile.', href: '/interests?tab=received' },
             { label: 'Requests Sent', sub: 'Track pending requests you sent from native-place search.', href: '/interests?tab=sent' },
-            { label: 'Accepted Connections', sub: 'View full profile, contact, WhatsApp, and optional chat.', href: '/matches' },
+            { label: 'Connected Profiles', sub: 'View full profile, contact, WhatsApp, and optional chat.', href: '/matches' },
             { label: 'My Profile', sub: 'Edit your native place, phone, photo, and family details.', href: '/profile/edit' },
           ].map((item, i, arr) => (
             <Link key={item.label} href={item.href} style={{

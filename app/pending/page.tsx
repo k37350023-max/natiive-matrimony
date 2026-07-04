@@ -22,7 +22,7 @@ export default function PendingPage() {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2 font-serif-display">Profile Created!</h1>
             <p className="text-gray-500 leading-relaxed text-sm">
-              Your profile is live in the native-place registry. Start browsing now.
+              Your profile is live. Start browsing profiles now.
             </p>
           </div>
 
@@ -34,7 +34,7 @@ export default function PendingPage() {
               {[
                 { icon: '✓', text: 'Search by native place and current location' },
                 { icon: '✓', text: 'Send requests without showing contact details' },
-                { icon: '✓', text: 'Full profile unlocks only after acceptance' },
+                { icon: '✓', text: 'Full profile is shown only after acceptance' },
                 { icon: '✓', text: 'Print full profile for accepted connections' },
               ].map(f => (
                 <p key={f.text} className="text-sm text-gray-700 flex items-center gap-2">

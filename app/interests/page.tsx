@@ -255,7 +255,7 @@ function RequestsPageInner() {
             <Link href={`/profile/${i.profile.id}`}
               className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
               style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
-              View Full Profile
+              View Profile
             </Link>
             <button onClick={() => respond(i.id, i.from_user, true)}
               style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#2E7D32', color: 'white' }}>
@@ -270,11 +270,11 @@ function RequestsPageInner() {
 
         {isAccepted && (
           <>
-            {/* Contact info unlock on match */}
+            {/* Contact info is shown after acceptance. */}
             {((i.profile as any).phone || (i.profile as any).email) && (
               <div className="mt-3 px-3 py-2.5 rounded-xl flex flex-wrap gap-3"
                 style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
-                <span className="text-xs font-semibold text-green-700">Full profile and contact unlocked</span>
+                <span className="text-xs font-semibold text-green-700">Full profile and contact shown</span>
                 {(i.profile as any).phone && (
                   <a href={`tel:${(i.profile as any).phone}`}
                     className="text-xs font-semibold flex items-center gap-1"
@@ -338,7 +338,7 @@ function RequestsPageInner() {
   const tabs: { key: 'received' | 'sent' | 'matched' | 'saved'; label: string; count: number }[] = [
     { key: 'received', label: 'Received', count: received.length },
     { key: 'sent',     label: 'Sent',     count: sent.length },
-    { key: 'matched',  label: 'Accepted',  count: matched.length },
+    { key: 'matched',  label: 'Connected',  count: matched.length },
     { key: 'saved',    label: 'Saved',    count: saved.length },
   ]
 
@@ -353,7 +353,7 @@ function RequestsPageInner() {
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <div className="flex-1">
               <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request accepted with {acceptedMatch.name}!</p>
-              <p className="text-xs text-green-600 mt-0.5">Full profile and contact are now unlocked.</p>
+              <p className="text-xs text-green-600 mt-0.5">Full profile and contact are now shown.</p>
             </div>
             <Link href="/matches"
               className="text-xs font-bold px-3 py-2 rounded-xl text-white shrink-0"
@@ -370,7 +370,7 @@ function RequestsPageInner() {
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-4">
           <h1 className="text-2xl font-bold text-gray-900 font-serif-display">Requests</h1>
-          <p className="text-sm text-gray-500 mt-1">Review interests, sent requests, accepted connections, and saved profiles.</p>
+          <p className="text-sm text-gray-500 mt-1">Review requests, sent requests, connected profiles, and saved profiles.</p>
         </div>
 
         <div className="flex rounded-xl p-1 mb-5" style={{ background: '#F3F4F6' }}>
@@ -438,7 +438,7 @@ function RequestsPageInner() {
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-gray-400 mb-1">{sent.length} sent - full profile unlocks after acceptance</p>
+              <p className="text-xs text-gray-400 mb-1">{sent.length} sent - full profile is shown after acceptance</p>
               {sent.map(i => <ProfileCard key={i.id} i={i} />)}
             </div>
           )
@@ -450,8 +450,8 @@ function RequestsPageInner() {
               <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EFF1EC', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </span>
-              <p className="font-semibold text-gray-700">No accepted connections yet</p>
-              <p className="text-sm text-gray-400 mt-1">Requests you accept become accepted connections here.</p>
+              <p className="font-semibold text-gray-700">No connected profiles yet</p>
+              <p className="text-sm text-gray-400 mt-1">When both sides accept, profiles appear here.</p>
             </div>
           ) : (
             <div className="space-y-3">

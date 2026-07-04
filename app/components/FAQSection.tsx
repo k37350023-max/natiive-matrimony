@@ -12,11 +12,11 @@ const FAQS = [
   },
   {
     q: 'Is the service free?',
-    a: 'Yes. Registry access is currently free: create a profile, browse by native place, send requests, and unlock details after mutual acceptance. Optional guided matchmaking can become a premium service for families who want human help.',
+    a: 'Yes. Create a profile, browse by native place, send requests, and see details after both sides accept. Optional guided matchmaking can become a premium service for families who want human help.',
   },
   {
     q: 'How private are my photos and contact details?',
-    a: 'Photos are visible by default so profiles feel real, but you can hide your photo anytime from Privacy settings. Phone numbers and email are shared only after a mutual match. You control what stays private.',
+    a: 'Photos are visible by default so profiles feel real, but you can hide your photo anytime from Privacy settings. Phone numbers and email are shared only after both sides accept. You control what stays private.',
   },
   {
     q: 'Can parents register on behalf of their child?',
@@ -24,7 +24,7 @@ const FAQS = [
   },
   {
     q: 'How is NativeMatrimony different from other matrimony sites?',
-    a: 'We are not trying to be a broad listing site. We focus on native-place discovery, useful profile details before unlock, join alerts for growing places, no cold messages, and contact sharing only after both sides agree.',
+    a: 'We are not trying to be a broad listing site. We focus on native-place discovery, useful profile previews, join alerts for growing places, no cold messages, and contact sharing only after both sides agree.',
   },
 ]
 

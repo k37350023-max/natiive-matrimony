@@ -22,8 +22,8 @@ export default function HowItWorks() {
     },
     {
       n: '3',
-      title: 'Send an interest',
-      desc: 'Found someone you like? Send an interest. Their family reviews it and responds.',
+      title: 'Send a request',
+      desc: 'Found someone you like? Send a request. Their family reviews it and responds.',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -33,7 +33,7 @@ export default function HowItWorks() {
     {
       n: '4',
       title: 'Connect when both say yes',
-      desc: 'When both families accept, contact details unlock and a chat opens. Take it from there.',
+      desc: 'When both families accept, contact details are shown and chat opens. Take it from there.',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>

@@ -77,7 +77,7 @@ export default function PricingPage() {
               <Benefit>2 years free for district founding members</Benefit>
               <Benefit>3 months free for everyone else</Benefit>
               <Benefit>More full profile views and chats after acceptance</Benefit>
-              <Benefit>Unlock contact after both sides accept</Benefit>
+              <Benefit>See contact after both sides accept</Benefit>
               <Benefit>Photo controls: show or hide anytime</Benefit>
             </div>
             <Link href={isLoggedIn ? '/browse' : '/register?offer=premium_trial'} className="btn-primary text-sm px-5 py-3 w-full justify-center">
@@ -108,9 +108,9 @@ export default function PricingPage() {
 
         <section className="mt-8 grid sm:grid-cols-3 gap-3">
           {[
-            ['Private by default', 'Full profile and contact details unlock only after an accepted request.'],
-            ['Native-place first', 'Search by hometown, district, city, or diaspora corridor.'],
-            ['No random messages', 'Chat opens only after both families show mutual interest.'],
+            ['Private by default', 'Full profile and contact details are shown only after an accepted request.'],
+            ['Native-place first', 'Search by hometown, district, city, or family roots.'],
+            ['No random messages', 'Chat opens only after both families accept.'],
           ].map(([title, body]) => (
             <article key={title} className="rounded-xl border bg-white px-5 py-4" style={{ borderColor: '#E7E3D8' }}>
               <h3 className="font-bold text-gray-900 text-sm mb-1">{title}</h3>

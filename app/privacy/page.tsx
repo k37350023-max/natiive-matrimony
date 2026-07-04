@@ -22,11 +22,11 @@ export default function PrivacyPage() {
           {[
             {
               title: '1. Information we collect',
-              body: 'We collect information you provide when creating a profile, including your name, date of birth, phone number, email address, location, education, profession, and photographs. We also collect usage data such as profile views, interests sent, and messages.',
+              body: 'We collect information you provide when creating a profile, including your name, date of birth, phone number, email address, location, education, profession, and photographs. We also collect usage data such as profile views, requests sent, and messages.',
             },
             {
               title: '2. How we use your information',
-              body: 'Your information is used to display your profile to potential matches, send you notifications about interests and messages, verify your identity, and improve our service. We do not sell your personal data to third parties.',
+              body: 'Your information is used to display your profile to potential matches, send you notifications about requests and messages, verify your identity, and improve our service. We do not sell your personal data to third parties.',
             },
             {
               title: '3. Profile visibility',

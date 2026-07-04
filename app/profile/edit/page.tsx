@@ -387,7 +387,7 @@ function EditProfilePageInner() {
       <div className="max-w-xl mx-auto px-4 py-5 space-y-4">
         {isNewProfile && (
           <div className="px-4 py-3 rounded-xl text-sm font-medium" style={{ background: '#EDF3ED', border: '1px solid #CADFCA', color: '#14241C' }}>
-            Fill the essentials first. Full profile and contact unlock only after acceptance.
+            Fill the essentials first. Full profile and contact are shown only after acceptance.
           </div>
         )}
         <div className="mb-2">
@@ -500,7 +500,7 @@ function EditProfilePageInner() {
           {/* Additional photos */}
           <div className="mb-5 pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-2">More photos <span className="font-normal text-gray-400">({additionalPhotos.length}/4 added)</span></p>
-            <p className="text-xs text-gray-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get significantly more interest.</p>
+            <p className="text-xs text-gray-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get more requests.</p>
             <div className="flex flex-wrap gap-2">
               {additionalPhotos.map((url, idx) => (
                 <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden group">
@@ -823,7 +823,7 @@ function EditProfilePageInner() {
         </div>
 
         {/* Family Background */}
-        <CollapsibleCard title="Family Background" subtitle="Shown only to mutual matches">
+        <CollapsibleCard title="Family Background" subtitle="Shown only after both sides accept">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -917,7 +917,7 @@ function EditProfilePageInner() {
         </CollapsibleCard>
 
         {/* Lifestyle - optional */}
-        <CollapsibleCard title="Lifestyle" badge="Optional" subtitle="Helps find compatible matches">
+        <CollapsibleCard title="Lifestyle" badge="Optional" subtitle="Helps find compatible profiles">
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label recommended>Diet</Label>
@@ -950,7 +950,7 @@ function EditProfilePageInner() {
         </CollapsibleCard>
 
         {/* Partner Preferences */}
-        <CollapsibleCard title="Partner Preferences" badge="Optional" subtitle="Helps us surface more compatible matches for you">
+        <CollapsibleCard title="Partner Preferences" badge="Optional" subtitle="Helps us show more compatible profiles">
           <div className="space-y-4">
             <div>
               <Label>Preferred age range (years)</Label>

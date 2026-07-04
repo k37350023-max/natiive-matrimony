@@ -84,9 +84,9 @@ export default function AppHeader() {
 
   const navItems = [
     { href: '/browse',    label: 'Browse',      active: path.startsWith('/browse') },
-    { href: '/search',    label: 'Search',      active: path.startsWith('/search') },
     { href: '/interests', label: 'Requests',    active: path.startsWith('/interests'), badge: pendingInterests },
-    { href: '/matches',   label: 'Connections', active: path.startsWith('/matches') || path.startsWith('/chat'), badge: unreadMessages },
+    { href: '/matches',   label: 'Connected',   active: path.startsWith('/matches') || path.startsWith('/chat'), badge: unreadMessages },
+    { href: '/dashboard', label: 'My Profile',  active: path.startsWith('/dashboard') || path.startsWith('/profile') },
   ]
 
   return (
@@ -153,15 +153,6 @@ export default function AppHeader() {
                         strokeDashoffset={2 * Math.PI * 21 * (1 - completeness / 100)}
                         style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
                     </svg>
-                    {/* Percentage pill */}
-                    <span style={{
-                      position: 'absolute', bottom: '-7px', left: '50%', transform: 'translateX(-50%)',
-                      background: '#14241C', color: 'white', fontSize: '8.5px', fontWeight: 700,
-                      lineHeight: 1, padding: '2px 5px', borderRadius: '99px', border: '1.5px solid white',
-                      whiteSpace: 'nowrap', pointerEvents: 'none',
-                    }}>
-                      {completeness}%
-                    </span>
                   </>
                 )}
                 <button
@@ -193,7 +184,7 @@ export default function AppHeader() {
                     <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0F0F0' }}>
                       <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#111', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileName}</p>
                       <p style={{ fontSize: '11.5px', color: '#667085', margin: '2px 0 0' }}>
-                        {memberNumber ? `Registry #${memberNumber}` : 'Private registry profile'}
+                        {memberNumber ? `Profile #${memberNumber}` : 'Private profile'}
                       </p>
                     </div>
                     {completeness !== null && completeness < 100 && (

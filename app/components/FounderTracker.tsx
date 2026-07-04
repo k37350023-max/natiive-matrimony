@@ -82,7 +82,7 @@ export default function FounderTracker() {
       <div className="px-6 pb-6 pt-2">
         <Link href={isLoggedIn ? '/browse' : '/register'}
           className="btn-primary w-full py-3 text-sm text-center block rounded-xl font-semibold">
-          {isLoggedIn ? 'Browse founder registry →' : 'Claim your free spot →'}
+          {isLoggedIn ? 'Browse profiles →' : 'Claim your free spot →'}
         </Link>
       </div>
     </div>

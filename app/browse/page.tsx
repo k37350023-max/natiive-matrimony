@@ -70,8 +70,6 @@ type Profile = {
   member_number: number | null; profile_created_by: string | null; annual_income: string | null
 }
 
-type Stats = { interestsSent: number; interestsReceived: number; matches: number; profileViews: number }
-
 /* ─── Helpers ────────────────────────────────────────────────── */
 function cmToFeet(cm: number) {
   const ft = Math.floor(cm / 30.48); const inches = Math.round((cm % 30.48) / 2.54)
@@ -160,12 +158,12 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           </header>
 
           <section style={{ paddingTop: '58px' }}>
-            <p className="section-label" style={{ margin: '0 0 14px' }}>Native-place registry</p>
+            <p className="section-label" style={{ margin: '0 0 14px' }}>Browse profiles</p>
             <h1 className="nm-title" style={{ fontSize: '33px', margin: 0, maxWidth: '330px' }}>
-              No one from {searchedPlace} yet.
+              No profiles from {searchedPlace} yet.
             </h1>
             <p className="nm-muted" style={{ fontSize: '15px', lineHeight: 1.7, margin: '18px 0 0', maxWidth: '300px' }}>
-              Join the always-free version and seed this native-place corridor. Founding members get 2 years of premium free; everyone else gets 3 months free.
+              Create your profile or save this place. We will notify you when someone joins.
             </p>
 
             <div aria-hidden="true" style={{ position: 'relative', height: '210px', margin: '24px -18px 0', overflow: 'hidden' }}>
@@ -194,18 +192,18 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                   </svg>
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
-                  <strong>Details unlock after acceptance.</strong><br />
-                  Create your registry profile now. Key details stay visible, while the full profile and contact stay locked until a request is accepted.
+                  <strong>Full details and contact are shown only after both sides accept.</strong><br />
+                  Start with your profile, then we can alert you when families from this native place join.
                 </p>
               </div>
             </div>
 
             <div style={{ display: 'grid', gap: '10px', marginTop: '22px' }}>
               <Link href={`/register?native_place=${encodeURIComponent(searchedPlace)}`} className="btn-primary" style={{ minHeight: 48 }}>
-                Register and notify me
+                Create Profile
               </Link>
               <Link href="/" className="nm-outline" style={{ minHeight: 46, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', fontSize: '14px', fontWeight: 700 }}>
-                Try another hometown
+                Try Another Place
               </Link>
             </div>
           </section>
@@ -234,7 +232,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           <p className="text-gray-500 text-sm">
             {searchedPlace
               ? 'Create a profile to see useful details and request full profile access after acceptance.'
-              : 'Join the always-free version to browse native profiles, save place alerts, and unlock full profiles after acceptance. Founders get 2 years premium free; others get 3 months.'}
+              : 'Join the always-free version to browse native profiles, save place alerts, and see full profiles after both sides accept. Founders get 2 years premium free; others get 3 months.'}
           </p>
         </div>
 
@@ -262,8 +260,8 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
         </div>
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
-          <p className="font-bold text-gray-900 text-lg mb-2">Useful previews before private details unlock</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see useful details first. Full details and contact unlock only after acceptance.</p>
+          <p className="font-bold text-gray-900 text-lg mb-2">Useful previews before private details are shown</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see useful details first. Full details and contact are shown only after both sides accept.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
               Join Free
@@ -433,7 +431,7 @@ function ProfileCard({
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <p style={{ color: '#57460F', fontSize: '11.5px', fontWeight: 700, lineHeight: 1.38, margin: 0 }}>
-              Request access to view full details and contact.
+              Send a request. If they accept, you can see full details and contact.
             </p>
           </div>
         )}
@@ -449,7 +447,7 @@ function ProfileCard({
         {/* Contact + Connect row */}
         {onSendInterest && (
           <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
-            {/* Contact unlocks only after acceptance. */}
+            {/* Contact is shown only after acceptance. */}
             {onContact && unlocked && (
               <button
                 onClick={e => { e.stopPropagation(); onContact() }}
@@ -479,12 +477,12 @@ function ProfileCard({
               }}
               onMouseEnter={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#14532D') }}
               onMouseLeave={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#1B5E20') }}>
-              {status === 'matched' ? 'View Full Profile'
-                : status === 'accepted' ? 'View Full Profile'
+              {status === 'matched' ? 'View Profile'
+                : status === 'accepted' ? 'View Profile'
                 : status === 'pending' ? 'Request Sent'
                 : status === 'rejected' ? 'Declined'
                 : sending ? 'Sending…'
-                : 'Request Access'}
+                : 'Send Request'}
             </button>
             {unlocked && chatHref && (
               <Link
@@ -655,9 +653,6 @@ export default function BrowsePage() {
   const [aiPicks, setAiPicks]         = useState<{ id: string; full_name: string; photo_url: string | null; photo_visibility: string; profession: string; date_of_birth: string; native_district: string; score: number; reason: string }[]>([])
   const [profiles, setProfiles]       = useState<Profile[]>([])
   const [loading, setLoading]         = useState(false)
-  const [stats, setStats]             = useState<Stats|null>(null)
-  const [myName, setMyName]           = useState('')
-  const [myMemberNum, setMyMemberNum] = useState<number|null>(null)
 
   // Filters
   const [region,          setRegion]          = useState('')
@@ -782,20 +777,14 @@ export default function BrowsePage() {
     fetch('/api/profiles/touch', { method: 'POST' }).catch(() => {})
 
     Promise.all([
-      supabase.from('profiles').select('member_number, full_name, gender, date_of_birth, native_state, native_district, photo_url, about, profession, education, height_cm, religion, current_city, caste, annual_income, mother_tongue, family_type, company, diet, star, rashi').eq('id', myId).maybeSingle(),
+      supabase.from('profiles').select('full_name, gender, date_of_birth, native_state, native_district, photo_url, about, profession, education, height_cm, religion, current_city, caste, annual_income, mother_tongue, family_type, company, diet, star, rashi').eq('id', myId).maybeSingle(),
       supabase.from('interests').select('from_user, to_user, status').or(`from_user.eq.${myId},to_user.eq.${myId}`),
       supabase.from('matches').select('id,user1,user2').or(`user1.eq.${myId},user2.eq.${myId}`),
-      supabase.from('interests').select('id',{count:'exact',head:true}).eq('from_user',myId),
-      supabase.from('interests').select('id',{count:'exact',head:true}).eq('to_user',myId).eq('status','pending'),
-      supabase.from('matches').select('id',{count:'exact',head:true}).or(`user1.eq.${myId},user2.eq.${myId}`),
-      supabase.from('profile_views').select('id',{count:'exact',head:true}).eq('viewed_id',myId),
       supabase.from('shortlists').select('profile_id').eq('by_profile_id',myId),
       supabase.from('ai_picks').select('score,reason,suggested_profile_id,profiles!ai_picks_suggested_profile_id_fkey(id,full_name,photo_url,photo_visibility,profession,date_of_birth,native_district)').eq('for_profile_id',myId).order('score',{ascending:false}).limit(6),
-    ]).then(([{data:prof},{data:ints},{data:matchRows},sentRes,receivedRes,matchRes,viewsRes,{data:sls},{data:picksRaw}])=>{
+    ]).then(([{data:prof},{data:ints},{data:matchRows},{data:sls},{data:picksRaw}])=>{
       if (!prof) { localStorage.removeItem('my_profile_id'); setMyProfileId(null) }
       setMyGender(prof?.gender ?? null)
-      setMyName(prof?.full_name ?? '')
-      setMyMemberNum(prof?.member_number ?? null)
       setMyNativeDistrict(prof?.native_district ?? '')
       setMyHasPhoto(Boolean(prof?.photo_url))
       if (prof) {
@@ -803,9 +792,9 @@ export default function BrowsePage() {
         setBannerDismissed(sessionStorage.getItem('completeness_banner_dismissed') === '1')
       }
 
-      // Status per profile: accepted interest = matched (chat); pending = request sent.
-      // A match row alone (created when a request opens a thread) is NOT "matched"
-      // unless the interest was accepted.
+      // Status per profile: accepted request = connected (chat); pending = request sent.
+      // A match row alone (created when a request opens a thread) is not connected
+      // unless the request was accepted.
       const map: Record<string,string> = {}
       ints?.forEach(i => {
         const other = i.from_user === myId ? i.to_user : i.from_user
@@ -815,13 +804,6 @@ export default function BrowsePage() {
       matchRows?.forEach(m => { const o = m.user1===myId?m.user2:m.user1; if (m.id) mIdMap[o]=m.id })
       setInterestMap(map)
       setMatchIdMap(mIdMap)
-
-      setStats({
-        interestsSent:     sentRes.count     || 0,
-        interestsReceived: receivedRes.count || 0,
-        matches:           matchRes.count    || 0,
-        profileViews:      viewsRes.count    || 0,
-      })
 
       setShortlists(new Set((sls||[]).map(s=>s.profile_id)))
       // Parse ai_picks with joined profile data
@@ -991,7 +973,7 @@ export default function BrowsePage() {
     }
   }
 
-  // Send an interest request. Stays PENDING until the recipient accepts
+  // Send a request. Stays pending until the recipient accepts.
   // (acceptance is what creates a match) - no auto-match here.
   async function sendInterest(p: Profile, opts: { advance?: boolean } = {}) {
     if (!myProfileId || interestMap[p.id] || sendingInterest) return
@@ -1050,7 +1032,7 @@ export default function BrowsePage() {
     photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':'',
     activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter,nativePlace,currentLocation].filter(Boolean).length
 
-  const genderLabel = oppositeGender === 'female' ? 'bride profiles' : oppositeGender === 'male' ? 'groom profiles' : 'registry profiles'
+  const genderLabel = 'profiles'
 
   /* ── Not logged in ── */
   if (!sessionChecked) return (
@@ -1086,37 +1068,14 @@ export default function BrowsePage() {
           </div>
         )}
 
-        {/* ── Stats Dashboard ─────────────────────────────────── */}
-        {stats && (
-          <div className="browse-stats-grid grid grid-cols-4 gap-2 mb-4">
-            {[
-              { label: 'Sent',     value: stats.interestsSent,     href: '/interests?tab=sent' },
-              { label: 'Received', value: stats.interestsReceived, href: '/interests?tab=received' },
-              { label: 'Accepted', value: stats.matches,           href: '/matches' },
-              { label: 'Views',    value: stats.profileViews,      href: `/profile/${myProfileId}` },
-            ].map(s => (
-              <Link key={s.label} href={s.href}
-                className="browse-stat-card"
-                style={{ background: 'white', borderRadius: '10px', border: '1px solid #E7E3D8', padding: '10px 6px', textAlign: 'center', textDecoration: 'none', display: 'block', transition: 'box-shadow 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)')}
-                onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}>
-                <p style={{ fontSize: '20px', fontWeight: 800, color: '#0F0F0F', lineHeight: 1, margin: '0 0 4px' }}>{s.value}</p>
-                <p style={{ fontSize: '11px', color: '#94A3B8', margin: 0, fontWeight: 500 }}>{s.label}</p>
-              </Link>
-            ))}
-          </div>
-        )}
-
         {/* ── Greeting + filter toggle ─────────────────────────── */}
         <div className="browse-command mb-3">
           <div className="flex items-center justify-between mb-2">
             <div className="browse-title-row" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
               <h1 className="browse-page-title" style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: 0, letterSpacing: 0, fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif' }}>
-                Native-place registry
+                Browse Profiles
               </h1>
-              {myMemberNum && (
-                <span style={{ fontSize: '11px', color: '#5E6B62', fontWeight: 800, letterSpacing: '0.08em' }}>{memberLabel(myMemberNum)}</span>
-              )}
+              <p style={{ fontSize: '13px', color: '#5E6B62', margin: 0 }}>Search by native place. Send a request when someone looks right.</p>
             </div>
             {/* Desktop filter button (hidden on mobile - chips below) */}
             <button
@@ -1138,14 +1097,14 @@ export default function BrowsePage() {
             <input
               value={nativePlace}
               onChange={e => setNativePlace(e.target.value)}
-              placeholder="Native place"
+              placeholder="Search native place"
               aria-label="Search Native Place"
               className="nm-input browse-search-input"
             />
             <input
               value={currentLocation}
               onChange={e => setCurrentLocation(e.target.value)}
-              placeholder="Current location (optional)"
+              placeholder="Current location"
               aria-label="Current location"
               className="nm-input browse-search-input"
             />
@@ -1190,11 +1149,11 @@ export default function BrowsePage() {
         <div className="flex gap-5">
 
           {/* ── Desktop sidebar ─── */}
-          <aside className="hidden sm:block w-56 shrink-0">
+          {showSidebar && <aside className="hidden sm:block w-56 shrink-0">
             <div className="card p-4 sticky top-20">
               <Filters {...{ region,state,district,ageRange,profCat,maritalFilter,heightRange,motherTongues,casteFilter,religionFilter,educationFilter,photoOnly,recentOnly,showViewed,ignorePrefs,activeFilterCount,setRegion,setState,setDistrict,setAgeRange,setProfCat,setMaritalFilter,setHeightRange,toggleMotherTongue,setCasteFilter,setReligionFilter,setEducationFilter,setPhotoOnly,setRecentOnly,setShowViewed,setIgnorePrefs,clearAll,availableStates,availableDistricts,handleMapRegion,activeWithin,setActiveWithin,verifiedOnly,setVerifiedOnly,profileByFilter,setProfileByFilter,incomeFilter,setIncomeFilter }} />
             </div>
-          </aside>
+          </aside>}
 
           {/* ── Main content ─── */}
           <div className="flex-1 min-w-0">
@@ -1206,7 +1165,7 @@ export default function BrowsePage() {
                   <>
                     <span style={{ fontWeight: 800, color: '#14241C', fontSize: '18px', letterSpacing: 0 }}>
                       {profiles.length.toLocaleString('en-IN')}
-                    </span> {genderLabel} to review
+                    </span> {genderLabel}
                   </>
                 )}
               </p>
@@ -1504,7 +1463,7 @@ export default function BrowsePage() {
                       {status && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                           style={{ background: 'rgba(255,255,255,0.95)', color: status==='matched'?'#2E7D32':'#14241C' }}>
-                          {status==='matched'?'Accepted ✓':status==='pending'?'Request Sent':'Accepted'}
+                          {status==='matched'?'Connected ✓':status==='pending'?'Request Sent':'Connected'}
                         </span>
                       )}
                     </div>
@@ -1543,7 +1502,7 @@ export default function BrowsePage() {
               {/* Action buttons */}
               <div className="px-5 pb-6 pt-3 space-y-2.5">
 
-                {/* Interest sent success feedback */}
+                {/* Request sent success feedback */}
                 {interestSent && (
                   <div className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold"
                     style={{ background: '#ECFDF5', color: '#065F46' }}>
@@ -1562,7 +1521,7 @@ export default function BrowsePage() {
                       : status
                       ? { background: '#ECFDF5', color: '#2E7D32' }
                       : { background: '#1B5E20', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(27,94,32,0.35)' }}>
-                    {status==='matched'  ? 'View Full Profile →' :
+                    {status==='matched'  ? 'View Profile →' :
                      status==='accepted' ? 'Accepted' :
                      status==='pending'  ? 'Request Sent ✓' :
                      status==='rejected' ? 'Declined' :
@@ -1580,7 +1539,7 @@ export default function BrowsePage() {
                     className="flex-1 py-2.5 rounded-xl text-sm font-semibold border flex items-center justify-center gap-1.5"
                     style={{ borderColor: '#E7E3D8', color: '#4B5563' }}
                     onClick={()=>setQuickView(null)}>
-                    {unlocked ? 'View full profile' : 'View locked profile'}
+                    {unlocked ? 'View profile' : 'View profile'}
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                   </Link>
                   <button
@@ -1649,7 +1608,7 @@ export default function BrowsePage() {
               <div style={{ marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 14px', borderRadius: '12px', background: '#EDF3ED', marginBottom: '12px' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent - contact unlocks once they accept</p>
+                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent. Contact is shown after they accept.</p>
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0, lineHeight: 1.5 }}>
                   Contact details are shared only after acceptance. We&apos;ve sent your request - you&apos;ll be notified when they accept.

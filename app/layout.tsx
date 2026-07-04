@@ -17,10 +17,10 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: { default: "NativeMatrimony.com - Matches by native place", template: "%s | NativeMatrimony.com" },
+  title: { default: "NativeMatrimony.com - Profiles by native place", template: "%s | NativeMatrimony.com" },
   description: "Join NativeMatrimony for free. The free version stays free, founding members get 2 years of premium, and others get 3 months premium free.",
   openGraph: {
-    title: "NativeMatrimony.com - Matches by native place",
+    title: "NativeMatrimony.com - Profiles by native place",
     description: "Start free and browse native profiles by roots. Founding members get 2 years premium free; others get 3 months premium free.",
     siteName: "NativeMatrimony.com",
     locale: "en_IN",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "NativeMatrimony.com - Matches by native place",
+    title: "NativeMatrimony.com - Profiles by native place",
     description: "Start free, browse native profiles, and connect only through accepted requests. Founders get 2 years premium free; others get 3 months free.",
   },
   manifest: "/manifest.json",

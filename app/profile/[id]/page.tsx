@@ -417,7 +417,7 @@ export default function ProfilePage() {
     const stored: number[] = JSON.parse(localStorage.getItem(key) || '[]')
     const recent = stored.filter(t => now - t < 60 * 60 * 1000)
     if (recent.length >= 10) {
-      setToast("You're sending too many interests. Please wait before sending more.")
+      setToast("You're sending too many requests. Please wait before sending more.")
       setTimeout(() => setToast(null), 4000)
       return
     }
@@ -433,7 +433,7 @@ export default function ProfilePage() {
     setViewerRelation('interested')
     setSending(false)
     setShowNoteModal(false)
-    showToast('Request sent. Full profile and contact unlock after they accept.')
+    showToast('Request sent. Full profile and contact are shown after they accept.')
   }
 
   function showToast(msg: string) {
@@ -771,7 +771,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Registry badge - own profile only */}
+        {/* Profile number - own profile only */}
         {isOwnProfile && profile.member_number && (
           <div className="card px-5 py-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -779,9 +779,9 @@ export default function ProfilePage() {
                 #{profile.member_number}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Registry Profile #{profile.member_number}</p>
+                <p className="text-sm font-semibold text-gray-800">Profile #{profile.member_number}</p>
                 <p className="text-xs text-gray-400">
-                  Full profile and contact unlock only after an accepted request.
+                  Full profile and contact are shown only after an accepted request.
                 </p>
               </div>
             </div>
@@ -913,8 +913,8 @@ export default function ProfilePage() {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-800">Full profile unlocks after acceptance.</p>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request to unlock the full profile, contact details, WhatsApp, and chat after acceptance.</p>
+                <p className="text-sm font-semibold text-gray-800">Full profile is shown after acceptance.</p>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">Send a request. If they accept, you can see full details and contact.</p>
               </div>
             </div>
           </div>
@@ -998,7 +998,7 @@ export default function ProfilePage() {
               ) : isOwnProfile ? (
                 <Link href="/profile/edit" className="text-sm font-medium flex items-center gap-1" style={{ color: '#14241C' }}>
                   <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Add partner preferences so matches know you're a fit
+                  Add partner preferences so the right profiles know you're a fit
                 </Link>
               ) : null}
             </div>
@@ -1021,7 +1021,7 @@ export default function ProfilePage() {
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
               <p className="font-semibold text-gray-800 mb-1">Full profile is locked.</p>
-              <p className="text-sm text-gray-500 mb-4">Send a request to unlock full details after acceptance.</p>
+              <p className="text-sm text-gray-500 mb-4">Send a request. If they accept, you can see full details.</p>
               {interestSent && <p className="text-sm font-semibold" style={{ color: '#0F5E3E' }}>Request sent. Waiting for acceptance.</p>}
             </div>
           ) : (
@@ -1113,7 +1113,7 @@ export default function ProfilePage() {
                 )}
               </div>
               {!showContact && !isOwnProfile && (
-                <p className="text-xs text-gray-400 mt-2">Contact details unlock after request acceptance.</p>
+                <p className="text-xs text-gray-400 mt-2">Contact details are shown after request acceptance.</p>
               )}
             </div>
           )
@@ -1167,7 +1167,7 @@ export default function ProfilePage() {
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-bold text-gray-900 font-serif-display">Send Request</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want. Full profile unlocks only after acceptance.</p>
+                <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want. Full profile is shown only after acceptance.</p>
               </div>
               <button onClick={() => setShowNoteModal(false)} className="text-gray-300 hover:text-gray-500 ml-3 mt-0.5">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1381,7 +1381,7 @@ export default function ProfilePage() {
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1 rounded-full"
                     style={{ background: '#EDF3ED', color: '#14241C' }}>
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Full profile and contact unlock when they accept your request
+                    Full profile and contact are shown when they accept your request
                   </span>
                 </div>
               )}
@@ -1398,7 +1398,7 @@ export default function ProfilePage() {
                   Login
                 </Link>
               </div>
-              <p className="text-center text-xs text-gray-400 mt-2">Full profile and contact unlock only after acceptance.</p>
+              <p className="text-center text-xs text-gray-400 mt-2">Full profile and contact are shown only after acceptance.</p>
             </>
           )}
         </div>

@@ -42,7 +42,7 @@ export default function HomeHeader() {
             <>
               <Link href="/browse" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Browse</Link>
               <Link href="/interests" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Requests</Link>
-              <Link href="/matches" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Connections</Link>
+              <Link href="/matches" style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none' }}>Connected</Link>
               <Link href={`/profile/${profileId}`} className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px', marginLeft: '4px' }}>My Profile</Link>
             </>
           ) : (

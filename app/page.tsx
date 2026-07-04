@@ -6,7 +6,7 @@ const popularPlaces = ['Karimnagar', 'Warangal', 'Guntur', 'Nellore', 'Rajahmund
 
 const trustItems = [
   ['Native-place first', 'Focused on families who care about roots, hometowns, and serious introductions.', 'pin'],
-  ['Useful before unlock', 'Photos and key profile details stay visible so the registry feels alive.', 'check'],
+  ['Useful preview', 'Photos and key profile details stay visible so browsing feels real.', 'check'],
   ['No Random Messages', 'Chat starts only when both sides accept.', 'chat'],
   ['Family Friendly', 'Built around native place, parents, and serious family review.', 'family'],
   ['Verified Profiles', 'Phone verification, approval flow, and optional manual review.', 'shield'],
@@ -14,9 +14,9 @@ const trustItems = [
 
 const journey = [
   ['Create your profile', 'Add native place, work, education, photo preference, and contact verification.'],
-  ['Join the native registry', 'Your profile becomes discoverable to families searching by roots and location.'],
-  ['Send or accept interest', 'Both families choose before full profile and contact unlock.'],
-  ['Talk with confidence', 'Accepted connections can continue with profile, chat, and contact.'],
+  ['Browse native profiles', 'Your profile becomes discoverable to families searching by roots and location.'],
+  ['Send or accept request', 'Both families choose before full profile and contact are shown.'],
+  ['Talk with confidence', 'Connected profiles can continue with profile, chat, and contact.'],
 ]
 
 const regions: Array<[string, string[]]> = [
@@ -85,7 +85,7 @@ function HeroVisual() {
           <span className="nmh-avatar-lock"><Icon name="shield" size={21} /></span>
           <div>
             <p>Verified preview</p>
-            <strong>Private details unlock after acceptance</strong>
+            <strong>Private details are shown after acceptance</strong>
           </div>
         </div>
         <div className="nmh-preview-list">
@@ -136,10 +136,10 @@ export default function Home() {
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
-                Join Free
+                Create Free Profile
               </Link>
               <Link href="/browse" className="nmh-secondary">
-                Browse Native Profiles
+                Browse Profiles
               </Link>
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
@@ -241,13 +241,13 @@ export default function Home() {
 
         <section className="nmh-section">
           <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">How we avoid the empty registry trap</p>
+            <p className="nmh-section-kicker">How the community grows</p>
             <h2>Start narrow, build trust, then expand community by community.</h2>
           </div>
           <div className="nmh-trust-grid">
             {[
               ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
-              ['Useful previews', 'Profiles show practical details like roots, work, location, and photo choice before full profile access unlocks.', 'search'],
+              ['Useful previews', 'Profiles show practical details like roots, work, location, and photo choice before full profile access is shown.', 'search'],
               ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
               <article key={title} className="nmh-trust-card">

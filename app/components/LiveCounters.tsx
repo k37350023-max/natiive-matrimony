@@ -72,8 +72,8 @@ export default function LiveCounters() {
     }}>
       {[
         { value: counts.profiles, label: 'Profiles registered' },
-        { value: counts.interests, label: 'Interests exchanged' },
-        { value: counts.matches, label: 'Couples matched' },
+        { value: counts.interests, label: 'Requests sent' },
+        { value: counts.matches, label: 'Connected profiles' },
       ].map(({ value, label }, i) => (
         <div key={label} style={{ borderRight: i < 2 ? '1px solid #F3F4F6' : 'none' }}>
           <Counter value={value} label={label} />
