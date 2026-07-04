@@ -117,9 +117,12 @@ export default function Home() {
             <Link href="/login">Login</Link>
             <Link href="/register" className="nmh-nav-cta">Join Free</Link>
           </nav>
-          <Link href="/register" className="nmh-menu" aria-label="Join free">
-            <Icon name="user" size={24} />
-          </Link>
+          <div className="nmh-mobile-actions">
+            <Link href="/login" className="nmh-mobile-login">Login</Link>
+            <Link href="/register" className="nmh-menu" aria-label="Join free">
+              <Icon name="user" size={24} />
+            </Link>
+          </div>
         </header>
 
         <section className="nmh-hero">

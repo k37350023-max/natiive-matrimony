@@ -115,7 +115,7 @@ export default function LoginPage() {
             Find someone who shares your roots.
           </h2>
           <p style={{ fontSize: '15px', opacity: 0.8, margin: '0 0 40px', lineHeight: 1.65 }}>
-            Search by native place first. Photos are visible unless hidden, while biodata and contact unlock only after acceptance.
+            Search by native place first. Photos are visible unless hidden, while family profile and contact unlock only after acceptance.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
@@ -217,7 +217,7 @@ export default function LoginPage() {
             {/* Trust badges */}
             <div style={{ display: 'flex', justifyContent: 'center', gap: '18px', marginTop: '28px', paddingTop: '22px', borderTop: '1px solid #EEEEEE' }}>
               {[
-                { stat: 'Private', label: 'Biodata' },
+                { stat: 'Private', label: 'Family profile' },
                 { stat: 'Request', label: 'Based' },
                 { stat: 'Phone', label: 'Verified' },
               ].map(t => (

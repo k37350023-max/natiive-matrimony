@@ -1541,6 +1541,23 @@ select.input {
   width: 30px;
 }
 
+.nmh-mobile-actions {
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.nmh-mobile-login {
+  border: 1px solid rgba(7, 94, 62, 0.22);
+  border-radius: 999px;
+  color: #075E3E;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 9px 12px;
+  text-decoration: none;
+}
+
 .nmh-hero,
 .nmh-section,
 .nmh-search-panel,
@@ -2218,6 +2235,10 @@ select.input {
   }
 
   .nmh-menu {
+    display: none;
+  }
+
+  .nmh-mobile-actions {
     display: none;
   }
 
