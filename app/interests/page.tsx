@@ -159,6 +159,7 @@ function RequestsPageInner() {
     const { data: rows } = await supabase
       .from('interests').select('*')
       .eq('from_user', myId)
+      .eq('status', 'pending')
       .order('created_at', { ascending: false })
     if (!rows?.length) { setSent([]); return }
     const ids = rows.map(r => r.to_user)
@@ -444,12 +445,12 @@ function RequestsPageInner() {
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
               </span>
               <p className="font-semibold text-gray-700">No requests sent yet</p>
-              <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and send request to get started.</p>
+              <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and send a request when someone feels right.</p>
               <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>
             </div>
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-gray-400 mb-1">{sent.length} sent - full profile is shown after acceptance</p>
+              <p className="text-xs text-gray-400 mb-1">{sent.length} waiting for a response</p>
               {sent.map(i => <ProfileCard key={i.id} i={i} />)}
             </div>
           )

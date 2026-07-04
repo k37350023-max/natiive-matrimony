@@ -93,7 +93,7 @@ function displayName(p: Pick<Profile,'full_name'|'hidden_fields'>, unlocked: boo
   return p.full_name.split(' ').slice(0,2).join(' ')
 }
 function verificationLabel(p: Pick<Profile,'verified'|'phone_verified'>) {
-  if (p.verified) return 'Community reviewed'
+  if (p.verified) return 'Profile checked'
   if (p.phone_verified) return 'Phone verified'
   return 'Profile preview'
 }
@@ -435,7 +435,7 @@ function ProfileCard({
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <p style={{ color: '#57460F', fontSize: '11.5px', fontWeight: 700, lineHeight: 1.38, margin: 0 }}>
-              Send a request. If they accept, you can see full details and contact.
+              Send a request to connect. Full details and contact are shown after both sides accept.
             </p>
           </div>
         )}
