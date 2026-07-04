@@ -195,7 +195,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
                   <strong>Details unlock after acceptance.</strong><br />
-                  Create your registry profile now. Key profile signals stay visible, while the family profile and contact stay locked until a request is accepted.
+                  Create your registry profile now. Key profile details stay visible, while the family profile and contact stay locked until a request is accepted.
                 </p>
               </div>
             </div>
@@ -233,7 +233,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           </h1>
           <p className="text-gray-500 text-sm">
             {searchedPlace
-              ? 'Create a profile to see high-signal details and request family profile access after acceptance.'
+              ? 'Create a profile to see useful details and request family profile access after acceptance.'
               : 'Join the always-free version to browse native profiles, save place alerts, and unlock family profiles after acceptance. Founders get 2 years premium free; others get 3 months.'}
           </p>
         </div>
@@ -263,7 +263,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
           <p className="font-bold text-gray-900 text-lg mb-2">Useful previews before private details unlock</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see practical signals first. Full names, family profile, and contact unlock only after acceptance.</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see useful details first. Full names, family profile, and contact unlock only after acceptance.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
               Join Free
@@ -506,7 +506,7 @@ function ProfileCard({
   )
 }
 
-/* ─── Match Signals ────────────────────────────────────────── */
+/* ─── Filters ────────────────────────────────────────── */
 function Filters({
   region, state, district, ageRange, profCat, maritalFilter, heightRange,
   motherTongues, casteFilter, religionFilter, educationFilter, photoOnly, recentOnly,
@@ -541,8 +541,8 @@ function Filters({
   return (
     <div className="space-y-4 text-sm">
       <div>
-        <p className="text-xs font-black uppercase tracking-wider mb-1" style={{ color: '#14241C' }}>Match Signals</p>
-        <p className="text-xs leading-relaxed" style={{ color: '#7A837A' }}>Start with roots. Add only the details your family truly needs.</p>
+        <p className="text-xs font-black uppercase tracking-wider mb-1" style={{ color: '#14241C' }}>Filters</p>
+        <p className="text-xs leading-relaxed" style={{ color: '#7A837A' }}>Start with native place. Add only the details your family truly needs.</p>
       </div>
 
       {/* Region map */}
@@ -622,7 +622,7 @@ function Filters({
       <div className="pt-1 space-y-2 border-t" style={{ borderColor: '#F3F4F6' }}>
         {[
           [photoOnly, setPhotoOnly, 'Photo visible'],
-          [verifiedOnly, setVerifiedOnly, 'Verified signal'],
+          [verifiedOnly, setVerifiedOnly, 'Verified profiles'],
           [recentOnly, setRecentOnly, 'New families'],
           [showViewed, setShowViewed, 'Hide seen profiles'],
           [ignorePrefs, setIgnorePrefs, 'Show outside stated preferences'],
@@ -639,7 +639,7 @@ function Filters({
       {activeFilterCount > 0 && (
         <button onClick={clearAll} className="text-xs font-semibold text-red-700 hover:underline flex items-center gap-1">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          Reset signals ({activeFilterCount})
+          Clear filters ({activeFilterCount})
         </button>
       )}
     </div>
@@ -1128,7 +1128,7 @@ export default function BrowsePage() {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
               </svg>
-              Match Signals{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
             </button>
           </div>
           <form
@@ -1169,7 +1169,7 @@ export default function BrowsePage() {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/>
               </svg>
-              Signals{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+              Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
             </button>
             <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
               {['All','Telangana','Coastal Andhra','Rayalaseema'].map(r => (
@@ -1362,9 +1362,9 @@ export default function BrowsePage() {
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-gray-700 mb-1">No profiles match these signals</p>
-                    <p className="text-sm text-gray-400 mb-4">Try relaxing one or two signals.</p>
-                    <button onClick={clearAll} className="btn-primary px-5 py-2 text-sm">Reset signals</button>
+                    <p className="font-semibold text-gray-700 mb-1">No profiles match these filters</p>
+                    <p className="text-sm text-gray-400 mb-4">Try removing one or two filters.</p>
+                    <button onClick={clearAll} className="btn-primary px-5 py-2 text-sm">Clear filters</button>
                   </>
                 )}
               </div>

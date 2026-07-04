@@ -397,8 +397,8 @@ export default function SearchPage() {
     <div style={{ background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', overflow: 'hidden' }}>
 
       <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid #E8E8E8', background: '#FBFAF5' }}>
-        <p style={{ fontSize: '10.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#075E3E', margin: '0 0 4px' }}>Signal search</p>
-        <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.45, margin: 0 }}>Start with native place and life stage. Add match signals only when you need to narrow the list.</p>
+        <p style={{ fontSize: '10.5px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#075E3E', margin: '0 0 4px' }}>Search filters</p>
+        <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.45, margin: 0 }}>Start with native place and age. Add more filters only when you need to narrow the list.</p>
       </div>
 
       <div style={{ padding: '0 14px', maxHeight: 'calc(100vh - 140px)', overflowY: 'auto' }}>
@@ -623,7 +623,7 @@ export default function SearchPage() {
         {/* Actions */}
         <div style={{ padding: '14px 0 16px', display: 'flex', gap: '8px' }}>
           <button onClick={doSearch} className="btn-primary" style={{ flex: 1, minHeight: '44px', padding: '10px', fontSize: '13.5px' }}>
-            Show registry view{activeCount > 0 ? ` (${activeCount})` : ''}
+            Show families{activeCount > 0 ? ` (${activeCount})` : ''}
           </button>
           <button onClick={resetAll} style={{ minHeight: '44px', padding: '10px 16px', border: '1.5px solid #DDDDD8', borderRadius: '8px', background: 'white', cursor: 'pointer', fontSize: '13px', color: '#777', fontWeight: 700 }}>
             Reset
@@ -660,7 +660,7 @@ export default function SearchPage() {
             boxShadow: '0 14px 34px rgba(20,36,28,0.07)',
           }} className="search-context-card">
             <div>
-              <p className="section-label mb-2">Signal search</p>
+              <p className="section-label mb-2">Search filters</p>
               <h1 style={{
                 color: '#101828',
                 fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif',
@@ -671,21 +671,21 @@ export default function SearchPage() {
                 margin: 0,
               }}>Find families that fit your roots</h1>
               <p style={{ color: '#667085', fontSize: '14px', lineHeight: 1.5, margin: '8px 0 0', maxWidth: '620px' }}>
-                Start broad with native place and life stage. Add family, work, lifestyle, or tradition signals only when the list is too wide.
+                Start broad with native place and age. Add family, work, lifestyle, or tradition filters only when the list is too wide.
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginTop: '12px' }}>
                 {[
                   region || 'Any native place',
                   district || 'All districts',
                   `${ageMin}-${ageMax} yrs`,
-                  activeCount > 0 ? `${activeCount} signals active` : 'No extra signals',
+                  activeCount > 0 ? `${activeCount} filters active` : 'No extra filters',
                 ].map(item => (
                   <span key={item} style={{ fontSize: '11.5px', fontWeight: 700, color: '#14241C', background: '#EDF3ED', border: '1px solid #DCE9D7', borderRadius: '99px', padding: '5px 9px' }}>{item}</span>
                 ))}
               </div>
             </div>
             <button onClick={doSearch} className="btn-primary" style={{ flexShrink: 0, minHeight: '44px', padding: '0 18px' }}>
-              Show Registry View
+              Show Families
             </button>
           </div>
 
@@ -730,10 +730,10 @@ export default function SearchPage() {
               </div>
               <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>Start broad, then refine</h2>
               <p style={{ fontSize: '14px', color: '#999', maxWidth: '300px', margin: '0 auto 24px', lineHeight: 1.65 }}>
-                Use native place and life stage first. If there are too many profiles, add match signals.
+                Use native place and age first. If there are too many profiles, add filters.
               </p>
               <button onClick={doSearch} className="btn-primary" style={{ padding: '12px 28px', fontSize: '14px' }}>
-                Show registry view
+                Show families
               </button>
             </div>
           )}
@@ -741,10 +741,10 @@ export default function SearchPage() {
           {/* No results */}
           {!loading && searched && profiles.length === 0 && (
             <div style={{ textAlign: 'center', padding: '60px 20px' }}>
-              <p style={{ fontSize: '16px', fontWeight: 600, color: '#333', margin: '0 0 8px' }}>No profiles match your signals</p>
-              <p style={{ fontSize: '13.5px', color: '#999', margin: '0 0 16px' }}>Try relaxing a few signals - fewer criteria means more results.</p>
+              <p style={{ fontSize: '16px', fontWeight: 600, color: '#333', margin: '0 0 8px' }}>No profiles match your filters</p>
+              <p style={{ fontSize: '13.5px', color: '#999', margin: '0 0 16px' }}>Try removing a few filters - fewer criteria means more results.</p>
               <button onClick={resetAll} style={{ padding: '10px 20px', borderRadius: '8px', border: '1.5px solid #DDDDD8', background: 'white', cursor: 'pointer', fontSize: '13px', fontWeight: 600, color: '#555' }}>
-                Reset signals
+                Clear filters
               </button>
             </div>
           )}
