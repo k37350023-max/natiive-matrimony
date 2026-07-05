@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createHmac } from 'crypto'
+import { createOtpToken, otpConfigured } from '@/lib/otpToken'
 
-const SECRET = process.env.OTP_SECRET || (process.env.NODE_ENV !== 'production' ? 'natiive-matrimony-otp' : '')
 const devSmsAllowed = process.env.NODE_ENV !== 'production' || process.env.DEV_SMS_ENABLED === 'true'
-
-function sign(payload: string) {
-  return createHmac('sha256', SECRET).update(payload).digest('hex').slice(0, 20)
-}
 
 export async function POST(req: NextRequest) {
   const { phone } = await req.json()
   if (!phone) return NextResponse.json({ error: 'Phone required' }, { status: 400 })
-  if (!SECRET) {
+  if (!otpConfigured()) {
     return NextResponse.json(
       { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
       { status: 503 },
@@ -20,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString()
   const expires = Date.now() + 10 * 60 * 1000 // 10 min
-  const token = `${otp}.${expires}.${sign(otp + phone + expires)}`
+  const token = createOtpToken(phone, otp, expires)
 
   const apiKey = process.env.FAST2SMS_API_KEY
   if (!apiKey) {

@@ -1,13 +1,8 @@
 import { NextResponse } from 'next/server'
-import { createHmac } from 'crypto'
 import { createClient } from '@supabase/supabase-js'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
-
-const OTP_SECRET = process.env.OTP_SECRET || (process.env.NODE_ENV !== 'production' ? 'natiive-matrimony-otp' : '')
-function otpSign(payload: string) {
-  return createHmac('sha256', OTP_SECRET).update(payload).digest('hex').slice(0, 20)
-}
+import { otpConfigured, verifyOtpToken } from '@/lib/otpToken'
 
 /* Verifies phone+OTP (primary) or email/password (legacy/dev) server-side,
    then issues the trusted session cookie. */
@@ -17,7 +12,7 @@ export async function POST(req: Request) {
     const { email, password, phone, otp, token } = await req.json()
 
     if (phone || otp || token) {
-      if (!OTP_SECRET) {
+      if (!otpConfigured()) {
         return NextResponse.json(
           { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
           { status: 503 },
@@ -26,18 +21,8 @@ export async function POST(req: Request) {
       if (!phone || !otp || !token) {
         return NextResponse.json({ error: 'Phone verification required' }, { status: 400 })
       }
-      const parts = String(token || '').split('.')
-      if (parts.length !== 3) return NextResponse.json({ error: 'Invalid verification code' }, { status: 400 })
-      const [storedOtp, expires, sig] = parts
-      if (sig !== otpSign(storedOtp + phone + expires)) {
-        return NextResponse.json({ error: 'Verification failed' }, { status: 400 })
-      }
-      if (Date.now() > parseInt(expires)) {
-        return NextResponse.json({ error: 'Code expired' }, { status: 400 })
-      }
-      if (String(otp).trim() !== storedOtp) {
-        return NextResponse.json({ error: 'Incorrect code' }, { status: 400 })
-      }
+      const verified = verifyOtpToken(phone, otp, token)
+      if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
 
       const { data: profile } = await supabaseAdmin
         .from('profiles').select('id,user_id').eq('phone', phone).maybeSingle()

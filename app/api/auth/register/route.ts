@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server'
-import { createHmac } from 'crypto'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
+import { otpConfigured, verifyOtpToken } from '@/lib/otpToken'
 
-const OTP_SECRET = process.env.OTP_SECRET || (process.env.NODE_ENV !== 'production' ? 'natiive-matrimony-otp' : '')
 const FOUNDING_MEMBER_LIMIT = 1000
 const FOUNDING_MEMBER_YEARS = 2
 const PREMIUM_TRIAL_MONTHS = 3
-
-function otpSign(payload: string) {
-  return createHmac('sha256', OTP_SECRET).update(payload).digest('hex').slice(0, 20)
-}
 
 /* Creates the account server-side after re-verifying the OTP, then issues the
    trusted session cookie. Profile creation no longer happens in the browser. */
@@ -23,7 +18,7 @@ export async function POST(req: Request) {
     if (!full_name || !gender || !phone || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
-    if (!OTP_SECRET) {
+    if (!otpConfigured()) {
       return NextResponse.json(
         { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
         { status: 503 },
@@ -31,12 +26,8 @@ export async function POST(req: Request) {
     }
 
     // Re-verify the OTP token server-side (never trust the client's "verified" claim).
-    const parts = String(token || '').split('.')
-    if (parts.length !== 3) return NextResponse.json({ error: 'Verification required' }, { status: 400 })
-    const [storedOtp, expires, sig] = parts
-    if (sig !== otpSign(storedOtp + phone + expires)) return NextResponse.json({ error: 'Verification failed' }, { status: 400 })
-    if (Date.now() > parseInt(expires)) return NextResponse.json({ error: 'Code expired' }, { status: 400 })
-    if (String(otp).trim() !== storedOtp) return NextResponse.json({ error: 'Incorrect code' }, { status: 400 })
+    const verified = verifyOtpToken(phone, otp, token)
+    if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
 
     // Synthesised credentials (mobile-first). Real phone-native auth can replace later.
     const digits = String(phone).replace(/[^0-9]/g, '')
