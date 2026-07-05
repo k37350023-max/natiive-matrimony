@@ -30,6 +30,13 @@ const profilePreview = [
   ['Contact', 'Shown after connection'],
 ]
 
+const proofStats = [
+  ['Free basics', 'Create, browse, receive requests'],
+  ['2 years premium', 'For first 1,000 district founders'],
+  ['Private contact', 'Phone and chat after connection'],
+  ['Human help', 'Optional shortlist support'],
+]
+
 const navItems = [
   ['/', 'Home', 'home'],
   ['/browse', 'Browse', 'search'],
@@ -152,6 +159,15 @@ export default function Home() {
           <HeroVisual />
         </section>
 
+        <section className="nmh-proof-band" aria-label="Launch trust points">
+          {proofStats.map(([title, body]) => (
+            <article key={title}>
+              <strong>{title}</strong>
+              <span>{body}</span>
+            </article>
+          ))}
+        </section>
+
         <section className="nmh-search-panel" aria-labelledby="native-search-heading">
           <div>
             <p className="nmh-section-kicker">Start with hometown</p>
@@ -171,7 +187,7 @@ export default function Home() {
         <section className="nmh-section nmh-intent-section">
           <div className="nmh-section-heading">
             <p className="nmh-section-kicker">Why families join now</p>
-            <h2>Founding Members make each native place useful.</h2>
+            <h2>Build useful local matches before the crowd arrives.</h2>
           </div>
           <div className="nmh-intent-grid">
             <article>
@@ -195,7 +211,7 @@ export default function Home() {
         <section className="nmh-section">
           <div className="nmh-section-heading">
             <p className="nmh-section-kicker">Simple privacy</p>
-            <h2>Show enough to decide. Protect what should stay private.</h2>
+            <h2>Profiles feel real. Contact stays private.</h2>
           </div>
           <div className="nmh-trust-grid">
             {trustItems.map(([title, body, icon]) => (
@@ -247,8 +263,8 @@ export default function Home() {
           <div className="nmh-trust-grid">
             {[
               ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
-              ['Useful profiles', 'Profiles show practical details like roots, work, location, and photo choice before a family sends a request.', 'search'],
-              ['Guided introductions', 'Families can use optional human-assisted support when they want extra vetting and coordination.', 'family'],
+              ['Useful profiles', 'Profiles show roots, work, location, and photo choice before a family sends a request.', 'search'],
+              ['Guided introductions', 'Optional matchmaker help is available when families want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
               <article key={title} className="nmh-trust-card">
                 <span><Icon name={icon} size={24} /></span>

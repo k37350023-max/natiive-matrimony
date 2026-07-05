@@ -125,9 +125,9 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
   const [previews, setPreviews] = React.useState<GuestPreview[]>([])
   const [checkedPlace, setCheckedPlace] = React.useState(false)
   const samplePreviews: GuestPreview[] = [
-    { full_name: 'Sample profile', profession: 'Product Manager', native_district: nativePlace || 'Guntur', date_of_birth: '1996-04-12', sample: true },
-    { full_name: 'Sample profile', profession: 'Software Engineer', native_district: nativePlace || 'Karimnagar', date_of_birth: '1994-08-22', sample: true },
-    { full_name: 'Sample profile', profession: 'Doctor', native_district: nativePlace || 'Vijayawada', date_of_birth: '1995-01-18', sample: true },
+    { full_name: 'Ravi Launch', profession: 'Product Manager', native_district: nativePlace || 'Guntur', date_of_birth: '1996-04-12', sample: true },
+    { full_name: 'Vijay Preview', profession: 'Software Engineer', native_district: nativePlace || 'Karimnagar', date_of_birth: '1994-08-22', sample: true },
+    { full_name: 'Meera Sample', profession: 'Doctor', native_district: nativePlace || 'Vijayawada', date_of_birth: '1995-01-18', sample: true },
   ]
 
   React.useEffect(() => {
@@ -307,21 +307,32 @@ function Chip({ active, onClick, label }: { active: boolean; onClick: ()=>void; 
 
 /* ─── Geometric placeholder (no photo) ───────────────────────── */
 function GeometricPlaceholder({ name }: { name: string }) {
-  const c = (name?.charCodeAt(0) || 65) % 4
-  const palettes = [
-    ['#C9A99A','#A8BFC4','#D4C5BE','#8FA8AD'],
-    ['#B5C4B1','#D4B896','#9EB5B0','#C8A882'],
-    ['#B8A9C9','#C9B8A8','#A9C4B8','#D4C9A8'],
-    ['#C4A8A8','#A8C4B8','#C4BEA8','#8FA8B8'],
-  ]
-  const [c1,c2,c3,c4] = palettes[c]
+  const seed = name?.charCodeAt(0) || 65
+  const initialsText = name
+    .split(' ')
+    .map(part => part[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'NM'
+  const hue = seed % 2 === 0
+    ? ['#F6F2E8', '#D9E8D8', '#0F5E3E']
+    : ['#F5EFE4', '#E3D8C2', '#755C2D']
+  const [bg, ring, ink] = hue
   return (
     <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" className="w-full h-full absolute inset-0">
-      <rect width="200" height="240" fill={c1}/>
-      <rect x="100" y="0" width="100" height="120" fill={c2}/>
-      <rect x="0" y="120" width="100" height="120" fill={c3}/>
-      <circle cx="100" cy="120" r="70" fill={c4}/>
-      <circle cx="100" cy="120" r="40" fill={c1} opacity="0.6"/>
+      <rect width="200" height="240" fill="#FFFFFF"/>
+      <rect width="200" height="240" fill={bg} opacity="0.82"/>
+      <path d="M28 42C60 22 99 18 133 30C158 39 176 56 188 78" fill="none" stroke={ring} strokeWidth="16" strokeLinecap="round" opacity="0.42"/>
+      <path d="M26 210C61 187 91 181 124 191C150 199 171 192 192 174" fill="none" stroke={ring} strokeWidth="18" strokeLinecap="round" opacity="0.35"/>
+      <circle cx="100" cy="102" r="45" fill="#14241C" opacity="0.08"/>
+      <circle cx="100" cy="98" r="42" fill="#FFFFFF" opacity="0.94"/>
+      <text x="100" y="109" textAnchor="middle" fontFamily="Inter, Arial, sans-serif" fontSize="28" fontWeight="800" fill={ink}>{initialsText}</text>
+      <path d="M86 169C92 153 108 153 114 169L121 189H79L86 169Z" fill={ink} opacity="0.12"/>
+      <path d="M83 188C89 166 111 166 117 188" fill="none" stroke={ink} strokeWidth="8" strokeLinecap="round" opacity="0.18"/>
+      <path d="M142 56C133 73 126 90 122 108" fill="none" stroke="#138F35" strokeWidth="3" strokeLinecap="round" opacity="0.65"/>
+      <ellipse cx="141" cy="58" rx="5" ry="9" transform="rotate(28 141 58)" fill="#F5B719" opacity="0.82"/>
+      <ellipse cx="135" cy="71" rx="5" ry="9" transform="rotate(28 135 71)" fill="#F5B719" opacity="0.76"/>
+      <ellipse cx="130" cy="85" rx="5" ry="9" transform="rotate(28 130 85)" fill="#F5B719" opacity="0.7"/>
     </svg>
   )
 }
