@@ -1083,7 +1083,7 @@ export default function BrowsePage() {
             </svg>
             <span className="flex-1 text-amber-800">
               {!myHasPhoto
-                ? <>Add one profile photo to complete your profile. You can keep it hidden until access is accepted.</>
+                ? <>Add a profile photo — it stays <strong>private</strong> and is only shown to people whose request you accept.</>
                 : <>Your profile is only <strong>{completenessPercent}% complete</strong>. Complete it to get more visibility.</>}
             </span>
             <Link href="/profile/edit" className="font-semibold text-amber-900 underline shrink-0">Complete now</Link>
