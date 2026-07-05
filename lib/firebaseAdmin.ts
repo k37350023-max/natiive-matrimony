@@ -1,6 +1,3 @@
-import { cert, getApps, initializeApp } from 'firebase-admin/app'
-import { getAuth } from 'firebase-admin/auth'
-
 type FirebaseServiceAccount = {
   projectId: string
   clientEmail: string
@@ -68,11 +65,16 @@ export function firebaseAdminConfigured() {
   return Boolean(parseServiceAccount())
 }
 
-export function getFirebaseAdminAuth() {
+export async function getFirebaseAdminAuth() {
   const serviceAccount = parseServiceAccount()
   if (!serviceAccount) {
     throw new Error('Firebase Admin is not configured')
   }
+
+  const [{ cert, getApps, initializeApp }, { getAuth }] = await Promise.all([
+    import('firebase-admin/app'),
+    import('firebase-admin/auth'),
+  ])
 
   const app = getApps().length
     ? getApps()[0]
@@ -89,7 +91,8 @@ export function getFirebaseAdminAuth() {
 
 export async function verifyFirebaseIdToken(idToken: string) {
   if (!idToken) throw new Error('Firebase ID token is required')
-  return getFirebaseAdminAuth().verifyIdToken(idToken)
+  const auth = await getFirebaseAdminAuth()
+  return auth.verifyIdToken(idToken)
 }
 
 export function normalizePhoneNumber(value: string) {
