@@ -3407,3 +3407,111 @@ select.input {
     width: 32px !important;
   }
 }
+
+/* Mobile launch hardening: keep first-screen UI inside the viewport. */
+@media (max-width: 719px) {
+  html,
+  body,
+  .nmh-page,
+  .nm-page {
+    max-width: 100%;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .nmh-shell,
+  .nm-shell {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .nmh-header,
+  .nm-topbar,
+  .app-header-inner {
+    min-width: 0;
+  }
+
+  .nmh-header .app-brand,
+  .app-header-inner .app-brand,
+  .nm-topbar .app-brand {
+    max-width: calc(100vw - 104px);
+    min-width: 0;
+  }
+
+  .app-brand-copy {
+    overflow: hidden;
+  }
+
+  .app-brand-copy > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nmh-mobile-actions,
+  .app-header-inner > div:last-child {
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .nmh-menu {
+    flex: 0 0 40px;
+    height: 40px;
+    width: 40px;
+  }
+
+  .nmh-mobile-login {
+    flex: 0 0 auto;
+    padding: 8px 11px;
+  }
+
+  .nmh-hero h1 {
+    font-size: clamp(31px, 8.9vw, 35px);
+    max-width: 100%;
+  }
+
+  .nmh-hero-copy,
+  .nmh-hero-copy > p,
+  .nmh-actions,
+  .nmh-primary,
+  .nmh-secondary,
+  .nmh-hero-visual,
+  .nmh-search-panel,
+  .nmh-section,
+  .nmh-consultant,
+  .nmh-final {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .nmh-primary,
+  .nmh-secondary {
+    box-sizing: border-box;
+  }
+
+  .nmh-match-chip {
+    left: 20px;
+    max-width: calc(100% - 40px);
+    white-space: normal;
+  }
+
+  .nmh-profile-panel {
+    max-width: calc(100% - 12px);
+  }
+
+  .nmh-search-form {
+    grid-template-columns: minmax(0, 1fr) 52px;
+  }
+
+  .nmh-search-form input {
+    min-width: 0;
+  }
+
+  .nmh-place-row,
+  .nmh-region-places,
+  .nmh-proof-row {
+    max-width: 100%;
+  }
+}

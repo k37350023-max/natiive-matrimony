@@ -87,11 +87,10 @@ export default function PricingPage() {
 
           <section className="card px-6 py-7" style={{ background: '#14241C', borderColor: '#203A2C', color: 'white', boxShadow: '0 24px 60px rgba(20,36,28,0.20)' }}>
             <p className="section-label mb-3" style={{ color: '#D9F2C7' }}>Guided help</p>
-            <h2 className="font-serif-display text-2xl font-bold mb-2">Human assisted</h2>
-            <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.68)' }}>For families who want help reviewing profiles and making serious introductions.</p>
+            <h2 className="font-serif-display text-2xl font-bold mb-2">Matchmaker help</h2>
+            <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.68)' }}>For families who want a real person to help shortlist and coordinate introductions.</p>
             <div className="mb-6">
-              <span className="text-4xl font-bold">Custom</span>
-              <span className="text-sm ml-1" style={{ color: 'rgba(255,255,255,0.62)' }}> optional</span>
+              <span className="text-4xl font-bold">By request</span>
             </div>
             <div className="space-y-3 mb-7">
               <Benefit dark>Profile and intent review</Benefit>

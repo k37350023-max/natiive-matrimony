@@ -176,8 +176,8 @@ export default function Home() {
           <div className="nmh-intent-grid">
             <article>
               <Icon name="upload" size={25} />
-              <h3>Seed your corridor</h3>
-              <p>Create the first useful profile for your native place so future families have someone real to discover.</p>
+              <h3>Be early in your place</h3>
+              <p>Create a real profile now so families from your native place can find you as the community grows.</p>
             </article>
             <article>
               <Icon name="lock" size={25} />
@@ -210,8 +210,8 @@ export default function Home() {
 
         <section className="nmh-section">
           <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">What a family sees first</p>
-            <h2>Useful previews make privacy feel alive.</h2>
+            <p className="nmh-section-kicker">What families see</p>
+            <h2>Real profile context before anyone shares contact.</h2>
           </div>
           <div className="nmh-preview-demo">
             <article>
@@ -241,8 +241,8 @@ export default function Home() {
 
         <section className="nmh-section">
           <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">How the community grows</p>
-            <h2>Start narrow, build trust, then expand community by community.</h2>
+            <p className="nmh-section-kicker">Launch model</p>
+            <h2>Start local, fill each place, then expand with trust.</h2>
           </div>
           <div className="nmh-trust-grid">
             {[

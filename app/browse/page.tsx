@@ -121,8 +121,14 @@ function memberLabel(n: number | null): string {
 
 /* ─── Guest preview (unauthenticated browse wall) ─────────────── */
 function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
-  const [previews, setPreviews] = React.useState<{ full_name: string; profession: string; native_district: string; date_of_birth: string }[]>([])
+  type GuestPreview = { full_name: string; profession: string; native_district: string; date_of_birth: string; sample?: boolean }
+  const [previews, setPreviews] = React.useState<GuestPreview[]>([])
   const [checkedPlace, setCheckedPlace] = React.useState(false)
+  const samplePreviews: GuestPreview[] = [
+    { full_name: 'Sample profile', profession: 'Product Manager', native_district: nativePlace || 'Guntur', date_of_birth: '1996-04-12', sample: true },
+    { full_name: 'Sample profile', profession: 'Software Engineer', native_district: nativePlace || 'Karimnagar', date_of_birth: '1994-08-22', sample: true },
+    { full_name: 'Sample profile', profession: 'Doctor', native_district: nativePlace || 'Vijayawada', date_of_birth: '1995-01-18', sample: true },
+  ]
 
   React.useEffect(() => {
     setCheckedPlace(false)
@@ -144,12 +150,14 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
     })
   }, [nativePlace])
 
-  function maskName(name: string) {
+  function previewName(name: string) {
     const parts = name.trim().split(' ')
-    return parts.map(p => p[0] + '***').join(' ')
+    if (parts.length <= 1) return parts[0] || 'Profile preview'
+    return `${parts[0]} ${parts[1][0]}.`
   }
 
   const searchedPlace = nativePlace?.trim()
+  const displayPreviews = previews.length > 0 ? previews : samplePreviews
   if (searchedPlace && checkedPlace && previews.length === 0) {
     return (
       <main className="nm-page">
@@ -198,8 +206,8 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                   </svg>
                 </div>
                 <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
-                  <strong>Full details and contact are shown only after both sides accept.</strong><br />
-                  Start with your profile, then we can alert you when families from this native place join.
+                  <strong>Be first for {searchedPlace}.</strong><br />
+                  Create your profile now. We will alert you when matching families join this place.
                 </p>
               </div>
             </div>
@@ -243,7 +251,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
-          {previews.map((p, i) => {
+          {displayPreviews.map((p, i) => {
             const age = p.date_of_birth ? Math.floor((Date.now() - new Date(p.date_of_birth + 'T00:00:00').getTime()) / (365.25*24*60*60*1000)) : null
             return (
               <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: '#E7E3D8' }}>
@@ -251,12 +259,12 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                   <GeometricPlaceholder name={p.full_name} />
                   <div className="absolute inset-0 flex items-end justify-center pb-3 pointer-events-none">
                     <div className="text-xs font-medium px-3 py-1.5 rounded-full" style={{ background: 'rgba(0,0,0,0.55)', color: 'white' }}>
-                      Photo choice visible after signup
+                      {p.sample ? 'Example preview' : 'Profile preview'}
                     </div>
                   </div>
                 </div>
                 <div className="p-3">
-                  <p className="font-semibold text-gray-800 text-sm">{maskName(p.full_name)}</p>
+                  <p className="font-semibold text-gray-800 text-sm">{p.sample ? 'Example profile' : previewName(p.full_name)}</p>
                   <p className="text-xs text-gray-500">{age ? `${age} yrs` : ''}{p.profession ? ` · ${p.profession}` : ''}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{p.native_district}</p>
                 </div>
@@ -266,8 +274,8 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
         </div>
 
         <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
-          <p className="font-bold text-gray-900 text-lg mb-2">Useful profiles with private contact</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">You can see useful details first. Full details and contact are shown only after both sides accept.</p>
+          <p className="font-bold text-gray-900 text-lg mb-2">Browse first. Connect when ready.</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">Profiles show useful details. Phone, email, WhatsApp, and chat open after connection.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
               Join Free
