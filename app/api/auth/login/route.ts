@@ -3,29 +3,45 @@ import { createClient } from '@supabase/supabase-js'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
 import { otpConfigured, verifyOtpToken } from '@/lib/otpToken'
+import { firebaseAdminConfigured, normalizePhoneNumber, verifyFirebaseIdToken } from '@/lib/firebaseAdmin'
 
 /* Verifies phone+OTP (primary) or email/password (legacy/dev) server-side,
    then issues the trusted session cookie. */
 export async function POST(req: Request) {
   try {
     assertAdminConfigured()
-    const { email, password, phone, otp, token } = await req.json()
+    const { email, password, phone, otp, token, firebaseIdToken } = await req.json()
 
-    if (phone || otp || token) {
-      if (!otpConfigured()) {
-        return NextResponse.json(
-          { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
-          { status: 503 },
-        )
-      }
-      if (!phone || !otp || !token) {
+    if (phone || otp || token || firebaseIdToken) {
+      if (!phone) {
         return NextResponse.json({ error: 'Phone verification required' }, { status: 400 })
       }
-      const verified = verifyOtpToken(phone, otp, token)
-      if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
+      const normalizedPhone = normalizePhoneNumber(phone)
+      if (firebaseIdToken) {
+        if (!firebaseAdminConfigured()) {
+          return NextResponse.json({ error: 'Firebase phone verification is not configured on the server' }, { status: 503 })
+        }
+        const decoded = await verifyFirebaseIdToken(firebaseIdToken)
+        const verifiedPhone = normalizePhoneNumber(decoded.phone_number || '')
+        if (!verifiedPhone || verifiedPhone !== normalizedPhone) {
+          return NextResponse.json({ error: 'Mobile verification did not match this number' }, { status: 400 })
+        }
+      } else {
+        if (!otpConfigured()) {
+          return NextResponse.json(
+            { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
+            { status: 503 },
+          )
+        }
+        if (!otp || !token) {
+          return NextResponse.json({ error: 'Phone verification required' }, { status: 400 })
+        }
+        const verified = verifyOtpToken(normalizedPhone, otp, token)
+        if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
+      }
 
       const { data: profile } = await supabaseAdmin
-        .from('profiles').select('id,user_id').eq('phone', phone).maybeSingle()
+        .from('profiles').select('id,user_id').eq('phone', normalizedPhone).maybeSingle()
       if (!profile) {
         return NextResponse.json({ error: 'No profile found for this mobile number' }, { status: 404 })
       }

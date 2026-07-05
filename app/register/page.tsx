@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import BrandLogo from '../components/BrandLogo'
+import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth'
 
 /* ─── India states & districts ───────────────────────────────── */
 const INDIA_STATES: Record<string, string[]> = {
@@ -85,9 +86,11 @@ export default function RegisterPage() {
   const [otp, setOtp] = useState('')
   const [otpToken, setOtpToken] = useState('')
   const [devOtp, setDevOtp] = useState('')   // shown only in dev mode (no SMS key)
+  const [firebaseConfirmation, setFirebaseConfirmation] = useState<ConfirmationResult | null>(null)
   const [sending, setSending] = useState(false)
   const [districtCount, setDistrictCount] = useState<number | null>(null)
   const otpRef = useRef<HTMLInputElement>(null)
+  const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
 
   const [form, setForm] = useState({
     profile_created_by: 'self', full_name: '', gender: '', phone: '',
@@ -106,7 +109,7 @@ export default function RegisterPage() {
     if (id) router.replace(`/profile/${id}`)
   }, [])
 
-  useEffect(() => { if (step === 2) setTimeout(() => otpRef.current?.focus(), 100) }, [step])
+  useEffect(() => { if (step === 3) setTimeout(() => otpRef.current?.focus(), 100) }, [step])
 
   const districts = form.native_state ? (INDIA_STATES[form.native_state] || []) : []
   const foundingClaimed = Math.min(districtCount ?? 0, FOUNDING_MEMBER_LIMIT)
@@ -130,6 +133,27 @@ export default function RegisterPage() {
   }, [selectedDistrict, form.native_state])
 
   /* Step 1 → send a real OTP (dev mode returns the code in the response) */
+  async function sendFirebaseOtp(fullPhone: string) {
+    const { firebaseClientConfigured, getFirebaseAuth } = await import('@/lib/firebaseClient')
+    if (!firebaseClientConfigured()) return false
+
+    const auth = getFirebaseAuth()
+    if (!auth) return false
+
+    const { RecaptchaVerifier, signInWithPhoneNumber } = await import('firebase/auth')
+    if (!recaptchaRef.current) {
+      recaptchaRef.current = new RecaptchaVerifier(auth, 'firebase-recaptcha-register', {
+        size: 'invisible',
+      })
+    }
+
+    const confirmation = await signInWithPhoneNumber(auth, fullPhone, recaptchaRef.current)
+    setFirebaseConfirmation(confirmation)
+    setOtpToken('')
+    setDevOtp('')
+    return true
+  }
+
   async function sendOtp() {
     if (!form.full_name.trim()) return setError('Please enter your name')
     if (!form.gender) return setError('Please select gender')
@@ -141,6 +165,12 @@ export default function RegisterPage() {
     setError(''); setSending(true)
     try {
       const fullPhone = `${phoneCode}${form.phone.trim()}`
+      const sentWithFirebase = await sendFirebaseOtp(fullPhone)
+      if (sentWithFirebase) {
+        setStep(3)
+        return
+      }
+
       const res = await fetch('/api/send-otp', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: fullPhone }),
@@ -161,6 +191,13 @@ export default function RegisterPage() {
     setError(''); setSending(true)
     try {
       const fullPhone = `${phoneCode}${form.phone.trim()}`
+      if (firebaseConfirmation) {
+        const credential = await firebaseConfirmation.confirm(otp.trim())
+        const firebaseIdToken = await credential.user.getIdToken()
+        await handleSubmit(firebaseIdToken)
+        return
+      }
+
       const res = await fetch('/api/verify-otp', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp: otp.trim(), token: otpToken, phone: fullPhone }),
@@ -174,7 +211,7 @@ export default function RegisterPage() {
   }
 
   /* Create the minimal profile and go inside */
-  async function handleSubmit() {
+  async function handleSubmit(firebaseIdToken?: string) {
     if (!form.profile_created_by) return setError('Please select who this profile is for')
     if (!form.date_of_birth) return setError('Date of birth is required')
     if (!form.native_state) return setError('Please select your native state')
@@ -192,7 +229,8 @@ export default function RegisterPage() {
           full_name: form.full_name, gender: form.gender, phone: fullPhone,
           date_of_birth: form.date_of_birth, native_state: form.native_state,
           native_district: form.native_district, current_city: form.current_city,
-          profile_created_by: form.profile_created_by, otp: otp.trim(), token: otpToken,
+          profile_created_by: form.profile_created_by,
+          ...(firebaseIdToken ? { firebaseIdToken } : { otp: otp.trim(), token: otpToken }),
         }),
       })
       const data = await res.json()
@@ -223,6 +261,7 @@ export default function RegisterPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FBFAF5' }}>
+      <div id="firebase-recaptcha-register" />
       <header style={{ background: 'white', borderBottom: '1px solid #E8E8E8' }}>
         <div style={{ maxWidth: '390px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
           <BrandLogo className="app-brand-compact" showTagline={false} />

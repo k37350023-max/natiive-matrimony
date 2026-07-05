@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
 import { otpConfigured, verifyOtpToken } from '@/lib/otpToken'
+import { firebaseAdminConfigured, normalizePhoneNumber, verifyFirebaseIdToken } from '@/lib/firebaseAdmin'
 
 const FOUNDING_MEMBER_LIMIT = 1000
 const FOUNDING_MEMBER_YEARS = 2
@@ -13,24 +14,36 @@ export async function POST(req: Request) {
   try {
     assertAdminConfigured()
     const b = await req.json()
-    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token } = b
+    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token, firebaseIdToken } = b
 
     if (!full_name || !gender || !phone || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
-    if (!otpConfigured()) {
-      return NextResponse.json(
-        { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
-        { status: 503 },
-      )
+    const normalizedPhone = normalizePhoneNumber(phone)
+    if (firebaseIdToken) {
+      if (!firebaseAdminConfigured()) {
+        return NextResponse.json({ error: 'Firebase phone verification is not configured on the server' }, { status: 503 })
+      }
+      const decoded = await verifyFirebaseIdToken(firebaseIdToken)
+      const verifiedPhone = normalizePhoneNumber(decoded.phone_number || '')
+      if (!verifiedPhone || verifiedPhone !== normalizedPhone) {
+        return NextResponse.json({ error: 'Mobile verification did not match this number' }, { status: 400 })
+      }
+    } else {
+      if (!otpConfigured()) {
+        return NextResponse.json(
+          { error: 'SMS verification is temporarily unavailable. Please try again shortly.' },
+          { status: 503 },
+        )
+      }
+
+      // Re-verify the OTP token server-side (never trust the client's "verified" claim).
+      const verified = verifyOtpToken(normalizedPhone, otp, token)
+      if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
     }
 
-    // Re-verify the OTP token server-side (never trust the client's "verified" claim).
-    const verified = verifyOtpToken(phone, otp, token)
-    if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
-
     // Synthesised credentials (mobile-first). Real phone-native auth can replace later.
-    const digits = String(phone).replace(/[^0-9]/g, '')
+    const digits = normalizedPhone.replace(/[^0-9]/g, '')
     const synthEmail = `${digits}@phone.native`
     const synthPass = `Nm-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`
 
@@ -59,7 +72,7 @@ export async function POST(req: Request) {
     const { data: profile, error: pErr } = await supabaseAdmin.from('profiles').insert({
       user_id: created.user.id,
       full_name: String(full_name).trim(),
-      gender, phone, date_of_birth,
+      gender, phone: normalizedPhone, date_of_birth,
       native_state, native_district, native_region: native_state,
       current_city: String(current_city).trim(),
       marital_status: 'never_married', religion: 'Hindu', mother_tongue: null,

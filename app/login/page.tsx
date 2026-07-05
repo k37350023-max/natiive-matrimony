@@ -1,9 +1,10 @@
 'use client'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import BrandLogo from '../components/BrandLogo'
+import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth'
 
 const COUNTRY_CODES = [
   { code: '+91', label: '+91' },
@@ -21,9 +22,32 @@ export default function LoginPage() {
   const [otp, setOtp] = useState('')
   const [otpToken, setOtpToken] = useState('')
   const [devOtp, setDevOtp] = useState('')
+  const [firebaseConfirmation, setFirebaseConfirmation] = useState<ConfirmationResult | null>(null)
   const [otpSent, setOtpSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
+
+  async function sendFirebaseOtp(fullPhone: string) {
+    const { firebaseClientConfigured, getFirebaseAuth } = await import('@/lib/firebaseClient')
+    if (!firebaseClientConfigured()) return false
+
+    const auth = getFirebaseAuth()
+    if (!auth) return false
+
+    const { RecaptchaVerifier, signInWithPhoneNumber } = await import('firebase/auth')
+    if (!recaptchaRef.current) {
+      recaptchaRef.current = new RecaptchaVerifier(auth, 'firebase-recaptcha-login', {
+        size: 'invisible',
+      })
+    }
+
+    const confirmation = await signInWithPhoneNumber(auth, fullPhone, recaptchaRef.current)
+    setFirebaseConfirmation(confirmation)
+    setOtpToken('')
+    setDevOtp('')
+    return true
+  }
 
   async function sendOtp() {
     if (phone.trim().length < 7) { setError('Enter a valid mobile number'); return }
@@ -31,6 +55,12 @@ export default function LoginPage() {
     setError('')
     try {
       const fullPhone = `${phoneCode}${phone.trim()}`
+      const sentWithFirebase = await sendFirebaseOtp(fullPhone)
+      if (sentWithFirebase) {
+        setOtpSent(true)
+        return
+      }
+
       const res = await fetch('/api/send-otp', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: fullPhone }),
@@ -55,9 +85,19 @@ export default function LoginPage() {
     localStorage.removeItem('my_user_id')
     try {
       const fullPhone = `${phoneCode}${phone.trim()}`
+      let firebaseIdToken = ''
+      if (firebaseConfirmation) {
+        const credential = await firebaseConfirmation.confirm(otp.trim())
+        firebaseIdToken = await credential.user.getIdToken()
+      }
+
       const res = await fetch('/api/auth/login', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: fullPhone, otp: otp.trim(), token: otpToken }),
+        body: JSON.stringify(
+          firebaseIdToken
+            ? { phone: fullPhone, firebaseIdToken }
+            : { phone: fullPhone, otp: otp.trim(), token: otpToken },
+        ),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Login failed')
@@ -93,6 +133,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FBFAF5' }}>
+      <div id="firebase-recaptcha-login" />
 
       {/* Header */}
       <header style={{ background: '#FFFFFF', borderBottom: '1px solid #E8E8E8' }}>
@@ -184,7 +225,7 @@ export default function LoginPage() {
                   {loading ? (otpSent ? 'Signing in…' : 'Sending OTP…') : (otpSent ? 'Sign In' : 'Send OTP')}
                 </button>
                 {otpSent && (
-                  <button onClick={() => { setOtpSent(false); setOtp(''); setOtpToken(''); setDevOtp(''); setError('') }}
+                  <button onClick={() => { setOtpSent(false); setOtp(''); setOtpToken(''); setDevOtp(''); setFirebaseConfirmation(null); setError('') }}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', fontSize: '13px' }}>
                     Change mobile number
                   </button>
