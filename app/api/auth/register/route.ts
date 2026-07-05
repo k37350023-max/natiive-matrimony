@@ -4,6 +4,8 @@ import { setSession } from '@/lib/session'
 import { otpConfigured, verifyOtpToken } from '@/lib/otpToken'
 import { firebaseAdminConfigured, normalizePhoneNumber, verifyFirebaseIdToken } from '@/lib/firebaseAdmin'
 
+export const runtime = 'nodejs'
+
 const FOUNDING_MEMBER_LIMIT = 1000
 const FOUNDING_MEMBER_YEARS = 2
 const PREMIUM_TRIAL_MONTHS = 3

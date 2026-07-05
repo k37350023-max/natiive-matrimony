@@ -35,7 +35,7 @@ FIREBASE_CLIENT_EMAIL=
 FIREBASE_PRIVATE_KEY=
 ```
 
-Instead of the three server variables above, you may set `FIREBASE_SERVICE_ACCOUNT_JSON` to the full Firebase service-account JSON. Keep Firebase server credentials private and never expose them with a `NEXT_PUBLIC_` prefix.
+Instead of the three server variables above, you may set `FIREBASE_SERVICE_ACCOUNT_JSON` to the full Firebase service-account JSON, or `FIREBASE_SERVICE_ACCOUNT_BASE64` to the base64-encoded service-account JSON. Base64 is recommended on hosts where multiline JSON escaping is unreliable. Keep Firebase server credentials private and never expose them with a `NEXT_PUBLIC_` prefix.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

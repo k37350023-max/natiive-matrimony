@@ -11,7 +11,36 @@ function parseServiceAccount(): FirebaseServiceAccount | null {
   const rawJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON
   if (rawJson) {
     try {
-      const parsed = JSON.parse(rawJson) as {
+      const firstParse = JSON.parse(rawJson) as
+        | string
+        | {
+            project_id?: string
+            client_email?: string
+            private_key?: string
+          }
+      const parsed = typeof firstParse === 'string'
+        ? JSON.parse(firstParse) as {
+            project_id?: string
+            client_email?: string
+            private_key?: string
+          }
+        : firstParse
+      if (parsed.project_id && parsed.client_email && parsed.private_key) {
+        return {
+          projectId: parsed.project_id,
+          clientEmail: parsed.client_email,
+          privateKey: parsed.private_key.replace(/\\n/g, '\n'),
+        }
+      }
+    } catch {
+      // Continue to FIREBASE_SERVICE_ACCOUNT_BASE64 or split env vars below.
+    }
+  }
+
+  const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64
+  if (serviceAccountBase64) {
+    try {
+      const parsed = JSON.parse(Buffer.from(serviceAccountBase64, 'base64').toString('utf8')) as {
         project_id?: string
         client_email?: string
         private_key?: string

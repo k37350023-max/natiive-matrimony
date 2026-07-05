@@ -5,6 +5,8 @@ import { setSession } from '@/lib/session'
 import { otpConfigured, verifyOtpToken } from '@/lib/otpToken'
 import { firebaseAdminConfigured, normalizePhoneNumber, verifyFirebaseIdToken } from '@/lib/firebaseAdmin'
 
+export const runtime = 'nodejs'
+
 /* Verifies phone+OTP (primary) or email/password (legacy/dev) server-side,
    then issues the trusted session cookie. */
 export async function POST(req: Request) {
