@@ -191,7 +191,18 @@ export default function RegisterPage() {
     setError(''); setSending(true)
     try {
       const fullPhone = `${phoneCode}${form.phone.trim()}`
-      const sentWithFirebase = await sendFirebaseOtp(fullPhone)
+
+      // Firebase phone auth first; fall back to server OTP if it fails
+      // (region not enabled, billing, reCAPTCHA) so signup still works.
+      let sentWithFirebase = false
+      try {
+        sentWithFirebase = await sendFirebaseOtp(fullPhone)
+      } catch {
+        try { recaptchaRef.current?.clear() } catch {}
+        recaptchaRef.current = null
+        setFirebaseConfirmation(null)
+        sentWithFirebase = false
+      }
       if (sentWithFirebase) {
         setStep(3)
         return

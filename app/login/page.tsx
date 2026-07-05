@@ -81,7 +81,18 @@ export default function LoginPage() {
     setError('')
     try {
       const fullPhone = `${phoneCode}${phone.trim()}`
-      const sentWithFirebase = await sendFirebaseOtp(fullPhone)
+
+      // Try Firebase phone auth first; if it fails (e.g. region not enabled,
+      // billing, reCAPTCHA), fall back to the server OTP path so login still works.
+      let sentWithFirebase = false
+      try {
+        sentWithFirebase = await sendFirebaseOtp(fullPhone)
+      } catch {
+        try { recaptchaRef.current?.clear() } catch {}
+        recaptchaRef.current = null
+        setFirebaseConfirmation(null)
+        sentWithFirebase = false
+      }
       if (sentWithFirebase) {
         setOtpSent(true)
         return

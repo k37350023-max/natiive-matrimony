@@ -6,6 +6,12 @@ flag anything that needs you under **⚠️ NEEDS YOU** below.
 ---
 
 ## ⚠️ NEEDS YOU (do these when you're back - everything else is handled)
+- [ ] **Login OTP root cause = Firebase Console setting.** Firebase returns
+      `OPERATION_NOT_ALLOWED: SMS unable to be sent until this region enabled`. Fix in
+      Firebase Console -> Authentication -> **Settings -> SMS region policy** -> **Allow India (+91)**
+      (and confirm **Sign-in method -> Phone** is enabled + add your prod domain under
+      **Settings -> Authorized domains**). Code now falls back to the server OTP path if Firebase
+      fails, but for real Firebase SMS in prod you must enable the region. Alt: set `FAST2SMS_API_KEY`.
 - [ ] **Set env vars in your HOST dashboard (Vercel/Netlify)** - `.env.local` is gitignored (correct),
       so the live site needs these set or login/connect/chat will break in prod:
       `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`,
