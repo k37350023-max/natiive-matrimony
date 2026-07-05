@@ -991,14 +991,14 @@ function EditProfilePageInner() {
                 <>
                   <p className="text-sm text-gray-600 mb-3">
                     We'll send a 6-digit code to{' '}
-                    <span className="font-medium">{phoneCode} {form.phone}</span>
+                    <span className="font-medium">{form.phone.trim().startsWith('+') ? form.phone.trim() : `${phoneCode} ${form.phone}`}</span>
                   </p>
                   <button
                     onClick={async () => {
                       setPhoneOtpLoading(true)
                       setPhoneOtpError('')
                       setDevOtp('')
-                      const fullPhone = `${phoneCode}${form.phone.trim()}`
+                      const fullPhone = form.phone.trim().startsWith('+') ? form.phone.trim() : `${phoneCode}${form.phone.trim()}`
                       const res = await fetch('/api/send-otp', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -1053,7 +1053,7 @@ function EditProfilePageInner() {
                 </div>
               )}
               <p className="text-sm text-gray-600">
-                Enter the 6-digit code sent to <span className="font-medium">{phoneCode} {form.phone}</span>
+                Enter the 6-digit code sent to <span className="font-medium">{form.phone.trim().startsWith('+') ? form.phone.trim() : `${phoneCode} ${form.phone}`}</span>
               </p>
               <div className="flex gap-2">
                 <input className="input font-mono text-center text-lg tracking-widest max-w-[160px]"
@@ -1064,7 +1064,7 @@ function EditProfilePageInner() {
                   onClick={async () => {
                     setPhoneOtpLoading(true)
                     setPhoneOtpError('')
-                    const fullPhone = `${phoneCode}${form.phone.trim()}`
+                    const fullPhone = form.phone.trim().startsWith('+') ? form.phone.trim() : `${phoneCode}${form.phone.trim()}`
                     const res = await fetch('/api/verify-otp', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },

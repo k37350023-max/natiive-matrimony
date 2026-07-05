@@ -80,6 +80,7 @@ export async function POST(req: Request) {
       marital_status: 'never_married', religion: 'Hindu', mother_tongue: null,
       profile_created_by, photo_url: '', photo_visibility: 'public',
       status: 'approved', verified: false,
+      phone_verified: true,  // phone was OTP/Firebase verified immediately above
       premium_expires_at: premiumExpiresAt.toISOString(),
     }).select('id').maybeSingle()
     if (pErr || !profile) {

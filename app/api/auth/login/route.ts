@@ -49,7 +49,8 @@ export async function POST(req: Request) {
       }
 
       await setSession(profile.id)
-      supabaseAdmin.from('profiles').update({ last_login_at: new Date().toISOString() })
+      // OTP/Firebase login proves phone ownership — keep phone_verified in sync.
+      supabaseAdmin.from('profiles').update({ last_login_at: new Date().toISOString(), phone_verified: true })
         .eq('id', profile.id).then(() => {})
 
       return NextResponse.json({ profileId: profile.id, userId: profile.user_id })
