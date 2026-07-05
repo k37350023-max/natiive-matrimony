@@ -15,6 +15,20 @@ const COUNTRY_CODES = [
   { code: '+65', label: '+65' },
 ]
 
+function phoneAuthErrorMessage(err: unknown) {
+  const message = err instanceof Error ? err.message : ''
+  if (message.includes('auth/operation-not-allowed')) {
+    return 'SMS is not enabled for this country yet. Please contact support or try another country code.'
+  }
+  if (message.includes('auth/too-many-requests')) {
+    return 'Too many code requests. Please wait a few minutes and try again.'
+  }
+  if (message.includes('auth/invalid-phone-number')) {
+    return 'Enter a valid mobile number with the correct country code.'
+  }
+  return message || 'Could not send OTP'
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const [phoneCode, setPhoneCode] = useState('+91')
@@ -71,7 +85,7 @@ export default function LoginPage() {
       setDevOtp(data.dev_otp || '')
       setOtpSent(true)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Could not send OTP')
+      setError(phoneAuthErrorMessage(err))
     } finally {
       setLoading(false)
     }
@@ -105,7 +119,7 @@ export default function LoginPage() {
       localStorage.setItem('my_profile_id', data.profileId)
       router.push('/browse')
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Login failed. Check your mobile number and OTP.')
+      setError(phoneAuthErrorMessage(err) || 'Login failed. Check your mobile number and OTP.')
     } finally {
       setLoading(false)
     }

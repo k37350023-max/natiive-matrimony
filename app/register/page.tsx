@@ -75,6 +75,20 @@ const PREMIUM_PERKS = [
   'Contact shown after connection',
 ]
 
+function phoneAuthErrorMessage(err: unknown) {
+  const message = err instanceof Error ? err.message : ''
+  if (message.includes('auth/operation-not-allowed')) {
+    return 'SMS is not enabled for this country yet. Please contact support or try another country code.'
+  }
+  if (message.includes('auth/too-many-requests')) {
+    return 'Too many code requests. Please wait a few minutes and try again.'
+  }
+  if (message.includes('auth/invalid-phone-number')) {
+    return 'Enter a valid mobile number with the correct country code.'
+  }
+  return message || 'Could not send code'
+}
+
 /* ─── Main ───────────────────────────────────────────────────── */
 export default function RegisterPage() {
   const router = useRouter()
@@ -181,7 +195,7 @@ export default function RegisterPage() {
       setDevOtp(data.dev_otp || '')   // present only when no SMS gateway configured
       setStep(3)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not send code')
+      setError(phoneAuthErrorMessage(err))
     } finally { setSending(false) }
   }
 
@@ -206,7 +220,7 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(data.error || 'Incorrect code')
       await handleSubmit()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Incorrect code')
+      setError(phoneAuthErrorMessage(err))
     } finally { setSending(false) }
   }
 
