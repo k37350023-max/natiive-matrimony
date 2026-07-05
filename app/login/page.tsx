@@ -29,6 +29,18 @@ function phoneAuthErrorMessage(err: unknown) {
   return message || 'Could not send OTP'
 }
 
+async function readApiJson(res: Response) {
+  const text = await res.text()
+  const contentType = res.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) {
+    if (text.includes('Vercel Security Checkpoint')) {
+      throw new Error('Security check blocked this request. Please refresh the page and try again.')
+    }
+    throw new Error('Server returned an unexpected response. Please try again.')
+  }
+  return JSON.parse(text)
+}
+
 export default function LoginPage() {
   const router = useRouter()
   const [phoneCode, setPhoneCode] = useState('+91')
@@ -79,7 +91,7 @@ export default function LoginPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: fullPhone }),
       })
-      const data = await res.json()
+      const data = await readApiJson(res)
       if (!res.ok) throw new Error(data.error || 'Could not send OTP')
       setOtpToken(data.token)
       setDevOtp(data.dev_otp || '')
@@ -113,7 +125,7 @@ export default function LoginPage() {
             : { phone: fullPhone, otp: otp.trim(), token: otpToken },
         ),
       })
-      const data = await res.json()
+      const data = await readApiJson(res)
       if (!res.ok) throw new Error(data.error || 'Login failed')
       localStorage.setItem('my_user_id', data.userId)
       localStorage.setItem('my_profile_id', data.profileId)
@@ -134,7 +146,7 @@ export default function LoginPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role }),
       })
-      const data = await res.json()
+      const data = await readApiJson(res)
       if (!res.ok) throw new Error(data.error || 'Test sign-in failed')
       localStorage.setItem('my_user_id', data.userId)
       localStorage.setItem('my_profile_id', data.profileId)

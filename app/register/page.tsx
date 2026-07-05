@@ -89,6 +89,18 @@ function phoneAuthErrorMessage(err: unknown) {
   return message || 'Could not send code'
 }
 
+async function readApiJson(res: Response) {
+  const text = await res.text()
+  const contentType = res.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) {
+    if (text.includes('Vercel Security Checkpoint')) {
+      throw new Error('Security check blocked this request. Please refresh the page and try again.')
+    }
+    throw new Error('Server returned an unexpected response. Please try again.')
+  }
+  return JSON.parse(text)
+}
+
 /* ─── Main ───────────────────────────────────────────────────── */
 export default function RegisterPage() {
   const router = useRouter()
@@ -189,7 +201,7 @@ export default function RegisterPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone: fullPhone }),
       })
-      const data = await res.json()
+      const data = await readApiJson(res)
       if (!res.ok) throw new Error(data.error || 'Could not send code')
       setOtpToken(data.token)
       setDevOtp(data.dev_otp || '')   // present only when no SMS gateway configured
@@ -216,7 +228,7 @@ export default function RegisterPage() {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ otp: otp.trim(), token: otpToken, phone: fullPhone }),
       })
-      const data = await res.json()
+      const data = await readApiJson(res)
       if (!res.ok) throw new Error(data.error || 'Incorrect code')
       await handleSubmit()
     } catch (err) {
@@ -247,7 +259,7 @@ export default function RegisterPage() {
           ...(firebaseIdToken ? { firebaseIdToken } : { otp: otp.trim(), token: otpToken }),
         }),
       })
-      const data = await res.json()
+      const data = await readApiJson(res)
       if (!res.ok) throw new Error(data.error || 'Something went wrong')
       localStorage.setItem('my_user_id', data.userId)
       localStorage.setItem('my_profile_id', data.profileId)
