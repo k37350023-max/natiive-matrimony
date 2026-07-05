@@ -471,7 +471,7 @@ function EditProfilePageInner() {
               Profile Photo <span className="ml-0.5 font-bold" style={{ color: '#DC2626' }}>*</span>
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              One real photo is required. It stays private on your profile — only people whose request you accept can see it.
+              Add a clear photo. It&apos;s visible to members by default — you&apos;re in full control and can hide it anytime from privacy settings below.
             </p>
           </div>
           <div className="flex items-center gap-4 mb-4">

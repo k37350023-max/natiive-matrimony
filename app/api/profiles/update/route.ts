@@ -34,7 +34,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
     }
     if ('photo_url' in clean && typeof clean.photo_url === 'string' && clean.photo_url.trim().length === 0) {
-      return NextResponse.json({ error: 'Please add a profile photo. It stays private and is only shown to people whose request you accept.' }, { status: 400 })
+      return NextResponse.json({ error: 'Please add a profile photo. It is shown by default, and you can hide it anytime in privacy settings.' }, { status: 400 })
     }
 
     const { error } = await supabaseAdmin.from('profiles').update(clean).eq('id', meId)
