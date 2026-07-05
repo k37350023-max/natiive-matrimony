@@ -3042,7 +3042,7 @@ select.input {
   color: #14241C;
   display: inline-flex;
   flex-shrink: 0;
-  gap: 10px;
+  gap: 9px;
   min-width: 0;
   text-decoration: none;
 }
@@ -3108,14 +3108,14 @@ select.input {
   color: #14241C;
   font-size: 22px;
   font-weight: 900;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.065em;
   line-height: 0.86;
 }
 
 .app-brand-matrimony {
   color: #166534;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 850;
   letter-spacing: 0.02em;
   line-height: 1;
 }
@@ -3415,37 +3415,37 @@ select.input {
 
 /* Final brand mark override: light paddy-grain badge */
 .app-brand .app-brand-paddy-mark {
-  background: #FFFFFF !important;
+  background: linear-gradient(145deg, #FFFFFF 0%, #FAFCF6 100%) !important;
   border: 1px solid rgba(194, 210, 184, 0.86) !important;
-  border-radius: 12px !important;
-  box-shadow: 0 8px 18px rgba(20, 36, 28, 0.09), inset 0 1px 0 rgba(255,255,255,0.95) !important;
+  border-radius: 13px !important;
+  box-shadow: 0 8px 18px rgba(20, 36, 28, 0.08), inset 0 1px 0 rgba(255,255,255,0.95) !important;
   overflow: hidden;
 }
 
 .app-brand .app-brand-paddy-mark svg {
-  height: 39px !important;
-  width: 39px !important;
+  height: 37px !important;
+  width: 37px !important;
 }
 
 .app-brand-home .app-brand-paddy-mark svg {
-  height: 45px !important;
-  width: 45px !important;
+  height: 42px !important;
+  width: 42px !important;
 }
 
 .app-brand-compact .app-brand-paddy-mark svg {
-  height: 34px !important;
-  width: 34px !important;
+  height: 31px !important;
+  width: 31px !important;
 }
 
 @media (max-width: 639px) {
   .app-brand .app-brand-paddy-mark svg {
-    height: 36px !important;
-    width: 36px !important;
+    height: 34px !important;
+    width: 34px !important;
   }
 
   .app-brand-compact .app-brand-paddy-mark svg {
-    height: 32px !important;
-    width: 32px !important;
+    height: 29px !important;
+    width: 29px !important;
   }
 }
 
