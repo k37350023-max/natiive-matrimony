@@ -330,7 +330,7 @@ function EditProfilePageInner() {
       if (upErr) throw upErr
       const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(path)
       const url = urlData.publicUrl
-      await supabase.from('profile_photos').insert({ profile_id: profileId, url, position })
+      await fetch('/api/profiles/photo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'addExtra', url, position }) })
       setAdditionalPhotos(prev => [...prev, url])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed')
@@ -340,7 +340,7 @@ function EditProfilePageInner() {
 
   async function removeExtraPhoto(url: string) {
     if (!profileId) return
-    await supabase.from('profile_photos').delete().eq('profile_id', profileId).eq('url', url)
+    await fetch('/api/profiles/photo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'removeExtra', url }) })
     setAdditionalPhotos(prev => prev.filter(u => u !== url))
   }
 
@@ -367,7 +367,7 @@ function EditProfilePageInner() {
     if (error) {
       setError('Invalid code - check your email and try again')
     } else {
-      await supabase.from('profiles').update({ phone_verified: true }).eq('id', profileId)
+      await fetch('/api/profiles/verify-phone', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ via: 'email' }) })
       setVerified(true)
       setOtpSent(false)
       setOtpCode('')
@@ -1073,10 +1073,8 @@ function EditProfilePageInner() {
                     const data = await res.json()
                     setPhoneOtpLoading(false)
                     if (!res.ok) { setPhoneOtpError(data.error || 'Verification failed'); return }
-                    // Mark verified in DB
-                    if (profileId) {
-                      await supabase.from('profiles').update({ phone_verified: true }).eq('id', profileId)
-                    }
+                    // Mark verified (server re-verifies the OTP against your profile phone)
+                    await fetch('/api/profiles/verify-phone', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ otp: phoneOtpCode, token: phoneOtpToken }) })
                     setVerified(true)
                     setPhoneOtpSent(false)
                     setPhoneOtpCode('')

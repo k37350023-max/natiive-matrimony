@@ -687,7 +687,7 @@ export default function ProfilePage() {
                           const { error: upErr } = await supabase.storage.from('profile-photos').upload(fileName, file, { upsert: true })
                           if (!upErr) {
                             const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(fileName)
-                            await supabase.from('profiles').update({ photo_url: urlData.publicUrl, photo_visibility: 'public' }).eq('id', myId)
+                            await fetch('/api/profiles/photo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'setMain', url: urlData.publicUrl }) })
                             window.location.reload()
                           }
                           setUploadingPhoto(false)

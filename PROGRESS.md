@@ -96,6 +96,16 @@ Ranked by what a normal visitor/member would actually hit.
   Groom chat message delivered. (Test accounts kept; the interaction rows were cleaned.)
 - Also fixed login/register headers to the lowercase `nativematrimony.` wordmark.
 
+## Autonomous build — P0 write migration (in progress)
+- ✅ notifications, profile_views, field_requests, reports, matches-accept, chat-read, interest
+  withdraw already server-side (Codex + earlier).
+- ✅ NEW: `/api/profiles/photo` (setMain/addExtra/removeExtra) + `/api/profiles/verify-phone`
+  (re-verifies OTP/Firebase server-side). Wired profile view photo upload, edit extra-photo
+  add/remove, edit phone-verify (email + phone OTP). Verified: 401 guards, authed ops 200,
+  bad OTP 400.
+- REMAINING client writes: only `app/admin/page.tsx` (internal admin tool — profiles update/
+  delete, notifications insert). Migrate next, then reads, then ENABLE RLS.
+
 ## FIX-ALL audit + RLS finish plan (in progress)
 Audit: build green; lint 120 (mostly noise: set-state-in-effect, no-img-element). Real backend
 risk = direct client DB access still bypassing the secured API → blocks RLS.
