@@ -6,6 +6,13 @@ flag anything that needs you under **⚠️ NEEDS YOU** below.
 ---
 
 ## ⚠️ NEEDS YOU (do these when you're back - everything else is handled)
+- [ ] **Enable RLS (closes the #1 security hole).** Every DB write is now server-side, so this
+      is safe + won't break the app. Run `supabase/rls-phase1-deny-anon-writes.sql` in
+      Supabase Studio -> SQL Editor. It enables RLS on all tables, keeps reads open (app keeps
+      working), and DENIES all anon insert/update/delete — so nobody can forge/modify/delete
+      rows via the public anon key anymore. (Also set `ADMIN_SECRET` in the host env — the admin
+      panel now uses it instead of a client-side password.)
+      Phase 2 (lock down PII reads) comes after the read-migration, tracked below.
 - [ ] **Login OTP root cause = Firebase Console setting.** Firebase returns
       `OPERATION_NOT_ALLOWED: SMS unable to be sent until this region enabled`. Fix in
       Firebase Console -> Authentication -> **Settings -> SMS region policy** -> **Allow India (+91)**
