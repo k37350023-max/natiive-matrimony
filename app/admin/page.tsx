@@ -97,13 +97,13 @@ export default function AdminPage() {
   }
 
   async function updateStatus(id: string, status: 'approved' | 'rejected') {
-    await supabase.from('profiles').update({ status, verified: status === 'approved' }).eq('id', id)
+    await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: password, action: 'updateStatus', id, status }) })
     loadProfiles()
   }
 
   async function hardDelete(id: string, name: string) {
     if (!confirm(`Permanently delete "${name}"? This cannot be undone.`)) return
-    await supabase.from('profiles').delete().eq('id', id)
+    await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: password, action: 'delete', id }) })
     if (filter === 'fake') loadFakeProfiles(); else loadProfiles()
   }
 
@@ -128,21 +128,12 @@ export default function AdminPage() {
   async function sendAnnouncement() {
     if (!announcementText.trim()) return
     setAnnouncementSending(true)
-    const { data: allProfiles } = await supabase.from('profiles').select('user_id').eq('status','approved').not('user_id', 'is', null)
-    if (allProfiles?.length) {
-      const notifications = allProfiles.map(p => ({
-        user_id: p.user_id,
-        type: 'system',
-        message: announcementText.trim(),
-        link: '/',
-        read: false,
-      }))
-      await supabase.from('notifications').insert(notifications)
-    }
+    const res = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: password, action: 'announce', text: announcementText.trim() }) })
+    const data = await res.json().catch(() => ({}))
     setAnnouncementText('')
     setShowAnnouncement(false)
     setAnnouncementSending(false)
-    alert(`Announcement sent to ${allProfiles?.length || 0} members.`)
+    alert(res.ok ? `Announcement sent to ${data.sent || 0} members.` : (data.error || 'Failed to send'))
   }
 
   if (!authed) {
