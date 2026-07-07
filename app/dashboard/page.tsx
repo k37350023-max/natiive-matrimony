@@ -124,7 +124,8 @@ export default function DashboardPage() {
   async function load(id: string) {
     setLoading(true)
 
-    const { data: p } = await supabase.from('profiles').select('*').eq('id', id).maybeSingle()
+    // Own profile via the secured route (owner gets full data; RLS-ready).
+    const p = await fetch(`/api/profiles/${id}`).then(r => r.ok ? r.json() : null).then(j => j?.profile)
     if (!p) { router.replace('/login'); return }
     setProfile(p)
 

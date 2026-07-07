@@ -272,7 +272,7 @@ export default function SearchPage() {
     const saved = localStorage.getItem('nm_recent_searches')
     if (saved) try { setRecentSearches(JSON.parse(saved)) } catch {}
 
-    supabase.from('profiles').select('gender').eq('id', id).maybeSingle()
+    supabase.from('profiles').select('id, full_name, gender, date_of_birth, profession, education, annual_income, about, native_district, native_state, native_region, native_country, current_city, current_state, height_cm, religion, caste, mother_tongue, family_type, verified, status, created_at, photo_url, photo_visibility, last_login_at, marital_status, profile_created_by, member_number, hidden_fields, user_id, phone_verified, visa_status, diet, smoking, drinking, star, rashi, manglik, gotra').eq('id', id).maybeSingle()
       .then(({ data }) => setMyGender(data?.gender ?? null))
 
     supabase.from('interests').select('to_user,status').eq('from_user', id)
@@ -312,7 +312,7 @@ export default function SearchPage() {
     localStorage.setItem('nm_recent_searches', JSON.stringify(updated))
 
     const opp = myGender === 'male' ? 'female' : myGender === 'female' ? 'male' : null
-    let q = supabase.from('profiles').select('*').eq('status','approved')
+    let q = supabase.from('profiles').select('id, full_name, gender, date_of_birth, profession, education, annual_income, about, native_district, native_state, native_region, current_city, current_state, height_cm, religion, caste, mother_tongue, family_type, verified, status, created_at, photo_url, photo_visibility, last_login_at, marital_status, profile_created_by, member_number, hidden_fields, user_id, phone_verified, visa_status, native_country, diet, smoking, drinking, star, rashi, manglik, gotra').eq('status','approved')
     if (opp)      q = q.eq('gender', opp)
     if (region)   q = q.eq('native_region', region)
     if (district) q = q.eq('native_district', district)

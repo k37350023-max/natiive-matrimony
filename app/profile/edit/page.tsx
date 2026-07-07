@@ -149,8 +149,9 @@ function EditProfilePageInner() {
   }, [])
 
   async function loadProfile(id: string) {
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single()
-    if (error || !data) { router.push('/browse'); return }
+    // Own profile via the secured route (owner receives full data incl. phone).
+    const data = await fetch(`/api/profiles/${id}`).then(r => r.ok ? r.json() : null).then(j => j?.profile)
+    if (!data) { router.push('/browse'); return }
     const rawPhone = data.phone || ''
     if (rawPhone.startsWith('+')) {
       const spaceIdx = rawPhone.indexOf(' ')

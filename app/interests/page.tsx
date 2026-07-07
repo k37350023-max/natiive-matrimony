@@ -103,6 +103,10 @@ function RequestsPageInner() {
     if (myId) { loadAll() } else { setLoading(false) }
   }, [sessionChecked, myId])
 
+  // Safe, PII-free columns for list views. Contact for accepted connections is
+  // fetched via the secured /api/profiles/contact (server checks acceptance).
+  const LIST_COLUMNS = 'id, full_name, gender, date_of_birth, profession, education, about, native_district, native_state, current_city, height_cm, religion, caste, verified, photo_url, photo_visibility, hidden_fields, last_login_at, marital_status'
+
   async function loadAll() {
     setLoading(true)
     await Promise.all([loadReceived(), loadAccepted(), loadSent(), loadSaved()])
@@ -126,7 +130,7 @@ function RequestsPageInner() {
     if (!rows?.length) { setReceived([]); return }
     const ids = rows.map(r => r.from_user)
     const [{ data: profiles }, { data: matchRows }] = await Promise.all([
-      supabase.from('profiles').select('*').in('id', ids),
+      supabase.from('profiles').select(LIST_COLUMNS).in('id', ids),
       supabase.from('matches').select('id,user1,user2').or(ids.map(id => `and(user1.eq.${id},user2.eq.${myId}),and(user1.eq.${myId},user2.eq.${id})`).join(',')),
     ])
     // Load first message per match
@@ -149,9 +153,24 @@ function RequestsPageInner() {
       .order('created_at', { ascending: false })
     if (!rows?.length) { setAccepted([]); return }
     const ids = rows.map(r => r.from_user)
-    const { data: profiles } = await supabase.from('profiles').select('*').in('id', ids)
+    const { data: profiles } = await supabase.from('profiles').select(LIST_COLUMNS).in('id', ids)
+    // Contact comes from the secured endpoint — server verifies the acceptance.
+    const contacts = await Promise.all(ids.map(async pid => {
+      try {
+        const r = await fetch('/api/profiles/contact', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ profileId: pid }),
+        })
+        const j = r.ok ? await r.json() : null
+        return { pid, phone: j?.unlocked ? j.phone : null, email: j?.unlocked ? j.email : null }
+      } catch { return { pid, phone: null, email: null } }
+    }))
     setAccepted(rows
-      .map(r => ({ ...r, profile: profiles?.find(p => p.id === r.from_user) }))
+      .map(r => {
+        const base = profiles?.find(p => p.id === r.from_user)
+        const c = contacts.find(x => x.pid === r.from_user)
+        return { ...r, profile: base ? { ...base, phone: c?.phone, email: c?.email } : undefined }
+      })
       .filter(r => r.profile) as Interest[])
   }
 
@@ -163,7 +182,7 @@ function RequestsPageInner() {
       .order('created_at', { ascending: false })
     if (!rows?.length) { setSent([]); return }
     const ids = rows.map(r => r.to_user)
-    const { data: profiles } = await supabase.from('profiles').select('*').in('id', ids)
+    const { data: profiles } = await supabase.from('profiles').select(LIST_COLUMNS).in('id', ids)
     setSent(rows
       .map(r => ({ ...r, profile: profiles?.find(p => p.id === r.to_user) }))
       .filter(r => r.profile) as Interest[])
