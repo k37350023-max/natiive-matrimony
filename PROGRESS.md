@@ -103,7 +103,18 @@ Ranked by what a normal visitor/member would actually hit.
   Groom chat message delivered. (Test accounts kept; the interaction rows were cleaned.)
 - Also fixed login/register headers to the lowercase `nativematrimony.` wordmark.
 
-## Autonomous build — P0 write migration (in progress)
+## Autonomous build — SECURITY (this session)
+- ✅ **ALL client DB writes migrated server-side** (photo, verify-phone, admin were the last).
+  Admin now uses `/api/admin` + server-only `ADMIN_SECRET` (was a bypassable client password).
+- ✅ **RLS Phase 1 SQL ready** (`supabase/rls-phase1-deny-anon-writes.sql`) — run it to deny all
+  anon writes with zero app breakage. In NEEDS YOU.
+- ✅ **Browse profile-list reads** no longer fetch phone/email (safe columns).
+- REMAINING read/PII lockdown (Phase 2, do next): interests accepted-tab contact → use
+  `/api/profiles/contact` (not select('*')); search `select('*')` → safe columns; dashboard/
+  profile-edit own-profile reads → `/api/profiles/[id]`; then column-revoke phone/email from
+  anon (or deny anon SELECT) once reads are server-side. Admin reads are internal (lower pri).
+
+## Autonomous build — P0 write migration (done)
 - ✅ notifications, profile_views, field_requests, reports, matches-accept, chat-read, interest
   withdraw already server-side (Codex + earlier).
 - ✅ NEW: `/api/profiles/photo` (setMain/addExtra/removeExtra) + `/api/profiles/verify-phone`
