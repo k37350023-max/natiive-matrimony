@@ -350,7 +350,14 @@ export default function RegisterPage() {
                 <div style={{ display: 'grid', gap: '10px', marginBottom: '13px' }}>
                   <div>
                     <Label>Native state</Label>
-                    <select style={inputStyle} value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }}>
+                    <select style={inputStyle} value={form.native_state} onChange={e => {
+                      const nextState = e.target.value
+                      // Keep a prefilled/typed native place if it exists in the chosen state
+                      // (e.g. arriving via /register?native_place=Guntur) instead of wiping it.
+                      const options = INDIA_STATES[nextState] || []
+                      const match = options.find(d => d.toLowerCase() === form.native_district.trim().toLowerCase())
+                      setForm(f => ({ ...f, native_state: nextState, native_district: match || '' }))
+                    }}>
                       <option value="">Select state</option>
                       {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
                     </select>
