@@ -843,7 +843,7 @@ export default function BrowsePage() {
     if (!myProfileId || !oppositeGender) return
     const sevenDaysAgo = new Date(Date.now() - 7*24*60*60*1000).toISOString()
     // New arrivals: 3 most recent profiles
-    supabase.from('profiles').select('*').eq('status','approved').eq('gender',oppositeGender)
+    supabase.from('profiles').select('id, full_name, gender, date_of_birth, profession, education, annual_income, about, native_district, native_state, native_region, current_city, current_state, height_cm, religion, caste, mother_tongue, family_type, verified, status, created_at, photo_url, photo_visibility, last_login_at, marital_status, profile_created_by, member_number, hidden_fields, user_id, phone_verified').eq('status','approved').eq('gender',oppositeGender)
       .neq('id', myProfileId).gte('created_at', sevenDaysAgo)
       .order('created_at', { ascending: false }).limit(3)
       .then(({data}) => setNewArrivals(data || []))
@@ -853,7 +853,7 @@ export default function BrowsePage() {
       const lastVisitDate = new Date(lastVisit)
       const hoursSince = (Date.now() - lastVisitDate.getTime()) / (1000*60*60)
       if (hoursSince > 24) {
-        supabase.from('profiles').select('*').eq('status','approved').eq('gender',oppositeGender)
+        supabase.from('profiles').select('id, full_name, gender, date_of_birth, profession, education, annual_income, about, native_district, native_state, native_region, current_city, current_state, height_cm, religion, caste, mother_tongue, family_type, verified, status, created_at, photo_url, photo_visibility, last_login_at, marital_status, profile_created_by, member_number, hidden_fields, user_id, phone_verified').eq('status','approved').eq('gender',oppositeGender)
           .neq('id', myProfileId).eq('native_district', myNativeDistrict)
           .gte('created_at', lastVisit)
           .order('created_at', { ascending: false }).limit(6)
@@ -887,7 +887,7 @@ export default function BrowsePage() {
     } catch { /* fall through to legacy query */ }
 
     if (data === null) {
-      let q = supabase.from('profiles').select('*').eq('status','approved')
+      let q = supabase.from('profiles').select('id, full_name, gender, date_of_birth, profession, education, annual_income, about, native_district, native_state, native_region, current_city, current_state, height_cm, religion, caste, mother_tongue, family_type, verified, status, created_at, photo_url, photo_visibility, last_login_at, marital_status, profile_created_by, member_number, hidden_fields, user_id, phone_verified').eq('status','approved')
       if (oppositeGender) q = q.eq('gender', oppositeGender)
       if (region)         q = q.eq('native_region', region)
       if (state)          q = q.eq('native_state', state)
