@@ -14,6 +14,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    if (action === 'list') {
+      let q = supabaseAdmin.from('profiles').select('*').order('created_at', { ascending: false })
+      if (status) q = q.eq('status', status)
+      const { data, error } = await q
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      return NextResponse.json({ profiles: data ?? [] })
+    }
+
+    if (action === 'listReports') {
+      const { data, error } = await supabaseAdmin.from('reports').select('reported, reason')
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+      return NextResponse.json({ reports: data ?? [] })
+    }
+
     if (action === 'updateStatus' && id && (status === 'approved' || status === 'rejected')) {
       const { error } = await supabaseAdmin.from('profiles')
         .update({ status, verified: status === 'approved' }).eq('id', id)

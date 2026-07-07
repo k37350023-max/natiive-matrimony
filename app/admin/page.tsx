@@ -45,24 +45,29 @@ export default function AdminPage() {
 
   useEffect(() => { if (authed) { if (filter === 'fake') loadFakeProfiles(); else loadProfiles() } }, [authed, filter])
 
+  async function adminApi(body: Record<string, unknown>) {
+    const res = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ secret: password, ...body }) })
+    return res.ok ? res.json() : {}
+  }
+
   async function loadProfiles() {
     setLoading(true)
-    const { data } = await supabase.from('profiles').select('*').eq('status', filter).order('created_at', { ascending: false })
+    const { profiles: data } = await adminApi({ action: 'list', status: filter })
     setProfiles(data || [])
     setLoading(false)
   }
 
   async function loadFakeProfiles() {
     setLoading(true)
-    const [{ data }, { data: reports }] = await Promise.all([
-      supabase.from('profiles').select('*').order('created_at', { ascending: false }),
-      supabase.from('reports').select('reported, reason'),
+    const [{ profiles: data }, { reports }] = await Promise.all([
+      adminApi({ action: 'list' }),
+      adminApi({ action: 'listReports' }),
     ])
-    const all = data || []
+    const all = (data || []) as (Profile & { photo_url?: string | null })[]
 
     // Count reports per profile
     const reportCounts: Record<string, string[]> = {}
-    ;(reports || []).forEach(r => {
+    ;((reports || []) as { reported: string; reason: string }[]).forEach(r => {
       if (!reportCounts[r.reported]) reportCounts[r.reported] = []
       reportCounts[r.reported].push(r.reason)
     })

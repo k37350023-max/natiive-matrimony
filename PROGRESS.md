@@ -6,6 +6,10 @@ flag anything that needs you under **⚠️ NEEDS YOU** below.
 ---
 
 ## ⚠️ NEEDS YOU (do these when you're back - everything else is handled)
+- [ ] **Enable RLS Phase 2 (hide phone/email at DB level).** After Phase 1, run
+      `supabase/rls-phase2-protect-pii.sql` — the public anon key can then no longer read
+      phone/email/birth details on profiles at all; contact flows only through the secured
+      server routes. Safe now: no client reads use select('*') on profiles anymore.
 - [ ] **Enable RLS (closes the #1 security hole).** Every DB write is now server-side, so this
       is safe + won't break the app. Run `supabase/rls-phase1-deny-anon-writes.sql` in
       Supabase Studio -> SQL Editor. It enables RLS on all tables, keeps reads open (app keeps
