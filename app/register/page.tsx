@@ -286,7 +286,9 @@ export default function RegisterPage() {
       localStorage.setItem('my_user_id', data.userId)
       localStorage.setItem('my_profile_id', data.profileId)
       const benefit = data.foundingMemberEligible ? 'founding_2y' : 'premium_3m'
-      router.push(`/browse?new=1&benefit=${benefit}`)
+      // Route straight to Browse for their native place — matches (or an alert) await.
+      const place = form.native_district.trim()
+      router.push(`/browse?new=1&benefit=${benefit}${place ? `&native_place=${encodeURIComponent(place)}` : ''}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)
@@ -302,8 +304,8 @@ export default function RegisterPage() {
   }
 
   const STEP_META = [
-    { n: 1, title: 'Create your free profile', sub: 'Start with native place. We will apply the best launch benefit automatically.' },
-    { n: 2, title: 'Basic details', sub: 'Only the essentials needed to start.' },
+    { n: 1, title: 'Create your free profile', sub: 'Takes less than 30 seconds. Start with your native place.' },
+    { n: 2, title: 'Basic details', sub: 'Just the essentials — you can complete details later.' },
     { n: 3, title: 'Verify your mobile', sub: `We sent a code to ${phoneCode} ${form.phone}` },
   ][step - 1]
 

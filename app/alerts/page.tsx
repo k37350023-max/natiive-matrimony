@@ -56,11 +56,11 @@ export default function AlertsPage() {
           <div>
             <h1 className="text-2xl font-bold" style={{ color: '#14241C' }}>Your alerts</h1>
             <p className="text-sm mt-1" style={{ color: '#5B6B60' }}>
-              Get notified when new profiles match a search. Keep as many as you like.
+              Create alerts for native places and preferences. We&apos;ll notify you when new matching profiles join.
             </p>
           </div>
           <Link href="/browse" className="btn-primary text-sm px-4 py-2 whitespace-nowrap" style={{ textDecoration: 'none' }}>
-            + New alert
+            + Create Alert
           </Link>
         </div>
 
@@ -84,10 +84,10 @@ export default function AlertsPage() {
             </div>
             <p className="font-semibold" style={{ color: '#14241C' }}>No alerts yet</p>
             <p className="text-sm mt-1 mb-5" style={{ color: '#5B6B60' }}>
-              Search by native place and filters, then tap <strong>Save this search</strong> to get notified when matching profiles join.
+              Create your first alert and we&apos;ll watch for matching profiles.
             </p>
             <Link href="/browse" className="btn-primary text-sm px-5 py-2.5" style={{ textDecoration: 'none' }}>
-              Browse profiles
+              Create Alert
             </Link>
           </div>
         ) : (

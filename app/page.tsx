@@ -13,10 +13,10 @@ const trustItems = [
 ]
 
 const journey = [
-  ['Create your profile', 'Add native place, work, education, photo preference, and contact verification.'],
-  ['Browse native profiles', 'Your profile becomes discoverable to families searching by roots and location.'],
-  ['Send or accept request', 'Both families choose before chat and contact are shown.'],
-  ['Talk with confidence', 'Connected profiles can continue with chat, phone, or email.'],
+  ['Create in 30 seconds', 'Just your name, native place, and a few basics. Complete the rest whenever you like.'],
+  ['Search your native place', 'See families from your hometown, or set an alert if the right one has not joined yet.'],
+  ['Let matches find you', 'We notify you when a matching profile from your native place joins. Create once, then relax.'],
+  ['Connect on mutual interest', 'Chat and contact open only when both families accept. No random messages.'],
 ]
 
 const regions: Array<[string, string[]]> = [
@@ -136,23 +136,25 @@ export default function Home() {
           <div className="nmh-hero-copy">
             <div className="nmh-eyebrow">
               <Icon name="pin" size={17} />
-              Always free to start
+              Takes less than 30 seconds
             </div>
-            <h1>Create your profile. Let the right native family find you.</h1>
-            <p>Create a profile and use the free version for as long as you need. Founding members get 2 years of premium free; everyone else gets 3 months of premium free.</p>
+            <h1>Create your profile in 30 seconds. Let native matches find you.</h1>
+            <p>Search by native place, save alerts, and get notified when matching profiles join.</p>
             <div className="nmh-actions">
               <Link href="/register" className="nmh-primary">
                 <Icon name="user" size={19} />
                 Create Free Profile
               </Link>
               <Link href="/browse" className="nmh-secondary">
-                Browse Profiles
+                Browse Native Places
               </Link>
             </div>
             <div className="nmh-proof-row" aria-label="Trust highlights">
-              <span>Native place first</span>
-              <span>3 months premium free</span>
+              <span>Native-place first</span>
+              <span>Free to start</span>
               <span>Place alerts</span>
+              <span>Mutual interest only</span>
+              <span>Parents welcome</span>
             </div>
             <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
           </div>
@@ -172,6 +174,7 @@ export default function Home() {
           <div>
             <p className="nmh-section-kicker">Start with hometown</p>
             <h2 id="native-search-heading">Search Native Places</h2>
+            <p className="nmh-search-sub">Find families from your native place — or set an alert and we&apos;ll notify you when one joins.</p>
           </div>
           <form action="/browse" className="nmh-search-form">
             <input name="native_place" placeholder="Village, town, district, or city" aria-label="Native place" />

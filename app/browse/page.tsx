@@ -1235,6 +1235,21 @@ export default function BrowsePage() {
               <Chip key={place} active={nativePlace.toLowerCase() === place.toLowerCase()} onClick={() => { setNativePlace(nativePlace === place ? '' : place); setPage(1) }} label={place} />
             ))}
           </div>
+          {/* Post-search notify bar — appears after any native-place search, works even with no results */}
+          {nativePlace.trim() && (
+            <button
+              onClick={() => savePlaceAlert()}
+              disabled={alertSaving}
+              className="w-full mb-3 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all"
+              style={alertSet
+                ? { background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA', minHeight: 46 }
+                : { background: '#14241C', color: '#EAF3EA', border: '1px solid #14241C', minHeight: 46 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+              {alertSaving ? 'Saving…' : alertSet ? `✓ You'll be notified about ${nativePlace.trim()}` : `Notify me when new profiles join ${nativePlace.trim()}`}
+            </button>
+          )}
           {/* Mobile filter row */}
           <div className="sm:hidden flex items-center gap-2">
             <button
@@ -1409,48 +1424,44 @@ export default function BrowsePage() {
               </div>
             )}
 
-            {/* Empty state */}
-            {!loading && profiles.length === 0 && (
-              <div className="card p-10 text-center">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#EDF3ED' }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75">
-                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
-                  </svg>
-                </div>
-                {(region||state||district) ? (
-                  <>
-                    <p className="font-semibold text-gray-800 mb-1">No {genderLabel} from {district||state||region} yet</p>
-                    <p className="text-sm text-gray-500 mb-5">Be the first from your area, or invite friends.</p>
-                    <button onClick={clearAll} className="btn-ghost px-5 py-2 text-sm">Show all {genderLabel}</button>
-                  </>
-                ) : nativePlace ? (
-                  <>
-                    <p className="font-semibold text-gray-800 mb-1">No profiles from {nativePlace} yet.</p>
-                    <p className="text-sm text-gray-500 mb-5">
-                      Save a place alert for {nativePlace}. We&apos;ll add it to Notifications and let you know when matching families join this native place search.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <button
-                        onClick={() => savePlaceAlert()}
-                        disabled={alertSaving}
-                        className={alertSet ? 'btn-ghost px-5 py-2 text-sm' : 'btn-primary px-5 py-2 text-sm'}>
-                        {alertSaving ? 'Updating alert…' : alertSet ? 'Remove Alert' : 'Save Place Alert'}
-                      </button>
-                      <button onClick={clearAll} className="btn-ghost px-5 py-2 text-sm">Show all profiles</button>
+            {/* Empty state — lead with the alert value prop, never "no profiles found" */}
+            {!loading && profiles.length === 0 && (() => {
+              const emptyPlace = nativePlace.trim() || district || state || region || myNativeDistrict
+              const hasFilters = Boolean(region||state||district||ageRange||casteFilter||religionFilter||profCat||incomeFilter||motherTongues.length||heightRange||maritalFilter||educationFilter||activeWithin||verifiedOnly||photoOnly)
+              return (
+                <div className="card overflow-hidden">
+                  <div className="p-6 sm:p-8 text-center" style={{ background: 'linear-gradient(180deg, #F4F8F2 0%, #FFFFFF 72%)' }}>
+                    <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ background: '#14241C' }}>
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#EAF3EA" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                      </svg>
                     </div>
-                    <p className="text-xs text-gray-400 mt-4">
-                      You can review saved place alerts on the Notifications page.
+                    <h3 className="text-xl font-bold" style={{ color: '#14241C' }}>No matching profiles yet?</h3>
+                    <p className="text-sm mt-2 mx-auto max-w-sm leading-relaxed" style={{ color: '#4B5A50' }}>
+                      Set an alert{emptyPlace ? ` for ${emptyPlace}` : ' for this native place'}. When someone matching your
+                      preference joins, we&apos;ll notify you.
                     </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="font-semibold text-gray-700 mb-1">No profiles match these filters</p>
-                    <p className="text-sm text-gray-400 mb-4">Try removing one or two filters.</p>
-                    <button onClick={clearAll} className="btn-primary px-5 py-2 text-sm">Clear filters</button>
-                  </>
-                )}
-              </div>
-            )}
+                    <div className="flex flex-col sm:flex-row gap-2.5 justify-center mt-5">
+                      <button
+                        onClick={() => savePlaceAlert(true)}
+                        disabled={alertSaving}
+                        className={alertSet ? 'btn-ghost px-6 py-2.5 text-sm' : 'btn-primary px-6 py-2.5 text-sm'}
+                        style={{ minHeight: 46 }}>
+                        {alertSaving ? 'Creating…' : alertSet ? '✓ Alert created' : 'Create Alert'}
+                      </button>
+                      {hasFilters && (
+                        <button onClick={clearAll} className="btn-ghost px-6 py-2.5 text-sm" style={{ minHeight: 46 }}>
+                          Clear filters
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-xs mt-4" style={{ color: '#8A968E' }}>
+                      Create once. Set alerts. Matches can find you later.
+                    </p>
+                  </div>
+                </div>
+              )
+            })()}
 
             {/* Skeleton loaders */}
             {loading && (
@@ -1516,21 +1527,21 @@ export default function BrowsePage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-bold text-[15px]" style={{ color: '#14241C' }}>
-                            We&apos;re just getting started{alertPlace ? ` in ${alertPlace}` : ''}.
+                            Want more options{alertPlace ? ` from ${alertPlace}` : ' from this native place'}? Set an alert.
                           </p>
                           <p className="text-[13.5px] mt-1 leading-relaxed" style={{ color: '#3B4A40' }}>
-                            New profiles are added every week. Turn on an alert and we&apos;ll notify you
-                            the moment matching {alertPlace ? `families from ${alertPlace}` : 'families'} join.
+                            We&apos;ll notify you the moment a new matching profile
+                            {alertPlace ? ` from ${alertPlace}` : ''} joins. Create once, and let matches find you.
                           </p>
                           <div className="flex flex-wrap gap-2.5 mt-3.5">
                             <button
                               onClick={() => savePlaceAlert()}
                               disabled={alertSaving}
                               className={alertSet ? 'btn-ghost px-4 py-2 text-sm' : 'btn-primary px-4 py-2 text-sm'}>
-                              {alertSaving ? 'Updating…' : alertSet ? 'Remove alert' : (alertPlace ? `Alert me for ${alertPlace}` : 'Turn on alert')}
+                              {alertSaving ? 'Updating…' : alertSet ? '✓ Alert created' : 'Create Alert'}
                             </button>
-                            <Link href="/register" className="btn-ghost px-4 py-2 text-sm" style={{ textDecoration: 'none' }}>
-                              Invite family &amp; friends
+                            <Link href="/alerts" className="btn-ghost px-4 py-2 text-sm" style={{ textDecoration: 'none' }}>
+                              My alerts
                             </Link>
                           </div>
                         </div>
