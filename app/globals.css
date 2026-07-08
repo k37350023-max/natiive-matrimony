@@ -3106,18 +3106,19 @@ select.input {
 
 .app-brand-native {
   color: #14241C;
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 0.065em;
-  line-height: 0.86;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1;
 }
 
 .app-brand-matrimony {
-  color: #166534;
-  font-size: 14px;
-  font-weight: 850;
-  letter-spacing: 0.02em;
-  line-height: 1;
+  color: #1B5E20;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.19em;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .app-brand-copy i {
@@ -3147,11 +3148,11 @@ select.input {
 }
 
 .app-brand-home .app-brand-native {
-  font-size: 27px;
+  font-size: 24px;
 }
 
 .app-brand-home .app-brand-matrimony {
-  font-size: 16px;
+  font-size: 11.5px;
 }
 
 .app-brand-home .app-brand-copy small {
@@ -3415,37 +3416,37 @@ select.input {
 
 /* Final brand mark override: light paddy-grain badge */
 .app-brand .app-brand-pin-mark {
-  background: linear-gradient(145deg, #FFFFFF 0%, #FAFCF6 100%) !important;
-  border: 1px solid rgba(194, 210, 184, 0.86) !important;
-  border-radius: 13px !important;
-  box-shadow: 0 8px 18px rgba(20, 36, 28, 0.08), inset 0 1px 0 rgba(255,255,255,0.95) !important;
+  background: linear-gradient(160deg, #1B5E20 0%, #14351C 100%) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 6px 16px rgba(20, 53, 28, 0.28), inset 0 1px 0 rgba(255,255,255,0.14) !important;
   overflow: hidden;
 }
 
 .app-brand .app-brand-pin-mark svg {
-  height: 37px !important;
-  width: 37px !important;
+  height: 26px !important;
+  width: 26px !important;
 }
 
 .app-brand-home .app-brand-pin-mark svg {
-  height: 42px !important;
-  width: 42px !important;
+  height: 32px !important;
+  width: 32px !important;
 }
 
 .app-brand-compact .app-brand-pin-mark svg {
-  height: 31px !important;
-  width: 31px !important;
+  height: 22px !important;
+  width: 22px !important;
 }
 
 @media (max-width: 639px) {
   .app-brand .app-brand-pin-mark svg {
-    height: 34px !important;
-    width: 34px !important;
+    height: 24px !important;
+    width: 24px !important;
   }
 
   .app-brand-compact .app-brand-pin-mark svg {
-    height: 29px !important;
-    width: 29px !important;
+    height: 20px !important;
+    width: 20px !important;
   }
 }
 
