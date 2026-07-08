@@ -124,6 +124,9 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
   type GuestPreview = { full_name: string; profession: string; native_district: string; date_of_birth: string; sample?: boolean }
   const [previews, setPreviews] = React.useState<GuestPreview[]>([])
   const [checkedPlace, setCheckedPlace] = React.useState(false)
+  const [waitlistPhone, setWaitlistPhone] = React.useState('')
+  const [waitlistStatus, setWaitlistStatus] = React.useState<'idle' | 'sending' | 'done'>('idle')
+  const [waitlistError, setWaitlistError] = React.useState('')
   const samplePreviews: GuestPreview[] = [
     { full_name: 'Ravi Launch', profession: 'Product Manager', native_district: nativePlace || 'Guntur', date_of_birth: '1996-04-12', sample: true },
     { full_name: 'Vijay Preview', profession: 'Software Engineer', native_district: nativePlace || 'Karimnagar', date_of_birth: '1994-08-22', sample: true },
@@ -205,10 +208,47 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                     <path d="M13.73 21a2 2 0 0 1-3.46 0" />
                   </svg>
                 </div>
-                <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
-                  <strong>Be first for {searchedPlace}.</strong><br />
-                  Create your profile now. We will alert you when matching families join this place.
-                </p>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: '13px', lineHeight: 1.55, color: '#26352C' }}>
+                    <strong>Be first for {searchedPlace}.</strong><br />
+                    Leave your number — we&apos;ll alert you when someone from this place joins.
+                  </p>
+                  {waitlistStatus === 'done' ? (
+                    <p style={{ margin: '10px 0 0', fontSize: '13px', fontWeight: 700, color: '#075E3E' }}>
+                      You&apos;re on the list — we&apos;ll notify you.
+                    </p>
+                  ) : (
+                    <form
+                      onSubmit={async e => {
+                        e.preventDefault()
+                        setWaitlistStatus('sending')
+                        try {
+                          const r = await fetch('/api/waitlist', {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ nativePlace: searchedPlace, phone: `+91${waitlistPhone.trim()}` }),
+                          })
+                          const j = await r.json()
+                          if (!r.ok) throw new Error(j.error || 'Could not save')
+                          setWaitlistStatus('done')
+                        } catch (err) {
+                          setWaitlistStatus('idle')
+                          setWaitlistError(err instanceof Error ? err.message : 'Could not save')
+                        }
+                      }}
+                      style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                      <input value={waitlistPhone} onChange={e => setWaitlistPhone(e.target.value.replace(/\D/g, ''))}
+                        type="tel" inputMode="numeric" placeholder="Mobile number" aria-label="Mobile number"
+                        className="nm-input" style={{ flex: 1, minWidth: 0, padding: '10px 12px', fontSize: '13.5px' }} />
+                      <button type="submit" disabled={waitlistStatus === 'sending'} className="nm-primary"
+                        style={{ padding: '10px 14px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                        {waitlistStatus === 'sending' ? 'Saving…' : 'Notify Me'}
+                      </button>
+                    </form>
+                  )}
+                  {waitlistError && waitlistStatus !== 'done' && (
+                    <p style={{ margin: '6px 0 0', fontSize: '12px', color: '#B4231F' }}>{waitlistError}</p>
+                  )}
+                </div>
               </div>
             </div>
 

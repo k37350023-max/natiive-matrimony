@@ -128,6 +128,15 @@ Ranked by what a normal visitor/member would actually hit.
 - REMAINING client writes: only `app/admin/page.tsx` (internal admin tool — profiles update/
   delete, notifications insert). Migrate next, then reads, then ENABLE RLS.
 
+## Autonomous build session (this cycle) - DONE so far
+- P0: all client PII reads removed (interests/search/dashboard/edit/admin); RLS Phase 2 SQL added
+- Perf: lib/counts.ts dedupes badge + approved counts (verified once-per-page); dead components removed
+- Fix: register keeps prefilled native place on state select (verified)
+- OTP UX: 30s resend timer + Resend button (login+register); 8s Firebase timeout fixes the
+  infinite "Sending OTP" hang (verified live: hang -> fallback -> dev OTP -> countdown -> resend)
+- Feature: "Notify Me" waitlist - native_place_waitlist table created (RLS-deny, server-only),
+  /api/waitlist route, capture form on the zero-results browse page (verified end-to-end, row cleaned)
+
 ## FIX-ALL audit + RLS finish plan (in progress)
 Audit: build green; lint 120 (mostly noise: set-state-in-effect, no-img-element). Real backend
 risk = direct client DB access still bypassing the secured API → blocks RLS.
