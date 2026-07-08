@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import BrandLogo from './components/BrandLogo'
+import { slugify } from '@/lib/nativePlaces'
 
 const popularPlaces = ['Karimnagar', 'Warangal', 'Guntur', 'Nellore', 'Rajahmundry', 'Nizamabad', 'Vijayawada', 'Vizag']
 
@@ -182,7 +183,7 @@ export default function Home() {
           </form>
           <div className="nmh-place-row" aria-label="Popular native place searches">
             {popularPlaces.map((place) => (
-              <Link key={place} href={`/browse?native_place=${encodeURIComponent(place)}`}>{place}</Link>
+              <Link key={place} href={`/native/${slugify(place)}`}>{place}</Link>
             ))}
           </div>
         </section>
@@ -309,7 +310,7 @@ export default function Home() {
                   <h3>{region}</h3>
                   <div className="nmh-region-places">
                     {places.map((place) => (
-                      <Link key={place} href={`/browse?native_place=${encodeURIComponent(place)}`}>{place}</Link>
+                      <Link key={place} href={`/native/${slugify(place)}`}>{place}</Link>
                     ))}
                   </div>
                 </div>

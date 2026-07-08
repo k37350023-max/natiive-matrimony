@@ -17,6 +17,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nativematrimony.com"),
   title: { default: "NativeMatrimony.com - Profiles by native place", template: "%s | NativeMatrimony.com" },
   description: "Join NativeMatrimony for free. The free version stays free, founding members get 2 years of premium, and others get 3 months premium free.",
   openGraph: {

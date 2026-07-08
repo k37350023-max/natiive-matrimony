@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { allNativePlaces } from '@/lib/nativePlaces'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,5 +32,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'weekly' as const,
   }))
 
-  return [...staticRoutes, ...profileRoutes]
+  // Programmatic native-place landing pages — the SEO growth engine.
+  const placeRoutes: MetadataRoute.Sitemap = allNativePlaces().map(p => ({
+    url: `${base}/native/${p.slug}`,
+    priority: 0.8,
+    changeFrequency: 'daily' as const,
+  }))
+
+  return [...staticRoutes, ...placeRoutes, ...profileRoutes]
 }
