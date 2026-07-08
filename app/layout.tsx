@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "NativeMatrimony.com - Profiles by native place",
     description: "Start free, browse native profiles, and connect only through accepted requests. Founders get 2 years premium free; others get 3 months free.",
   },

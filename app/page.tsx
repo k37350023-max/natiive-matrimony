@@ -113,9 +113,32 @@ function HeroVisual() {
   )
 }
 
+const homeJsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'NativeMatrimony',
+      url: 'https://nativematrimony.com',
+      description: 'Native-place-first marriage discovery. Search by native place, set free alerts, and connect only on mutual interest.',
+    },
+    {
+      '@type': 'WebSite',
+      name: 'NativeMatrimony',
+      url: 'https://nativematrimony.com',
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: 'https://nativematrimony.com/browse?native_place={search_term_string}' },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
+}
+
 export default function Home() {
   return (
     <main className="nmh-page">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
       <div className="nmh-shell">
         <header className="nmh-header">
           <Logo />
