@@ -114,9 +114,17 @@ export default function RegisterPage() {
   const [devOtp, setDevOtp] = useState('')   // shown only in dev mode (no SMS key)
   const [firebaseConfirmation, setFirebaseConfirmation] = useState<ConfirmationResult | null>(null)
   const [sending, setSending] = useState(false)
+  const [resendIn, setResendIn] = useState(0)
   const [districtCount, setDistrictCount] = useState<number | null>(null)
   const otpRef = useRef<HTMLInputElement>(null)
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
+
+  // Resend countdown - 30s between OTP sends.
+  useEffect(() => {
+    if (resendIn <= 0) return
+    const t = setInterval(() => setResendIn(v => (v > 1 ? v - 1 : 0)), 1000)
+    return () => clearInterval(t)
+  }, [resendIn > 0])
 
   const [form, setForm] = useState({
     profile_created_by: 'self', full_name: '', gender: '', phone: '',
@@ -192,11 +200,14 @@ export default function RegisterPage() {
     try {
       const fullPhone = `${phoneCode}${form.phone.trim()}`
 
-      // Firebase phone auth first; fall back to server OTP if it fails
-      // (region not enabled, billing, reCAPTCHA) so signup still works.
+      // Firebase phone auth first; fall back to server OTP if it fails OR hangs
+      // (region not enabled, billing, stuck reCAPTCHA) so signup still works.
       let sentWithFirebase = false
       try {
-        sentWithFirebase = await sendFirebaseOtp(fullPhone)
+        sentWithFirebase = await Promise.race([
+          sendFirebaseOtp(fullPhone),
+          new Promise<boolean>((_, reject) => setTimeout(() => reject(new Error('firebase-timeout')), 8000)),
+        ])
       } catch {
         try { recaptchaRef.current?.clear() } catch {}
         recaptchaRef.current = null
@@ -204,7 +215,7 @@ export default function RegisterPage() {
         sentWithFirebase = false
       }
       if (sentWithFirebase) {
-        setStep(3)
+        setStep(3); setResendIn(30)
         return
       }
 
@@ -216,7 +227,7 @@ export default function RegisterPage() {
       if (!res.ok) throw new Error(data.error || 'Could not send code')
       setOtpToken(data.token)
       setDevOtp(data.dev_otp || '')   // present only when no SMS gateway configured
-      setStep(3)
+      setStep(3); setResendIn(30)
     } catch (err) {
       setError(phoneAuthErrorMessage(err))
     } finally { setSending(false) }
@@ -523,10 +534,20 @@ export default function RegisterPage() {
                 <button onClick={verifyOtp} disabled={sending} className="btn-primary" style={{ padding: '13px', fontSize: '15px' }}>
                   {sending || loading ? 'Creating profile…' : 'Verify & create profile'}
                 </button>
-                <button onClick={() => { setStep(2); setOtp(''); setError('') }}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#94A3B8' }}>
-                  ← Change details
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <button onClick={() => { setStep(2); setOtp(''); setError(''); setResendIn(0) }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#94A3B8' }}>
+                    ← Change details
+                  </button>
+                  {resendIn > 0 ? (
+                    <span style={{ fontSize: '13px', color: '#94A3B8' }}>Resend OTP in {resendIn}s</span>
+                  ) : (
+                    <button onClick={() => { if (!sending) { setOtp(''); sendOtp() } }} disabled={sending}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1B5E20', fontSize: '13px', fontWeight: 700 }}>
+                      Resend OTP
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>

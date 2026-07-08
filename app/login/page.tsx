@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -52,7 +52,15 @@ export default function LoginPage() {
   const [otpSent, setOtpSent] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [resendIn, setResendIn] = useState(0)
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
+
+  // Resend countdown — 30s between OTP sends (also softens rate limits).
+  useEffect(() => {
+    if (resendIn <= 0) return
+    const t = setInterval(() => setResendIn(s => (s > 1 ? s - 1 : 0)), 1000)
+    return () => clearInterval(t)
+  }, [resendIn > 0])
 
   async function sendFirebaseOtp(fullPhone: string) {
     const { firebaseClientConfigured, getFirebaseAuth } = await import('@/lib/firebaseClient')
@@ -82,11 +90,14 @@ export default function LoginPage() {
     try {
       const fullPhone = `${phoneCode}${phone.trim()}`
 
-      // Try Firebase phone auth first; if it fails (e.g. region not enabled,
-      // billing, reCAPTCHA), fall back to the server OTP path so login still works.
+      // Try Firebase phone auth first; if it fails OR hangs (region not enabled,
+      // billing, stuck reCAPTCHA challenge), fall back to the server OTP path.
       let sentWithFirebase = false
       try {
-        sentWithFirebase = await sendFirebaseOtp(fullPhone)
+        sentWithFirebase = await Promise.race([
+          sendFirebaseOtp(fullPhone),
+          new Promise<boolean>((_, reject) => setTimeout(() => reject(new Error('firebase-timeout')), 8000)),
+        ])
       } catch {
         try { recaptchaRef.current?.clear() } catch {}
         recaptchaRef.current = null
@@ -94,7 +105,7 @@ export default function LoginPage() {
         sentWithFirebase = false
       }
       if (sentWithFirebase) {
-        setOtpSent(true)
+        setOtpSent(true); setResendIn(30)
         return
       }
 
@@ -106,7 +117,7 @@ export default function LoginPage() {
       if (!res.ok) throw new Error(data.error || 'Could not send OTP')
       setOtpToken(data.token)
       setDevOtp(data.dev_otp || '')
-      setOtpSent(true)
+      setOtpSent(true); setResendIn(30)
     } catch (err: unknown) {
       setError(phoneAuthErrorMessage(err))
     } finally {
@@ -262,10 +273,20 @@ export default function LoginPage() {
                   {loading ? (otpSent ? 'Signing in…' : 'Sending OTP…') : (otpSent ? 'Sign In' : 'Send OTP')}
                 </button>
                 {otpSent && (
-                  <button onClick={() => { setOtpSent(false); setOtp(''); setOtpToken(''); setDevOtp(''); setFirebaseConfirmation(null); setError('') }}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', fontSize: '13px' }}>
-                    Change mobile number
-                  </button>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <button onClick={() => { setOtpSent(false); setOtp(''); setOtpToken(''); setDevOtp(''); setFirebaseConfirmation(null); setError(''); setResendIn(0) }}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', fontSize: '13px' }}>
+                      Change mobile number
+                    </button>
+                    {resendIn > 0 ? (
+                      <span style={{ fontSize: '13px', color: '#94A3B8' }}>Resend OTP in {resendIn}s</span>
+                    ) : (
+                      <button onClick={() => { if (!loading) { setOtp(''); sendOtp() } }} disabled={loading}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1B5E20', fontSize: '13px', fontWeight: 700 }}>
+                        Resend OTP
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
