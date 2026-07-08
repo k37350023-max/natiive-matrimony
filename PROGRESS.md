@@ -128,6 +128,22 @@ Ranked by what a normal visitor/member would actually hit.
 - REMAINING client writes: only `app/admin/page.tsx` (internal admin tool — profiles update/
   delete, notifications insert). Migrate next, then reads, then ENABLE RLS.
 
+## AUTONOMOUS SESSION - FINAL SUMMARY (2026-07-08)
+Backlog state after this run:
+- **P0 security: code-complete.** Zero client DB writes remain; zero client reads of phone/email
+  remain (admin now uses the gated API). YOUR STEP: run supabase/rls-phase1-deny-anon-writes.sql
+  then rls-phase2-protect-pii.sql in Supabase Studio - the app is verified-ready for both.
+- **P1 correctness: done.** Native-place prefill preserved on state select; stat-tile staleness
+  obsolete (browse redesign removed the tiles).
+- **P2 perf: done.** lib/counts.ts dedupes badge/approved counts (verified once-per-page vs 10+);
+  dead components (LiveCounters, FounderTracker, FounderCount) removed. Lint noise (set-state-in-
+  effect etc.) intentionally left - cosmetic, and Codex iterates these files in parallel.
+- **P3 features: done.** OTP resend timer + 8s Firebase-hang timeout (fixed infinite "Sending
+  OTP"); Notify-Me waitlist end-to-end (table w/ RLS-deny, /api/waitlist, browse capture form,
+  and in-app notification to waiters when someone from their place registers - all verified);
+  biodata download pre-existed.
+Everything above is committed + pushed to main. Remaining human steps are in NEEDS YOU.
+
 ## Autonomous build session (this cycle) - DONE so far
 - P0: all client PII reads removed (interests/search/dashboard/edit/admin); RLS Phase 2 SQL added
 - Perf: lib/counts.ts dedupes badge + approved counts (verified once-per-page); dead components removed

@@ -88,6 +88,28 @@ export async function POST(req: Request) {
     }
 
     await setSession(profile.id)
+
+    // Fulfil the "Notify Me" waitlist: members waiting on this native place get
+    // an in-app notification (best-effort, never blocks signup).
+    ;(async () => {
+      const { data: waiters } = await supabaseAdmin.from('native_place_waitlist')
+        .select('id, profile_id').ilike('native_place', native_district)
+        .is('notified_at', null).not('profile_id', 'is', null)
+      if (!waiters?.length) return
+      const ids = waiters.map(w => w.profile_id).filter(Boolean) as string[]
+      const { data: users } = await supabaseAdmin.from('profiles').select('id, user_id').in('id', ids)
+      for (const u of users || []) {
+        if (!u.user_id || u.id === profile.id) continue
+        await supabaseAdmin.from('notifications').insert({
+          user_id: u.user_id, type: 'waitlist_joined',
+          message: `Someone from ${native_district} just joined — take a look`,
+          from_profile_id: profile.id, read: false, link: `/browse?native_place=${encodeURIComponent(native_district)}`,
+        })
+      }
+      await supabaseAdmin.from('native_place_waitlist')
+        .update({ notified_at: new Date().toISOString() }).in('id', waiters.map(w => w.id))
+    })().catch(() => {})
+
     return NextResponse.json({
       profileId: profile.id,
       userId: created.user.id,
