@@ -762,13 +762,23 @@ export default function BrowsePage() {
     const location = searchParams.get('current_location') || ''
     if (place) setNativePlace(place)
     if (location) setCurrentLocation(location)
-    // Re-apply filters when arriving from a saved alert link.
+    // Re-apply filters when arriving from a saved alert link (keys must match
+    // alertBrowseHref in lib/alertFilters.ts).
     const qpRegion = searchParams.get('region'); if (qpRegion) setRegion(qpRegion)
     const qpState = searchParams.get('state'); if (qpState) setState(qpState)
     const qpDistrict = searchParams.get('district'); if (qpDistrict) setDistrict(qpDistrict)
     const qpAge = searchParams.get('ageRange'); if (qpAge) setAgeRange(qpAge)
+    const qpProf = searchParams.get('profCat'); if (qpProf) setProfCat(qpProf)
+    const qpMarital = searchParams.get('maritalFilter'); if (qpMarital) setMaritalFilter(qpMarital)
+    const qpHeight = searchParams.get('heightRange'); if (qpHeight) setHeightRange(qpHeight)
     const qpCaste = searchParams.get('casteFilter'); if (qpCaste) setCasteFilter(qpCaste)
     const qpReligion = searchParams.get('religionFilter'); if (qpReligion) setReligionFilter(qpReligion)
+    const qpEdu = searchParams.get('educationFilter'); if (qpEdu) setEducationFilter(qpEdu)
+    const qpIncome = searchParams.get('incomeFilter'); if (qpIncome) setIncomeFilter(qpIncome)
+    const qpActive = searchParams.get('activeWithin'); if (qpActive) setActiveWithin(qpActive)
+    const qpTongues = searchParams.get('motherTongues'); if (qpTongues) setMotherTongues(qpTongues.split(','))
+    if (searchParams.get('verifiedOnly') === '1') setVerifiedOnly(true)
+    if (searchParams.get('photoOnly') === '1') setPhotoOnly(true)
     if (searchParams.get('new') === '1') {
       const benefit = searchParams.get('benefit')
       setBrowseToast(benefit === 'founding_2y'

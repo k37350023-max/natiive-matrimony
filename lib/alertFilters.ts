@@ -91,16 +91,22 @@ export function alertChips(nativePlace: string, currentLocation: string, filters
   return chips
 }
 
-/** Build the /browse URL that re-applies an alert's filters. */
+/** Build the /browse URL that re-applies ALL of an alert's filters. Keys here
+    must stay in sync with the query-param reader in app/browse/page.tsx. */
 export function alertBrowseHref(nativePlace: string, currentLocation: string, filters: AlertFilters): string {
   const nf = normalizeFilters(filters)
   const p = new URLSearchParams()
   if (nativePlace) p.set('native_place', nativePlace)
   if (currentLocation) p.set('current_location', currentLocation)
-  for (const k of ['region', 'state', 'district', 'ageRange', 'casteFilter', 'religionFilter'] as const) {
+  for (const k of ['region', 'state', 'district', 'ageRange', 'profCat', 'maritalFilter',
+    'heightRange', 'casteFilter', 'religionFilter', 'educationFilter', 'incomeFilter',
+    'activeWithin'] as const) {
     const v = nf[k]
     if (typeof v === 'string' && v) p.set(k, v)
   }
+  if (nf.motherTongues?.length) p.set('motherTongues', nf.motherTongues.join(','))
+  if (nf.verifiedOnly) p.set('verifiedOnly', '1')
+  if (nf.photoOnly) p.set('photoOnly', '1')
   const qs = p.toString()
   return qs ? `/browse?${qs}` : '/browse'
 }
