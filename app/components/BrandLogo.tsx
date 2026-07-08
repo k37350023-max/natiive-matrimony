@@ -9,14 +9,11 @@ type BrandLogoProps = {
 export default function BrandLogo({ href = '/', className = '', showTagline = true }: BrandLogoProps) {
   return (
     <Link href={href} className={`app-brand ${className}`.trim()} aria-label="NativeMatrimony home">
-      <span className="app-brand-mark app-brand-paddy-mark" aria-hidden="true">
+      <span className="app-brand-mark app-brand-pin-mark" aria-hidden="true">
         <svg viewBox="0 0 48 48" role="img" focusable="false">
-          <path d="M16 40C22 29.7 27.1 18.4 30.5 8" fill="none" stroke="#0B7A3E" strokeLinecap="round" strokeWidth="3.2" />
-          <path d="M16.6 34.2C12 30.4 9.9 25.9 10.4 20.7C15.6 22.2 18.7 25.8 20 31.6" fill="none" stroke="#23A24D" strokeLinecap="round" strokeWidth="2.4" />
-          <path d="M23.1 24.8C29.2 24.1 34.2 26 38 30.7C31.8 31.8 26.8 29.8 23.1 24.8Z" fill="#23A24D" />
-          <path d="M31.1 8.2C37.8 11.8 38.7 17.1 33.7 23.8C27 20.2 26.1 14.9 31.1 8.2Z" fill="#F6B91A" stroke="#C98400" strokeWidth="1.15" strokeLinejoin="round" />
-          <path d="M26.4 16.7C33 20.2 33.9 25.4 29 31.8C22.4 28.3 21.6 23.2 26.4 16.7Z" fill="#F8C12D" stroke="#C98400" strokeWidth="1.15" strokeLinejoin="round" />
-          <path d="M21.6 25.1C27.7 28.5 28.5 33.3 24 39.2C17.9 35.8 17.1 31 21.6 25.1Z" fill="#EFAE19" stroke="#C98400" strokeWidth="1.15" strokeLinejoin="round" />
+          {/* Location pin (native place) with a heart (marriage) inside */}
+          <path d="M24 3.5c-8.4 0-15 6.4-15 15 0 10.2 12.6 24.4 14.1 26 .5.55 1.3.55 1.8 0C26.4 42.9 39 28.7 39 18.5c0-8.6-6.6-15-15-15z" fill="#1B5E20" />
+          <path d="M24 30.6s-8.1-5-8.1-10.6c0-2.7 2.1-4.7 4.7-4.7 1.7 0 3.1 1 3.9 2.2.8-1.2 2.2-2.2 3.9-2.2 2.6 0 4.7 2 4.7 4.7 0 5.6-8.1 10.6-8.1 10.6z" fill="#FBFAF5" />
         </svg>
       </span>
       <span className="app-brand-copy">

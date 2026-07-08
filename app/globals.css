@@ -3414,7 +3414,7 @@ select.input {
 }
 
 /* Final brand mark override: light paddy-grain badge */
-.app-brand .app-brand-paddy-mark {
+.app-brand .app-brand-pin-mark {
   background: linear-gradient(145deg, #FFFFFF 0%, #FAFCF6 100%) !important;
   border: 1px solid rgba(194, 210, 184, 0.86) !important;
   border-radius: 13px !important;
@@ -3422,28 +3422,28 @@ select.input {
   overflow: hidden;
 }
 
-.app-brand .app-brand-paddy-mark svg {
+.app-brand .app-brand-pin-mark svg {
   height: 37px !important;
   width: 37px !important;
 }
 
-.app-brand-home .app-brand-paddy-mark svg {
+.app-brand-home .app-brand-pin-mark svg {
   height: 42px !important;
   width: 42px !important;
 }
 
-.app-brand-compact .app-brand-paddy-mark svg {
+.app-brand-compact .app-brand-pin-mark svg {
   height: 31px !important;
   width: 31px !important;
 }
 
 @media (max-width: 639px) {
-  .app-brand .app-brand-paddy-mark svg {
+  .app-brand .app-brand-pin-mark svg {
     height: 34px !important;
     width: 34px !important;
   }
 
-  .app-brand-compact .app-brand-paddy-mark svg {
+  .app-brand-compact .app-brand-pin-mark svg {
     height: 29px !important;
     width: 29px !important;
   }
