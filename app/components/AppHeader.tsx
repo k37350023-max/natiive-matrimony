@@ -79,6 +79,7 @@ export default function AppHeader() {
     { href: '/browse',    label: 'Browse',      active: path.startsWith('/browse') },
     { href: '/interests', label: 'Requests',    active: path.startsWith('/interests'), badge: pendingInterests },
     { href: '/matches',   label: 'Connected',   active: path.startsWith('/matches') || path.startsWith('/chat'), badge: unreadMessages },
+    { href: '/alerts',    label: 'Alerts',      active: path.startsWith('/alerts') },
     { href: '/dashboard', label: 'My Profile',  active: path.startsWith('/dashboard') || path.startsWith('/profile') },
   ]
 

@@ -35,7 +35,7 @@ const TAB_FILTERS: Record<string, string[]> = {
   Requests:  ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
   Views:     ['profile_view'],
   Connected: ['interest_accepted'],
-  'Place Alerts': ['place_alert_saved','place_match_joined'],
+  'Place Alerts': ['place_alert_saved','place_match_joined','alert_match_joined','waitlist_joined'],
   System:    ['system','field_request','field_request_approved'],
 }
 

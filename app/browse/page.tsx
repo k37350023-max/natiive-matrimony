@@ -741,6 +741,7 @@ export default function BrowsePage() {
 
   const [showSidebar,     setShowSidebar]     = useState(false)
   const [alertSet,        setAlertSet]        = useState(false)
+  const [alertId,         setAlertId]         = useState<string|null>(null)
   const [alertSaving,     setAlertSaving]     = useState(false)
   const [browseToast,     setBrowseToast]     = useState<string|null>(null)
   const [interestMap,     setInterestMap]     = useState<Record<string,string>>({})
@@ -762,6 +763,13 @@ export default function BrowsePage() {
     const location = searchParams.get('current_location') || ''
     if (place) setNativePlace(place)
     if (location) setCurrentLocation(location)
+    // Re-apply filters when arriving from a saved alert link.
+    const qpRegion = searchParams.get('region'); if (qpRegion) setRegion(qpRegion)
+    const qpState = searchParams.get('state'); if (qpState) setState(qpState)
+    const qpDistrict = searchParams.get('district'); if (qpDistrict) setDistrict(qpDistrict)
+    const qpAge = searchParams.get('ageRange'); if (qpAge) setAgeRange(qpAge)
+    const qpCaste = searchParams.get('casteFilter'); if (qpCaste) setCasteFilter(qpCaste)
+    const qpReligion = searchParams.get('religionFilter'); if (qpReligion) setReligionFilter(qpReligion)
     if (searchParams.get('new') === '1') {
       const benefit = searchParams.get('benefit')
       setBrowseToast(benefit === 'founding_2y'
@@ -775,50 +783,66 @@ export default function BrowsePage() {
   const availableDistricts = state  ? (REGIONS[region]?.[state] || []) : []
   const oppositeGender     = myGender === 'male' ? 'female' : myGender === 'female' ? 'male' : null
 
-  useEffect(() => {
-    const place = nativePlace.trim() || district || state || region
-    if (!myProfileId || !place) {
-      setAlertSet(false)
-      return
+  // Current filters as a saved-alert payload (native place falls back to the
+  // member's own so an alert can always be saved, even with no filter).
+  function currentAlertPayload() {
+    return {
+      nativePlace: nativePlace.trim() || district || state || region || myNativeDistrict,
+      currentLocation: currentLocation.trim(),
+      filters: {
+        region, state, district, ageRange, profCat, maritalFilter, heightRange,
+        motherTongues, casteFilter, religionFilter, educationFilter, incomeFilter,
+        activeWithin, verifiedOnly, photoOnly,
+      },
     }
-    const params = new URLSearchParams({ nativePlace: place })
-    const location = currentLocation.trim()
-    if (location) params.set('currentLocation', location)
+  }
+
+  useEffect(() => {
+    if (!myProfileId) { setAlertSet(false); setAlertId(null); return }
     let cancelled = false
-    fetch(`/api/place-alerts?${params.toString()}`)
+    fetch('/api/alerts', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'check', ...currentAlertPayload() }),
+    })
       .then(r => r.ok ? r.json() : { saved: false })
-      .then(data => { if (!cancelled) setAlertSet(Boolean(data.saved)) })
-      .catch(() => { if (!cancelled) setAlertSet(false) })
+      .then(data => { if (!cancelled) { setAlertSet(Boolean(data.saved)); setAlertId(data.id ?? null) } })
+      .catch(() => { if (!cancelled) { setAlertSet(false); setAlertId(null) } })
     return () => { cancelled = true }
-  }, [myProfileId, nativePlace, currentLocation, district, state, region])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myProfileId, nativePlace, currentLocation, region, state, district, ageRange,
+      profCat, maritalFilter, heightRange, motherTongues, casteFilter, religionFilter,
+      educationFilter, incomeFilter, activeWithin, verifiedOnly, photoOnly])
 
   async function savePlaceAlert(forceSave = false) {
-    // Fall back to the member's own native place when no filter is active.
-    const place = nativePlace.trim() || district || state || region || myNativeDistrict
-    if (!place) {
-      setBrowseToast('Choose a native place before saving an alert')
+    if (!myProfileId) {
+      setBrowseToast('Sign in to save alerts')
       setTimeout(() => setBrowseToast(null), 3500)
       return
     }
-
-    const next = forceSave ? true : !alertSet
+    const payload = currentAlertPayload()
+    const shouldRemove = !forceSave && alertSet && alertId
     setAlertSaving(true)
     try {
-      const res = await fetch('/api/place-alerts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: next ? 'save' : 'remove',
-          nativePlace: place,
-          currentLocation: currentLocation.trim(),
-        }),
-      })
-      const data = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(data.error || 'Could not update alert')
-      setAlertSet(next)
-      setBrowseToast(next
-        ? `Alert on for ${place}. Check Notifications when matching families join.`
-        : `Alert removed for ${place}.`)
+      if (shouldRemove) {
+        const res = await fetch('/api/alerts', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id: alertId }),
+        })
+        if (!res.ok) throw new Error('Could not remove alert')
+        setAlertSet(false); setAlertId(null)
+        setBrowseToast('Alert removed.')
+      } else {
+        const res = await fetch('/api/alerts', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'create', ...payload }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) throw new Error(data.error || 'Could not save alert')
+        setAlertSet(true); setAlertId(data.id ?? null)
+        setBrowseToast(data.already
+          ? 'You already have this alert.'
+          : `Alert saved. We'll notify you when matching profiles join — see all in Alerts.`)
+      }
     } catch (err) {
       setBrowseToast(err instanceof Error ? err.message : 'Could not update alert')
     } finally {
@@ -1006,7 +1030,7 @@ export default function BrowsePage() {
     setRegion(''); setState(''); setDistrict(''); setAgeRange(''); setProfCat('')
     setMaritalFilter(''); setHeightRange(''); setMotherTongues([]); setCasteFilter('')
     setReligionFilter(''); setEducationFilter(''); setPhotoOnly(false)
-    setRecentOnly(false); setShowViewed(false); setIgnorePrefs(false); setAlertSet(false)
+    setRecentOnly(false); setShowViewed(false); setIgnorePrefs(false); setAlertSet(false); setAlertId(null)
     setActiveWithin(''); setVerifiedOnly(false); setProfileByFilter(''); setIncomeFilter('')
     setNativePlace(''); setCurrentLocation('')
     setPage(1)
@@ -1246,12 +1270,17 @@ export default function BrowsePage() {
               <button
                 onClick={() => savePlaceAlert()}
                 disabled={alertSaving}
+                title="Save the current native place and filters as an alert"
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
                 style={alertSet
                   ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px', padding: '0 14px' }
                   : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px' }}>
-                {alertSaving ? 'Updating…' : alertSet ? 'Remove alert' : '+ Save alert'}
+                {alertSaving ? 'Updating…' : alertSet ? '✓ Alert saved' : '+ Save this search'}
               </button>
+              <Link href="/alerts" className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
+                style={{ borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px', display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
+                My alerts
+              </Link>
             </div>
             {/* Suggested profiles */}
             {false && aiPicks.length > 0 && (

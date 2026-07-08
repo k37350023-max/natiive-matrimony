@@ -110,6 +110,34 @@ export async function POST(req: Request) {
         .update({ notified_at: new Date().toISOString() }).in('id', waiters.map(w => w.id))
     })().catch(() => {})
 
+    // Saved search alerts: notify members whose alert native place matches this
+    // new profile's native district (best-effort, opposite gender only).
+    ;(async () => {
+      const { data: alerts } = await supabaseAdmin.from('saved_alerts')
+        .select('id, user_id, profile_id, label')
+        .ilike('native_place', native_district).not('user_id', 'is', null)
+      if (!alerts?.length) return
+      const { data: owners } = await supabaseAdmin.from('profiles')
+        .select('id, gender').in('id', alerts.map(a => a.profile_id))
+      const genderById = new Map((owners || []).map(o => [o.id, o.gender]))
+      const matched: string[] = []
+      for (const a of alerts) {
+        if (a.profile_id === profile.id) continue
+        if (genderById.get(a.profile_id) === gender) continue // opposite gender only
+        await supabaseAdmin.from('notifications').insert({
+          user_id: a.user_id, type: 'alert_match_joined',
+          message: `New profile from ${native_district} matches your alert "${a.label}"`,
+          from_profile_id: profile.id, read: false,
+          link: `/browse?native_place=${encodeURIComponent(native_district)}`,
+        })
+        matched.push(a.id)
+      }
+      if (matched.length) {
+        await supabaseAdmin.from('saved_alerts')
+          .update({ last_notified_at: new Date().toISOString() }).in('id', matched)
+      }
+    })().catch(() => {})
+
     return NextResponse.json({
       profileId: profile.id,
       userId: created.user.id,
