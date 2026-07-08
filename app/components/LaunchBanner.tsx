@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { getApprovedProfileCount } from '@/lib/counts'
 
 const GOAL = 1000
 
@@ -15,9 +16,7 @@ export default function LaunchBanner() {
     const id = localStorage.getItem('my_profile_id')
     setIsLoggedIn(!!id)
     if (sessionStorage.getItem('banner_dismissed')) setDismissed(true)
-    supabase.from('profiles').select('id', { count: 'exact', head: true })
-      .eq('status', 'approved')
-      .then(({ count }) => setCount(count ?? 0))
+    getApprovedProfileCount().then(c => setCount(c))
     if (id) {
       supabase.from('profiles').select('premium_expires_at').eq('id', id).maybeSingle()
         .then(({ data }) => {

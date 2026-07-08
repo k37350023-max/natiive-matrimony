@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { computeCompleteness } from '@/lib/completeness'
+import { getMyBadgeCounts } from '@/lib/counts'
 import NotificationBell from './NotificationBell'
 import BrandLogo from './BrandLogo'
 
@@ -44,18 +45,10 @@ export default function AppHeader() {
         setCompleteness(computeCompleteness(data).percent)
       })
 
-    supabase.from('interests').select('id', { count: 'exact', head: true })
-      .eq('to_user', id).eq('status', 'pending')
-      .then(({ count }) => setPendingInterests(count || 0))
-
-    supabase.from('matches').select('id').or(`user1.eq.${id},user2.eq.${id}`)
-      .then(({ data: matchRows }) => {
-        if (!matchRows?.length) return
-        supabase.from('messages').select('id', { count: 'exact', head: true })
-          .in('match_id', matchRows.map(m => m.id))
-          .neq('from_profile_id', id).eq('read', false)
-          .then(({ count }) => setUnreadMessages(count || 0))
-      })
+    getMyBadgeCounts(id).then(({ pendingInterests, unreadMessages }) => {
+      setPendingInterests(pendingInterests)
+      setUnreadMessages(unreadMessages)
+    })
   }, [])
 
   useEffect(() => {

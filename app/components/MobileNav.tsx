@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { getMyBadgeCounts } from '@/lib/counts'
 
 function Badge({ count }: { count: number }) {
   if (!count) return null
@@ -29,17 +29,11 @@ export default function MobileNav() {
     const id = localStorage.getItem('my_profile_id')
     if (id) {
       setProfileHref(`/profile/${id}`)
-      supabase.from('interests').select('id', { count: 'exact', head: true })
-        .eq('to_user', id).eq('status', 'pending')
-        .then(({ count }) => setPendingInterests(count || 0))
-      supabase.from('matches').select('id').or(`user1.eq.${id},user2.eq.${id}`)
-        .then(({ data: matchRows }) => {
-          if (!matchRows?.length) return
-          supabase.from('messages').select('id', { count: 'exact', head: true })
-            .in('match_id', matchRows.map(m => m.id))
-            .neq('from_profile_id', id).eq('read', false)
-            .then(({ count }) => setUnreadMessages(count || 0))
-        })
+      // Shared with AppHeader via lib/counts — one query set per page, not two.
+      getMyBadgeCounts(id).then(({ pendingInterests, unreadMessages }) => {
+        setPendingInterests(pendingInterests)
+        setUnreadMessages(unreadMessages)
+      })
     } else {
       setProfileHref('/login')
     }
