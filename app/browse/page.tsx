@@ -793,7 +793,8 @@ export default function BrowsePage() {
   }, [myProfileId, nativePlace, currentLocation, district, state, region])
 
   async function savePlaceAlert(forceSave = false) {
-    const place = nativePlace.trim() || district || state || region
+    // Fall back to the member's own native place when no filter is active.
+    const place = nativePlace.trim() || district || state || region || myNativeDistrict
     if (!place) {
       setBrowseToast('Choose a native place before saving an alert')
       setTimeout(() => setBrowseToast(null), 3500)
@@ -1412,6 +1413,12 @@ export default function BrowsePage() {
             {/* Profile grid - 2 cols on mobile, 3 on desktop */}
             {(() => {
               const paged = profiles.slice(0, page * PAGE_SIZE)
+              // Alert target: the active place filter, else the member's own
+              // native place — so the nudge works even with no filter applied.
+              const alertPlace = nativePlace.trim() || district || state || region || myNativeDistrict
+              // Show a "we're growing" nudge when there ARE results but only a few
+              // (all fit on one page) — logged-in members, filtered or not.
+              const showGrowing = !loading && paged.length > 0 && profiles.length <= 8
               return (
                 <>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
@@ -1437,6 +1444,39 @@ export default function BrowsePage() {
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'white' }}>
                         Load more ({profiles.length - page * PAGE_SIZE} remaining)
                       </button>
+                    </div>
+                  )}
+
+                  {/* We're-growing nudge — few results, offer a place alert */}
+                  {showGrowing && (
+                    <div className="card mt-4 p-5 sm:p-6" style={{ background: '#EDF3ED', border: '1px solid #CADfCA' }}>
+                      <div className="flex items-start gap-3.5">
+                        <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#14241C' }}>
+                          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#EAF3EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-bold text-[15px]" style={{ color: '#14241C' }}>
+                            We&apos;re just getting started{alertPlace ? ` in ${alertPlace}` : ''}.
+                          </p>
+                          <p className="text-[13.5px] mt-1 leading-relaxed" style={{ color: '#3B4A40' }}>
+                            New profiles are added every week. Turn on an alert and we&apos;ll notify you
+                            the moment matching {alertPlace ? `families from ${alertPlace}` : 'families'} join.
+                          </p>
+                          <div className="flex flex-wrap gap-2.5 mt-3.5">
+                            <button
+                              onClick={() => savePlaceAlert()}
+                              disabled={alertSaving}
+                              className={alertSet ? 'btn-ghost px-4 py-2 text-sm' : 'btn-primary px-4 py-2 text-sm'}>
+                              {alertSaving ? 'Updating…' : alertSet ? 'Remove alert' : (alertPlace ? `Alert me for ${alertPlace}` : 'Turn on alert')}
+                            </button>
+                            <Link href="/register" className="btn-ghost px-4 py-2 text-sm" style={{ textDecoration: 'none' }}>
+                              Invite family &amp; friends
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </>
