@@ -57,6 +57,8 @@ function typeLabel(type: string) {
   if (type === 'profile_view')             return { label: 'Profile View', color: '#1E40AF', bg: '#EFF6FF' }
   if (type === 'place_alert_saved')        return { label: 'Place Alert On', color: '#075E3E', bg: '#EDF3ED' }
   if (type === 'place_match_joined')       return { label: 'New Native Place Profile', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'alert_match_joined')       return { label: 'Alert Match', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'waitlist_joined')          return { label: 'Native Place Update', color: '#065F46', bg: '#ECFDF5' }
   if (type === 'field_request')            return { label: 'Contact Request', color: '#7C3AED', bg: '#F5F3FF' }
   if (type === 'field_request_approved')   return { label: 'Contact Shared', color: '#065F46', bg: '#ECFDF5' }
   return { label: 'Notification', color: '#5E6B62', bg: '#F3F4F6' }
@@ -85,6 +87,7 @@ function notifAction(type: string, fromProfileId: string | null, link?: string |
   if (type === 'field_request' && fromProfileId) return { label: 'View profile →', href: `/profile/${fromProfileId}` }
   if (type === 'field_request_approved') return { label: 'Go to matches →', href: '/interests?tab=matched' }
   if (type === 'place_alert_saved' || type === 'place_match_joined') return { label: 'Open saved search →', href: link || '/browse' }
+  if (type === 'alert_match_joined' || type === 'waitlist_joined') return { label: 'View profiles →', href: link || '/browse' }
   return null
 }
 

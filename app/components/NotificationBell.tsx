@@ -249,6 +249,14 @@ export default function NotificationBell() {
                           Open saved search →
                         </button>
                       )}
+                      {(n.type === 'alert_match_joined' || n.type === 'waitlist_joined') && link && (
+                        <button
+                          onClick={e => { e.stopPropagation(); router.push(link); setOpen(false) }}
+                          className="mt-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg"
+                          style={{ background: '#2E7D32', color: 'white' }}>
+                          View profiles →
+                        </button>
+                      )}
                     </div>
                     {!n.read && (
                       <div className="w-2 h-2 rounded-full mt-1 shrink-0" style={{ background: '#14241C' }} />
