@@ -1150,6 +1150,12 @@ export default function BrowsePage() {
     photoOnly?'p':'',recentOnly?'r':'',showViewed?'h':'',ignorePrefs?'i':'',
     activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter,nativePlace,currentLocation].filter(Boolean).length
 
+  // Filters applied *beyond* the native place — used to spell out exactly what
+  // an alert will capture, so "save" isn't ambiguous about place-only vs filters.
+  const extraFilterCount = [region,state,district,ageRange,profCat,maritalFilter,heightRange,casteFilter,
+    religionFilter,educationFilter,...motherTongues,photoOnly?'p':'',recentOnly?'r':'',
+    activeWithin,verifiedOnly?'v':'',profileByFilter,incomeFilter,currentLocation].filter(Boolean).length
+
   const genderLabel = 'profiles'
 
   /* ── Not logged in ── */
@@ -1237,18 +1243,33 @@ export default function BrowsePage() {
           </div>
           {/* Post-search notify bar — appears after any native-place search, works even with no results */}
           {nativePlace.trim() && (
-            <button
-              onClick={() => savePlaceAlert()}
-              disabled={alertSaving}
-              className="w-full mb-3 flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all"
-              style={alertSet
-                ? { background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA', minHeight: 46 }
-                : { background: '#14241C', color: '#EAF3EA', border: '1px solid #14241C', minHeight: 46 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              </svg>
-              {alertSaving ? 'Saving…' : alertSet ? `✓ Alert on for ${nativePlace.trim()} — tap to turn off` : `Notify me when new profiles join ${nativePlace.trim()}`}
-            </button>
+            <div className="mb-3">
+              <button
+                onClick={() => savePlaceAlert()}
+                disabled={alertSaving}
+                className="w-full flex items-center justify-center gap-2 rounded-xl text-sm font-bold transition-all"
+                style={alertSet
+                  ? { background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA', minHeight: 46 }
+                  : { background: '#14241C', color: '#EAF3EA', border: '1px solid #14241C', minHeight: 46 }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                {alertSaving
+                  ? 'Saving…'
+                  : alertSet
+                    ? '✓ Alert on — tap to turn off'
+                    : extraFilterCount > 0
+                      ? `Notify me: ${nativePlace.trim()} + ${extraFilterCount} filter${extraFilterCount > 1 ? 's' : ''}`
+                      : `Notify me when new profiles join ${nativePlace.trim()}`}
+              </button>
+              {!alertSet && (
+                <p className="text-[11.5px] mt-1.5 text-center" style={{ color: '#8A968E' }}>
+                  {extraFilterCount > 0
+                    ? `Saves ${nativePlace.trim()} with your ${extraFilterCount} active filter${extraFilterCount > 1 ? 's' : ''}. Clear filters to alert on the place alone.`
+                    : `Alerts on everyone from ${nativePlace.trim()}. Add filters to narrow it.`}
+                </p>
+              )}
+            </div>
           )}
           {/* Mobile filter row */}
           <div className="sm:hidden flex items-center gap-2">
@@ -1311,16 +1332,20 @@ export default function BrowsePage() {
                 <option value="last_active">Last active</option>
                 <option value="best_match">Best match</option>
               </select>
-              <button
-                onClick={() => savePlaceAlert()}
-                disabled={alertSaving}
-                title="Save the current native place and filters as an alert"
-                className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
-                style={alertSet
-                  ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px', padding: '0 14px' }
-                  : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px' }}>
-                {alertSaving ? 'Updating…' : alertSet ? '✓ Alert on — remove' : '+ Save this search'}
-              </button>
+              {/* Only show here when there's no native place (the notify bar above
+                  already handles the place case) — avoids two identical alert buttons. */}
+              {!nativePlace.trim() && (
+                <button
+                  onClick={() => savePlaceAlert()}
+                  disabled={alertSaving}
+                  title="Save the current filters as an alert"
+                  className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
+                  style={alertSet
+                    ? { background: '#EDF3ED', color: '#14241C', borderColor: '#CADFCA', minHeight: '38px', padding: '0 14px' }
+                    : { borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px' }}>
+                  {alertSaving ? 'Updating…' : alertSet ? '✓ Alert on — remove' : (extraFilterCount > 0 ? `+ Alert me: ${extraFilterCount} filter${extraFilterCount > 1 ? 's' : ''}` : '+ Save this search')}
+                </button>
+              )}
               <Link href="/alerts" className="text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all"
                 style={{ borderColor: '#E7E3D8', color: '#5E6B62', background: 'white', minHeight: '38px', padding: '0 14px', display: 'inline-flex', alignItems: 'center', textDecoration: 'none' }}>
                 My alerts
