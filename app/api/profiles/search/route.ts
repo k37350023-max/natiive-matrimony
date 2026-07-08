@@ -17,6 +17,14 @@ const SAFE_COLUMNS = [
   'profile_created_by', 'member_number', 'hidden_fields',
 ].join(', ')
 
+/* Sanitize a free-text search term before it goes into a PostgREST .or()
+   filter. Commas and parentheses are reserved (they'd break the logic-tree
+   parse — a user typing "Guntur, AP" would 400); % and _ are ilike wildcards.
+   Strip them all so the term is matched literally. */
+function cleanTerm(v: unknown): string {
+  return String(v ?? '').replace(/[%_,'"()]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80)
+}
+
 export async function POST(req: Request) {
   try {
     assertAdminConfigured()
@@ -32,14 +40,14 @@ export async function POST(req: Request) {
     if (region)         q = q.eq('native_region', region)
     if (state)          q = q.eq('native_state', state)
     if (district)       q = q.eq('native_district', district)
-    if (casteFilter)    q = q.ilike('caste', `%${casteFilter}%`)
+    if (casteFilter)    q = q.ilike('caste', `%${cleanTerm(casteFilter)}%`)
     if (nativePlace) {
-      const place = String(nativePlace).trim()
-      q = q.or(`native_district.ilike.%${place}%,native_state.ilike.%${place}%,current_city.ilike.%${place}%`)
+      const place = cleanTerm(nativePlace)
+      if (place) q = q.or(`native_district.ilike.%${place}%,native_state.ilike.%${place}%,current_city.ilike.%${place}%`)
     }
     if (currentLocation) {
-      const location = String(currentLocation).trim()
-      q = q.or(`current_city.ilike.%${location}%,current_state.ilike.%${location}%`)
+      const location = cleanTerm(currentLocation)
+      if (location) q = q.or(`current_city.ilike.%${location}%,current_state.ilike.%${location}%`)
     }
 
     const { data, error } = await q

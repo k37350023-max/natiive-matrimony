@@ -957,8 +957,10 @@ export default function BrowsePage() {
       if (region)         q = q.eq('native_region', region)
       if (state)          q = q.eq('native_state', state)
       if (district)       q = q.eq('native_district', district)
-      if (nativePlace)    q = q.or(`native_district.ilike.%${nativePlace}%,native_state.ilike.%${nativePlace}%,current_city.ilike.%${nativePlace}%`)
-      if (currentLocation) q = q.or(`current_city.ilike.%${currentLocation}%,current_state.ilike.%${currentLocation}%`)
+      const npClean = nativePlace.replace(/[%_,'"()]/g, ' ').replace(/\s+/g, ' ').trim()
+      const clClean = currentLocation.replace(/[%_,'"()]/g, ' ').replace(/\s+/g, ' ').trim()
+      if (npClean)  q = q.or(`native_district.ilike.%${npClean}%,native_state.ilike.%${npClean}%,current_city.ilike.%${npClean}%`)
+      if (clClean)  q = q.or(`current_city.ilike.%${clClean}%,current_state.ilike.%${clClean}%`)
       if (casteFilter)    q = q.ilike('caste', `%${casteFilter}%`)
       const resp = await q
         .or(`last_login_at.gt.${fourteenDaysAgo},last_login_at.is.null`)
