@@ -3105,19 +3105,20 @@ select.input {
 }
 
 .app-brand-native {
-  color: #14241C;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
+  font-family: var(--font-playfair), Georgia, serif !important;
+  color: #14532D;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
   line-height: 1;
 }
 
 .app-brand-matrimony {
-  color: #1B5E20;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.19em;
-  line-height: 1.1;
+  color: #4E7D34;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
@@ -3415,38 +3416,40 @@ select.input {
 }
 
 /* Final brand mark override: light paddy-grain badge */
-.app-brand .app-brand-pin-mark {
-  background: linear-gradient(160deg, #1B5E20 0%, #14351C 100%) !important;
+.app-brand .app-brand-emblem {
+  background: none !important;
   border: none !important;
-  border-radius: 12px !important;
-  box-shadow: 0 6px 16px rgba(20, 53, 28, 0.28), inset 0 1px 0 rgba(255,255,255,0.14) !important;
-  overflow: hidden;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  height: auto !important;
+  width: auto !important;
+  overflow: visible;
 }
 
-.app-brand .app-brand-pin-mark svg {
-  height: 26px !important;
-  width: 26px !important;
+.app-brand .app-brand-emblem svg {
+  height: 40px !important;
+  width: 33px !important;
 }
 
-.app-brand-home .app-brand-pin-mark svg {
-  height: 32px !important;
-  width: 32px !important;
+.app-brand-home .app-brand-emblem svg {
+  height: 48px !important;
+  width: 39px !important;
 }
 
-.app-brand-compact .app-brand-pin-mark svg {
-  height: 22px !important;
-  width: 22px !important;
+.app-brand-compact .app-brand-emblem svg {
+  height: 34px !important;
+  width: 28px !important;
 }
 
 @media (max-width: 639px) {
-  .app-brand .app-brand-pin-mark svg {
-    height: 24px !important;
-    width: 24px !important;
+  .app-brand .app-brand-emblem svg {
+    height: 36px !important;
+    width: 29px !important;
   }
 
-  .app-brand-compact .app-brand-pin-mark svg {
-    height: 20px !important;
-    width: 20px !important;
+  .app-brand-compact .app-brand-emblem svg {
+    height: 32px !important;
+    width: 26px !important;
   }
 }
 

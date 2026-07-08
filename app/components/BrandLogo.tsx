@@ -8,22 +8,23 @@ type BrandLogoProps = {
 
 export default function BrandLogo({ href = '/', className = '', showTagline = true }: BrandLogoProps) {
   return (
-    <Link href={href} className={`app-brand ${className}`.trim()} aria-label="NativeMatrimony home">
-      <span className="app-brand-mark app-brand-pin-mark" aria-hidden="true">
-        <svg viewBox="0 0 48 48" role="img" focusable="false">
-          {/* Cream location pin (native place) with a heart cut out (marriage) */}
-          <path
-            fillRule="evenodd"
-            clipRule="evenodd"
-            fill="#FBFAF5"
-            d="M24 4c-7.7 0-14 6.1-14 13.9 0 9.6 11.6 22.9 13.1 24.5.5.5 1.3.5 1.8 0C26.4 40.8 38 27.5 38 17.9 38 10.1 31.7 4 24 4Zm0 22.9s-7-4.4-7-9.4c0-2.4 1.9-4.2 4.2-4.2 1.5 0 2.8.8 3.5 2 .7-1.2 2-2 3.5-2 2.3 0 4.2 1.8 4.2 4.2 0 5-7 9.4-7 9.4Z"
-          />
+    <Link href={href} className={`app-brand ${className}`.trim()} aria-label="Native Matrimony home">
+      <span className="app-brand-mark app-brand-emblem" aria-hidden="true">
+        <svg viewBox="0 0 44 54" role="img" focusable="false">
+          {/* Paddy / rice stalk — native roots: cream grains fanning up from a green stalk */}
+          <path d="M22 48C26 35 31 22 37 13 35 26 31 41 23 49Z" fill="#1B4D2E" />
+          <path d="M22 47C22 43 22 42 22 40" stroke="#2E7D46" strokeWidth="1.7" strokeLinecap="round" fill="none" />
+          <path d="M22 46C17.5 44 12 46 8.5 50 13.5 51.5 19 49.5 22 45Z" fill="#5FA03C" />
+          <path d="M22 45.5C24.5 44 29.5 44.5 32.5 47 29 48.5 24.5 48 22 45Z" fill="#5FA03C" />
+          <path d="M22 44C19.6 36 19.6 24 22 16 24.4 24 24.4 36 22 44Z" fill="#ECE4D0" />
+          <path d="M22 44C17.8 37.5 14.6 27.5 14 20.5 18.2 24.5 21.4 35 22 44Z" fill="#ECE4D0" />
+          <path d="M22 44C26.2 37.5 29.4 27.5 30 20.5 25.8 24.5 22.6 35 22 44Z" fill="#ECE4D0" />
         </svg>
       </span>
       <span className="app-brand-copy">
         <span className="app-brand-native">Native</span>
         <span className="app-brand-matrimony">Matrimony</span>
-        {showTagline && <small>By native place</small>}
+        {showTagline && <small>Rooted in tradition. United in love.</small>}
       </span>
     </Link>
   )
