@@ -12,6 +12,7 @@ export default function AppFooter() {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           {[
             { label: 'Browse', href: '/browse' },
+            { label: 'Native places', href: '/native' },
             { label: 'Privacy', href: '/privacy' },
             { label: 'Terms', href: '/terms' },
             { label: 'support@nativematrimony.com', href: 'mailto:support@nativematrimony.com' },
