@@ -36,6 +36,22 @@ const MOTHER_TONGUES = ['Telugu','Hindi','Tamil','Kannada','Malayalam','Marathi'
 const CASTES         = ['Reddy','Kamma','Kapu','Brahmin','Velama','Yadav','SC/ST','OBC']
 const RELIGIONS      = ['Hindu','Muslim','Christian','Sikh','Jain','Buddhist']
 const EDUCATION_LEVELS = ['Any','Graduate','Post Graduate','Doctorate','Diploma','12th / HSC']
+
+/* Education is a free-text field ("B.Tech", "MBA", "PhD"). Classify it into the
+   filter categories by keyword, highest qualification wins, so the filter
+   actually matches real values (naive substring made "B.Tech" never match
+   "Graduate" and "Graduate" wrongly match "Post Graduate"). */
+function educationCategory(raw: string | null | undefined): string {
+  const s = (raw || '').toLowerCase()
+  if (!s) return ''
+  const has = (...kws: string[]) => kws.some(k => s.includes(k))
+  if (has('phd','ph.d','ph. d','doctor','d.phil','dphil','postdoc','post doc','post-doc')) return 'Doctorate'
+  if (has('m.tech','mtech','m.e','mba','m.sc','msc','m.a','m.com','mcom','master','mca','llm','m.s.','ms(','pgdm','pg diploma','post grad','postgrad','post-grad')) return 'Post Graduate'
+  if (has('b.tech','btech','b.e','be(','b.sc','bsc','b.a','b.com','bcom','bachelor','bca','llb','mbbs','b.arch','b.ed','b.pharm','graduat','degree')) return 'Graduate'
+  if (has('diploma','iti','polytechnic')) return 'Diploma'
+  if (has('12th','hsc','intermediate','higher secondary','+2','10+2','puc')) return '12th / HSC'
+  return ''
+}
 const HEIGHT_RANGES: { label: string; min: number; max: number }[] = [
   { label: 'Below 5\'2"', min: 0,   max: 157 },
   { label: '5\'2"-5\'5"', min: 157, max: 165 },
@@ -998,7 +1014,7 @@ export default function BrowsePage() {
     }
     if (motherTongues.length>0) results = results.filter(p=>p.mother_tongue&&motherTongues.includes(p.mother_tongue))
     if (religionFilter)  results = results.filter(p=>p.religion?.toLowerCase()===religionFilter.toLowerCase())
-    if (educationFilter && educationFilter!=='Any') results = results.filter(p=>p.education?.toLowerCase().includes(educationFilter.toLowerCase()))
+    if (educationFilter && educationFilter!=='Any') results = results.filter(p=>educationCategory(p.education)===educationFilter)
     if (photoOnly)  results = results.filter(p=>!!p.photo_url)
     if (recentOnly) { const t=new Date(Date.now()-30*24*60*60*1000); results=results.filter(p=>new Date(p.created_at)>=t) }
     if (verifiedOnly) results = results.filter(p=>isVerified(p))
