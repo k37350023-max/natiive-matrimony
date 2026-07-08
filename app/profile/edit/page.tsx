@@ -776,11 +776,15 @@ function EditProfilePageInner() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label required>Mother tongue</Label>
+                {/* Values must match the browse mother-tongue filter (exact match). */}
                 <select className="input" value={form.mother_tongue} onChange={e => set('mother_tongue', e.target.value)}>
                   <option value="Telugu">Telugu</option>
+                  <option value="Hindi">Hindi</option>
                   <option value="Tamil">Tamil</option>
                   <option value="Kannada">Kannada</option>
-                  <option value="Hindi">Hindi</option>
+                  <option value="Malayalam">Malayalam</option>
+                  <option value="Marathi">Marathi</option>
+                  <option value="English">English</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
