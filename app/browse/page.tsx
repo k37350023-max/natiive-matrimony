@@ -53,7 +53,9 @@ const ACTIVE_WITHIN_OPTS = [
   { label: '7 days', hours: 168 },
   { label: '30 days', hours: 720 },
 ]
-const INCOME_RANGES = ['Below ₹3L','₹3L-6L','₹6L-10L','₹10L-20L','₹20L-50L','₹50L+']
+// Must match the values stored by profile edit (India LPA group) exactly —
+// the income filter is an exact-equality match on annual_income.
+const INCOME_RANGES = ['Below 3 LPA','3-6 LPA','6-10 LPA','10-15 LPA','15-25 LPA','25-50 LPA','50+ LPA']
 const PAGE_SIZE = 18
 const POPULAR_NATIVE_PLACES = ['Guntur', 'Warangal', 'Nellore', 'Vijayawada', 'Chennai', 'Coimbatore', 'Madurai', 'Rajkot', 'Mysore']
 
