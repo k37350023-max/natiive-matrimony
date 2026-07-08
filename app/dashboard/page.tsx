@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import AppHeader from '../components/AppHeader'
 import MobileNav from '../components/MobileNav'
+import ShareButtons from '../components/ShareButtons'
+import { slugify } from '@/lib/nativePlaces'
 
 type Profile = {
   id: string; full_name: string; gender: string; date_of_birth: string | null
@@ -244,6 +246,23 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Invite loop — more families from your native place = better matches for you */}
+        {profile.native_district && (
+          <div style={{ background: '#EDF3ED', borderRadius: '10px', border: '1px solid #CADFCA', padding: '16px 18px', marginBottom: '14px' }}>
+            <p style={{ fontSize: '14px', fontWeight: 800, color: '#14241C', margin: '0 0 3px' }}>
+              Grow matches from {profile.native_district}
+            </p>
+            <p style={{ fontSize: '12.5px', color: '#3B4A40', margin: '0 0 12px', lineHeight: 1.5 }}>
+              More families from your native place means better matches for you. Share {profile.native_district} — it takes 30 seconds to join.
+            </p>
+            <ShareButtons
+              compact
+              url={`https://nativematrimony.com/native/${slugify(profile.native_district)}`}
+              text={`Marriage profiles with roots in ${profile.native_district} on NativeMatrimony —`}
+            />
+          </div>
+        )}
 
         <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', overflow: 'hidden', marginBottom: '14px' }}>
           {[
