@@ -78,9 +78,9 @@ export default function AppHeader() {
   const navItems = [
     { href: '/browse',    label: 'Browse',      active: path.startsWith('/browse') },
     { href: '/interests', label: 'Requests',    active: path.startsWith('/interests'), badge: pendingInterests },
-    { href: '/matches',   label: 'Connected',   active: path.startsWith('/matches') || path.startsWith('/chat'), badge: unreadMessages },
+    { href: '/matches',   label: 'Chats',       active: path.startsWith('/matches') || path.startsWith('/chat'), badge: unreadMessages },
     { href: '/alerts',    label: 'Alerts',      active: path.startsWith('/alerts') },
-    { href: '/dashboard', label: 'My Profile',  active: path.startsWith('/dashboard') || path.startsWith('/profile') },
+    { href: '/dashboard', label: 'Profile',     active: path.startsWith('/dashboard') || path.startsWith('/profile') },
   ]
 
   return (

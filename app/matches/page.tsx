@@ -150,8 +150,8 @@ export default function MatchesPage() {
       <AppHeader />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-5">
-          <h1 className="text-2xl font-bold text-gray-900">Connected Profiles</h1>
-          <p className="text-gray-500 text-sm mt-0.5">View contact details, WhatsApp, and chat after both sides accept.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Chats</h1>
+          <p className="text-gray-500 text-sm mt-0.5">People you&apos;ve connected with — chat, view contact, or WhatsApp.</p>
         </div>
         {error && (
           <div className="mb-4 rounded-xl px-4 py-3 text-sm font-semibold" style={{ background: '#FEF2F2', color: '#B91C1C', border: '1px solid #FECACA' }}>
