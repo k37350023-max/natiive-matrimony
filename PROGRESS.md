@@ -128,6 +128,21 @@ Ranked by what a normal visitor/member would actually hit.
 - REMAINING client writes: only `app/admin/page.tsx` (internal admin tool — profiles update/
   delete, notifications insert). Migrate next, then reads, then ENABLE RLS.
 
+## GROWTH ENGINE — programmatic SEO + WhatsApp virality (2026-07-08)
+Built the two engines Indian consumer marketplaces grow on — organic search and WhatsApp forwards.
+- **485 programmatic-SEO native-place landing pages** (/native/[place]): server-rendered, full SEO
+  (title/description/canonical/OpenGraph/JSON-LD), live count + preview or "be the first / set alert"
+  framing, Create-Profile + Browse CTAs, WhatsApp share, nearby-place internal links.
+- **/native directory hub** grouped by state; footer link; strengthens the internal-link graph.
+- **lib/nativePlaces.ts** — shared states→districts + slug helpers (extracted from register).
+- **Sitemap**: 485 place pages + /native; robots allows /native/.
+- **WhatsApp virality**: ShareButtons (WhatsApp + copy) on every place page; dashboard "Grow matches
+  from <place>" invite loop (each member recruits supply for their own searches).
+- **Dynamic branded OG images** per place + a homepage default (next/og), summary_large_image cards —
+  big lever on share click-through.
+- **Homepage structured data**: WebSite + Organization + SearchAction (sitelinks search box).
+- metadataBase set. Cold-server verified: all pages 200, OG PNGs render, homepage links to /native.
+
 ## AUTONOMOUS SESSION - FINAL SUMMARY (2026-07-08)
 Backlog state after this run:
 - **P0 security: code-complete.** Zero client DB writes remain; zero client reads of phone/email
