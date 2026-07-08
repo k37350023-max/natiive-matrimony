@@ -120,17 +120,23 @@ export async function POST(req: Request) {
       const { data: owners } = await supabaseAdmin.from('profiles')
         .select('id, gender').in('id', alerts.map(a => a.profile_id))
       const genderById = new Map((owners || []).map(o => [o.id, o.gender]))
+      // One notification per user, even if several of their alerts match, so a
+      // single signup can't spam. First matching alert per user wins the label.
+      const byUser = new Map<string, { label: string }>()
       const matched: string[] = []
       for (const a of alerts) {
         if (a.profile_id === profile.id) continue
         if (genderById.get(a.profile_id) === gender) continue // opposite gender only
+        matched.push(a.id)
+        if (!byUser.has(a.user_id)) byUser.set(a.user_id, { label: a.label })
+      }
+      for (const [uid, { label }] of byUser) {
         await supabaseAdmin.from('notifications').insert({
-          user_id: a.user_id, type: 'alert_match_joined',
-          message: `New profile from ${native_district} matches your alert "${a.label}"`,
+          user_id: uid, type: 'alert_match_joined',
+          message: `New profile from ${native_district} matches your alert "${label}"`,
           from_profile_id: profile.id, read: false,
           link: `/browse?native_place=${encodeURIComponent(native_district)}`,
         })
-        matched.push(a.id)
       }
       if (matched.length) {
         await supabaseAdmin.from('saved_alerts')

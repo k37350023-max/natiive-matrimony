@@ -679,7 +679,6 @@ function Filters({
           [verifiedOnly, setVerifiedOnly, 'Verified profiles'],
           [recentOnly, setRecentOnly, 'New families'],
           [showViewed, setShowViewed, 'Hide seen profiles'],
-          [ignorePrefs, setIgnorePrefs, 'Show outside stated preferences'],
         ].map(([val, set, label]) => (
           <label key={label as string} className="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" checked={val as boolean}
