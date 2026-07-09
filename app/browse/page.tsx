@@ -9,6 +9,7 @@ import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
 import BrandLogo from '../components/BrandLogo'
+import JoinPromoTile from '../components/JoinPromoTile'
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const REGIONS: Record<string, Record<string, string[]>> = {
@@ -311,7 +312,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
           {displayPreviews.map((p, i) => {
             const age = p.date_of_birth ? Math.floor((Date.now() - new Date(p.date_of_birth + 'T00:00:00').getTime()) / (365.25*24*60*60*1000)) : null
-            return (
+            return [
               <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: '#E7E3D8' }}>
                 <div className="relative" style={{ paddingBottom: '115%' }}>
                   <GeometricPlaceholder name={p.full_name} />
@@ -326,8 +327,12 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                   <p className="text-xs text-gray-500">{age ? `${age} yrs` : ''}{p.profession ? ` · ${p.profession}` : ''}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{p.native_district}</p>
                 </div>
-              </div>
-            )
+              </div>,
+              // Intersperse a "create your profile in 30 seconds" conversion tile.
+              (i % 5 === 4) ? (
+                <JoinPromoTile key={`promo-${i}`} registerHref={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} />
+              ) : null,
+            ]
           })}
         </div>
 
@@ -1516,7 +1521,7 @@ export default function BrowsePage() {
               return (
                 <>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-                    {paged.map((p, idx) => (
+                    {paged.map((p, idx) => [
                       <ProfileCard
                         key={p.id}
                         p={p}
@@ -1525,8 +1530,12 @@ export default function BrowsePage() {
                         onToggleShortlist={() => toggleShortlist(p.id)}
                         onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
                         onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingProfileIds.has(p.id)}
-                      />
-                    ))}
+                      />,
+                      // Intersperse a "new profiles join daily / set an alert" tile.
+                      (idx % 6 === 5) ? (
+                        <JoinPromoTile key={`promo-${idx}`} member onCreateAlert={() => savePlaceAlert(true)} />
+                      ) : null,
+                    ])}
                   </div>
                   {profiles.length > page * PAGE_SIZE && (
                     <div className="mt-6 text-center">
