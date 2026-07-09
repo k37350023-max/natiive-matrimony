@@ -9,7 +9,6 @@ import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
 import BrandLogo from '../components/BrandLogo'
-import JoinPromoTile from '../components/JoinPromoTile'
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const REGIONS: Record<string, Record<string, string[]>> = {
@@ -312,7 +311,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
           {displayPreviews.map((p, i) => {
             const age = p.date_of_birth ? Math.floor((Date.now() - new Date(p.date_of_birth + 'T00:00:00').getTime()) / (365.25*24*60*60*1000)) : null
-            return [
+            return (
               <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm border" style={{ borderColor: '#E7E3D8' }}>
                 <div className="relative" style={{ paddingBottom: '115%' }}>
                   <GeometricPlaceholder name={p.full_name} />
@@ -327,21 +326,25 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
                   <p className="text-xs text-gray-500">{age ? `${age} yrs` : ''}{p.profession ? ` · ${p.profession}` : ''}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{p.native_district}</p>
                 </div>
-              </div>,
-              // Intersperse a "create your profile in 30 seconds" conversion tile.
-              (i % 5 === 4) ? (
-                <JoinPromoTile key={`promo-${i}`} registerHref={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} />
-              ) : null,
-            ]
+              </div>
+            )
           })}
         </div>
 
-        <div className="text-center bg-white rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#E7E3D8' }}>
-          <p className="font-bold text-gray-900 text-lg mb-2">Browse first. Connect when ready.</p>
-          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">Profiles show useful details. Phone, email, WhatsApp, and chat open after connection.</p>
+        <div className="text-center rounded-2xl p-8 shadow-sm border overflow-hidden" style={{ borderColor: '#CADFCA', background: 'linear-gradient(180deg, #F4F8F2 0%, #FFFFFF 78%)' }}>
+          <div className="mx-auto mb-3 w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: '#14241C' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EAF3EA" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </div>
+          <p className="font-bold text-gray-900 text-lg mb-2">New profiles join every day</p>
+          <p className="text-sm text-gray-500 mb-6 mx-auto max-w-xs">
+            Create your profile in 30 seconds and get notified when new matches
+            {searchedPlace ? ` from ${searchedPlace}` : ''} join. Free to start.
+          </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href={searchedPlace ? `/register?native_place=${encodeURIComponent(searchedPlace)}` : '/register'} className="btn-primary px-8 py-3 text-sm">
-              Join Free
+              Create Free Profile
             </Link>
             <Link href="/login" className="btn-ghost px-8 py-3 text-sm">Sign in</Link>
           </div>
@@ -1515,13 +1518,15 @@ export default function BrowsePage() {
               // Alert target: the active place filter, else the member's own
               // native place — so the nudge works even with no filter applied.
               const alertPlace = nativePlace.trim() || district || state || region || myNativeDistrict
-              // Show a "we're growing" nudge when there ARE results but only a few
-              // (all fit on one page) — logged-in members, filtered or not.
-              const showGrowing = !loading && paged.length > 0 && profiles.length <= 8
+              // End-of-list CTA: show once the member has reached the bottom of
+              // the list (everything loaded), so scrolling never dead-ends into
+              // empty space — always offers an alert so matches come to them.
+              const reachedEnd = paged.length >= profiles.length
+              const showGrowing = !loading && paged.length > 0 && reachedEnd
               return (
                 <>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-                    {paged.map((p, idx) => [
+                    {paged.map((p, idx) => (
                       <ProfileCard
                         key={p.id}
                         p={p}
@@ -1530,12 +1535,8 @@ export default function BrowsePage() {
                         onToggleShortlist={() => toggleShortlist(p.id)}
                         onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
                         onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingProfileIds.has(p.id)}
-                      />,
-                      // Intersperse a "new profiles join daily / set an alert" tile.
-                      (idx % 6 === 5) ? (
-                        <JoinPromoTile key={`promo-${idx}`} member onCreateAlert={() => savePlaceAlert(true)} />
-                      ) : null,
-                    ])}
+                      />
+                    ))}
                   </div>
                   {profiles.length > page * PAGE_SIZE && (
                     <div className="mt-6 text-center">
@@ -1550,35 +1551,33 @@ export default function BrowsePage() {
                     </div>
                   )}
 
-                  {/* We're-growing nudge — few results, offer a place alert */}
+                  {/* End-of-list CTA — reached the bottom, never dead-end into empty space */}
                   {showGrowing && (
-                    <div className="card mt-4 p-5 sm:p-6" style={{ background: '#EDF3ED', border: '1px solid #CADfCA' }}>
-                      <div className="flex items-start gap-3.5">
-                        <div className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: '#14241C' }}>
-                          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#EAF3EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
-                          </svg>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-bold text-[15px]" style={{ color: '#14241C' }}>
-                            Want more options{alertPlace ? ` from ${alertPlace}` : ' from this native place'}? Set an alert.
+                    <div className="card mt-5 p-6 sm:p-7 text-center" style={{ background: 'linear-gradient(180deg, #F4F8F2 0%, #FFFFFF 78%)', border: '1px solid #CADfCA' }}>
+                      <div className="mx-auto mb-3 w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: '#14241C' }}>
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EAF3EA" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                          <p className="font-bold text-[16px]" style={{ color: '#14241C' }}>
+                            You&apos;ve seen everyone{alertPlace ? ` from ${alertPlace}` : ''} for now.
                           </p>
-                          <p className="text-[13.5px] mt-1 leading-relaxed" style={{ color: '#3B4A40' }}>
-                            We&apos;ll notify you the moment a new matching profile
-                            {alertPlace ? ` from ${alertPlace}` : ''} joins. Create once, and let matches find you.
+                          <p className="text-[13.5px] mt-1.5 leading-relaxed mx-auto max-w-sm" style={{ color: '#3B4A40' }}>
+                            New profiles join every day. Set an alert and we&apos;ll notify you the moment a new
+                            match{alertPlace ? ` from ${alertPlace}` : ''} joins — no need to keep checking.
                           </p>
-                          <div className="flex flex-wrap gap-2.5 mt-3.5">
+                          <div className="flex flex-wrap gap-2.5 mt-4 justify-center">
                             <button
                               onClick={() => savePlaceAlert()}
                               disabled={alertSaving}
-                              className={alertSet ? 'btn-ghost px-4 py-2 text-sm' : 'btn-primary px-4 py-2 text-sm'}>
+                              className={alertSet ? 'btn-ghost px-5 py-2.5 text-sm' : 'btn-primary px-5 py-2.5 text-sm'}>
                               {alertSaving ? 'Updating…' : alertSet ? '✓ Alert on — tap to remove' : 'Create Alert'}
                             </button>
-                            <Link href="/alerts" className="btn-ghost px-4 py-2 text-sm" style={{ textDecoration: 'none' }}>
+                            <Link href="/alerts" className="btn-ghost px-5 py-2.5 text-sm" style={{ textDecoration: 'none' }}>
                               My alerts
                             </Link>
                           </div>
-                        </div>
                       </div>
                     </div>
                   )}
