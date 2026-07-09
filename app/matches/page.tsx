@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
+import EmptyState from '../components/EmptyState'
 
 type MatchEntry = {
   id: string
@@ -162,16 +163,13 @@ export default function MatchesPage() {
         {loading && <div className="text-center py-12 text-gray-400 text-sm">Loading...</div>}
 
         {!loading && matches.length === 0 && (
-          <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #E7E3D8', padding: '56px 24px', textAlign: 'center' }}>
-            <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-            </div>
-            <p style={{ fontWeight: 700, fontSize: '15px', color: '#111827', marginBottom: '6px' }}>No connected profiles yet</p>
-            <p style={{ fontSize: '13px', color: '#94A3B8', marginBottom: '24px' }}>Send a request from Browse. Contact opens after connection.</p>
-            <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Native Profiles</Link>
-          </div>
+          <EmptyState
+            icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
+            title="No chats yet"
+            subtitle="When you and another family both accept, you'll connect here — message, view contact, or reach out on WhatsApp."
+            primary={{ label: 'Browse profiles', href: '/browse' }}
+            secondary={{ label: 'View requests', href: '/interests' }}
+          />
         )}
 
         <div className="space-y-3">

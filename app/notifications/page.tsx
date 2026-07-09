@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import AppHeader from '../components/AppHeader'
 import MobileNav from '../components/MobileNav'
+import EmptyState from '../components/EmptyState'
 
 type Notif = {
   id: string
@@ -288,19 +289,15 @@ export default function NotificationsPage() {
 
         {/* Empty state */}
         {!loading && filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px 20px', background: 'white', borderRadius: '16px', border: '1px solid #E8E8E8' }}>
-            <div style={{ width: 56, height: 56, borderRadius: 16, background: '#EFF1EC', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            </div>
-            <p style={{ fontSize: '16px', fontWeight: 700, color: '#111', margin: '0 0 8px' }}>
-              {tab === 'All' ? 'No notifications yet' : `No ${tab.toLowerCase()} notifications`}
-            </p>
-            <p style={{ fontSize: '13.5px', color: '#94A3B8', maxWidth: '280px', margin: '0 auto', lineHeight: 1.6 }}>
-              {tab === 'All'
-                ? 'When someone sends a request, views your profile, accepts a request, or a saved place has new profiles, you will see it here.'
-                : 'Nothing in this category yet.'}
-            </p>
-          </div>
+          <EmptyState
+            icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>}
+            title={tab === 'All' ? 'No notifications yet' : `No ${tab.toLowerCase()} notifications`}
+            subtitle={tab === 'All'
+              ? 'Requests, profile views, accepted connections, and new profiles from your saved places will all show up here.'
+              : 'Nothing in this category yet — set an alert and we’ll keep you posted.'}
+            primary={{ label: 'Browse profiles', href: '/browse' }}
+            secondary={{ label: 'Your alerts', href: '/alerts' }}
+          />
         )}
 
         {/* Notification groups */}

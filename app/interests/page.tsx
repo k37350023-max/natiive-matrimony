@@ -5,6 +5,14 @@ import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
+import EmptyState from '../components/EmptyState'
+
+const ico = {
+  inbox: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>,
+  sent: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>,
+  people: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>,
+  heart: <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>,
+}
 
 type Interest = {
   id: string
@@ -442,13 +450,12 @@ function RequestsPageInner() {
 
         {!loading && tab === 'received' && (
           received.length === 0 ? (
-            <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              </span>
-              <p className="font-semibold text-gray-700">No pending requests</p>
-              <p className="text-sm text-gray-400 mt-1">When someone sends you a request, it appears here.</p>
-            </div>
+            <EmptyState
+              icon={ico.inbox}
+              title="No requests yet"
+              subtitle="When someone likes your profile, their request lands here. Keep browsing — the more profiles you view, the sooner they notice you."
+              primary={{ label: 'Browse profiles', href: '/browse' }}
+            />
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-gray-400 mb-1">Review their message and profile before accepting</p>
@@ -459,14 +466,12 @@ function RequestsPageInner() {
 
         {!loading && tab === 'sent' && (
           sent.length === 0 ? (
-            <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
-              </span>
-              <p className="font-semibold text-gray-700">No requests sent yet</p>
-              <p className="text-sm text-gray-400 mt-1 mb-6">Browse profiles and send a request when someone feels right.</p>
-              <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>
-            </div>
+            <EmptyState
+              icon={ico.sent}
+              title="No requests sent yet"
+              subtitle="Browse profiles by native place and send a request when someone feels right. They'll be notified straight away."
+              primary={{ label: 'Browse profiles', href: '/browse' }}
+            />
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-gray-400 mb-1">{sent.length} waiting for a response</p>
@@ -477,13 +482,12 @@ function RequestsPageInner() {
 
         {!loading && tab === 'matched' && (
           matched.length === 0 ? (
-            <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EFF1EC', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </span>
-              <p className="font-semibold text-gray-700">No connected profiles yet</p>
-              <p className="text-sm text-gray-400 mt-1">When both sides accept, profiles appear here.</p>
-            </div>
+            <EmptyState
+              icon={ico.people}
+              title="No connections yet"
+              subtitle="When both sides accept a request, you connect here — chat, contact, and WhatsApp open up. Send a few requests to get started."
+              primary={{ label: 'Browse profiles', href: '/browse' }}
+            />
           ) : (
             <div className="space-y-3">
               {matched.map(i => <ProfileCard key={i.id} i={i} isAccepted />)}
@@ -493,14 +497,12 @@ function RequestsPageInner() {
 
         {!loading && tab === 'saved' && (
           saved.length === 0 ? (
-            <div className="card p-12 text-center flex flex-col items-center">
-              <span style={{ width: 52, height: 52, borderRadius: 14, background: '#EDF3ED', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-              </span>
-              <p className="font-semibold text-gray-700">No saved profiles</p>
-              <p className="text-sm text-gray-400 mt-1 mb-6">Tap the heart on any profile to save them here.</p>
-              <Link href="/browse" className="btn-primary px-6 py-2.5 text-sm">Browse Profiles</Link>
-            </div>
+            <EmptyState
+              icon={ico.heart}
+              title="No saved profiles"
+              subtitle="Tap the heart on any profile to save them here — a quiet shortlist you can revisit any time."
+              primary={{ label: 'Browse profiles', href: '/browse' }}
+            />
           ) : (
             <div className="grid grid-cols-2 gap-3">
               {saved.map(p => {

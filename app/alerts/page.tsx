@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import AppHeader from '../components/AppHeader'
 import MobileNav from '../components/MobileNav'
 import { alertChips, alertBrowseHref, type AlertFilters } from '@/lib/alertFilters'
+import EmptyState from '../components/EmptyState'
 
 type Alert = {
   id: string
@@ -76,19 +77,13 @@ export default function AlertsPage() {
             ))}
           </div>
         ) : alerts.length === 0 ? (
-          <div className="card mt-6 p-8 text-center">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#EDF3ED' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
-              </svg>
-            </div>
-            <p className="font-semibold" style={{ color: '#14241C' }}>No alerts yet</p>
-            <p className="text-sm mt-1 mb-5" style={{ color: '#5B6B60' }}>
-              Create your first alert and we&apos;ll watch for matching profiles.
-            </p>
-            <Link href="/browse" className="btn-primary text-sm px-5 py-2.5" style={{ textDecoration: 'none' }}>
-              Create Alert
-            </Link>
+          <div className="mt-6">
+            <EmptyState
+              icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>}
+              title="No alerts yet"
+              subtitle="Create your first alert and we'll watch for matching profiles from your native place — and notify you the moment one joins."
+              primary={{ label: 'Create alert', href: '/browse' }}
+            />
           </div>
         ) : (
           <div className="mt-6 space-y-3">
