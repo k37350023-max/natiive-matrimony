@@ -99,11 +99,22 @@ export default function RegisterPage() {
     date_of_birth: '', native_state: '', native_district: '', current_city: '',
   })
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
+  const [googleAuth, setGoogleAuth] = useState<{ idToken: string; email: string; name: string } | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const place = params.get('native_place')?.trim()
     if (place) setForm(f => f.native_district ? f : ({ ...f, native_district: place }))
+    // Google-verified signup: prefill name + email, skip phone entirely.
+    if (params.get('google') === '1') {
+      try {
+        const g = JSON.parse(sessionStorage.getItem('nm_google') || 'null')
+        if (g?.idToken) {
+          setGoogleAuth(g)
+          setForm(f => ({ ...f, full_name: f.full_name || g.name || '' }))
+        }
+      } catch {}
+    }
   }, [])
 
   useEffect(() => {
@@ -242,11 +253,13 @@ export default function RegisterPage() {
       const res = await fetch('/api/auth/register', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          full_name: form.full_name, gender: form.gender, phone: fullPhone,
+          full_name: form.full_name, gender: form.gender,
           date_of_birth: form.date_of_birth, native_state: form.native_state,
           native_district: form.native_district, current_city: form.current_city,
           profile_created_by: form.profile_created_by,
-          ...(firebaseIdToken ? { firebaseIdToken } : { otp: otp.trim(), token: otpToken }),
+          ...(googleAuth
+            ? { googleIdToken: googleAuth.idToken }
+            : { phone: fullPhone, ...(firebaseIdToken ? { firebaseIdToken } : { otp: otp.trim(), token: otpToken }) }),
         }),
       })
       const data = await readApiJson(res)
@@ -466,6 +479,12 @@ export default function RegisterPage() {
                   <Label>Current city</Label>
                   <input style={inputStyle} placeholder="e.g. Dallas, Hyderabad, Chennai" value={form.current_city} onChange={e => set('current_city', e.target.value)} />
                 </div>
+                {googleAuth ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#14241C' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
+                    Signed in with Google as <strong>{googleAuth.email}</strong>
+                  </div>
+                ) : (
                 <div>
                   <Label>Mobile number</Label>
                   <div style={{ display: 'flex', border: '1.5px solid #E7E3D8', borderRadius: '8px', overflow: 'hidden' }}>
@@ -480,9 +499,16 @@ export default function RegisterPage() {
                   </div>
                   <p style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>We&apos;ll send a verification code. Your number is never shown to members.</p>
                 </div>
-                <button onClick={sendOtp} disabled={sending} className="btn-primary" style={{ padding: '13px', fontSize: '15px', marginTop: '4px' }}>
-                  {sending ? 'Sending OTP…' : 'Send OTP'}
-                </button>
+                )}
+                {googleAuth ? (
+                  <button onClick={() => { handleSubmit(); try { sessionStorage.removeItem('nm_google') } catch {} }} disabled={loading} className="btn-primary" style={{ padding: '13px', fontSize: '15px', marginTop: '4px' }}>
+                    {loading ? 'Creating profile…' : 'Create my profile'}
+                  </button>
+                ) : (
+                  <button onClick={sendOtp} disabled={sending} className="btn-primary" style={{ padding: '13px', fontSize: '15px', marginTop: '4px' }}>
+                    {sending ? 'Sending OTP…' : 'Send OTP'}
+                  </button>
+                )}
               </div>
             )}
 

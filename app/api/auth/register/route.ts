@@ -17,13 +17,30 @@ export async function POST(req: Request) {
   try {
     assertAdminConfigured()
     const b = await req.json()
-    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token, firebaseIdToken } = b
+    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token, firebaseIdToken, googleIdToken } = b
 
-    if (!full_name || !gender || !phone || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by) {
+    const isGoogle = Boolean(googleIdToken)
+    if (!full_name || !gender || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by || (!isGoogle && !phone)) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
-    const normalizedPhone = normalizePhoneNumber(phone)
-    if (firebaseIdToken) {
+
+    // ── Google-verified signup (no phone) ──────────────────────
+    let googleEmail = ''
+    if (isGoogle) {
+      if (!firebaseAdminConfigured()) {
+        return NextResponse.json({ error: 'Google sign-in is not configured on the server' }, { status: 503 })
+      }
+      const decoded = await verifyFirebaseIdToken(googleIdToken)
+      googleEmail = String(decoded.email || '').trim().toLowerCase()
+      if (!googleEmail) return NextResponse.json({ error: 'Google account has no email' }, { status: 400 })
+      const { data: existing } = await supabaseAdmin.from('profiles').select('id').ilike('email', googleEmail).maybeSingle()
+      if (existing) return NextResponse.json({ error: 'An account already exists for this Google email. Please sign in.' }, { status: 409 })
+    }
+
+    const normalizedPhone = isGoogle ? '' : normalizePhoneNumber(phone)
+    if (isGoogle) {
+      // email already verified by Google — skip phone verification entirely.
+    } else if (firebaseIdToken) {
       if (!firebaseAdminConfigured()) {
         return NextResponse.json({ error: 'Firebase phone verification is not configured on the server' }, { status: 503 })
       }
@@ -45,17 +62,18 @@ export async function POST(req: Request) {
       if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
     }
 
-    // Synthesised credentials (mobile-first). Real phone-native auth can replace later.
+    // Auth credentials. Google signups use the real Google email; phone signups
+    // get a synthetic email (they can add a real one + password later).
     const digits = normalizedPhone.replace(/[^0-9]/g, '')
-    const synthEmail = `${digits}@phone.native`
+    const authEmail = isGoogle ? googleEmail : `${digits}@phone.native`
     const synthPass = `Nm-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`
 
     const { data: created, error: cErr } = await supabaseAdmin.auth.admin.createUser({
-      email: synthEmail, password: synthPass, email_confirm: true,
+      email: authEmail, password: synthPass, email_confirm: true,
     })
     if (cErr || !created.user) {
       const dup = cErr?.message?.toLowerCase().includes('already')
-      return NextResponse.json({ error: dup ? 'This mobile number is already registered' : (cErr?.message || 'Signup failed') }, { status: 400 })
+      return NextResponse.json({ error: dup ? (isGoogle ? 'This Google account is already registered' : 'This mobile number is already registered') : (cErr?.message || 'Signup failed') }, { status: 400 })
     }
 
     const { count: districtCount } = await supabaseAdmin.from('profiles')
@@ -75,13 +93,13 @@ export async function POST(req: Request) {
     const { data: profile, error: pErr } = await supabaseAdmin.from('profiles').insert({
       user_id: created.user.id,
       full_name: String(full_name).trim(),
-      gender, phone: normalizedPhone, date_of_birth,
+      gender, phone: isGoogle ? null : normalizedPhone, email: isGoogle ? googleEmail : null, date_of_birth,
       native_state, native_district, native_region: native_state,
       current_city: String(current_city).trim(),
       marital_status: 'never_married', religion: 'Hindu', mother_tongue: null,
       profile_created_by, photo_url: '', photo_visibility: 'public',
       status: 'approved', verified: false,
-      phone_verified: true,  // phone was OTP/Firebase verified immediately above
+      phone_verified: !isGoogle,  // phone was OTP/Firebase verified above (Google = email verified)
       premium_expires_at: premiumExpiresAt.toISOString(),
     }).select('id').maybeSingle()
     if (pErr || !profile) {
