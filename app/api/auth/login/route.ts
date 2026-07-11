@@ -12,7 +12,30 @@ export const runtime = 'nodejs'
 export async function POST(req: Request) {
   try {
     assertAdminConfigured()
-    const { email, password, phone, otp, token, firebaseIdToken } = await req.json()
+    const { email, password, phone, otp, token, firebaseIdToken, emailOtp } = await req.json()
+
+    // ── Email OTP login (passwordless) ──────────────────────────
+    if (emailOtp) {
+      if (!otpConfigured()) {
+        return NextResponse.json({ error: 'Email login is temporarily unavailable.' }, { status: 503 })
+      }
+      const normalizedEmail = String(email || '').trim().toLowerCase()
+      if (!normalizedEmail || !token) {
+        return NextResponse.json({ error: 'Email verification required' }, { status: 400 })
+      }
+      const verified = verifyOtpToken(normalizedEmail, String(emailOtp).trim(), token)
+      if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
+
+      const { data: profile } = await supabaseAdmin
+        .from('profiles').select('id,user_id').ilike('email', normalizedEmail).maybeSingle()
+      if (!profile) {
+        return NextResponse.json({ error: 'No account found for that email' }, { status: 404 })
+      }
+      await setSession(profile.id)
+      supabaseAdmin.from('profiles').update({ last_login_at: new Date().toISOString() })
+        .eq('id', profile.id).then(() => {})
+      return NextResponse.json({ profileId: profile.id, userId: profile.user_id })
+    }
 
     if (phone || otp || token || firebaseIdToken) {
       if (!phone) {

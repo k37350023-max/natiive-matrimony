@@ -83,6 +83,9 @@ function EditProfilePageInner() {
   const isNewProfile = searchParams.get('new') === '1'
   const [profileId, setProfileId] = useState<string | null>(null)
   const [userEmail, setUserEmail] = useState('')
+  const [pwPass, setPwPass] = useState('')
+  const [pwSaving, setPwSaving] = useState(false)
+  const [pwMsg, setPwMsg] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -953,6 +956,47 @@ function EditProfilePageInner() {
                 <option value="Regularly">Regularly</option>
               </select>
             </div>
+          </div>
+        </CollapsibleCard>
+
+        {/* Sign-in & password */}
+        <CollapsibleCard title="Sign-in & password" badge="Optional" subtitle="Add an email + password so you can log in without your phone">
+          <div className="space-y-3">
+            <div>
+              <Label>Email address</Label>
+              <input className="input" type="email" placeholder="you@example.com" value={userEmail}
+                onChange={e => { setUserEmail(e.target.value); setPwMsg('') }} />
+            </div>
+            <div>
+              <Label>Password</Label>
+              <input className="input" type="password" placeholder="At least 6 characters" value={pwPass}
+                onChange={e => { setPwPass(e.target.value); setPwMsg('') }} />
+            </div>
+            {pwMsg && (
+              <p className="text-sm" style={{ color: pwMsg.startsWith('✓') ? '#1B5E20' : '#B4231F' }}>{pwMsg}</p>
+            )}
+            <button
+              type="button"
+              disabled={pwSaving}
+              onClick={async () => {
+                if (!userEmail.includes('@')) { setPwMsg('Enter a valid email'); return }
+                if (pwPass.length < 6) { setPwMsg('Password must be at least 6 characters'); return }
+                setPwSaving(true); setPwMsg('')
+                try {
+                  const r = await fetch('/api/auth/set-password', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail.trim().toLowerCase(), password: pwPass }),
+                  })
+                  const j = await r.json()
+                  if (!r.ok) throw new Error(j.error || 'Could not save')
+                  setPwPass(''); setPwMsg('✓ Saved. You can now sign in with your email + password or an emailed code.')
+                } catch (e) {
+                  setPwMsg(e instanceof Error ? e.message : 'Could not save')
+                } finally { setPwSaving(false) }
+              }}
+              className="btn-primary text-sm px-5 py-2.5">
+              {pwSaving ? 'Saving…' : 'Save email & password'}
+            </button>
           </div>
         </CollapsibleCard>
 

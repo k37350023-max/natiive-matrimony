@@ -53,6 +53,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [resendIn, setResendIn] = useState(0)
+  const [method, setMethod] = useState<'phone' | 'email'>('phone')
+  const [emailMode, setEmailMode] = useState<'password' | 'code'>('password')
+  const [emailAddr, setEmailAddr] = useState('')
+  const [emailPassword, setEmailPassword] = useState('')
+  const [emailOtp, setEmailOtp] = useState('')
+  const [emailToken, setEmailToken] = useState('')
+  const [emailDevOtp, setEmailDevOtp] = useState('')
+  const [emailSent, setEmailSent] = useState(false)
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
 
   // Resend countdown — 30s between OTP sends (also softens rate limits).
@@ -159,6 +167,73 @@ export default function LoginPage() {
     }
   }
 
+  async function handlePasswordLogin() {
+    const em = emailAddr.trim().toLowerCase()
+    if (!em.includes('@')) { setError('Enter a valid email address'); return }
+    if (!emailPassword) { setError('Enter your password'); return }
+    setLoading(true); setError('')
+    localStorage.removeItem('my_profile_id')
+    localStorage.removeItem('my_user_id')
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: em, password: emailPassword }),
+      })
+      const data = await readApiJson(res)
+      if (!res.ok) throw new Error(data.error || 'Login failed')
+      localStorage.setItem('my_user_id', data.userId)
+      localStorage.setItem('my_profile_id', data.profileId)
+      router.push('/browse')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed. Check your email and password.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function sendEmailOtp() {
+    const em = emailAddr.trim().toLowerCase()
+    if (!em.includes('@')) { setError('Enter a valid email address'); return }
+    setLoading(true); setError('')
+    try {
+      const res = await fetch('/api/auth/send-email-otp', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: em }),
+      })
+      const data = await readApiJson(res)
+      if (!res.ok) throw new Error(data.error || 'Could not send code')
+      setEmailToken(data.token)
+      setEmailDevOtp(data.dev_otp || '')
+      setEmailSent(true); setResendIn(30)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Could not send code')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handleEmailLogin() {
+    if (emailOtp.trim().length < 4) { setError('Enter the code from your email'); return }
+    setLoading(true); setError('')
+    localStorage.removeItem('my_profile_id')
+    localStorage.removeItem('my_user_id')
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: emailAddr.trim().toLowerCase(), emailOtp: emailOtp.trim(), token: emailToken }),
+      })
+      const data = await readApiJson(res)
+      if (!res.ok) throw new Error(data.error || 'Login failed')
+      localStorage.setItem('my_user_id', data.userId)
+      localStorage.setItem('my_profile_id', data.profileId)
+      router.push('/browse')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Login failed. Check your email and code.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // One-click test sign-in (dev only). Creates/uses a stable test account and
   // sets the session cookie - no credentials needed.
   async function devLogin(role: 'groom' | 'bride') {
@@ -230,7 +305,7 @@ export default function LoginPage() {
               <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#111', letterSpacing: '-0.02em', margin: '0 0 6px', fontFamily: 'var(--font-inter), sans-serif' }}>
                 Welcome back
               </h1>
-              <p style={{ fontSize: '14px', color: '#999', margin: 0 }}>Sign in with your verified mobile number</p>
+              <p style={{ fontSize: '14px', color: '#999', margin: 0 }}>Sign in with your mobile number or email</p>
             </div>
 
             <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '22px 20px' }}>
@@ -239,6 +314,21 @@ export default function LoginPage() {
                   {error}
                 </div>
               )}
+              {/* Method toggle */}
+              {!otpSent && !emailSent && (
+                <div style={{ display: 'flex', gap: '6px', padding: '4px', background: '#F1F5EF', borderRadius: '10px', marginBottom: '16px' }}>
+                  {(['phone', 'email'] as const).map(m => (
+                    <button key={m} onClick={() => { setMethod(m); setError('') }}
+                      style={{ flex: 1, padding: '9px', fontSize: '13.5px', fontWeight: 700, borderRadius: '8px', border: 'none', cursor: 'pointer',
+                        background: method === m ? '#FFFFFF' : 'transparent', color: method === m ? '#14241C' : '#6B7A70',
+                        boxShadow: method === m ? '0 1px 3px rgba(20,36,28,0.12)' : 'none' }}>
+                      {m === 'phone' ? 'Mobile number' : 'Email'}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {method === 'phone' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
                   <label className="form-label">Mobile number</label>
@@ -289,6 +379,82 @@ export default function LoginPage() {
                   </div>
                 )}
               </div>
+              ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {/* Password vs one-time code */}
+                {!emailSent && (
+                  <div style={{ display: 'flex', gap: '18px', fontSize: '13px' }}>
+                    {(['password', 'code'] as const).map(sm => (
+                      <button key={sm} onClick={() => { setEmailMode(sm); setError('') }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px 0', fontWeight: emailMode === sm ? 700 : 500,
+                          color: emailMode === sm ? '#14241C' : '#94A3B8', borderBottom: emailMode === sm ? '2px solid #1B5E20' : '2px solid transparent' }}>
+                        {sm === 'password' ? 'Password' : 'Email me a code'}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <div>
+                  <label className="form-label">Email address</label>
+                  <input className="input" type="email" placeholder="you@example.com" value={emailAddr} disabled={emailSent}
+                    onChange={e => setEmailAddr(e.target.value)}
+                    onKeyDown={e => { if (e.key === 'Enter') { emailMode === 'password' ? handlePasswordLogin() : (emailSent ? handleEmailLogin() : sendEmailOtp()) } }} />
+                </div>
+
+                {emailMode === 'password' ? (
+                  <>
+                    <div>
+                      <label className="form-label">Password</label>
+                      <input className="input" type="password" placeholder="Your password" value={emailPassword}
+                        onChange={e => setEmailPassword(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handlePasswordLogin()} />
+                    </div>
+                    <button onClick={handlePasswordLogin} disabled={loading} className="btn-primary" style={{ width: '100%', padding: '13px', fontSize: '15px', marginTop: '4px', borderRadius: '8px' }}>
+                      {loading ? 'Signing in…' : 'Sign In'}
+                    </button>
+                    <p style={{ fontSize: '12.5px', color: '#94A3B8', textAlign: 'center', margin: 0 }}>
+                      No password yet? Sign in with a code, then set one in <Link href="/profile/edit" style={{ color: '#1B5E20', fontWeight: 600, textDecoration: 'none' }}>your profile</Link>.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    {emailSent && (
+                      <>
+                        {emailDevOtp && (
+                          <div style={{ padding: '10px 14px', borderRadius: '8px', fontSize: '12px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
+                            Dev mode code: <strong>{emailDevOtp}</strong>
+                          </div>
+                        )}
+                        <div>
+                          <label className="form-label">Code from your email</label>
+                          <input className="input" inputMode="numeric" placeholder="Enter 6-digit code" value={emailOtp}
+                            onChange={e => setEmailOtp(e.target.value.replace(/\D/g, ''))}
+                            onKeyDown={e => e.key === 'Enter' && handleEmailLogin()} />
+                        </div>
+                      </>
+                    )}
+                    <button onClick={emailSent ? handleEmailLogin : sendEmailOtp} disabled={loading} className="btn-primary" style={{ width: '100%', padding: '13px', fontSize: '15px', marginTop: '4px', borderRadius: '8px' }}>
+                      {loading ? (emailSent ? 'Signing in…' : 'Sending code…') : (emailSent ? 'Sign In' : 'Email me a code')}
+                    </button>
+                    {emailSent && (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <button onClick={() => { setEmailSent(false); setEmailOtp(''); setEmailToken(''); setEmailDevOtp(''); setError(''); setResendIn(0) }}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', fontSize: '13px' }}>
+                          Change email
+                        </button>
+                        {resendIn > 0 ? (
+                          <span style={{ fontSize: '13px', color: '#94A3B8' }}>Resend in {resendIn}s</span>
+                        ) : (
+                          <button onClick={() => { if (!loading) { setEmailOtp(''); sendEmailOtp() } }} disabled={loading}
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1B5E20', fontSize: '13px', fontWeight: 700 }}>
+                            Resend code
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+              )}
             </div>
 
             {process.env.NODE_ENV !== 'production' && (

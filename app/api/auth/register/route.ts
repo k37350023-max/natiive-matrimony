@@ -3,6 +3,7 @@ import { supabaseAdmin, assertAdminConfigured } from '@/lib/supabaseAdmin'
 import { setSession } from '@/lib/session'
 import { otpConfigured, verifyOtpToken } from '@/lib/otpToken'
 import { firebaseAdminConfigured, normalizePhoneNumber, verifyFirebaseIdToken } from '@/lib/firebaseAdmin'
+import { sendEmail, emailConfigured, emailLayout } from '@/lib/email'
 
 export const runtime = 'nodejs'
 
@@ -118,25 +119,36 @@ export async function POST(req: Request) {
         .ilike('native_place', native_district).not('user_id', 'is', null)
       if (!alerts?.length) return
       const { data: owners } = await supabaseAdmin.from('profiles')
-        .select('id, gender').in('id', alerts.map(a => a.profile_id))
+        .select('id, gender, email').in('id', alerts.map(a => a.profile_id))
       const genderById = new Map((owners || []).map(o => [o.id, o.gender]))
+      const emailByProfile = new Map((owners || []).map(o => [o.id, o.email]))
       // One notification per user, even if several of their alerts match, so a
       // single signup can't spam. First matching alert per user wins the label.
-      const byUser = new Map<string, { label: string }>()
+      const byUser = new Map<string, { label: string; email: string | null }>()
       const matched: string[] = []
       for (const a of alerts) {
         if (a.profile_id === profile.id) continue
         if (genderById.get(a.profile_id) === gender) continue // opposite gender only
         matched.push(a.id)
-        if (!byUser.has(a.user_id)) byUser.set(a.user_id, { label: a.label })
+        if (!byUser.has(a.user_id)) byUser.set(a.user_id, { label: a.label, email: emailByProfile.get(a.profile_id) ?? null })
       }
-      for (const [uid, { label }] of byUser) {
+      const browseUrl = `https://nativematrimony.com/browse?native_place=${encodeURIComponent(native_district)}`
+      for (const [uid, { label, email }] of byUser) {
         await supabaseAdmin.from('notifications').insert({
           user_id: uid, type: 'alert_match_joined',
           message: `New profile from ${native_district} matches your alert "${label}"`,
           from_profile_id: profile.id, read: false,
           link: `/browse?native_place=${encodeURIComponent(native_district)}`,
         })
+        // Email the alert owner too (best-effort; skipped if no email / not configured).
+        if (email && emailConfigured()) {
+          const html = emailLayout(
+            `A new match from ${native_district} just joined`,
+            `Good news — a new profile matching your alert <strong>"${label}"</strong> just joined NativeMatrimony. Profiles like this get noticed quickly, so take a look while it's fresh.`,
+            { label: `View ${native_district} profiles`, url: browseUrl },
+          )
+          sendEmail({ to: email, subject: `New ${native_district} match for your alert`, html }).catch(() => {})
+        }
       }
       if (matched.length) {
         await supabaseAdmin.from('saved_alerts')
