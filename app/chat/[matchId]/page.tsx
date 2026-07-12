@@ -340,7 +340,7 @@ export default function ChatPage() {
           <div className="max-w-2xl mx-auto text-center">
             {chatState.iAmSender ? (
               <>
-                <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request sent - your first message is delivered</p>
+                <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Interest sent. Your first message is delivered.</p>
                 <p className="text-xs mt-1" style={{ color: '#5E6B62' }}>
                   You can send more messages once {other?.full_name?.split(' ')[0] || 'they'} accept your request.
                 </p>

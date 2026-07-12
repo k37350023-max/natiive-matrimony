@@ -434,7 +434,7 @@ export default function ProfilePage() {
     setViewerRelation('interested')
     setSending(false)
     setShowNoteModal(false)
-    showToast('Request sent. Contact opens after they accept.')
+    showToast('Interest sent. Contact opens after they accept.')
   }
 
   function showToast(msg: string) {
@@ -1025,7 +1025,7 @@ export default function ProfilePage() {
               </div>
               <p className="font-semibold text-gray-800 mb-1">Some profile details are hidden.</p>
               <p className="text-sm text-gray-500 mb-4">Connect first to see the hidden details.</p>
-              {interestSent && <p className="text-sm font-semibold" style={{ color: '#0F5E3E' }}>Request sent. Waiting for acceptance.</p>}
+              {interestSent && <p className="text-sm font-semibold" style={{ color: '#0F5E3E' }}>Interest sent. Waiting for reply.</p>}
             </div>
           ) : (
             <>
@@ -1171,7 +1171,7 @@ export default function ProfilePage() {
           <div className="w-full max-w-sm mx-4 mb-4 sm:mb-0 card p-6">
             <div className="flex items-start justify-between mb-4">
               <div>
-                <h3 className="font-bold text-gray-900 font-serif-display">Send Request</h3>
+                <h3 className="font-bold text-gray-900 font-serif-display">Connect</h3>
                 <p className="text-xs text-gray-400 mt-0.5">Add a short note if you want.</p>
               </div>
               <button onClick={() => setShowNoteModal(false)} className="text-gray-300 hover:text-gray-500 ml-3 mt-0.5">
@@ -1194,13 +1194,13 @@ export default function ProfilePage() {
                 onClick={() => expressInterest()}
                 disabled={sending}
                 className="flex-1 btn-ghost py-2.5 text-sm">
-                Send Request
+                Connect
               </button>
               <button
                 onClick={() => expressInterest(noteText)}
                 disabled={sending}
                 className="flex-1 btn-primary py-2.5 text-sm">
-                {sending ? 'Sending...' : 'Send with Note'}
+                {sending ? 'Sending...' : 'Connect with note'}
               </button>
             </div>
           </div>
@@ -1369,11 +1369,11 @@ export default function ProfilePage() {
                     {viewerRelation === 'received' ? (
                       <Link href="/interests?tab=received"
                         className="flex-1 btn-primary py-3 text-sm text-center flex items-center justify-center">
-                        Respond to their request →
+                        They want to connect - Reply
                       </Link>
                     ) : interestSent ? (
                       <button disabled className="flex-1 btn-primary py-3 text-sm" style={{ opacity: 0.72 }}>
-                        Request Sent
+                        Waiting for reply
                       </button>
                     ) : (
                       <button
@@ -1381,7 +1381,7 @@ export default function ProfilePage() {
                         disabled={sending}
                         className="flex-1 btn-primary py-3 text-sm"
                       >
-                        {sending ? 'Sending...' : 'Send Request'}
+                        {sending ? 'Sending...' : 'Connect'}
                       </button>
                     )}
                   </>
@@ -1409,7 +1409,7 @@ export default function ProfilePage() {
             <>
               <div className="flex gap-2.5">
                 <Link href="/register" className="flex-1 btn-primary py-3 text-sm text-center">
-                  Register to Send Request
+                  Register to connect
                 </Link>
                 <Link href="/login"
                   className="px-4 py-3 rounded-lg font-semibold text-sm border text-center"
@@ -1417,7 +1417,7 @@ export default function ProfilePage() {
                   Login
                 </Link>
               </div>
-              <p className="text-center text-xs text-gray-400 mt-2">Send a request to connect and see contact details.</p>
+              <p className="text-center text-xs text-gray-400 mt-2">Create a profile to connect. Contact details show after both sides accept.</p>
             </>
           )}
         </div>

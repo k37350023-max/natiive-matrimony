@@ -22,8 +22,8 @@ export default function HowItWorks() {
     },
     {
       n: '3',
-      title: 'Send a request',
-      desc: 'Found someone you like? Send a request. Their family reviews it and responds.',
+      title: 'Connect',
+      desc: 'Found someone who looks right? Connect. Their family reviews and replies.',
       icon: (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
           <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>

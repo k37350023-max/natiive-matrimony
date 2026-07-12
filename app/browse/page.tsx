@@ -443,7 +443,7 @@ function ProfileCard({
       onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 16px 36px rgba(20,36,28,0.12)'; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-4px)' }}
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
-      {/* Photo (4:5) - visible when allowed, protected when the member chooses privacy */}
+      {/* Photo (4:5) - visible when allowed, hidden only when the member chooses privacy */}
       <div className="browse-profile-media" style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
         {showPhoto ? (
           <img loading="lazy"
@@ -475,7 +475,7 @@ function ProfileCard({
           <div style={{ position: 'absolute', left: '12px', right: '12px', bottom: '12px', zIndex: 9 }}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', maxWidth: '100%', borderRadius: '12px', background: 'rgba(20,36,28,0.82)', color: 'white', fontSize: '11.5px', fontWeight: 800, padding: '8px 10px', boxShadow: '0 10px 24px rgba(20,36,28,0.20)' }}>
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              Connect to see contact
+              Contact after connection
             </span>
           </div>
         )}
@@ -488,7 +488,11 @@ function ProfileCard({
           <p style={{ fontFamily: 'var(--font-space-grotesk), sans-serif', fontWeight: 600, color: '#14241C', fontSize: '17px', lineHeight: 1.25, letterSpacing: '-0.01em', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {visibleName}
           </p>
-          {age && <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>{age} yrs</span>}
+          {(age || p.height_cm) && (
+            <span style={{ fontSize: '14px', fontWeight: 600, color: '#5E6B62', flexShrink: 0 }}>
+              {[age ? `${age} yrs` : '', p.height_cm ? cmToFeet(p.height_cm) : ''].filter(Boolean).join(' · ')}
+            </span>
+          )}
         </div>
 
         {/* Location */}
@@ -505,6 +509,11 @@ function ProfileCard({
         <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#14241C', margin: '8px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {p.profession || p.education || 'Profession not shared yet'}
         </p>
+        {p.education && p.profession && (
+          <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {p.education}
+          </p>
+        )}
         <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: '4px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {p.current_city || 'Current location not shared'}
         </p>
@@ -560,13 +569,13 @@ function ProfileCard({
               }}
               onMouseEnter={e => { if (!status || status==='matched' || status==='incoming') (e.currentTarget.style.background = '#14532D') }}
               onMouseLeave={e => { if (!status || status==='matched' || status==='incoming') (e.currentTarget.style.background = '#1B5E20') }}>
-              {status === 'matched' ? 'View Profile'
-                : status === 'accepted' ? 'View Profile'
-                : status === 'incoming' ? 'Respond to request'
-                : status === 'pending' ? 'Request Sent'
+              {status === 'matched' ? 'View profile'
+                : status === 'accepted' ? 'View profile'
+                : status === 'incoming' ? 'Reply'
+                : status === 'pending' ? 'Waiting'
                 : status === 'rejected' ? 'Declined'
                 : sending ? 'Sending…'
-                : 'Send Request'}
+                : 'Connect'}
             </button>
             {unlocked && chatHref && (
               <Link
@@ -917,7 +926,7 @@ export default function BrowsePage() {
         setBannerDismissed(sessionStorage.getItem('completeness_banner_dismissed') === '1')
       }
 
-      // Status per profile: accepted request = connected (chat); pending = request sent.
+      // Status per profile: accepted interest = connected (chat); pending = waiting.
       // A match row alone (created when a request opens a thread) is not connected
       // unless the request was accepted.
       const map: Record<string,string> = {}
@@ -1103,7 +1112,7 @@ export default function BrowsePage() {
     }
   }
 
-  // Send a request. Stays pending until the recipient accepts.
+  // Express interest. Stays pending until the recipient accepts.
   // (acceptance is what creates a match) - no auto-match here.
   async function sendInterest(p: Profile, opts: { advance?: boolean } = {}) {
     if (!myProfileId || interestMap[p.id] || sendingProfileIds.has(p.id)) return
@@ -1688,7 +1697,7 @@ export default function BrowsePage() {
                       {status && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                           style={{ background: 'rgba(255,255,255,0.95)', color: status==='matched'?'#2E7D32':'#14241C' }}>
-                          {status==='matched'?'Connected ✓':status==='incoming'?'Sent you a request':status==='pending'?'Request Sent':status==='rejected'?'Declined':'Connected'}
+                          {status==='matched'?'Connected ✓':status==='incoming'?'Wants to connect':status==='pending'?'Waiting':status==='rejected'?'Declined':'Connected'}
                         </span>
                       )}
                     </div>
@@ -1727,12 +1736,12 @@ export default function BrowsePage() {
               {/* Action buttons */}
               <div className="px-5 pb-6 pt-3 space-y-2.5">
 
-                {/* Request sent success feedback */}
+                {/* Interest sent success feedback */}
                 {interestSent && (
                   <div className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold"
                     style={{ background: '#ECFDF5', color: '#065F46' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    Request sent! Moving to next…
+                    Interest sent. Showing the next profile…
                   </div>
                 )}
 
@@ -1747,11 +1756,11 @@ export default function BrowsePage() {
                       ? { background: '#ECFDF5', color: '#2E7D32' }
                       : { background: '#1B5E20', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(27,94,32,0.35)' }}>
                     {status==='matched'  ? 'View Profile →' :
-                     status==='incoming' ? 'They sent you a request — Respond →' :
+                     status==='incoming' ? 'They want to connect — Reply →' :
                      status==='accepted' ? 'Accepted' :
-                     status==='pending'  ? 'Request Sent ✓' :
+                     status==='pending'  ? 'Waiting for reply' :
                      status==='rejected' ? 'Declined' :
-                     sendingProfileIds.has(p.id) ? 'Sending…' : 'Send Request'}
+                     sendingProfileIds.has(p.id) ? 'Sending…' : 'Connect'}
                   </button>
                 )}
 
@@ -1834,10 +1843,10 @@ export default function BrowsePage() {
               <div style={{ marginTop: '10px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 14px', borderRadius: '12px', background: '#EDF3ED', marginBottom: '12px' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B5E20" strokeWidth="2" strokeLinecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Request sent. Contact is shown after connection.</p>
+                  <p style={{ fontSize: '13px', color: '#14241C', margin: 0, fontWeight: 600 }}>Interest sent. Contact is shown after connection.</p>
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#5E6B62', margin: 0, lineHeight: 1.5 }}>
-                  Contact details are shared only after connection. We&apos;ve sent your request - you&apos;ll be notified when they accept.
+                  Contact details are shared only after connection. We&apos;ll notify you when they accept.
                 </p>
               </div>
             )}

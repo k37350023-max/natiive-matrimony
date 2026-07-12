@@ -214,7 +214,7 @@ function ResultCard({ p, interestStatus, onView }: { p: Profile; interestStatus?
             <span style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '8px', background: '#ECFDF5', color: '#2E7D32', fontWeight: 600 }}>Connected ✓</span>
           )}
           {interestStatus === 'pending' && (
-            <span style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '8px', background: '#EAF3EA', color: '#14241C', fontWeight: 600 }}>Request Sent</span>
+            <span style={{ padding: '7px 14px', fontSize: '12px', borderRadius: '8px', background: '#EAF3EA', color: '#14241C', fontWeight: 600 }}>Waiting</span>
           )}
         </div>
       </div>

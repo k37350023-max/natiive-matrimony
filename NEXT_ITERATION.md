@@ -4,16 +4,16 @@
 
 - Homepage: 90/100
 - Signup: 93/100 after essential fields are saved
-- Browse: 92/100 after visible filters were simplified
-- Profile: 86/100
+- Browse: 94/100 after visible filters and card language were simplified
+- Profile: 90/100 after connection language cleanup
 - Edit Profile: 84/100
 - Requests: 86/100
 - Notifications: 84/100
 - Alerts: 88/100
-- Chats: 86/100
+- Chats: 88/100
 - Settings / Privacy: 84/100
 
-Overall launch score: 90/100
+Overall launch score: 91/100
 
 ## Completed Work
 
@@ -23,6 +23,9 @@ Overall launch score: 90/100
 - Browse filter drawer now shows only core launch filters first: age, religion, community, and marital status. Region, height, language, profession, education, income, activity, and quality toggles moved under More filters.
 - Browse heading now reinforces the native-place value proposition.
 - Empty result count no longer says `0 profiles`; it points users toward new profiles and alerts.
+- Browse cards now use simpler actions: `Connect`, `Waiting`, `Reply`, and `View profile`.
+- Browse cards show height beside age and add education under profession when both are available.
+- Profile detail, search, chat, pricing, and How it works now use the same connection language instead of transactional request copy.
 
 ## Remaining P0 Issues
 
@@ -30,7 +33,7 @@ Overall launch score: 90/100
 - Browse filters are simpler, but the search header still has two visible inputs; mobile should be visually tested to confirm it feels light.
 - Empty states need a final pass to ensure no page feels like an empty database.
 - Profile cards should be checked visually on mobile for hierarchy: photo, age, height, native place, profession, education, verification, activity.
-- Request flow copy should avoid “send request” wherever it feels transactional or rude.
+- Remaining request-flow copy should be checked visually in the actual browser, especially Requests tabs and empty states.
 - Supabase RLS remains a launch security concern because many client-side reads still depend on public anon access.
 
 ## Remaining P1 Issues
@@ -42,16 +45,16 @@ Overall launch score: 90/100
 
 ## Exact Next Task
 
-Make profile cards and request copy simpler:
+Make the requests area feel simpler and less like an admin table:
 
-1. Replace transactional `Send Request` with warmer but short copy.
-2. Ensure cards show age, native place, profession, education, verification, and activity with no clutter.
-3. Verify mobile card hierarchy and button loading state.
+1. Separate waiting interests from connected profiles more clearly.
+2. Remove duplicate names and rude status copy.
+3. Verify accepted items do not remain visually buried in Sent.
 
 ## Files Likely To Edit
 
 - `app/browse/page.tsx`
-- `app/globals.css`
+- `app/interests/page.tsx`
 - `NEXT_ITERATION.md`
 
 ## Known UX Problems

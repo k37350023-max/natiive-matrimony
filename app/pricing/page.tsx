@@ -60,7 +60,7 @@ export default function PricingPage() {
               <Benefit>Save places and get alerts</Benefit>
             </div>
             <Link href={isLoggedIn ? '/browse' : '/register?plan=free'} className="btn-ghost text-sm px-5 py-3 w-full justify-center">
-              {isLoggedIn ? 'Browse Profiles' : 'Start Free'}
+              {isLoggedIn ? 'Browse Profiles' : 'Create Free Profile'}
             </Link>
           </section>
 
