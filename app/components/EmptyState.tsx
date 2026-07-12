@@ -1,6 +1,24 @@
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 
+type EmptyStateAction = { label: string; href?: string; onClick?: () => void }
+
+function EmptyStateButton({ action, kind }: { action: EmptyStateAction; kind: 'primary' | 'ghost' }) {
+  const cls = kind === 'primary' ? 'btn-primary' : 'btn-ghost'
+  const style = {
+    minHeight: 46,
+    padding: '0 22px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 700,
+    fontSize: 14,
+    textDecoration: 'none',
+  } as const
+  if (action.href) return <Link href={action.href} className={cls} style={style}>{action.label}</Link>
+  return <button onClick={action.onClick} className={cls} style={style}>{action.label}</button>
+}
+
 /* One consistent, premium empty state across the app: a soft gradient card,
    a dark icon tile, a clear headline, guidance, and always a next action so a
    page never dead-ends into blank space. */
@@ -15,17 +33,10 @@ export default function EmptyState({
   icon: ReactNode
   title: string
   subtitle: string
-  primary?: { label: string; href?: string; onClick?: () => void }
-  secondary?: { label: string; href?: string; onClick?: () => void }
+  primary?: EmptyStateAction
+  secondary?: EmptyStateAction
   compact?: boolean
 }) {
-  const Btn = ({ a, kind }: { a: { label: string; href?: string; onClick?: () => void }; kind: 'primary' | 'ghost' }) => {
-    const cls = kind === 'primary' ? 'btn-primary' : 'btn-ghost'
-    const style = { minHeight: 46, padding: '0 22px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14, textDecoration: 'none' } as const
-    if (a.href) return <Link href={a.href} className={cls} style={style}>{a.label}</Link>
-    return <button onClick={a.onClick} className={cls} style={style}>{a.label}</button>
-  }
-
   return (
     <div className="card overflow-hidden">
       <div className={`text-center ${compact ? 'px-5 py-8' : 'px-6 py-12'}`}
@@ -37,8 +48,8 @@ export default function EmptyState({
         <p className="text-sm mt-1.5 mx-auto leading-relaxed" style={{ color: '#5B6B60', maxWidth: 360 }}>{subtitle}</p>
         {(primary || secondary) && (
           <div className="flex flex-col sm:flex-row gap-2.5 justify-center mt-5">
-            {primary && <Btn a={primary} kind="primary" />}
-            {secondary && <Btn a={secondary} kind="ghost" />}
+            {primary && <EmptyStateButton action={primary} kind="primary" />}
+            {secondary && <EmptyStateButton action={secondary} kind="ghost" />}
           </div>
         )}
       </div>

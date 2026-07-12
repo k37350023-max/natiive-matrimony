@@ -97,6 +97,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     profile_created_by: 'self', full_name: '', gender: '', phone: '',
     date_of_birth: '', native_state: '', native_district: '', current_city: '',
+    religion: 'Hindu', caste: '', profession: '', education: '',
   })
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
   const [googleAuth, setGoogleAuth] = useState<{ idToken: string; email: string; name: string } | null>(null)
@@ -176,6 +177,10 @@ export default function RegisterPage() {
     if (!form.native_state) return setError('Please select your native state')
     if (!form.native_district) return setError('Please select your native place')
     if (!form.current_city.trim()) return setError('Current city is required')
+    if (!form.religion.trim()) return setError('Religion is required')
+    if (!form.caste.trim()) return setError('Community is required')
+    if (!form.profession.trim()) return setError('Profession is required')
+    if (!form.education.trim()) return setError('Education is required')
     if (form.phone.trim().length < 7) return setError('Enter a valid mobile number')
     setError(''); setSending(true)
     try {
@@ -246,6 +251,10 @@ export default function RegisterPage() {
     if (!form.native_state) return setError('Please select your native state')
     if (!form.native_district) return setError('Please select your native district')
     if (!form.current_city.trim()) return setError('Current city is required')
+    if (!form.religion.trim()) return setError('Religion is required')
+    if (!form.caste.trim()) return setError('Community is required')
+    if (!form.profession.trim()) return setError('Profession is required')
+    if (!form.education.trim()) return setError('Education is required')
     if (!googleAuth) {
       if (!signupEmail.includes('@')) return setError('Enter a valid email address')
       if (signupPassword.length < 6) return setError('Password must be at least 6 characters')
@@ -260,6 +269,8 @@ export default function RegisterPage() {
           full_name: form.full_name, gender: form.gender,
           date_of_birth: form.date_of_birth, native_state: form.native_state,
           native_district: form.native_district, current_city: form.current_city,
+          religion: form.religion.trim(), caste: form.caste.trim(),
+          profession: form.profession.trim(), education: form.education.trim(),
           profile_created_by: form.profile_created_by,
           ...(googleAuth
             ? { googleIdToken: googleAuth.idToken }
@@ -306,7 +317,7 @@ export default function RegisterPage() {
 
   const STEP_META = [
     { n: 1, title: 'Create your free profile', sub: 'Takes less than 30 seconds. Start with your native place.' },
-    { n: 2, title: 'Basic details', sub: 'Just the essentials — you can complete details later.' },
+    { n: 2, title: 'Profile basics', sub: 'Only what families need to understand your profile at a glance.' },
     { n: 3, title: 'Verify your mobile', sub: `We sent a code to ${phoneCode} ${form.phone}` },
   ][step - 1]
 
@@ -508,6 +519,29 @@ export default function RegisterPage() {
                 <div>
                   <Label>Current city</Label>
                   <input style={inputStyle} placeholder="e.g. Dallas, Hyderabad, Chennai" value={form.current_city} onChange={e => set('current_city', e.target.value)} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <Label>Religion</Label>
+                    <select style={inputStyle} value={form.religion} onChange={e => set('religion', e.target.value)}>
+                      <option value="">Select</option>
+                      {['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist', 'Other'].map(r => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Community</Label>
+                    <input style={inputStyle} placeholder="e.g. Reddy, Kamma" value={form.caste} onChange={e => set('caste', e.target.value)} />
+                  </div>
+                </div>
+                <div>
+                  <Label>Profession</Label>
+                  <input style={inputStyle} placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
+                </div>
+                <div>
+                  <Label>Education</Label>
+                  <input style={inputStyle} placeholder="e.g. B.Tech, MBA, MBBS" value={form.education} onChange={e => set('education', e.target.value)} />
                 </div>
                 {googleAuth ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#14241C' }}>

@@ -17,12 +17,16 @@ export async function POST(req: Request) {
   try {
     assertAdminConfigured()
     const b = await req.json()
-    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token, firebaseIdToken, googleIdToken, email, password } = b
+    const {
+      full_name, gender, phone, date_of_birth, native_state, native_district,
+      current_city, profile_created_by, otp, token, firebaseIdToken,
+      googleIdToken, email, password, religion, caste, profession, education,
+    } = b
 
     const isGoogle = Boolean(googleIdToken)
     const isEmailSignup = !isGoogle && Boolean(email && password)
     const noPhoneNeeded = isGoogle || isEmailSignup
-    if (!full_name || !gender || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by || (!noPhoneNeeded && !phone)) {
+    if (!full_name || !gender || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by || !religion || !caste || !profession || !education || (!noPhoneNeeded && !phone)) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
@@ -105,7 +109,12 @@ export async function POST(req: Request) {
       gender, phone: noPhoneNeeded ? null : normalizedPhone, email: noPhoneNeeded ? accountEmail : null, date_of_birth,
       native_state, native_district, native_region: native_state,
       current_city: String(current_city).trim(),
-      marital_status: 'never_married', religion: 'Hindu', mother_tongue: null,
+      marital_status: 'never_married',
+      religion: String(religion).trim(),
+      caste: String(caste).trim(),
+      profession: String(profession).trim(),
+      education: String(education).trim(),
+      mother_tongue: null,
       profile_created_by, photo_url: '', photo_visibility: 'public',
       status: 'approved', verified: false,
       phone_verified: !noPhoneNeeded,  // phone verified now (phone signup) or later via popup
