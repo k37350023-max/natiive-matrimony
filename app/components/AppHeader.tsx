@@ -15,6 +15,7 @@ export default function AppHeader() {
   const [profileName, setProfileName] = useState('')
   const [photoUrl, setPhotoUrl] = useState<string | null>(null)
   const [memberNumber, setMemberNumber] = useState<number | null>(null)
+  const [premiumExpiresAt, setPremiumExpiresAt] = useState<string | null>(null)
   const [pendingInterests, setPendingInterests] = useState(0)
   const [unreadMessages, setUnreadMessages] = useState(0)
   const [completeness, setCompleteness] = useState<number | null>(null)
@@ -42,6 +43,7 @@ export default function AppHeader() {
         setProfileName(data.full_name || '')
         setPhotoUrl(data.photo_visibility !== 'hidden' ? data.photo_url : null)
         setMemberNumber(data.member_number ?? null)
+        setPremiumExpiresAt(data.premium_expires_at ?? null)
         setCompleteness(computeCompleteness(data).percent)
       })
 
@@ -82,6 +84,16 @@ export default function AppHeader() {
     { href: '/alerts',    label: 'Alerts',      active: path.startsWith('/alerts') },
     { href: '/dashboard', label: 'Profile',     active: path.startsWith('/dashboard') || path.startsWith('/profile') },
   ]
+
+  const premiumDate = premiumExpiresAt ? new Date(premiumExpiresAt) : null
+  const premiumActive = !!premiumDate && premiumDate > new Date()
+  const daysLeft = premiumDate ? Math.ceil((premiumDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000)) : 0
+  const isDistrictPremium = premiumActive && daysLeft > 120
+  const accessLabel = premiumActive ? (isDistrictPremium ? '2Y Premium' : 'Premium') : 'Free'
+  const accessShortLabel = accessLabel
+  const accessSubline = premiumActive && premiumDate
+    ? `${accessLabel} until ${premiumDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`
+    : 'Free profile'
 
   return (
     <header className="app-header" style={{
@@ -135,6 +147,30 @@ export default function AppHeader() {
           {ready && profileId ? (
             <>
               <NotificationBell />
+              <span
+                className="account-access-badge"
+                title={accessSubline}
+                aria-label={accessSubline}
+                style={{
+                  alignItems: 'center',
+                  background: premiumActive ? '#FFF7D6' : '#F4F7F1',
+                  border: premiumActive ? '1px solid #E7C45B' : '1px solid #DDE8DE',
+                  borderRadius: '999px',
+                  color: premiumActive ? '#6F4B00' : '#475569',
+                  display: 'inline-flex',
+                  fontSize: '11px',
+                  fontWeight: 900,
+                  gap: '5px',
+                  minHeight: '28px',
+                  padding: '0 9px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill={premiumActive ? '#D99A00' : 'none'} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polygon points="12 2 15.1 8.3 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 8.9 8.3 12 2" />
+                </svg>
+                {accessShortLabel}
+              </span>
               <div style={{ position: 'relative' }} ref={menuRef}>
                 {completeness !== null && completeness < 100 && (
                   <>
@@ -179,6 +215,11 @@ export default function AppHeader() {
                       <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#111', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileName}</p>
                       <p style={{ fontSize: '11.5px', color: '#667085', margin: '2px 0 0' }}>
                         {memberNumber ? `Profile #${memberNumber}` : 'Private profile'}
+                      </p>
+                      <p style={{ alignItems: 'center', color: premiumActive ? '#7A5200' : '#64748B', display: 'flex', fontSize: '11.5px', fontWeight: 800, gap: '5px', margin: '8px 0 0' }}>
+                        <span style={{ background: premiumActive ? '#FFF7D6' : '#F4F7F1', border: premiumActive ? '1px solid #E7C45B' : '1px solid #DDE8DE', borderRadius: '999px', padding: '3px 8px' }}>
+                          {accessSubline}
+                        </span>
                       </p>
                     </div>
                     {completeness !== null && completeness < 100 && (

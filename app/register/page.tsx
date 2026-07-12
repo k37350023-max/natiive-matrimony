@@ -450,11 +450,11 @@ export default function RegisterPage() {
                 <p style={{ color: '#5E6B62', fontSize: '12.5px', lineHeight: 1.55, margin: '0 0 11px' }}>
                   {selectedDistrict
                     ? districtCount === null
-                      ? `Checking founding spots for ${selectedDistrict}...`
+                      ? `Checking 2-year Premium spots for ${selectedDistrict}...`
                       : foundingRemaining > 0
-                        ? `${foundingRemaining.toLocaleString('en-IN')} founding spots still open in ${selectedDistrict}. You get 2 years premium free after signup.`
-                        : `Founding spots are full in ${selectedDistrict}; your free profile still includes 3 months premium.`
-                    : 'Choose your native place to check district founding spots.'}
+                        ? `${foundingRemaining.toLocaleString('en-IN')} 2-year Premium spots still open in ${selectedDistrict}. You get 2 years premium free after signup.`
+                        : `2-year Premium spots are full in ${selectedDistrict}; your free profile still includes 3 months premium.`
+                    : 'Choose your native place to check 2-year Premium spots.'}
                 </p>
                 <div style={{ height: '7px', background: '#EEF4EA', borderRadius: '99px', overflow: 'hidden' }}>
                   <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#075E3E', borderRadius: '99px', transition: 'width 0.35s ease' }} />
@@ -473,7 +473,7 @@ export default function RegisterPage() {
             <div style={{ alignItems: 'center', background: '#FFFFFF', border: '1px solid #DCE9D7', borderRadius: '12px', display: 'flex', gap: '10px', marginBottom: '16px', padding: '12px 14px' }}>
               <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '11px', fontWeight: 900, height: '22px', justifyContent: 'center', width: '22px' }}>✓</span>
               <p style={{ color: '#475569', fontSize: '12.5px', lineHeight: 1.45, margin: 0 }}>
-                Native place: <strong style={{ color: '#14241C' }}>{selectedDistrict}</strong>. {foundingApplied ? '2 years premium will be applied.' : 'Premium trial will be applied.'}
+                Native place: <strong style={{ color: '#14241C' }}>{selectedDistrict}</strong>. {foundingApplied ? '2 years Premium will be applied.' : '3 months Premium will be applied.'}
               </p>
             </div>
           ) : null}

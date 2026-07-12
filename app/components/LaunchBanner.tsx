@@ -29,7 +29,7 @@ export default function LaunchBanner() {
 
   if (dismissed) return null
 
-  // Show "founder access active" minimized banner for early members.
+  // Show active Premium access for early district members.
   if (premiumExpiry) {
     const expiry = new Date(premiumExpiry)
     const formatted = expiry.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -41,7 +41,7 @@ export default function LaunchBanner() {
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
           <div>
-            <p className="text-xs font-bold" style={{ color: '#14241C' }}>Founder Access Active</p>
+            <p className="text-xs font-bold" style={{ color: '#14241C' }}>Premium Active</p>
             <p className="text-[11px]" style={{ color: '#057A5B' }}>Premium access active until {formatted}</p>
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function LaunchBanner() {
         <div className="flex-1 min-w-0">
           <p className="font-extrabold text-sm leading-snug" style={{ color: '#14241C' }}>Always Free + Premium Trial</p>
           <p className="text-xs mt-0.5 leading-snug" style={{ color: '#14241C' }}>
-            Free version stays free.<br />Premium: 2 years for founders, 3 months for others.
+            Free version stays free.<br />Premium: 2 years for the first 1,000 per district, 3 months for others.
           </p>
           {count !== null && (
             <div className="mt-2 flex items-center gap-2">

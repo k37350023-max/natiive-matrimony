@@ -1,7 +1,7 @@
 'use client'
 import { supabase } from '@/lib/supabase'
 
-/* Shared, deduped count queries. Several components (banner, founder tracker,
+/* Shared, deduped count queries. Several components (banner, district tracker,
    header, mobile nav) used to fire identical HEAD count queries on every page
    load — multiplied by React re-mounts. This module gives them one in-flight
    promise + a short TTL cache, so each count hits Supabase at most once per
@@ -18,7 +18,7 @@ function cached(key: string, fetcher: () => Promise<number>): Promise<number> {
   return promise
 }
 
-/** Total approved profiles (founder tracker, launch banner, live counters). */
+/** Total approved profiles (district tracker, launch banner, live counters). */
 export function getApprovedProfileCount(): Promise<number> {
   return cached('profiles-approved', async () => {
     const { count } = await supabase.from('profiles')

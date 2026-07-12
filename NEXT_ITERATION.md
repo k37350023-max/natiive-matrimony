@@ -40,6 +40,8 @@ Overall launch score: 98/100
 - Homepage hero visual and profile panel are tighter so the first screen feels calmer and more premium.
 - Browse profile cards are shorter, and the results toolbar is contained so controls do not visually spill.
 - Authenticated header and Browse now share the same launch-width shell, avoiding clipped controls on normal desktop windows.
+- Account header now shows Free, Premium, or 2Y Premium beside the profile icon.
+- Launch offer copy no longer uses confusing Founding Member language; it explains the first 1,000 profiles per district get 2 years Premium.
 
 ## Remaining P0 Issues
 

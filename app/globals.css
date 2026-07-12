@@ -3558,6 +3558,10 @@ select.input {
     min-width: 0;
   }
 
+  .account-access-badge {
+    display: none !important;
+  }
+
   .nmh-menu {
     flex: 0 0 40px;
     height: 40px;

@@ -27,10 +27,10 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL("https://nativematrimony.com"),
   title: { default: "NativeMatrimony.com - Profiles by native place", template: "%s | NativeMatrimony.com" },
-  description: "Join NativeMatrimony for free. The free version stays free, founding members get 2 years of premium, and others get 3 months premium free.",
+  description: "Join NativeMatrimony for free. The free version stays free, the first 1,000 profiles in each district get 2 years premium, and others get 3 months premium free.",
   openGraph: {
     title: "NativeMatrimony.com - Profiles by native place",
-    description: "Start free and browse native profiles by roots. Founding members get 2 years premium free; others get 3 months premium free.",
+    description: "Start free and browse native profiles by roots. The first 1,000 profiles in each district get 2 years premium free; others get 3 months premium free.",
     siteName: "NativeMatrimony.com",
     locale: "en_IN",
     type: "website",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "NativeMatrimony.com - Profiles by native place",
-    description: "Start free, browse native profiles, and connect when both sides agree. Founders get 2 years premium free; others get 3 months free.",
+    description: "Start free, browse native profiles, and connect when both sides agree. The first 1,000 profiles in each district get 2 years premium free; others get 3 months free.",
   },
   manifest: "/manifest.json",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "NativeMatrimony.com" },

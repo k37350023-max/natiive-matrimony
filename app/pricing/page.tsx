@@ -39,7 +39,7 @@ export default function PricingPage() {
             Start free. Upgrade only when you need more access.
           </h1>
           <p className="text-base text-gray-600 leading-relaxed">
-            The free version stays free. Founding members get premium free for 2 years. Everyone else gets 3 months of premium free after signup.
+            The free version stays free. The first 1,000 profiles in each district get 2 years of Premium. Everyone else gets 3 months of Premium free after signup.
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export default function PricingPage() {
               <span className="text-sm text-gray-500 ml-1"> for launch users</span>
             </div>
             <div className="space-y-3 mb-7">
-              <Benefit>2 years free for district founding members</Benefit>
+              <Benefit>2 years free for the first 1,000 profiles in each district</Benefit>
               <Benefit>3 months free for everyone else</Benefit>
               <Benefit>More chats and contact views after connection</Benefit>
               <Benefit>See contact after both sides accept</Benefit>

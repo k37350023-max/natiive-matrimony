@@ -315,7 +315,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           <p className="text-gray-500 text-sm">
             {searchedPlace
               ? 'Create a profile to see useful details and connect when both sides agree.'
-              : 'Join the always-free version to browse native profiles, save place alerts, and connect when both sides agree. Founders get 2 years premium free; others get 3 months.'}
+              : 'Join the always-free version to browse native profiles, save place alerts, and connect when both sides agree. The first 1,000 profiles in each district get 2 years premium free; others get 3 months.'}
           </p>
         </div>
 
@@ -833,7 +833,7 @@ export default function BrowsePage() {
     if (searchParams.get('new') === '1') {
       const benefit = searchParams.get('benefit')
       setBrowseToast(benefit === 'founding_2y'
-        ? 'Welcome. Your 2-year founding premium benefit is active.'
+        ? 'Welcome. Your 2-year Premium access is active.'
         : 'Welcome. Your 3-month premium trial is active.')
       setTimeout(() => setBrowseToast(null), 4200)
     }

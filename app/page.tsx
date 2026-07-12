@@ -33,7 +33,7 @@ const profilePreview = [
 
 const proofStats = [
   ['Free basics', 'Create, browse, receive interests'],
-  ['2 years premium', 'For first 1,000 district founders'],
+  ['2 years premium', 'For the first 1,000 profiles in each district'],
   ['Private contact', 'Phone and chat after connection'],
   ['Human help', 'Optional shortlist support'],
 ]
@@ -225,7 +225,7 @@ export default function Home() {
             <article>
               <Icon name="lock" size={25} />
               <h3>Free stays free</h3>
-              <p>Basic profile creation, native place search, and receiving interests stay free. Premium is free for 2 years for founders, and 3 months for everyone else.</p>
+              <p>Basic profile creation, native place search, and receiving interests stay free. Premium is free for 2 years for the first 1,000 profiles in each district, and 3 months for everyone else.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
@@ -289,7 +289,7 @@ export default function Home() {
           </div>
           <div className="nmh-trust-grid">
             {[
-              ['Freemium launch', 'Profile creation, basic search, and receiving interests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
+              ['Freemium launch', 'Profile creation, basic search, and receiving interests stay free. The first 1,000 profiles in each district get 2 years premium free; everyone else gets 3 months free.', 'pin'],
               ['Useful profiles', 'Profiles show roots, work, location, and photo choice before a family connects.', 'search'],
               ['Guided introductions', 'Optional matchmaker help is available when families want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
@@ -364,7 +364,7 @@ export default function Home() {
           <div>
             <p className="nmh-section-kicker">Create now, match when ready</p>
             <h2>Be visible to the right family before they search elsewhere.</h2>
-            <p>Join the always-free version today. Claim 2 years of free premium if district founding spots are open, or get 3 months of premium free.</p>
+            <p>Join the always-free version today. Get 2 years of free premium if your district still has one of its first 1,000 spots, or get 3 months of premium free.</p>
           </div>
           <div className="nmh-actions">
             <Link href="/register" className="nmh-primary">Join Free</Link>
