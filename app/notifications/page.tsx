@@ -96,16 +96,18 @@ function compactNotifications(items: Notif[]): DisplayNotif[] {
   const compacted: DisplayNotif[] = []
   const seen = new Map<string, DisplayNotif>()
 
-  for (const n of items) {
-    if (n.type !== 'profile_view' || !n.from_profile_id) {
+  for (const n of items) {   // items are newest-first (created_at desc)
+    // Collapse repeat profile views AND repeat requests from the SAME person into
+    // one row — a person can only have one active request, and repeated views are
+    // noise. The newest one is kept; older ids ride along so dismiss clears them all.
+    const mergeable = (n.type === 'profile_view' || n.type === 'interest_received') && n.from_profile_id
+    if (!mergeable) {
       compacted.push({ ...n, count: 1, ids: [n.id] })
       continue
     }
 
-    const day = new Date(n.created_at).toISOString().slice(0, 10)
-    const key = `${n.type}:${n.from_profile_id}:${day}`
+    const key = `${n.type}:${n.from_profile_id}`
     const existing = seen.get(key)
-
     if (existing) {
       existing.count += 1
       existing.ids.push(n.id)
@@ -311,8 +313,8 @@ export default function NotificationsPage() {
                 const from = n.from_profile_id ? profiles[n.from_profile_id] : null
                 const action = notifAction(n.type, n.from_profile_id, n.link)
                 const badge = typeLabel(n.type)
-                const message = n.type === 'profile_view' && n.count > 1
-                  ? `${from?.full_name || 'This profile'} viewed your profile ${n.count} times today`
+                const message = n.type === 'profile_view'
+                  ? `${from?.full_name || 'This profile'} viewed your profile${n.count > 1 ? ` ${n.count} times` : ''}`
                   : n.message
 
                 return (
