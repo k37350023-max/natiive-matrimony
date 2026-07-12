@@ -356,10 +356,12 @@ export default function ProfilePage() {
         body: JSON.stringify({ toProfileId: profile.id, fields }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || 'Could not send request')
+      if (!res.ok) throw new Error(json?.error || 'Could not ask to see this')
       if (json.request) setFieldRequest(json.request)
+      setToast('Asked to see hidden info')
+      setTimeout(() => setToast(null), 3500)
     } catch (err) {
-      setToast(err instanceof Error ? err.message : 'Could not send request')
+      setToast(err instanceof Error ? err.message : 'Could not ask to see this')
       setTimeout(() => setToast(null), 3500)
     } finally {
       setSendingFieldReq(false)
@@ -375,10 +377,10 @@ export default function ProfilePage() {
         body: JSON.stringify({ requestId: reqId, approve }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json?.error || 'Could not respond to request')
+      if (!res.ok) throw new Error(json?.error || 'Could not respond right now')
       setIncomingRequests(prev => prev.filter(r => r.id !== reqId))
     } catch (err) {
-      setToast(err instanceof Error ? err.message : 'Could not respond to request')
+      setToast(err instanceof Error ? err.message : 'Could not respond right now')
       setTimeout(() => setToast(null), 3500)
     } finally {
       setApprovingReq(null)
@@ -418,7 +420,7 @@ export default function ProfilePage() {
     const stored: number[] = JSON.parse(localStorage.getItem(key) || '[]')
     const recent = stored.filter(t => now - t < 60 * 60 * 1000)
     if (recent.length >= 10) {
-      setToast("You're sending too many requests. Please wait before sending more.")
+      setToast("You're trying to connect too often. Please wait before trying again.")
       setTimeout(() => setToast(null), 4000)
       return
     }
@@ -514,7 +516,7 @@ export default function ProfilePage() {
             style={isPending
               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
               : { background: 'white', color: '#14241C', borderColor: '#CADFCA' }}>
-            {isPending ? '✓ Requested' : 'Request'}
+            {isPending ? 'Asked' : 'Ask to see'}
           </button>
         )}
       </div>
@@ -703,7 +705,7 @@ export default function ProfilePage() {
                           style={fieldIsRequested('photo')
                             ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
                             : { background: 'white', color: '#14241C', borderColor: '#CADFCA' }}>
-                          {fieldIsRequested('photo') ? '✓ Photo requested' : 'Request photo'}
+                          {fieldIsRequested('photo') ? 'Asked' : 'Ask to see photo'}
                         </button>
                       </div>
                     )}
@@ -863,7 +865,7 @@ export default function ProfilePage() {
         {isOwnProfile && incomingRequests.length > 0 && (
           <div className="card px-5 py-4">
             <p className="text-sm font-semibold text-gray-800 mb-3">
-              Info requests
+              Info people asked to see
               <span className="ml-2 text-xs font-bold px-1.5 py-0.5 rounded-full text-white" style={{ background: '#DC2626' }}>
                 {incomingRequests.length}
               </span>
@@ -951,7 +953,7 @@ export default function ProfilePage() {
                       style={fieldIsRequested('current_city')
                         ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
                         : { background: 'white', color: '#14241C', borderColor: '#CADFCA' }}>
-                      {fieldIsRequested('current_city') ? '✓ Requested' : 'Request'}
+                      {fieldIsRequested('current_city') ? 'Asked' : 'Ask to see'}
                     </button>
                   )}
                 </div>
@@ -1090,7 +1092,7 @@ export default function ProfilePage() {
                             style={fieldIsRequested('phone')
                               ? { background: '#ECFDF5', color: '#065F46', borderColor: '#A7F3D0' }
                               : { background: 'white', color: '#14241C', borderColor: '#CADFCA' }}>
-                            {fieldIsRequested('phone') ? '✓ Requested' : 'Request'}
+                            {fieldIsRequested('phone') ? 'Asked' : 'Ask to see'}
                           </button>
                         )}
                       </div>

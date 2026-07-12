@@ -5,7 +5,7 @@
 - Homepage: 92/100 after nav and launch copy were aligned
 - Signup: 96/100 after essential fields and one required photo were added
 - Browse: 94/100 after visible filters and card language were simplified
-- Profile: 90/100 after connection language cleanup
+- Profile: 92/100 after connection and hidden-info wording cleanup
 - Edit Profile: 84/100
 - Requests: 91/100 after outgoing accepted connections and tab copy were fixed
 - Notifications: 87/100 after action labels and categories were aligned
@@ -13,7 +13,7 @@
 - Messages: 90/100 after naming was standardized
 - Settings / Privacy: 84/100
 
-Overall launch score: 94/100
+Overall launch score: 95/100
 
 ## Completed Work
 
@@ -31,6 +31,7 @@ Overall launch score: 94/100
 - App navigation now uses `Connections` and `Messages` consistently across header, mobile nav, homepage, dashboard, notifications, metadata, and empty states.
 - Chat lock states now say `Interest sent`, `Remove interest`, and `wants to connect` instead of request-heavy language.
 - Signup now requires one clear profile photo in the basics step and uploads it immediately after profile creation.
+- Hidden profile details now use `Ask to see` / `Asked` instead of blunt `Request` labels.
 
 ## Remaining P0 Issues
 
@@ -38,7 +39,7 @@ Overall launch score: 94/100
 - Browse filters are simpler, but the search header still has two visible inputs; mobile should be visually tested to confirm it feels light.
 - Empty states need a final pass to ensure no page feels like an empty database.
 - Profile cards should be checked visually on mobile for hierarchy: photo, age, height, native place, profession, education, verification, activity.
-- Connections and Messages should be visually checked on mobile for card density and button tap comfort.
+- Connections, Messages, and profile detail should be visually checked on mobile for card density and button tap comfort.
 - Supabase RLS remains a launch security concern because many client-side reads still depend on public anon access.
 
 ## Remaining P1 Issues
@@ -50,17 +51,17 @@ Overall launch score: 94/100
 
 ## Exact Next Task
 
-Make profile privacy wording simpler:
+Make profile edit privacy wording simpler:
 
-1. Replace hidden-detail `Request` buttons with plain `Ask to see` where visible.
+1. Replace privacy setting descriptions that still say `request access` with `ask to see`.
 2. Keep the privacy behavior intact.
-3. Verify profile detail does not sound locked by default.
+3. Verify profile edit does not sound like profile details are locked by default.
 
 ## Files Likely To Edit
 
 - `app/browse/page.tsx`
 - `app/register/page.tsx`
-- `app/profile/[id]/page.tsx`
+- `app/profile/edit/page.tsx`
 - `NEXT_ITERATION.md`
 
 ## Known UX Problems
