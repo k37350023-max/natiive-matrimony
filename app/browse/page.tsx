@@ -624,49 +624,15 @@ function Filters({
     <div className="space-y-4 text-sm">
       <div>
         <p className="text-xs font-black uppercase tracking-wider mb-1" style={{ color: '#14241C' }}>Filters</p>
-        <p className="text-xs leading-relaxed" style={{ color: '#7A837A' }}>Start with native place. Add only the details your family truly needs.</p>
+        <p className="text-xs leading-relaxed" style={{ color: '#7A837A' }}>Keep it simple. Start with native place, then narrow only if needed.</p>
       </div>
 
-      {/* Region map */}
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Roots corridor</p>
-        <IndiaMap mode="filter" selectedRegion={region} onRegionClick={handleMapRegion} compact />
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {['All','Telangana','Coastal Andhra','Rayalaseema'].map(r => (
-            <Chip key={r} active={r==='All'?!region:region===r}
-              onClick={()=>handleMapRegion(r==='All'?'':(region===r?'':r))} label={r} />
-          ))}
-        </div>
-      </div>
-
-      {/* State / District cascades */}
-      {region && (
-        <div className="space-y-2">
-          <select className="input text-xs py-1.5" value={state} onChange={e=>{setState(e.target.value);setDistrict('')}}>
-            <option value="">All states</option>
-            {availableStates.map(s=><option key={s}>{s}</option>)}
-          </select>
-          <select className="input text-xs py-1.5" value={district} onChange={e=>setDistrict(e.target.value)} disabled={!state}>
-            <option value="">All districts</option>
-            {availableDistricts.map(d=><option key={d}>{d}</option>)}
-          </select>
-        </div>
-      )}
-
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Life stage</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Age</p>
         <div className="flex flex-wrap gap-1">{AGE_RANGES.map(a=>chip(ageRange===a,()=>setAgeRange(ageRange===a?'':a),a))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Height comfort</p>
-        <div className="flex flex-wrap gap-1">{HEIGHT_RANGES.map(h=>chip(heightRange===h.label,()=>setHeightRange(heightRange===h.label?'':h.label),h.label))}</div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Status</p>
-        <div className="flex flex-wrap gap-1">{MARITAL_OPTIONS.map(o=>chip(maritalFilter===o.value,()=>setMaritalFilter(maritalFilter===o.value?'':o.value),o.label))}</div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Faith</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Religion</p>
         <div className="flex flex-wrap gap-1">{RELIGIONS.map(r=>chip(religionFilter===r,()=>setReligionFilter(religionFilter===r?'':r),r))}</div>
       </div>
       <div>
@@ -674,48 +640,85 @@ function Filters({
         <div className="flex flex-wrap gap-1">{CASTES.map(c=>chip(casteFilter===c,()=>setCasteFilter(casteFilter===c?'':c),c))}</div>
       </div>
       <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Home language</p>
-        <div className="flex flex-wrap gap-1">{MOTHER_TONGUES.map(m=>chip(motherTongues.includes(m),()=>toggleMotherTongue(m),m))}</div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Work field</p>
-        <div className="flex flex-wrap gap-1">{PROFESSIONS.map(pr=>chip(profCat===pr,()=>setProfCat(profCat===pr?'':pr),pr))}</div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Learning</p>
-        <div className="flex flex-wrap gap-1">{EDUCATION_LEVELS.map(e=>chip(educationFilter===e,()=>setEducationFilter(educationFilter===e?'':e),e))}</div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Financial range</p>
-        <div className="flex flex-wrap gap-1">{INCOME_RANGES.map(r=>chip(incomeFilter===r,()=>setIncomeFilter(incomeFilter===r?'':r),r))}</div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Recently active</p>
-        <div className="flex flex-wrap gap-1">{ACTIVE_WITHIN_OPTS.map(o=>chip(activeWithin===o.label,()=>setActiveWithin(activeWithin===o.label?'':o.label),o.label))}</div>
-      </div>
-      <div>
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Managed by</p>
-        <div className="flex flex-wrap gap-1">
-          {chip(profileByFilter==='self',()=>setProfileByFilter(profileByFilter==='self'?'':'self'),'Self')}
-          {chip(profileByFilter==='parent',()=>setProfileByFilter(profileByFilter==='parent'?'':'parent'),'Parent')}
-        </div>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Marital status</p>
+        <div className="flex flex-wrap gap-1">{MARITAL_OPTIONS.map(o=>chip(maritalFilter===o.value,()=>setMaritalFilter(maritalFilter===o.value?'':o.value),o.label))}</div>
       </div>
 
-      <div className="pt-1 space-y-2 border-t" style={{ borderColor: '#F3F4F6' }}>
-        {[
-          [photoOnly, setPhotoOnly, 'Photo visible'],
-          [verifiedOnly, setVerifiedOnly, 'Verified profiles'],
-          [recentOnly, setRecentOnly, 'New families'],
-          [showViewed, setShowViewed, 'Hide seen profiles'],
-        ].map(([val, set, label]) => (
-          <label key={label as string} className="flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" checked={val as boolean}
-              onChange={e => (set as (v:boolean)=>void)(e.target.checked)}
-              className="accent-red-800 w-3.5 h-3.5" />
-            <span className="text-xs text-gray-600 font-medium">{label as string}</span>
-          </label>
-        ))}
-      </div>
+      <details className="rounded-xl border p-3" style={{ borderColor: '#E7E3D8', background: '#FFFEFA' }}>
+        <summary className="cursor-pointer text-xs font-black uppercase tracking-wider" style={{ color: '#14241C' }}>
+          More filters
+        </summary>
+        <div className="mt-4 space-y-4">
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Region</p>
+            <IndiaMap mode="filter" selectedRegion={region} onRegionClick={handleMapRegion} compact />
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {['All','Telangana','Coastal Andhra','Rayalaseema'].map(r => (
+                <Chip key={r} active={r==='All'?!region:region===r}
+                  onClick={()=>handleMapRegion(r==='All'?'':(region===r?'':r))} label={r} />
+              ))}
+            </div>
+          </div>
+          {region && (
+            <div className="space-y-2">
+              <select className="input text-xs py-1.5" value={state} onChange={e=>{setState(e.target.value);setDistrict('')}}>
+                <option value="">All states</option>
+                {availableStates.map(s=><option key={s}>{s}</option>)}
+              </select>
+              <select className="input text-xs py-1.5" value={district} onChange={e=>setDistrict(e.target.value)} disabled={!state}>
+                <option value="">All districts</option>
+                {availableDistricts.map(d=><option key={d}>{d}</option>)}
+              </select>
+            </div>
+          )}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Height</p>
+            <div className="flex flex-wrap gap-1">{HEIGHT_RANGES.map(h=>chip(heightRange===h.label,()=>setHeightRange(heightRange===h.label?'':h.label),h.label))}</div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Mother tongue</p>
+            <div className="flex flex-wrap gap-1">{MOTHER_TONGUES.map(m=>chip(motherTongues.includes(m),()=>toggleMotherTongue(m),m))}</div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Profession</p>
+            <div className="flex flex-wrap gap-1">{PROFESSIONS.map(pr=>chip(profCat===pr,()=>setProfCat(profCat===pr?'':pr),pr))}</div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Education</p>
+            <div className="flex flex-wrap gap-1">{EDUCATION_LEVELS.map(e=>chip(educationFilter===e,()=>setEducationFilter(educationFilter===e?'':e),e))}</div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Income</p>
+            <div className="flex flex-wrap gap-1">{INCOME_RANGES.map(r=>chip(incomeFilter===r,()=>setIncomeFilter(incomeFilter===r?'':r),r))}</div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Recently active</p>
+            <div className="flex flex-wrap gap-1">{ACTIVE_WITHIN_OPTS.map(o=>chip(activeWithin===o.label,()=>setActiveWithin(activeWithin===o.label?'':o.label),o.label))}</div>
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Profile created by</p>
+            <div className="flex flex-wrap gap-1">
+              {chip(profileByFilter==='self',()=>setProfileByFilter(profileByFilter==='self'?'':'self'),'Self')}
+              {chip(profileByFilter==='parent',()=>setProfileByFilter(profileByFilter==='parent'?'':'parent'),'Parent')}
+            </div>
+          </div>
+          <div className="pt-1 space-y-2 border-t" style={{ borderColor: '#F3F4F6' }}>
+            {[
+              [photoOnly, setPhotoOnly, 'Photo visible'],
+              [verifiedOnly, setVerifiedOnly, 'Verified profiles'],
+              [recentOnly, setRecentOnly, 'New profiles'],
+              [showViewed, setShowViewed, 'Hide seen profiles'],
+            ].map(([val, set, label]) => (
+              <label key={label as string} className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={val as boolean}
+                  onChange={e => (set as (v:boolean)=>void)(e.target.checked)}
+                  className="accent-red-800 w-3.5 h-3.5" />
+                <span className="text-xs text-gray-600 font-medium">{label as string}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </details>
 
       {activeFilterCount > 0 && (
         <button onClick={clearAll} className="text-xs font-semibold text-red-700 hover:underline flex items-center gap-1">
@@ -850,7 +853,6 @@ export default function BrowsePage() {
       .then(data => { if (!cancelled) { setAlertSet(Boolean(data.saved)); setAlertId(data.id ?? null) } })
       .catch(() => { if (!cancelled) { setAlertSet(false); setAlertId(null) } })
     return () => { cancelled = true }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myProfileId, nativePlace, currentLocation, region, state, district, ageRange,
       profCat, maritalFilter, heightRange, motherTongues, casteFilter, religionFilter,
       educationFilter, incomeFilter, activeWithin, verifiedOnly, photoOnly])
@@ -1217,7 +1219,7 @@ export default function BrowsePage() {
               <h1 className="browse-page-title" style={{ fontSize: '18px', fontWeight: 800, color: '#0F0F0F', margin: 0, letterSpacing: 0, fontFamily: 'var(--font-space-grotesk), var(--font-inter), sans-serif' }}>
                 Browse Profiles
               </h1>
-              <p style={{ fontSize: '13px', color: '#5E6B62', margin: 0 }}>Search by native place. Send a request when someone looks right.</p>
+              <p style={{ fontSize: '13px', color: '#5E6B62', margin: 0 }}>Find people from your native place. Open a profile when someone looks right.</p>
             </div>
             {/* Desktop filter button (hidden on mobile - chips below) */}
             <button
@@ -1336,8 +1338,8 @@ export default function BrowsePage() {
                 {loading ? 'Loading…' : (
                   <>
                     <span style={{ fontWeight: 800, color: '#14241C', fontSize: '18px', letterSpacing: 0 }}>
-                      {profiles.length.toLocaleString('en-IN')}
-                    </span> {genderLabel}
+                      {profiles.length > 0 ? profiles.length.toLocaleString('en-IN') : 'New profiles'}
+                    </span> {profiles.length > 0 ? genderLabel : 'will appear here'}
                   </>
                 )}
               </p>
