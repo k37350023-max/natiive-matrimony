@@ -60,8 +60,8 @@ function lastSeenBadge(ts: string | null): string | null {
 }
 
 const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; border: string }> = {
-  pending:  { label: 'Awaiting response', bg: '#EDF3ED', color: '#14241C', border: '#CADFCA' },
-  accepted: { label: 'Accepted ✓',        bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
+  pending:  { label: 'Waiting for reply', bg: '#EDF3ED', color: '#14241C', border: '#CADFCA' },
+  accepted: { label: 'Connected',         bg: '#ECFDF5', color: '#065F46', border: '#A7F3D0' },
   rejected: { label: 'Declined',          bg: '#EDF3ED', color: '#14241C', border: '#CADFCA' },
 }
 
@@ -157,10 +157,11 @@ function RequestsPageInner() {
   async function loadAccepted() {
     const { data: rows } = await supabase
       .from('interests').select('*')
-      .eq('to_user', myId).eq('status', 'accepted')
+      .eq('status', 'accepted')
+      .or(`from_user.eq.${myId},to_user.eq.${myId}`)
       .order('created_at', { ascending: false })
     if (!rows?.length) { setAccepted([]); return }
-    const ids = rows.map(r => r.from_user)
+    const ids = rows.map(r => r.from_user === myId ? r.to_user : r.from_user)
     const { data: profiles } = await supabase.from('profiles').select(LIST_COLUMNS).in('id', ids)
     // Contact comes from the secured endpoint — server verifies the acceptance.
     const contacts = await Promise.all(ids.map(async pid => {
@@ -175,8 +176,9 @@ function RequestsPageInner() {
     }))
     setAccepted(rows
       .map(r => {
-        const base = profiles?.find(p => p.id === r.from_user)
-        const c = contacts.find(x => x.pid === r.from_user)
+        const otherId = r.from_user === myId ? r.to_user : r.from_user
+        const base = profiles?.find(p => p.id === otherId)
+        const c = contacts.find(x => x.pid === otherId)
         return { ...r, profile: base ? { ...base, phone: c?.phone, email: c?.email } : undefined }
       })
       .filter(r => r.profile) as Interest[])
@@ -218,7 +220,7 @@ function RequestsPageInner() {
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-        <p className="font-semibold text-gray-700 mb-2">Loading requests…</p>
+        <p className="font-semibold text-gray-700 mb-2">Loading connections...</p>
       </div>
     </div>
   )
@@ -227,7 +229,7 @@ function RequestsPageInner() {
     <div className="min-h-screen" style={{ background: '#FBFAF5' }}>
       <AppHeader />
       <div className="flex flex-col items-center justify-center py-24 text-center px-4">
-        <p className="font-semibold text-gray-700 mb-2">Login to see requests</p>
+        <p className="font-semibold text-gray-700 mb-2">Login to see connections</p>
         <Link href="/login" className="btn-primary px-6 py-2.5 mt-2">Login</Link>
       </div>
     </div>
@@ -291,18 +293,18 @@ function RequestsPageInner() {
 
         {showActions && (
           <div className="flex gap-2 mt-3">
-            <Link href={`/profile/${i.profile.id}`}
-              className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
-              style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
-              View Profile
+              <Link href={`/profile/${i.profile.id}`}
+                className="px-3 py-2 text-center text-xs font-semibold rounded-lg border"
+                style={{ borderColor: '#E7E3D8', color: '#4B5563' }}>
+              View profile
             </Link>
             <button onClick={() => respond(i.id, i.from_user, true)}
               style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#2E7D32', color: 'white' }}>
-              Accept
+              Connect
             </button>
             <button onClick={() => respond(i.id, i.from_user, false)}
               style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #E7E3D8', cursor: 'pointer', background: 'white', color: '#5E6B62' }}>
-              Decline
+              Not now
             </button>
           </div>
         )}
@@ -313,7 +315,7 @@ function RequestsPageInner() {
             {((i.profile as any).phone || (i.profile as any).email) && (
               <div className="mt-3 px-3 py-2.5 rounded-xl flex flex-wrap gap-3"
                 style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
-                <span className="text-xs font-semibold text-green-700">Contact shown</span>
+                <span className="text-xs font-semibold text-green-700">Contact is open</span>
                 {(i.profile as any).phone && (
                   <a href={`tel:${(i.profile as any).phone}`}
                     className="text-xs font-semibold flex items-center gap-1"
@@ -323,7 +325,7 @@ function RequestsPageInner() {
                   </a>
                 )}
                 {(i.profile as any).phone && (
-                  <a href={`https://wa.me/91${(i.profile as any).phone?.replace(/\D/g,'')}`}
+                  <a href={`https://wa.me/${(i.profile as any).phone?.replace(/\D/g,'')}`}
                     target="_blank" rel="noopener noreferrer"
                     className="text-xs font-semibold px-2 py-0.5 rounded-full"
                     style={{ background: '#25D366', color: 'white', textDecoration: 'none' }}>
@@ -366,7 +368,7 @@ function RequestsPageInner() {
                 if (res.ok) setSent(prev => prev.filter(x => x.id !== i.id))
               }}
               className="text-xs text-gray-400 hover:text-red-500 transition-colors px-2 py-1">
-              Withdraw request
+              Remove
             </button>
           </div>
         )}
@@ -375,8 +377,8 @@ function RequestsPageInner() {
   }
 
   const tabs: { key: 'received' | 'sent' | 'matched' | 'saved'; label: string; count: number }[] = [
-    { key: 'received', label: 'Received', count: received.length },
-    { key: 'sent',     label: 'Sent',     count: sent.length },
+    { key: 'received', label: 'New',      count: received.length },
+    { key: 'sent',     label: 'Waiting',  count: sent.length },
     { key: 'matched',  label: 'Connected',  count: matched.length },
     { key: 'saved',    label: 'Saved',    count: saved.length },
   ]
@@ -391,8 +393,8 @@ function RequestsPageInner() {
             style={{ background: '#ECFDF5', border: '1px solid #A7F3D0' }}>
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <div className="flex-1">
-              <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Request accepted with {acceptedMatch.name}!</p>
-              <p className="text-xs text-green-600 mt-0.5">Contact details are now shown.</p>
+              <p className="text-sm font-semibold" style={{ color: '#14241C' }}>You connected with {acceptedMatch.name}.</p>
+              <p className="text-xs text-green-600 mt-0.5">Chat and contact are open now.</p>
             </div>
             <Link href="/matches"
               className="text-xs font-bold px-3 py-2 rounded-xl text-white shrink-0"
@@ -408,8 +410,8 @@ function RequestsPageInner() {
 
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-gray-900 font-serif-display">Requests</h1>
-          <p className="text-sm text-gray-500 mt-1">Review requests, sent requests, connected profiles, and saved profiles.</p>
+          <h1 className="text-2xl font-bold text-gray-900 font-serif-display">Connections</h1>
+          <p className="text-sm text-gray-500 mt-1">New interests, waiting replies, connected profiles, and saved profiles.</p>
         </div>
 
         <div className="flex rounded-xl p-1 mb-5" style={{ background: '#F3F4F6' }}>
@@ -452,13 +454,13 @@ function RequestsPageInner() {
           received.length === 0 ? (
             <EmptyState
               icon={ico.inbox}
-              title="No requests yet"
-              subtitle="When someone likes your profile, their request lands here. Keep browsing — the more profiles you view, the sooner they notice you."
+              title="No new interests yet"
+              subtitle="When someone wants to connect, they appear here. Keep browsing and your profile stays active."
               primary={{ label: 'Browse profiles', href: '/browse' }}
             />
           ) : (
             <div className="space-y-3">
-              <p className="text-xs text-gray-400 mb-1">Review their message and profile before accepting</p>
+              <p className="text-xs text-gray-400 mb-1">Open the profile, then accept if it feels right.</p>
               {received.map(i => <ProfileCard key={i.id} i={i} showActions />)}
             </div>
           )
@@ -468,8 +470,8 @@ function RequestsPageInner() {
           sent.length === 0 ? (
             <EmptyState
               icon={ico.sent}
-              title="No requests sent yet"
-              subtitle="Browse profiles by native place and send a request when someone feels right. They'll be notified straight away."
+              title="Nobody waiting yet"
+              subtitle="Connect with someone from Browse. They will appear here until they reply."
               primary={{ label: 'Browse profiles', href: '/browse' }}
             />
           ) : (
@@ -485,7 +487,7 @@ function RequestsPageInner() {
             <EmptyState
               icon={ico.people}
               title="No connections yet"
-              subtitle="When both sides accept a request, you connect here — chat, contact, and WhatsApp open up. Send a few requests to get started."
+              subtitle="When both sides say yes, chat and contact appear here."
               primary={{ label: 'Browse profiles', href: '/browse' }}
             />
           ) : (
@@ -500,7 +502,7 @@ function RequestsPageInner() {
             <EmptyState
               icon={ico.heart}
               title="No saved profiles"
-              subtitle="Tap the heart on any profile to save them here — a quiet shortlist you can revisit any time."
+              subtitle="Save profiles you want to revisit later."
               primary={{ label: 'Browse profiles', href: '/browse' }}
             />
           ) : (

@@ -7,13 +7,13 @@
 - Browse: 94/100 after visible filters and card language were simplified
 - Profile: 90/100 after connection language cleanup
 - Edit Profile: 84/100
-- Requests: 86/100
+- Requests: 91/100 after outgoing accepted connections and tab copy were fixed
 - Notifications: 84/100
 - Alerts: 88/100
 - Chats: 88/100
 - Settings / Privacy: 84/100
 
-Overall launch score: 91/100
+Overall launch score: 92/100
 
 ## Completed Work
 
@@ -26,6 +26,8 @@ Overall launch score: 91/100
 - Browse cards now use simpler actions: `Connect`, `Waiting`, `Reply`, and `View profile`.
 - Browse cards show height beside age and add education under profession when both are available.
 - Profile detail, search, chat, pricing, and How it works now use the same connection language instead of transactional request copy.
+- Connections page now shows outgoing accepted interests in Connected, not only incoming accepted interests.
+- Connections page tabs now read as New, Waiting, Connected, and Saved, with softer actions: `Connect`, `Not now`, and `Remove`.
 
 ## Remaining P0 Issues
 
@@ -33,7 +35,7 @@ Overall launch score: 91/100
 - Browse filters are simpler, but the search header still has two visible inputs; mobile should be visually tested to confirm it feels light.
 - Empty states need a final pass to ensure no page feels like an empty database.
 - Profile cards should be checked visually on mobile for hierarchy: photo, age, height, native place, profession, education, verification, activity.
-- Remaining request-flow copy should be checked visually in the actual browser, especially Requests tabs and empty states.
+- Connections page should be visually checked on mobile for card density and button tap comfort.
 - Supabase RLS remains a launch security concern because many client-side reads still depend on public anon access.
 
 ## Remaining P1 Issues
@@ -45,16 +47,17 @@ Overall launch score: 91/100
 
 ## Exact Next Task
 
-Make the requests area feel simpler and less like an admin table:
+Make the next visible page feel less like an admin table:
 
-1. Separate waiting interests from connected profiles more clearly.
-2. Remove duplicate names and rude status copy.
-3. Verify accepted items do not remain visually buried in Sent.
+1. Check matches/chat for duplicated connection concepts now that Connections is cleaner.
+2. Remove any dashboard-like labels that do not help a family user decide what to do next.
+3. Verify mobile card hierarchy and empty states.
 
 ## Files Likely To Edit
 
 - `app/browse/page.tsx`
-- `app/interests/page.tsx`
+- `app/matches/page.tsx`
+- `app/chat/page.tsx`
 - `NEXT_ITERATION.md`
 
 ## Known UX Problems
