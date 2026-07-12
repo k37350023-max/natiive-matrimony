@@ -12,7 +12,7 @@ const FAQS = [
   },
   {
     q: 'Is the service free?',
-    a: 'Yes. Create a profile, browse by native place, send requests, and see details after both sides accept. Optional guided matchmaking can become a premium service for families who want human help.',
+    a: 'Yes. Create a profile, browse by native place, connect with families, and see contact after both sides accept. Optional guided matchmaking can become a premium service for families who want human help.',
   },
   {
     q: 'How private are my photos and contact details?',

@@ -33,7 +33,7 @@ type FromProfile = {
 
 const TAB_FILTERS: Record<string, string[]> = {
   All:       [],
-  Requests:  ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
+  Connections: ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
   Views:     ['profile_view'],
   Connected: ['interest_accepted'],
   'Place Alerts': ['place_alert_saved','place_match_joined','alert_match_joined','waitlist_joined'],
@@ -82,11 +82,11 @@ function notifIcon(type: string) {
 }
 
 function notifAction(type: string, fromProfileId: string | null, link?: string | null): { label: string; href: string } | null {
-  if (type === 'interest_received')  return { label: 'Review request →', href: '/interests?tab=received' }
-  if (type === 'interest_accepted')  return { label: 'Open chat →', href: '/matches' }
+  if (type === 'interest_received')  return { label: 'View interest →', href: '/interests?tab=received' }
+  if (type === 'interest_accepted')  return { label: 'Open messages →', href: '/matches' }
   if (type === 'profile_view' && fromProfileId) return { label: 'View their profile →', href: `/profile/${fromProfileId}` }
   if (type === 'field_request' && fromProfileId) return { label: 'View profile →', href: `/profile/${fromProfileId}` }
-  if (type === 'field_request_approved') return { label: 'Go to matches →', href: '/interests?tab=matched' }
+  if (type === 'field_request_approved') return { label: 'View connection →', href: '/interests?tab=matched' }
   if (type === 'place_alert_saved' || type === 'place_match_joined') return { label: 'Open saved search →', href: link || '/browse' }
   if (type === 'alert_match_joined' || type === 'waitlist_joined') return { label: 'View profiles →', href: link || '/browse' }
   return null
@@ -247,7 +247,7 @@ export default function NotificationsPage() {
               </span>
             )}
             </div>
-            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Requests, views, connected profiles, and native place alerts</p>
+            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Interests, views, connected profiles, and native place alerts</p>
           </div>
           {notifs.some(n => !n.read) && (
             <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#14241C', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
@@ -295,7 +295,7 @@ export default function NotificationsPage() {
             icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>}
             title={tab === 'All' ? 'No notifications yet' : `No ${tab.toLowerCase()} notifications`}
             subtitle={tab === 'All'
-              ? 'Requests, profile views, accepted connections, and new profiles from your saved places will all show up here.'
+              ? 'Interests, profile views, accepted connections, and new profiles from your saved places will all show up here.'
               : 'Nothing in this category yet — set an alert and we’ll keep you posted.'}
             primary={{ label: 'Browse profiles', href: '/browse' }}
             secondary={{ label: 'Your alerts', href: '/alerts' }}

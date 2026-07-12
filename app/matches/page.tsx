@@ -84,7 +84,7 @@ export default function MatchesPage() {
         : prev.filter(m => m.match_id !== matchId)
       )
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not respond to this request')
+      setError(err instanceof Error ? err.message : 'Could not respond right now')
       setTimeout(() => setError(''), 3500)
     } finally {
       setResponding(null)
@@ -151,8 +151,8 @@ export default function MatchesPage() {
       <AppHeader />
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="mb-5">
-          <h1 className="text-2xl font-bold text-gray-900">Chats</h1>
-          <p className="text-gray-500 text-sm mt-0.5">People you&apos;ve connected with — chat, view contact, or WhatsApp.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
+          <p className="text-gray-500 text-sm mt-0.5">People you&apos;ve connected with. Chat starts here.</p>
         </div>
         {error && (
           <div className="mb-4 rounded-xl px-4 py-3 text-sm font-semibold" style={{ background: '#FEF2F2', color: '#B91C1C', border: '1px solid #FECACA' }}>
@@ -165,10 +165,10 @@ export default function MatchesPage() {
         {!loading && matches.length === 0 && (
           <EmptyState
             icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>}
-            title="No chats yet"
-            subtitle="When you and another family both accept, you'll connect here — message, view contact, or reach out on WhatsApp."
+            title="No messages yet"
+            subtitle="When both sides say yes, messages and contact open here."
             primary={{ label: 'Browse profiles', href: '/browse' }}
-            secondary={{ label: 'View requests', href: '/interests' }}
+            secondary={{ label: 'View connections', href: '/interests' }}
           />
         )}
 
@@ -224,7 +224,7 @@ export default function MatchesPage() {
                           background: p.is_mutual ? '#ECFDF5' : '#F3F4F6',
                           color: p.is_mutual ? '#065F46' : '#5E6B62',
                         }}>
-                          {p.is_mutual ? 'Connected' : 'Requested'}
+                          {p.is_mutual ? 'Connected' : 'Waiting'}
                         </span>
                       </div>
                       {p.last_message_at && (
@@ -237,7 +237,7 @@ export default function MatchesPage() {
                     {p.last_message ? (
                       <p style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.last_message}</p>
                     ) : p.is_mutual ? (
-                      <p style={{ fontSize: '12px', color: '#2E7D32', fontWeight: 500, marginTop: '3px' }}>Say hello - you're connected!</p>
+                      <p style={{ fontSize: '12px', color: '#2E7D32', fontWeight: 500, marginTop: '3px' }}>Say hello. You&apos;re connected.</p>
                     ) : (
                       <p style={{ fontSize: '12px', color: '#94A3B8', marginTop: '3px' }}>{seenLabel || `Native: ${p.native_district}`}</p>
                     )}
@@ -250,13 +250,13 @@ export default function MatchesPage() {
                       onClick={() => respond(p.pending_interest_id!, true, p.match_id)}
                       disabled={responding === p.pending_interest_id}
                       style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: 'none', cursor: 'pointer', background: '#2E7D32', color: 'white', transition: 'opacity 0.15s' }}>
-                      Accept
+                      Connect
                     </button>
                     <button
                       onClick={() => respond(p.pending_interest_id!, false, p.match_id)}
                       disabled={responding === p.pending_interest_id}
                       style={{ flex: 1, padding: '9px', fontSize: '13px', fontWeight: 700, borderRadius: '12px', border: '1px solid #7FB17F', cursor: 'pointer', background: 'white', color: '#DC2626', transition: 'opacity 0.15s' }}>
-                      Decline
+                      Not now
                     </button>
                   </div>
                 )}
@@ -266,7 +266,7 @@ export default function MatchesPage() {
                   <div style={{ marginTop: '14px', display: 'flex', gap: '8px' }}>
                     <Link href={`/profile/${p.id}`}
                       style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 600, borderRadius: '99px', border: '1px solid #E7E3D8', color: '#334155', textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
-                      View Profile
+                      View profile
                     </Link>
                     <Link href={`/chat/${p.match_id}`}
                       style={{ padding: '8px 16px', fontSize: '12px', fontWeight: 700, borderRadius: '99px', border: '1px solid #E7E3D8', background: 'white', color: '#5E6B62', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>

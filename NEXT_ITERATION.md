@@ -2,18 +2,18 @@
 
 ## Current Launch Score
 
-- Homepage: 90/100
+- Homepage: 92/100 after nav and launch copy were aligned
 - Signup: 93/100 after essential fields are saved
 - Browse: 94/100 after visible filters and card language were simplified
 - Profile: 90/100 after connection language cleanup
 - Edit Profile: 84/100
 - Requests: 91/100 after outgoing accepted connections and tab copy were fixed
-- Notifications: 84/100
+- Notifications: 87/100 after action labels and categories were aligned
 - Alerts: 88/100
-- Chats: 88/100
+- Messages: 90/100 after naming was standardized
 - Settings / Privacy: 84/100
 
-Overall launch score: 92/100
+Overall launch score: 93/100
 
 ## Completed Work
 
@@ -28,6 +28,8 @@ Overall launch score: 92/100
 - Profile detail, search, chat, pricing, and How it works now use the same connection language instead of transactional request copy.
 - Connections page now shows outgoing accepted interests in Connected, not only incoming accepted interests.
 - Connections page tabs now read as New, Waiting, Connected, and Saved, with softer actions: `Connect`, `Not now`, and `Remove`.
+- App navigation now uses `Connections` and `Messages` consistently across header, mobile nav, homepage, dashboard, notifications, metadata, and empty states.
+- Chat lock states now say `Interest sent`, `Remove interest`, and `wants to connect` instead of request-heavy language.
 
 ## Remaining P0 Issues
 
@@ -35,7 +37,7 @@ Overall launch score: 92/100
 - Browse filters are simpler, but the search header still has two visible inputs; mobile should be visually tested to confirm it feels light.
 - Empty states need a final pass to ensure no page feels like an empty database.
 - Profile cards should be checked visually on mobile for hierarchy: photo, age, height, native place, profession, education, verification, activity.
-- Connections page should be visually checked on mobile for card density and button tap comfort.
+- Connections and Messages should be visually checked on mobile for card density and button tap comfort.
 - Supabase RLS remains a launch security concern because many client-side reads still depend on public anon access.
 
 ## Remaining P1 Issues
@@ -47,17 +49,17 @@ Overall launch score: 92/100
 
 ## Exact Next Task
 
-Make the next visible page feel less like an admin table:
+Make signup/photo quality launch-ready:
 
-1. Check matches/chat for duplicated connection concepts now that Connections is cleaner.
-2. Remove any dashboard-like labels that do not help a family user decide what to do next.
-3. Verify mobile card hierarchy and empty states.
+1. Decide whether photo upload belongs inside signup or as an unavoidable first post-signup task.
+2. Make one photo feel required for profile quality while preserving privacy controls.
+3. Verify registration still stays short and clear.
 
 ## Files Likely To Edit
 
 - `app/browse/page.tsx`
-- `app/matches/page.tsx`
-- `app/chat/page.tsx`
+- `app/register/page.tsx`
+- `app/profile/edit/page.tsx`
 - `NEXT_ITERATION.md`
 
 ## Known UX Problems

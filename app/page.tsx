@@ -32,7 +32,7 @@ const profilePreview = [
 ]
 
 const proofStats = [
-  ['Free basics', 'Create, browse, receive requests'],
+  ['Free basics', 'Create, browse, receive interests'],
   ['2 years premium', 'For first 1,000 district founders'],
   ['Private contact', 'Phone and chat after connection'],
   ['Human help', 'Optional shortlist support'],
@@ -41,8 +41,8 @@ const proofStats = [
 const navItems = [
   ['/', 'Home', 'home'],
   ['/browse', 'Browse', 'search'],
-  ['/interests', 'Requests', 'heart'],
-  ['/matches', 'Chats', 'chat'],
+  ['/interests', 'Connections', 'heart'],
+  ['/matches', 'Messages', 'chat'],
   ['/dashboard', 'Profile', 'user'],
 ]
 
@@ -144,7 +144,7 @@ export default function Home() {
           <Logo />
           <nav className="nmh-desktop-nav" aria-label="Main navigation">
             <Link href="/browse">Browse</Link>
-            <Link href="/interests">Requests</Link>
+            <Link href="/interests">Connections</Link>
             <Link href="/login">Login</Link>
             <Link href="/register" className="nmh-nav-cta">Join Free</Link>
           </nav>
@@ -225,7 +225,7 @@ export default function Home() {
             <article>
               <Icon name="lock" size={25} />
               <h3>Free stays free</h3>
-              <p>Basic profile creation, native place search, and receiving requests stay free. Premium is free for 2 years for founders, and 3 months for everyone else.</p>
+              <p>Basic profile creation, native place search, and receiving interests stay free. Premium is free for 2 years for founders, and 3 months for everyone else.</p>
             </article>
             <article>
               <Icon name="heart" size={25} />
@@ -276,7 +276,7 @@ export default function Home() {
             </article>
             <aside>
               <span><Icon name="lock" size={18} /> Contact stays private</span>
-              <span><Icon name="check" size={18} /> Enough context to request</span>
+              <span><Icon name="check" size={18} /> Enough context to decide</span>
               <span><Icon name="chat" size={18} /> No random messages</span>
             </aside>
           </div>
@@ -289,8 +289,8 @@ export default function Home() {
           </div>
           <div className="nmh-trust-grid">
             {[
-              ['Freemium launch', 'Profile creation, basic search, and receiving requests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
-              ['Useful profiles', 'Profiles show roots, work, location, and photo choice before a family sends a request.', 'search'],
+              ['Freemium launch', 'Profile creation, basic search, and receiving interests stay free. Founders get 2 years premium free; everyone else gets 3 months free.', 'pin'],
+              ['Useful profiles', 'Profiles show roots, work, location, and photo choice before a family connects.', 'search'],
               ['Guided introductions', 'Optional matchmaker help is available when families want extra vetting and coordination.', 'family'],
             ].map(([title, body, icon]) => (
               <article key={title} className="nmh-trust-card">
@@ -304,7 +304,7 @@ export default function Home() {
 
         <section className="nmh-section">
           <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Simple request flow</p>
+            <p className="nmh-section-kicker">Simple connection flow</p>
             <h2>From profile to match, without pressure.</h2>
           </div>
           <div className="nmh-journey">

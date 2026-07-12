@@ -55,7 +55,7 @@ export default function PricingPage() {
             <div className="space-y-3 mb-7">
               <Benefit>Create and edit your profile</Benefit>
               <Benefit>Browse native profiles</Benefit>
-              <Benefit>Receive match requests</Benefit>
+              <Benefit>Receive interests from families</Benefit>
               <Benefit>Chat and view contact for up to 5 connected profiles per month</Benefit>
               <Benefit>Save places and get alerts</Benefit>
             </div>

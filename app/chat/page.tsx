@@ -148,7 +148,7 @@ export default function ChatInboxPage() {
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-5" style={{ background: '#EDF3ED' }}><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
             <p className="font-semibold text-gray-800 text-lg mb-1">No messages yet</p>
             <p className="text-sm text-gray-400 mb-2">Messages open when you and another person both accept.</p>
-            <p className="text-sm text-gray-400 mb-6">Browse profiles, send a request, and once they accept, you can chat here.</p>
+            <p className="text-sm text-gray-400 mb-6">Browse profiles, connect, and chat here after they accept.</p>
             <Link href="/browse" className="btn-primary px-6 py-2.5">Browse Profiles</Link>
           </div>
         )}

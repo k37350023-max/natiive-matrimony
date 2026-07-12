@@ -33,7 +33,7 @@ export default function PendingPage() {
             <div className="space-y-2">
               {[
                 { icon: '✓', text: 'Search by native place and current location' },
-                { icon: '✓', text: 'Send requests without showing contact details' },
+                { icon: '✓', text: 'Connect without showing contact details' },
                 { icon: '✓', text: 'Your profile is visible unless you hide it in Privacy' },
                 { icon: '✓', text: 'Contact opens only after connection' },
               ].map(f => (
@@ -47,7 +47,7 @@ export default function PendingPage() {
 
           <div className="flex gap-3">
             <Link href="/browse" className="flex-1 btn-primary text-center py-3">Browse Profiles →</Link>
-            <Link href="/interests" className="flex-1 btn-outline text-center py-3">My Requests</Link>
+            <Link href="/interests" className="flex-1 btn-outline text-center py-3">My Connections</Link>
           </div>
         </div>
       </div>

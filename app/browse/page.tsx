@@ -304,7 +304,7 @@ function GuestBrowsePreview({ nativePlace }: { nativePlace?: string }) {
           </h1>
           <p className="text-gray-500 text-sm">
             {searchedPlace
-              ? 'Create a profile to see useful details, send requests, and connect when both sides agree.'
+              ? 'Create a profile to see useful details and connect when both sides agree.'
               : 'Join the always-free version to browse native profiles, save place alerts, and connect when both sides agree. Founders get 2 years premium free; others get 3 months.'}
           </p>
         </div>

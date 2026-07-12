@@ -83,7 +83,7 @@ export default function ChatPage() {
 
   async function unmatch() {
     if (actioning) return
-    const verb = chatState?.locked && chatState?.iAmSender ? 'withdraw this request' : 'unmatch'
+    const verb = chatState?.locked && chatState?.iAmSender ? 'remove this interest' : 'remove this connection'
     if (!confirm(`Are you sure you want to ${verb}? This removes the conversation for both of you.`)) return
     setActioning(true)
     const r = await fetch('/api/matches/unmatch', {
@@ -334,7 +334,7 @@ export default function ChatPage() {
         </div>
       )}
 
-      {/* Composer is available after the request is accepted. */}
+      {/* Composer is available after the connection is accepted. */}
       {chatState?.locked ? (
         <div className="shrink-0 bg-white border-t px-4 py-4" style={{ borderColor: '#E7E3D8' }}>
           <div className="max-w-2xl mx-auto text-center">
@@ -342,18 +342,18 @@ export default function ChatPage() {
               <>
                 <p className="text-sm font-semibold" style={{ color: '#14241C' }}>Interest sent. Your first message is delivered.</p>
                 <p className="text-xs mt-1" style={{ color: '#5E6B62' }}>
-                  You can send more messages once {other?.full_name?.split(' ')[0] || 'they'} accept your request.
+                  You can send more messages once {other?.full_name?.split(' ')[0] || 'they'} accepts.
                 </p>
                 <button onClick={unmatch} disabled={actioning}
                   className="mt-3 text-xs font-semibold px-4 py-2 rounded-lg border"
                   style={{ borderColor: '#E7E3D8', color: '#5E6B62' }}>
-                  Withdraw request
+                  Remove interest
                 </button>
               </>
             ) : (
               <>
                 <p className="text-sm font-semibold" style={{ color: '#14241C' }}>
-                  {other?.full_name?.split(' ')[0] || 'They'} sent you a connection request
+                  {other?.full_name?.split(' ')[0] || 'They'} wants to connect
                 </p>
                 <p className="text-xs mt-1 mb-3" style={{ color: '#5E6B62' }}>Accept to start chatting.</p>
                 <div className="flex items-center justify-center gap-2">
