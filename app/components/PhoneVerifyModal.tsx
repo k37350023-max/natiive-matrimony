@@ -1,33 +1,68 @@
 'use client'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth'
 
 const CODES = ['+91', '+1', '+44', '+61', '+971', '+65']
 
 /* Post-signup phone verification popup. Email/Google accounts have no phone yet;
-   this attaches + verifies one in a couple taps. Uses the server OTP path
-   (dev shows the code; production sends real SMS once a gateway key is set). */
+   this attaches + verifies one. Uses Firebase SMS first (real OTP), falling back
+   to the server OTP path if Firebase is unavailable. */
 export default function PhoneVerifyModal({ onDone, onDismiss }: { onDone: () => void; onDismiss: () => void }) {
   const [code, setCode] = useState('+91')
   const [phone, setPhone] = useState('')
   const [stage, setStage] = useState<'enter' | 'code'>('enter')
   const [otp, setOtp] = useState('')
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState('')       // server-OTP fallback token
   const [devOtp, setDevOtp] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const confirmationRef = useRef<ConfirmationResult | null>(null)
+  const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
   const full = `${code}${phone.trim()}`
+
+  async function sendViaFirebase(fullPhone: string): Promise<boolean> {
+    const { firebaseClientConfigured, getFirebaseAuth } = await import('@/lib/firebaseClient')
+    if (!firebaseClientConfigured()) return false
+    const auth = getFirebaseAuth()
+    if (!auth) return false
+    const { RecaptchaVerifier, signInWithPhoneNumber } = await import('firebase/auth')
+    if (!recaptchaRef.current) {
+      recaptchaRef.current = new RecaptchaVerifier(auth, 'phone-verify-recaptcha', { size: 'invisible' })
+    }
+    const confirmation = await signInWithPhoneNumber(auth, fullPhone, recaptchaRef.current)
+    confirmationRef.current = confirmation
+    setToken(''); setDevOtp('')
+    return true
+  }
 
   async function sendCode() {
     if (phone.trim().length < 7) { setError('Enter a valid mobile number'); return }
     setBusy(true); setError('')
     try {
-      const r = await fetch('/api/send-otp', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: full }),
-      })
-      const d = await r.json()
-      if (!r.ok) throw new Error(d.error || 'Could not send code')
-      setToken(d.token); setDevOtp(d.dev_otp || ''); setStage('code')
+      // Try Firebase SMS first; race an 8s timeout so a stuck reCAPTCHA/region
+      // issue falls back to the server OTP path instead of hanging.
+      let sent = false
+      try {
+        sent = await Promise.race([
+          sendViaFirebase(full),
+          new Promise<boolean>((_, rej) => setTimeout(() => rej(new Error('firebase-timeout')), 8000)),
+        ])
+      } catch {
+        try { recaptchaRef.current?.clear() } catch {}
+        recaptchaRef.current = null
+        confirmationRef.current = null
+        sent = false
+      }
+      if (!sent) {
+        const r = await fetch('/api/send-otp', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: full }),
+        })
+        const d = await r.json()
+        if (!r.ok) throw new Error(d.error || 'Could not send code')
+        setToken(d.token); setDevOtp(d.dev_otp || '')
+      }
+      setStage('code')
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not send code') }
     finally { setBusy(false) }
   }
@@ -36,20 +71,28 @@ export default function PhoneVerifyModal({ onDone, onDismiss }: { onDone: () => 
     if (otp.trim().length < 4) { setError('Enter the code'); return }
     setBusy(true); setError('')
     try {
+      let body: Record<string, string>
+      if (confirmationRef.current) {
+        const cred = await confirmationRef.current.confirm(otp.trim())
+        const firebaseIdToken = await cred.user.getIdToken()
+        body = { phone: full, firebaseIdToken }
+      } else {
+        body = { phone: full, otp: otp.trim(), token }
+      }
       const r = await fetch('/api/profiles/verify-phone', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: full, otp: otp.trim(), token }),
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
       })
       const d = await r.json()
       if (!r.ok) throw new Error(d.error || 'Could not verify')
       onDone()
-    } catch (e) { setError(e instanceof Error ? e.message : 'Could not verify') }
+    } catch (e) { setError(e instanceof Error ? e.message : 'Incorrect code — try again') }
     finally { setBusy(false) }
   }
 
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 70, background: 'rgba(20,36,28,0.55)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
       onClick={e => e.target === e.currentTarget && onDismiss()}>
+      <div id="phone-verify-recaptcha" />
       <div onClick={e => e.stopPropagation()} className="w-full" style={{ background: 'white', maxWidth: 440, borderRadius: '20px 20px 0 0', padding: '22px 20px 26px' }}>
         <div style={{ width: 48, height: 48, borderRadius: 14, background: '#14241C', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#EAF3EA" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
@@ -90,7 +133,7 @@ export default function PhoneVerifyModal({ onDone, onDismiss }: { onDone: () => 
             <button onClick={verify} disabled={busy} className="btn-primary" style={{ width: '100%', padding: '13px', fontSize: 15, borderRadius: 8 }}>
               {busy ? 'Verifying…' : 'Verify & finish'}
             </button>
-            <button onClick={() => { setStage('enter'); setOtp(''); setError('') }}
+            <button onClick={() => { setStage('enter'); setOtp(''); setError(''); confirmationRef.current = null }}
               style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', fontSize: 13, marginTop: 10 }}>
               Change number
             </button>
