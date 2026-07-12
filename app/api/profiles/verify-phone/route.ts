@@ -16,12 +16,13 @@ export async function POST(req: Request) {
     const meId = await getSessionProfileId()
     if (!meId) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
-    const { otp, token, firebaseIdToken, via } = await req.json()
+    const { otp, token, firebaseIdToken, via, phone } = await req.json()
     const { data: me } = await supabaseAdmin.from('profiles').select('phone').eq('id', meId).maybeSingle()
-    const myPhone = normalizePhoneNumber(me?.phone || '')
+    // Attach a NEW phone (email/Google signups have none yet) or re-verify the existing one.
+    const targetPhone = normalizePhoneNumber(String(phone || me?.phone || ''))
+    if (!targetPhone) return NextResponse.json({ error: 'Enter a valid mobile number' }, { status: 400 })
 
     if (via === 'email') {
-      // Email OTP was verified client-side via Supabase Auth for the caller's own account.
       await supabaseAdmin.from('profiles').update({ phone_verified: true }).eq('id', meId)
       return NextResponse.json({ ok: true })
     }
@@ -30,16 +31,21 @@ export async function POST(req: Request) {
       if (!firebaseAdminConfigured()) return NextResponse.json({ error: 'Phone verification unavailable' }, { status: 503 })
       const decoded = await verifyFirebaseIdToken(firebaseIdToken)
       const verifiedPhone = normalizePhoneNumber(decoded.phone_number || '')
-      if (!verifiedPhone || (myPhone && verifiedPhone !== myPhone)) {
+      if (!verifiedPhone || verifiedPhone !== targetPhone) {
         return NextResponse.json({ error: 'Verification did not match your number' }, { status: 400 })
       }
     } else {
       if (!otpConfigured()) return NextResponse.json({ error: 'Phone verification unavailable' }, { status: 503 })
-      const verified = verifyOtpToken(myPhone, otp, token)
+      const verified = verifyOtpToken(targetPhone, otp, token)
       if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
     }
 
-    await supabaseAdmin.from('profiles').update({ phone_verified: true }).eq('id', meId)
+    // Don't let a number already tied to another account be attached here.
+    const { data: clash } = await supabaseAdmin.from('profiles')
+      .select('id').eq('phone', targetPhone).neq('id', meId).maybeSingle()
+    if (clash) return NextResponse.json({ error: 'That mobile number is already on another account' }, { status: 409 })
+
+    await supabaseAdmin.from('profiles').update({ phone: targetPhone, phone_verified: true }).eq('id', meId)
     return NextResponse.json({ ok: true })
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Failed'

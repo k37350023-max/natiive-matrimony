@@ -53,7 +53,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [resendIn, setResendIn] = useState(0)
-  const [method, setMethod] = useState<'phone' | 'email'>('phone')
+  const [method, setMethod] = useState<'phone' | 'email'>('email')
   const [emailMode, setEmailMode] = useState<'password' | 'code'>('password')
   const [emailAddr, setEmailAddr] = useState('')
   const [emailPassword, setEmailPassword] = useState('')
@@ -332,7 +332,7 @@ export default function LoginPage() {
               <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#111', letterSpacing: '-0.02em', margin: '0 0 6px', fontFamily: 'var(--font-inter), sans-serif' }}>
                 Welcome back
               </h1>
-              <p style={{ fontSize: '14px', color: '#999', margin: 0 }}>Sign in with your mobile number or email</p>
+              <p style={{ fontSize: '14px', color: '#999', margin: 0 }}>Sign in with email or Google</p>
             </div>
 
             <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '22px 20px' }}>
@@ -341,20 +341,6 @@ export default function LoginPage() {
                   {error}
                 </div>
               )}
-              {/* Method toggle */}
-              {!otpSent && !emailSent && (
-                <div style={{ display: 'flex', gap: '6px', padding: '4px', background: '#F1F5EF', borderRadius: '10px', marginBottom: '16px' }}>
-                  {(['phone', 'email'] as const).map(m => (
-                    <button key={m} onClick={() => { setMethod(m); setError('') }}
-                      style={{ flex: 1, padding: '9px', fontSize: '13.5px', fontWeight: 700, borderRadius: '8px', border: 'none', cursor: 'pointer',
-                        background: method === m ? '#FFFFFF' : 'transparent', color: method === m ? '#14241C' : '#6B7A70',
-                        boxShadow: method === m ? '0 1px 3px rgba(20,36,28,0.12)' : 'none' }}>
-                      {m === 'phone' ? 'Mobile number' : 'Email'}
-                    </button>
-                  ))}
-                </div>
-              )}
-
               {method === 'phone' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>

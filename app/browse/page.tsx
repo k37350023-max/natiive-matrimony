@@ -9,6 +9,7 @@ import IndiaMap from '../components/IndiaMap'
 import MobileNav from '../components/MobileNav'
 import AppHeader from '../components/AppHeader'
 import BrandLogo from '../components/BrandLogo'
+import PhoneVerifyModal from '../components/PhoneVerifyModal'
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const REGIONS: Record<string, Record<string, string[]>> = {
@@ -769,6 +770,7 @@ export default function BrowsePage() {
   const [alertId,         setAlertId]         = useState<string|null>(null)
   const [alertSaving,     setAlertSaving]     = useState(false)
   const [browseToast,     setBrowseToast]     = useState<string|null>(null)
+  const [showPhoneVerify, setShowPhoneVerify] = useState(false)
   const [interestMap,     setInterestMap]     = useState<Record<string,string>>({})
   const [matchIdMap,      setMatchIdMap]      = useState<Record<string,string>>({})
   const [contactProfile, setContactProfile] = useState<Profile | null>(null)
@@ -811,6 +813,10 @@ export default function BrowsePage() {
         ? 'Welcome. Your 2-year founding premium benefit is active.'
         : 'Welcome. Your 3-month premium trial is active.')
       setTimeout(() => setBrowseToast(null), 4200)
+    }
+    // Post-signup phone verification prompt (email/Google accounts have no phone yet).
+    if (searchParams.get('verify_phone') === '1' && !sessionStorage.getItem('phone_verify_dismissed')) {
+      setShowPhoneVerify(true)
     }
   }, [searchParams])
 
@@ -1590,6 +1596,13 @@ export default function BrowsePage() {
       </div>
 
       <MobileNav />
+
+      {showPhoneVerify && (
+        <PhoneVerifyModal
+          onDone={() => { setShowPhoneVerify(false); setBrowseToast('Phone verified — thanks!'); setTimeout(() => setBrowseToast(null), 3500) }}
+          onDismiss={() => { setShowPhoneVerify(false); try { sessionStorage.setItem('phone_verify_dismissed', '1') } catch {} }}
+        />
+      )}
 
       {/* ── Quick-view modal ─────────────────────────────────── */}
       {quickView && (() => {

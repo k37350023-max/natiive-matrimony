@@ -100,6 +100,8 @@ export default function RegisterPage() {
   })
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
   const [googleAuth, setGoogleAuth] = useState<{ idToken: string; email: string; name: string } | null>(null)
+  const [signupEmail, setSignupEmail] = useState('')
+  const [signupPassword, setSignupPassword] = useState('')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -219,9 +221,8 @@ export default function RegisterPage() {
     try {
       const fullPhone = `${phoneCode}${form.phone.trim()}`
       if (firebaseConfirmation) {
-        const credential = await firebaseConfirmation.confirm(otp.trim())
-        const firebaseIdToken = await credential.user.getIdToken()
-        await handleSubmit(firebaseIdToken)
+        await firebaseConfirmation.confirm(otp.trim())
+        await handleSubmit()
         return
       }
 
@@ -238,18 +239,21 @@ export default function RegisterPage() {
   }
 
   /* Create the minimal profile and go inside */
-  async function handleSubmit(firebaseIdToken?: string) {
-    if (!form.profile_created_by) return setError('Please select who this profile is for')
+  async function handleSubmit() {
+    if (!form.full_name.trim()) return setError('Enter your full name')
+    if (!form.gender) return setError('Select gender')
     if (!form.date_of_birth) return setError('Date of birth is required')
     if (!form.native_state) return setError('Please select your native state')
     if (!form.native_district) return setError('Please select your native district')
     if (!form.current_city.trim()) return setError('Current city is required')
+    if (!googleAuth) {
+      if (!signupEmail.includes('@')) return setError('Enter a valid email address')
+      if (signupPassword.length < 6) return setError('Password must be at least 6 characters')
+    }
     setLoading(true); setError('')
     localStorage.removeItem('my_profile_id')
     localStorage.removeItem('my_user_id')
     try {
-      // Server re-verifies the OTP, creates the account, and sets the session cookie.
-      const fullPhone = `${phoneCode}${form.phone.trim()}`
       const res = await fetch('/api/auth/register', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -259,20 +263,36 @@ export default function RegisterPage() {
           profile_created_by: form.profile_created_by,
           ...(googleAuth
             ? { googleIdToken: googleAuth.idToken }
-            : { phone: fullPhone, ...(firebaseIdToken ? { firebaseIdToken } : { otp: otp.trim(), token: otpToken }) }),
+            : { email: signupEmail.trim().toLowerCase(), password: signupPassword }),
         }),
       })
       const data = await readApiJson(res)
       if (!res.ok) throw new Error(data.error || 'Something went wrong')
+      try { sessionStorage.removeItem('nm_google') } catch {}
       localStorage.setItem('my_user_id', data.userId)
       localStorage.setItem('my_profile_id', data.profileId)
       const benefit = data.foundingMemberEligible ? 'founding_2y' : 'premium_3m'
-      // Route straight to Browse for their native place — matches (or an alert) await.
       const place = form.native_district.trim()
-      router.push(`/browse?new=1&benefit=${benefit}${place ? `&native_place=${encodeURIComponent(place)}` : ''}`)
+      // verify_phone=1 pops the phone-verification prompt on arrival.
+      router.push(`/browse?new=1&verify_phone=1&benefit=${benefit}${place ? `&native_place=${encodeURIComponent(place)}` : ''}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)
+    }
+  }
+
+  async function handleGoogleSignup() {
+    setError('')
+    try {
+      const { signInWithGoogle } = await import('@/lib/firebaseClient')
+      const g = await signInWithGoogle()
+      setGoogleAuth(g)
+      setForm(f => ({ ...f, full_name: f.full_name || g.name || '' }))
+      if (!form.native_district) setStep(1)
+      else setStep(2)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Google sign-in failed'
+      if (!/popup-closed|cancelled|closed by user/i.test(msg)) setError(msg)
     }
   }
 
@@ -305,7 +325,7 @@ export default function RegisterPage() {
 
           {/* Progress dots */}
           <div style={{ display: 'flex', gap: '6px', marginBottom: '22px' }}>
-            {[1, 2, 3].map(n => (
+            {[1, 2].map(n => (
               <div key={n} style={{ flex: 1, height: '4px', borderRadius: '99px', background: n <= step ? '#14241C' : '#E7E3D8', transition: 'background 0.3s' }} />
             ))}
           </div>
@@ -445,7 +465,17 @@ export default function RegisterPage() {
                   </div>
                 </div>
                 <button onClick={continueFromOwnerStep} className="btn-primary" style={{ padding: '13px', fontSize: '15px' }}>
-                  Continue
+                  Continue with email
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '2px 0' }}>
+                  <div style={{ flex: 1, height: '1px', background: '#E7E3D8' }} />
+                  <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>or</span>
+                  <div style={{ flex: 1, height: '1px', background: '#E7E3D8' }} />
+                </div>
+                <button type="button" onClick={handleGoogleSignup}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '12px', fontSize: '14.5px', fontWeight: 700, color: '#14241C', background: 'white', border: '1.5px solid #E7E3D8', borderRadius: '10px', cursor: 'pointer' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
+                  Continue with Google
                 </button>
               </div>
             )}
@@ -482,33 +512,27 @@ export default function RegisterPage() {
                 {googleAuth ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#14241C' }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
-                    Signed in with Google as <strong>{googleAuth.email}</strong>
+                    Signing up with Google as <strong>{googleAuth.email}</strong>
                   </div>
                 ) : (
-                <div>
-                  <Label>Mobile number</Label>
-                  <div style={{ display: 'flex', border: '1.5px solid #E7E3D8', borderRadius: '8px', overflow: 'hidden' }}>
-                    <select value={phoneCode} onChange={e => setPhoneCode(e.target.value)}
-                      style={{ background: '#FBFAF5', fontSize: '13px', fontWeight: 600, padding: '11px 8px', border: 'none', outline: 'none', borderRight: '1px solid #E7E3D8', flexShrink: 0 }}>
-                      {COUNTRY_CODES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
-                    </select>
-                    <input style={{ flex: 1, padding: '11px 13px', fontSize: '14px', border: 'none', outline: 'none', background: 'white' }}
-                      type="tel" placeholder="Mobile number" value={form.phone}
-                      onChange={e => set('phone', e.target.value.replace(/\D/g, ''))}
-                      onKeyDown={e => { if (e.key === 'Enter') sendOtp() }} />
-                  </div>
-                  <p style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>We&apos;ll send a verification code. Your number is never shown to members.</p>
-                </div>
+                  <>
+                    <div>
+                      <Label>Email address</Label>
+                      <input style={inputStyle} type="email" placeholder="you@example.com" value={signupEmail}
+                        onChange={e => setSignupEmail(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Create a password</Label>
+                      <input style={inputStyle} type="password" placeholder="At least 6 characters" value={signupPassword}
+                        onChange={e => setSignupPassword(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }} />
+                      <p style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>You&apos;ll verify your phone in one tap after — your number is never shown to members.</p>
+                    </div>
+                  </>
                 )}
-                {googleAuth ? (
-                  <button onClick={() => { handleSubmit(); try { sessionStorage.removeItem('nm_google') } catch {} }} disabled={loading} className="btn-primary" style={{ padding: '13px', fontSize: '15px', marginTop: '4px' }}>
-                    {loading ? 'Creating profile…' : 'Create my profile'}
-                  </button>
-                ) : (
-                  <button onClick={sendOtp} disabled={sending} className="btn-primary" style={{ padding: '13px', fontSize: '15px', marginTop: '4px' }}>
-                    {sending ? 'Sending OTP…' : 'Send OTP'}
-                  </button>
-                )}
+                <button onClick={() => handleSubmit()} disabled={loading} className="btn-primary" style={{ padding: '13px', fontSize: '15px', marginTop: '4px' }}>
+                  {loading ? 'Creating profile…' : 'Create my profile'}
+                </button>
               </div>
             )}
 

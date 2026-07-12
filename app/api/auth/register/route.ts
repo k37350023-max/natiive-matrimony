@@ -17,29 +17,38 @@ export async function POST(req: Request) {
   try {
     assertAdminConfigured()
     const b = await req.json()
-    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token, firebaseIdToken, googleIdToken } = b
+    const { full_name, gender, phone, date_of_birth, native_state, native_district, current_city, profile_created_by, otp, token, firebaseIdToken, googleIdToken, email, password } = b
 
     const isGoogle = Boolean(googleIdToken)
-    if (!full_name || !gender || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by || (!isGoogle && !phone)) {
+    const isEmailSignup = !isGoogle && Boolean(email && password)
+    const noPhoneNeeded = isGoogle || isEmailSignup
+    if (!full_name || !gender || !date_of_birth || !native_state || !native_district || !current_city || !profile_created_by || (!noPhoneNeeded && !phone)) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     // ── Google-verified signup (no phone) ──────────────────────
-    let googleEmail = ''
+    let accountEmail = ''
     if (isGoogle) {
       if (!firebaseAdminConfigured()) {
         return NextResponse.json({ error: 'Google sign-in is not configured on the server' }, { status: 503 })
       }
       const decoded = await verifyFirebaseIdToken(googleIdToken)
-      googleEmail = String(decoded.email || '').trim().toLowerCase()
-      if (!googleEmail) return NextResponse.json({ error: 'Google account has no email' }, { status: 400 })
-      const { data: existing } = await supabaseAdmin.from('profiles').select('id').ilike('email', googleEmail).maybeSingle()
-      if (existing) return NextResponse.json({ error: 'An account already exists for this Google email. Please sign in.' }, { status: 409 })
+      accountEmail = String(decoded.email || '').trim().toLowerCase()
+      if (!accountEmail) return NextResponse.json({ error: 'Google account has no email' }, { status: 400 })
+    } else if (isEmailSignup) {
+      accountEmail = String(email).trim().toLowerCase()
+      if (!accountEmail.includes('@')) return NextResponse.json({ error: 'Enter a valid email address' }, { status: 400 })
+      if (String(password).length < 6) return NextResponse.json({ error: 'Password must be at least 6 characters' }, { status: 400 })
+    }
+    if (noPhoneNeeded) {
+      const { data: existing } = await supabaseAdmin.from('profiles').select('id').ilike('email', accountEmail).maybeSingle()
+      if (existing) return NextResponse.json({ error: 'An account already exists for this email. Please sign in.' }, { status: 409 })
     }
 
-    const normalizedPhone = isGoogle ? '' : normalizePhoneNumber(phone)
-    if (isGoogle) {
-      // email already verified by Google — skip phone verification entirely.
+    const normalizedPhone = noPhoneNeeded ? '' : normalizePhoneNumber(phone)
+    if (noPhoneNeeded) {
+      // Account is created with a verified email (Google) or email+password;
+      // phone is attached + verified later via the post-signup popup.
     } else if (firebaseIdToken) {
       if (!firebaseAdminConfigured()) {
         return NextResponse.json({ error: 'Firebase phone verification is not configured on the server' }, { status: 503 })
@@ -62,18 +71,18 @@ export async function POST(req: Request) {
       if (!verified.ok) return NextResponse.json({ error: verified.error }, { status: 400 })
     }
 
-    // Auth credentials. Google signups use the real Google email; phone signups
-    // get a synthetic email (they can add a real one + password later).
+    // Auth credentials. Email/Google signups use the real email (+ the chosen
+    // password for email signup); phone signups get a synthetic email.
     const digits = normalizedPhone.replace(/[^0-9]/g, '')
-    const authEmail = isGoogle ? googleEmail : `${digits}@phone.native`
-    const synthPass = `Nm-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`
+    const authEmail = noPhoneNeeded ? accountEmail : `${digits}@phone.native`
+    const authPass = isEmailSignup ? String(password) : `Nm-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`
 
     const { data: created, error: cErr } = await supabaseAdmin.auth.admin.createUser({
-      email: authEmail, password: synthPass, email_confirm: true,
+      email: authEmail, password: authPass, email_confirm: true,
     })
     if (cErr || !created.user) {
       const dup = cErr?.message?.toLowerCase().includes('already')
-      return NextResponse.json({ error: dup ? (isGoogle ? 'This Google account is already registered' : 'This mobile number is already registered') : (cErr?.message || 'Signup failed') }, { status: 400 })
+      return NextResponse.json({ error: dup ? (noPhoneNeeded ? 'This email is already registered' : 'This mobile number is already registered') : (cErr?.message || 'Signup failed') }, { status: 400 })
     }
 
     const { count: districtCount } = await supabaseAdmin.from('profiles')
@@ -93,13 +102,13 @@ export async function POST(req: Request) {
     const { data: profile, error: pErr } = await supabaseAdmin.from('profiles').insert({
       user_id: created.user.id,
       full_name: String(full_name).trim(),
-      gender, phone: isGoogle ? null : normalizedPhone, email: isGoogle ? googleEmail : null, date_of_birth,
+      gender, phone: noPhoneNeeded ? null : normalizedPhone, email: noPhoneNeeded ? accountEmail : null, date_of_birth,
       native_state, native_district, native_region: native_state,
       current_city: String(current_city).trim(),
       marital_status: 'never_married', religion: 'Hindu', mother_tongue: null,
       profile_created_by, photo_url: '', photo_visibility: 'public',
       status: 'approved', verified: false,
-      phone_verified: !isGoogle,  // phone was OTP/Firebase verified above (Google = email verified)
+      phone_verified: !noPhoneNeeded,  // phone verified now (phone signup) or later via popup
       premium_expires_at: premiumExpiresAt.toISOString(),
     }).select('id').maybeSingle()
     if (pErr || !profile) {
