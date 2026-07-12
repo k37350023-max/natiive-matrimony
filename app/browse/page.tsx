@@ -546,22 +546,23 @@ function ProfileCard({
               </button>
             )}
             <button
-              onClick={e => { e.stopPropagation(); if (status==='matched' || status==='accepted') { onClick() } else if (!status && !sending) onSendInterest() }}
-              disabled={(!!status && status!=='matched') || sending}
+              onClick={e => { e.stopPropagation(); if (status==='matched' || status==='accepted') { onClick() } else if (status==='incoming') { window.location.href = '/interests?tab=received' } else if (!status && !sending) onSendInterest() }}
+              disabled={(!!status && status!=='matched' && status!=='incoming') || sending}
               style={{
                 flex: 1, padding: '10px', borderRadius: '10px',
-                border: 'none', cursor: (status && status!=='matched') ? 'default' : 'pointer',
+                border: 'none', cursor: (status && status!=='matched' && status!=='incoming') ? 'default' : 'pointer',
                 fontFamily: 'var(--font-space-grotesk), sans-serif',
                 fontSize: '13.5px', fontWeight: 600, letterSpacing: '-0.01em',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'background 0.15s',
-                background: status === 'matched' ? '#1B5E20' : status ? '#EFF1EC' : '#1B5E20',
-                color: status === 'matched' ? '#FFFFFF' : status ? '#8A938A' : '#FFFFFF',
+                background: (status === 'matched' || status === 'incoming') ? '#1B5E20' : status ? '#EFF1EC' : '#1B5E20',
+                color: (status === 'matched' || status === 'incoming') ? '#FFFFFF' : status ? '#8A938A' : '#FFFFFF',
               }}
-              onMouseEnter={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#14532D') }}
-              onMouseLeave={e => { if (!status || status==='matched') (e.currentTarget.style.background = '#1B5E20') }}>
+              onMouseEnter={e => { if (!status || status==='matched' || status==='incoming') (e.currentTarget.style.background = '#14532D') }}
+              onMouseLeave={e => { if (!status || status==='matched' || status==='incoming') (e.currentTarget.style.background = '#1B5E20') }}>
               {status === 'matched' ? 'View Profile'
                 : status === 'accepted' ? 'View Profile'
+                : status === 'incoming' ? 'Respond to request'
                 : status === 'pending' ? 'Request Sent'
                 : status === 'rejected' ? 'Declined'
                 : sending ? 'Sending…'
@@ -920,7 +921,10 @@ export default function BrowsePage() {
       const map: Record<string,string> = {}
       ints?.forEach(i => {
         const other = i.from_user === myId ? i.to_user : i.from_user
-        map[other] = i.status === 'accepted' ? 'matched' : i.status
+        if (i.status === 'accepted') map[other] = 'matched'
+        // A pending request THEY sent me is "incoming" (I respond); one I sent is "pending".
+        else if (i.status === 'pending') map[other] = i.from_user === myId ? 'pending' : 'incoming'
+        else map[other] = i.status
       })
       const mIdMap: Record<string,string> = {}
       matchRows?.forEach(m => { const o = m.user1===myId?m.user2:m.user1; if (m.id) mIdMap[o]=m.id })
@@ -1682,7 +1686,7 @@ export default function BrowsePage() {
                       {status && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                           style={{ background: 'rgba(255,255,255,0.95)', color: status==='matched'?'#2E7D32':'#14241C' }}>
-                          {status==='matched'?'Connected ✓':status==='pending'?'Request Sent':'Connected'}
+                          {status==='matched'?'Connected ✓':status==='incoming'?'Sent you a request':status==='pending'?'Request Sent':status==='rejected'?'Declined':'Connected'}
                         </span>
                       )}
                     </div>
@@ -1732,15 +1736,16 @@ export default function BrowsePage() {
 
                 {myProfileId && myProfileId !== p.id && !interestSent && (
                   <button
-                    onClick={() => { if (status==='matched' || status==='accepted') { window.location.href = `/profile/${p.id}` } else if (!status) { handleInterestFromModal(p) } }}
-                    disabled={(!!status && status!=='matched') || sendingProfileIds.has(p.id)}
+                    onClick={() => { if (status==='matched' || status==='accepted') { window.location.href = `/profile/${p.id}` } else if (status==='incoming') { window.location.href = '/interests?tab=received' } else if (!status) { handleInterestFromModal(p) } }}
+                    disabled={(!!status && status!=='matched' && status!=='incoming') || sendingProfileIds.has(p.id)}
                     className="w-full py-3 rounded-xl text-sm font-bold transition-all"
-                    style={status==='matched'
+                    style={(status==='matched' || status==='incoming')
                       ? { background: '#1B5E20', color: '#FFFFFF', cursor: 'pointer' }
                       : status
                       ? { background: '#ECFDF5', color: '#2E7D32' }
                       : { background: '#1B5E20', color: '#FFFFFF', boxShadow: '0 4px 14px rgba(27,94,32,0.35)' }}>
                     {status==='matched'  ? 'View Profile →' :
+                     status==='incoming' ? 'They sent you a request — Respond →' :
                      status==='accepted' ? 'Accepted' :
                      status==='pending'  ? 'Request Sent ✓' :
                      status==='rejected' ? 'Declined' :

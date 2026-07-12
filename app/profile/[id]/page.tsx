@@ -1366,7 +1366,12 @@ export default function ProfilePage() {
                         Print Profile
                       </button>
                     )}
-                    {interestSent ? (
+                    {viewerRelation === 'received' ? (
+                      <Link href="/interests?tab=received"
+                        className="flex-1 btn-primary py-3 text-sm text-center flex items-center justify-center">
+                        Respond to their request →
+                      </Link>
+                    ) : interestSent ? (
                       <button disabled className="flex-1 btn-primary py-3 text-sm" style={{ opacity: 0.72 }}>
                         Request Sent
                       </button>
