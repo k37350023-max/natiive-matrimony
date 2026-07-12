@@ -103,6 +103,8 @@ export default function RegisterPage() {
   const [googleAuth, setGoogleAuth] = useState<{ idToken: string; email: string; name: string } | null>(null)
   const [signupEmail, setSignupEmail] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null)
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState('')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -126,6 +128,11 @@ export default function RegisterPage() {
   }, [])
 
   useEffect(() => { if (step === 3) setTimeout(() => otpRef.current?.focus(), 100) }, [step])
+  useEffect(() => {
+    return () => {
+      if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview)
+    }
+  }, [profilePhotoPreview])
 
   const districts = form.native_state ? (INDIA_STATES[form.native_state] || []) : []
   const foundingClaimed = Math.min(districtCount ?? 0, FOUNDING_MEMBER_LIMIT)
@@ -255,6 +262,7 @@ export default function RegisterPage() {
     if (!form.caste.trim()) return setError('Community is required')
     if (!form.profession.trim()) return setError('Profession is required')
     if (!form.education.trim()) return setError('Education is required')
+    if (!profilePhoto) return setError('Please add one clear profile photo')
     if (!googleAuth) {
       if (!signupEmail.includes('@')) return setError('Enter a valid email address')
       if (signupPassword.length < 6) return setError('Password must be at least 6 characters')
@@ -282,6 +290,7 @@ export default function RegisterPage() {
       try { sessionStorage.removeItem('nm_google') } catch {}
       localStorage.setItem('my_user_id', data.userId)
       localStorage.setItem('my_profile_id', data.profileId)
+      await uploadSignupPhoto(data.profileId)
       const benefit = data.foundingMemberEligible ? 'founding_2y' : 'premium_3m'
       const place = form.native_district.trim()
       // verify_phone=1 pops the phone-verification prompt on arrival.
@@ -290,6 +299,42 @@ export default function RegisterPage() {
       setError(err instanceof Error ? err.message : 'Something went wrong')
       setLoading(false)
     }
+  }
+
+  async function uploadSignupPhoto(profileId: string) {
+    if (!profilePhoto) return
+    if (profilePhoto.size > 5 * 1024 * 1024) {
+      throw new Error('Profile photo must be under 5MB')
+    }
+    const ext = profilePhoto.name.split('.').pop()?.toLowerCase() || 'jpg'
+    const path = `${profileId}/main-signup-${Date.now()}.${ext}`
+    const { error: uploadError } = await supabase.storage.from('profile-photos')
+      .upload(path, profilePhoto, { upsert: true })
+    if (uploadError) throw new Error(uploadError.message || 'Could not upload photo')
+    const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(path)
+    const res = await fetch('/api/profiles/photo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'setMain', url: urlData.publicUrl }),
+    })
+    const data = await readApiJson(res)
+    if (!res.ok) throw new Error(data.error || 'Could not save photo')
+  }
+
+  function chooseProfilePhoto(file: File | undefined) {
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload a JPG or PNG photo')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Profile photo must be under 5MB')
+      return
+    }
+    if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview)
+    setProfilePhoto(file)
+    setProfilePhotoPreview(URL.createObjectURL(file))
+    setError('')
   }
 
   async function handleGoogleSignup() {
@@ -542,6 +587,30 @@ export default function RegisterPage() {
                 <div>
                   <Label>Education</Label>
                   <input style={inputStyle} placeholder="e.g. B.Tech, MBA, MBBS" value={form.education} onChange={e => set('education', e.target.value)} />
+                </div>
+                <div>
+                  <Label>Profile photo</Label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', border: '1.5px solid #E7E3D8', borderRadius: '10px', padding: '12px', background: '#FFFFFF' }}>
+                    {profilePhotoPreview ? (
+                      <img src={profilePhotoPreview} alt="Profile photo preview" style={{ width: '58px', height: '58px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                    ) : (
+                      <div style={{ alignItems: 'center', background: '#EDF3ED', borderRadius: '50%', color: '#5E6B62', display: 'flex', flexShrink: 0, height: '58px', justifyContent: 'center', width: '58px' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                      </div>
+                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <label style={{ color: '#14241C', cursor: 'pointer', display: 'inline-flex', fontSize: '13px', fontWeight: 800, marginBottom: '4px' }}>
+                        {profilePhoto ? 'Change photo' : 'Upload photo'}
+                        <input type="file" accept="image/*" className="hidden" onChange={e => chooseProfilePhoto(e.target.files?.[0])} />
+                      </label>
+                      <p style={{ color: '#94A3B8', fontSize: '11.5px', lineHeight: 1.45, margin: 0 }}>
+                        One clear photo is required so profiles feel real. You can hide it later in privacy settings.
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 {googleAuth ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#14241C' }}>

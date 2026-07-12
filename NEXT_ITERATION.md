@@ -3,7 +3,7 @@
 ## Current Launch Score
 
 - Homepage: 92/100 after nav and launch copy were aligned
-- Signup: 93/100 after essential fields are saved
+- Signup: 96/100 after essential fields and one required photo were added
 - Browse: 94/100 after visible filters and card language were simplified
 - Profile: 90/100 after connection language cleanup
 - Edit Profile: 84/100
@@ -13,7 +13,7 @@
 - Messages: 90/100 after naming was standardized
 - Settings / Privacy: 84/100
 
-Overall launch score: 93/100
+Overall launch score: 94/100
 
 ## Completed Work
 
@@ -30,10 +30,11 @@ Overall launch score: 93/100
 - Connections page tabs now read as New, Waiting, Connected, and Saved, with softer actions: `Connect`, `Not now`, and `Remove`.
 - App navigation now uses `Connections` and `Messages` consistently across header, mobile nav, homepage, dashboard, notifications, metadata, and empty states.
 - Chat lock states now say `Interest sent`, `Remove interest`, and `wants to connect` instead of request-heavy language.
+- Signup now requires one clear profile photo in the basics step and uploads it immediately after profile creation.
 
 ## Remaining P0 Issues
 
-- Profile photo is still not captured during signup; browse nudges for photo after signup, but launch prompt requires photo as an essential field.
+- Signup photo upload should be smoke-tested against production storage settings after deployment.
 - Browse filters are simpler, but the search header still has two visible inputs; mobile should be visually tested to confirm it feels light.
 - Empty states need a final pass to ensure no page feels like an empty database.
 - Profile cards should be checked visually on mobile for hierarchy: photo, age, height, native place, profession, education, verification, activity.
@@ -49,17 +50,17 @@ Overall launch score: 93/100
 
 ## Exact Next Task
 
-Make signup/photo quality launch-ready:
+Make profile privacy wording simpler:
 
-1. Decide whether photo upload belongs inside signup or as an unavoidable first post-signup task.
-2. Make one photo feel required for profile quality while preserving privacy controls.
-3. Verify registration still stays short and clear.
+1. Replace hidden-detail `Request` buttons with plain `Ask to see` where visible.
+2. Keep the privacy behavior intact.
+3. Verify profile detail does not sound locked by default.
 
 ## Files Likely To Edit
 
 - `app/browse/page.tsx`
 - `app/register/page.tsx`
-- `app/profile/edit/page.tsx`
+- `app/profile/[id]/page.tsx`
 - `NEXT_ITERATION.md`
 
 ## Known UX Problems
