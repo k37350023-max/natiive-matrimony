@@ -31,6 +31,13 @@ const regions = [
   ['All India', 'Search by roots across states', '#F1F3EA'],
 ]
 
+const previewPlaces = [
+  ['Hyderabad', '42 active profiles'],
+  ['Guntur', '28 active profiles'],
+  ['Warangal', '19 active profiles'],
+  ['Nellore', 'New alerts open'],
+]
+
 const navItems = [
   ['/', 'Home', 'home'],
   ['/browse', 'Browse', 'search'],
@@ -62,32 +69,43 @@ function Icon({ name, size = 22 }: { name: string; size?: number }) {
   )
 }
 
-function MapVisual() {
+function DirectoryPreview() {
   return (
-    <div className="nmh-map-visual" aria-hidden="true">
-      <svg viewBox="0 0 520 560" className="nmh-india-map">
-        <path d="M244 42c38 18 57 44 55 80 34-2 68 18 85 51 15 30 45 51 78 64-14 28-35 43-64 45 6 33-4 64-30 91-23 23-33 53-31 91-42 4-78-10-108-41-32 13-66 12-101-2-5-39 6-73 34-101-30-19-49-45-58-78 24-16 50-23 78-20-9-38 12-81 62-180z" />
-        <path d="M197 204c74 20 133 58 178 114M224 124c42 60 68 122 77 188M156 254c65 6 129 25 192 58M228 396c34-43 72-75 115-96" className="nmh-map-line" />
-      </svg>
-      {[
-        ['Hyderabad', 61, 52],
-        ['Warangal', 66, 42],
-        ['Guntur', 58, 61],
-        ['Karimnagar', 54, 36],
-        ['Nellore', 63, 72],
-        ['Vijayawada', 70, 58],
-      ].map(([label, x, y]) => (
-        <span key={label} className="nmh-map-pin" style={{ left: `${x}%`, top: `${y}%` }} title={label as string}>
-          <Icon name="pin" size={14} />
-        </span>
-      ))}
-      <div className="nmh-map-card">
-        <span><Icon name="family" size={24} /></span>
-        <strong>Rooted in your place.</strong>
-        <p>Create once. We notify you when matching families join.</p>
-        <Link href="/register">Create profile</Link>
+    <aside className="nmh-directory-preview" aria-label="NativeMatrimony preview">
+      <div className="nmh-preview-top">
+        <span><Icon name="shield" size={22} /></span>
+        <div>
+          <p>Private until connected</p>
+          <strong>Browse real profiles by native place</strong>
+        </div>
       </div>
-    </div>
+      <div className="nmh-preview-search">
+        <Icon name="search" size={18} />
+        <span>Search Guntur, Warangal, Nellore...</span>
+      </div>
+      <div className="nmh-preview-profile">
+        <div className="nmh-preview-avatar">AR</div>
+        <div>
+          <strong>Ananya R.</strong>
+          <p>29 yrs · Product Manager</p>
+          <p>Native place: Guntur</p>
+        </div>
+        <span>Verified</span>
+      </div>
+      <div className="nmh-preview-grid">
+        {previewPlaces.map(([place, count]) => (
+          <Link key={place} href={`/native/${slugify(place)}`}>
+            <strong>{place}</strong>
+            <span>{count}</span>
+          </Link>
+        ))}
+      </div>
+      <div className="nmh-preview-steps">
+        <p><Icon name="check" size={16} /> Create profile</p>
+        <p><Icon name="check" size={16} /> Browse native places</p>
+        <p><Icon name="check" size={16} /> Connect when both sides agree</p>
+      </div>
+    </aside>
   )
 }
 
@@ -138,8 +156,8 @@ export default function Home() {
 
         <section className="nmh-hero nmh-directory-hero">
           <div className="nmh-hero-copy">
-            <h1>Find your life partner from your native place.</h1>
-            <p>Search by hometown, save alerts, and connect with families who share your roots, values, and culture.</p>
+            <h1>Meet families who care about your native place.</h1>
+            <p>Create a profile, choose your native place, browse serious families, and connect when interest is mutual.</p>
             <div className="nmh-proof-row" aria-label="Trust highlights">
               <span><Icon name="shield" size={15} />100% verified</span>
               <span><Icon name="lock" size={15} />Privacy first</span>
@@ -164,7 +182,7 @@ export default function Home() {
               </div>
             </section>
           </div>
-          <MapVisual />
+          <DirectoryPreview />
         </section>
 
         <section id="how-it-works" className="nmh-how-band">

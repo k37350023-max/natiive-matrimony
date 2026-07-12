@@ -17,7 +17,7 @@ Overall launch score: 98/100
 
 ## Completed Work
 
-- Homepage now follows the cleaner green native-place directory direction: search-first hero, map visual, how-it-works steps, trust stats, region cards, and a simpler final CTA.
+- Homepage was corrected from an over-decorated concept into a simpler product-led native-place search page with a real profile/district preview and clearer first action.
 - Signup now asks for and saves the essential browse-quality fields: religion, community, profession, and education.
 - Server-side registration now requires and persists those fields instead of creating thin profiles with hardcoded defaults.
 - Fixed `EmptyState` lint blocker by moving the action button component outside render.
