@@ -2,18 +2,18 @@
 
 ## Current Launch Score
 
-- Homepage: 92/100 after nav and launch copy were aligned
+- Homepage: 94/100 after nav, launch copy, and desktop clipping were addressed
 - Signup: 96/100 after essential fields and one required photo were added
-- Browse: 94/100 after visible filters and card language were simplified
+- Browse: 95/100 after filters, card language, and loading fallback were improved
 - Profile: 92/100 after connection and hidden-info wording cleanup
 - Edit Profile: 88/100 after privacy wording cleanup
-- Requests: 91/100 after outgoing accepted connections and tab copy were fixed
+- Connections: 92/100 after outgoing accepted connections, tab copy, and loading fallback were fixed
 - Notifications: 87/100 after action labels and categories were aligned
 - Alerts: 88/100
 - Messages: 90/100 after naming was standardized
 - Settings / Privacy: 84/100
 
-Overall launch score: 96/100
+Overall launch score: 97/100
 
 ## Completed Work
 
@@ -33,10 +33,14 @@ Overall launch score: 96/100
 - Signup now requires one clear profile photo in the basics step and uploads it immediately after profile creation.
 - Hidden profile details now use `Ask to see` / `Asked` instead of blunt `Request` labels.
 - Profile edit, privacy, and terms copy now use connection/interest language instead of request-heavy phrasing.
+- Homepage desktop shell now uses tighter width constraints to avoid clipped hero/nav content.
+- Browse and Connections now fail open from slow data loading instead of leaving users on indefinite loading screens.
+- Browse no longer duplicates the same profiles in separate `New this week` / `since last visit` sections before the main list.
 
 ## Remaining P0 Issues
 
 - Signup photo upload should be smoke-tested against production storage settings after deployment.
+- Visual QA should be rerun after each layout/loading polish change.
 - Browse filters are simpler, but the search header still has two visible inputs; mobile should be visually tested to confirm it feels light.
 - Empty states need a final pass to ensure no page feels like an empty database.
 - Profile cards should be checked visually on mobile for hierarchy: photo, age, height, native place, profession, education, verification, activity.

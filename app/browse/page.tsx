@@ -76,6 +76,16 @@ const INCOME_RANGES = ['Below 3 LPA','3-6 LPA','6-10 LPA','10-15 LPA','15-25 LPA
 const PAGE_SIZE = 18
 const POPULAR_NATIVE_PLACES = ['Guntur', 'Warangal', 'Nellore', 'Vijayawada', 'Chennai', 'Coimbatore', 'Madurai', 'Rajkot', 'Mysore']
 
+function withTimeout<T>(promise: PromiseLike<T>, ms = 5000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms)
+    promise.then(
+      value => { clearTimeout(timer); resolve(value) },
+      error => { clearTimeout(timer); reject(error) },
+    )
+  })
+}
+
 /* ─── Types ──────────────────────────────────────────────────── */
 type Profile = {
   id: string; full_name: string; gender: string; date_of_birth: string
@@ -910,13 +920,13 @@ export default function BrowsePage() {
     if (!myId) { setSessionChecked(true); return }
     fetch('/api/profiles/touch', { method: 'POST' }).catch(() => {})
 
-    Promise.all([
+    withTimeout(Promise.all([
       supabase.from('profiles').select('full_name, gender, date_of_birth, native_state, native_district, photo_url, about, profession, education, height_cm, religion, current_city, caste, annual_income, mother_tongue, family_type, company, diet, star, rashi').eq('id', myId).maybeSingle(),
       supabase.from('interests').select('from_user, to_user, status').or(`from_user.eq.${myId},to_user.eq.${myId}`),
       supabase.from('matches').select('id,user1,user2').or(`user1.eq.${myId},user2.eq.${myId}`),
       supabase.from('shortlists').select('profile_id').eq('by_profile_id',myId),
       supabase.from('ai_picks').select('score,reason,suggested_profile_id,profiles!ai_picks_suggested_profile_id_fkey(id,full_name,photo_url,photo_visibility,profession,date_of_birth,native_district)').eq('for_profile_id',myId).order('score',{ascending:false}).limit(6),
-    ]).then(([{data:prof},{data:ints},{data:matchRows},{data:sls},{data:picksRaw}])=>{
+    ])).then(([{data:prof},{data:ints},{data:matchRows},{data:sls},{data:picksRaw}])=>{
       if (!prof) { localStorage.removeItem('my_profile_id'); setMyProfileId(null) }
       setMyGender(prof?.gender ?? null)
       setMyNativeDistrict(prof?.native_district ?? '')
@@ -950,6 +960,8 @@ export default function BrowsePage() {
           .map((r: any) => ({ ...r.profiles, score: r.score, reason: r.reason }))
         setAiPicks(picks)
       }
+      setSessionChecked(true)
+    }).catch(() => {
       setSessionChecked(true)
     })
   }, [])
@@ -999,15 +1011,20 @@ export default function BrowsePage() {
     // Falls back to the legacy direct query if the API isn't configured yet.
     let data: Profile[] | null = null
     try {
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 4500)
       const res = await fetch('/api/profiles/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({ oppositeGender, region, state, district, casteFilter, nativePlace, currentLocation }),
       })
+      clearTimeout(timer)
       if (res.ok) data = (await res.json()).profiles as Profile[]
     } catch { /* fall through to legacy query */ }
 
-    if (data === null) {
+    try {
+      if (data === null) {
       let q = supabase.from('profiles').select('id, full_name, gender, date_of_birth, profession, education, annual_income, about, native_district, native_state, native_region, current_city, current_state, height_cm, religion, caste, mother_tongue, family_type, verified, status, created_at, photo_url, photo_visibility, last_login_at, marital_status, profile_created_by, member_number, hidden_fields, user_id, phone_verified').eq('status','approved')
       if (oppositeGender) q = q.eq('gender', oppositeGender)
       if (region)         q = q.eq('native_region', region)
@@ -1018,13 +1035,13 @@ export default function BrowsePage() {
       if (npClean)  q = q.or(`native_district.ilike.%${npClean}%,native_state.ilike.%${npClean}%,current_city.ilike.%${npClean}%`)
       if (clClean)  q = q.or(`current_city.ilike.%${clClean}%,current_state.ilike.%${clClean}%`)
       if (casteFilter)    q = q.ilike('caste', `%${casteFilter}%`)
-      const resp = await q
+      const resp = await withTimeout(q
         .or(`last_login_at.gt.${fourteenDaysAgo},last_login_at.is.null`)
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false }), 4500)
       data = resp.data || []
-    }
+      }
 
-    let results = data || []
+      let results = data || []
     if (myProfileId) results = results.filter(p => p.id !== myProfileId)
     if (showViewed && viewedIds.size > 0) results = results.filter(p => !viewedIds.has(p.id))
 
@@ -1078,8 +1095,12 @@ export default function BrowsePage() {
     }
     // newest is default (already ordered by created_at desc from DB)
 
-    setProfiles(results)
-    setLoading(false)
+      setProfiles(results)
+    } catch {
+      setProfiles([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   function handleMapRegion(r: string) { setRegion(r); setState(''); setDistrict('') }
@@ -1437,44 +1458,6 @@ export default function BrowsePage() {
                   ))}
                 </div>
                 <hr className="mt-4 mb-1 border-gray-100" />
-              </div>
-            )}
-
-            {/* New Arrivals */}
-            {newArrivals.length > 0 && (
-              <div className="mb-5">
-                <div className="flex items-center gap-2 mb-2.5">
-                  <span className="text-sm font-bold text-gray-900">New this week</span>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {newArrivals.map((p, idx) => (
-                    <ProfileCard key={p.id} p={p} status={interestMap[p.id]}
-                      shortlisted={shortlists.has(p.id)}
-                      onToggleShortlist={() => toggleShortlist(p.id)}
-                      onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingProfileIds.has(p.id)} />
-                  ))}
-                </div>
-                <hr className="my-4 border-gray-100" />
-              </div>
-            )}
-
-            {/* Since last visit */}
-            {sinceLastVisit.length > 0 && (
-              <div className="mb-5">
-                <div className="flex items-center gap-2 mb-2.5">
-                  <span className="text-sm font-bold text-gray-900">New from {myNativeDistrict} since your last visit</span>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {sinceLastVisit.map((p, idx) => (
-                    <ProfileCard key={p.id} p={p} status={interestMap[p.id]}
-                      shortlisted={shortlists.has(p.id)}
-                      onToggleShortlist={() => toggleShortlist(p.id)}
-                      onClick={() => { setQuickView(p); setQuickViewIdx(idx); setInterestSent(false) }}
-                      onSendInterest={() => sendInterest(p)} onContact={() => openContact(p)} chatHref={matchIdMap[p.id] ? `/chat/${matchIdMap[p.id]}` : undefined} sending={sendingProfileIds.has(p.id)} />
-                  ))}
-                </div>
-                <hr className="my-4 border-gray-100" />
               </div>
             )}
 

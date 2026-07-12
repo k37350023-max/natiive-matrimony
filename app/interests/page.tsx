@@ -65,6 +65,16 @@ const STATUS_STYLES: Record<string, { label: string; bg: string; color: string; 
   rejected: { label: 'Declined',          bg: '#EDF3ED', color: '#14241C', border: '#CADFCA' },
 }
 
+function withTimeout<T>(promise: Promise<T>, ms = 8000): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('timeout')), ms)
+    promise.then(
+      value => { clearTimeout(timer); resolve(value) },
+      error => { clearTimeout(timer); reject(error) },
+    )
+  })
+}
+
 type SavedProfile = {
   id: string
   full_name: string
@@ -117,7 +127,7 @@ function RequestsPageInner() {
 
   async function loadAll() {
     setLoading(true)
-    await Promise.all([loadReceived(), loadAccepted(), loadSent(), loadSaved()])
+    await withTimeout(Promise.all([loadReceived(), loadAccepted(), loadSent(), loadSaved()])).catch(() => {})
     setLoading(false)
   }
 

@@ -1483,6 +1483,7 @@ select.input {
 }
 
 .nmh-shell {
+  box-sizing: border-box;
   width: 100%;
   max-width: 430px;
   margin: 0 auto;
@@ -2205,8 +2206,9 @@ select.input {
 
 @media (min-width: 720px) {
   .nmh-shell {
-    max-width: 1180px;
-    padding: 30px 30px 64px;
+    box-sizing: border-box;
+    max-width: 1080px;
+    padding: 30px 22px 64px;
   }
 
   .nmh-header {
@@ -2964,8 +2966,8 @@ select.input {
   }
 
   .nmh-hero {
-    grid-template-columns: minmax(0, 1fr) minmax(410px, 540px);
-    gap: 38px;
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 500px);
+    gap: 28px;
   }
 
   .nmh-hero h1 {
@@ -3022,7 +3024,7 @@ select.input {
 
 @media (min-width: 1100px) {
   .nmh-hero {
-    grid-template-columns: minmax(0, 1.06fr) minmax(460px, 560px);
+    grid-template-columns: minmax(0, 1fr) minmax(430px, 500px);
   }
 
   .nmh-hero h1 {
