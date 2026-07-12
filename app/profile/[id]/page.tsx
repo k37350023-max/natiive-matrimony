@@ -465,7 +465,8 @@ export default function ProfilePage() {
   const fullProfileHidden = fieldIsHidden('full_profile') && !isOwnProfile && !canViewContact
   const canViewFullProfile = isOwnProfile || canViewContact || !fullProfileHidden
   const nameHidden = fieldIsHidden('name') && !isOwnProfile && !canViewContact
-  const publicName = nameHidden ? 'Name hidden' : profile.full_name
+  const cleanDisplayName = (name: string) => name.replace(/\s*\((groom|bride|male|female)\)\s*$/i, '').trim()
+  const publicName = nameHidden ? 'Name hidden' : cleanDisplayName(profile.full_name)
 
   // Photos are open by default; explicit hidden fields or legacy hidden visibility still hide them.
   const photoHidden = fieldIsHidden('photo') || profile.photo_visibility === 'hidden'

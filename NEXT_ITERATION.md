@@ -42,6 +42,7 @@ Overall launch score: 98/100
 - Authenticated header and Browse now share the same launch-width shell, avoiding clipped controls on normal desktop windows.
 - Account header now shows Free, Premium, or 2Y Premium beside the profile icon.
 - Launch offer copy no longer uses confusing Founding Member language; it explains the first 1,000 profiles per district get 2 years Premium.
+- Mobile navigation is subtler, notification tabs no longer clip, pricing hero is tighter, and profile names no longer expose role labels like Groom/Bride.
 
 ## Remaining P0 Issues
 

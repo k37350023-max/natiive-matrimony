@@ -96,12 +96,16 @@ export default function MobileNav() {
       <div style={{ display: 'flex' }}>
         {items.map(item => (
           <Link key={item.href} href={item.href} className={item.active ? 'active' : ''} style={{
+            position: 'relative',
             flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', padding: '10px 4px 10px', gap: '4px', minHeight: '58px',
+            justifyContent: 'center', padding: '8px 4px 9px', gap: '3px', minHeight: '56px',
             textDecoration: 'none',
             color: item.active ? '#14241C' : '#AAAAAA',
             transition: 'color 0.15s',
           }}>
+            {item.active && (
+              <span aria-hidden="true" style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '26px', height: '3px', borderRadius: '99px', background: '#14241C' }} />
+            )}
             <div className="mobile-tabbar-icon" style={{ position: 'relative' }}>
               {item.icon}
               {item.badge ? <Badge count={item.badge} /> : null}

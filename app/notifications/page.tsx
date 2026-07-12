@@ -36,7 +36,7 @@ const TAB_FILTERS: Record<string, string[]> = {
   Connections: ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
   Views:     ['profile_view'],
   Connected: ['interest_accepted'],
-  'Place Alerts': ['place_alert_saved','place_match_joined','alert_match_joined','waitlist_joined'],
+  Alerts: ['place_alert_saved','place_match_joined','alert_match_joined','waitlist_joined'],
   System:    ['system','field_request','field_request_approved'],
 }
 
@@ -257,10 +257,10 @@ export default function NotificationsPage() {
         </div>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: '0', background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', padding: '4px', marginBottom: '16px', overflowX: 'auto' }}>
+        <div className="notification-tabs" style={{ display: 'flex', gap: '4px', background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', padding: '5px', marginBottom: '16px', overflowX: 'auto' }}>
           {tabs.map(t => (
             <button key={t} onClick={() => setTab(t)} style={{
-              flex: 1, minWidth: 'max-content', padding: '7px 12px', borderRadius: '7px', border: 'none', cursor: 'pointer', fontSize: '12.5px', fontWeight: 600, transition: 'all 0.15s', whiteSpace: 'nowrap',
+              flex: '0 0 auto', minWidth: 'auto', padding: '8px 11px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 800, transition: 'all 0.15s', whiteSpace: 'nowrap',
               background: tab === t ? '#14241C' : 'transparent',
               color: tab === t ? 'white' : '#777',
             }}>
@@ -296,7 +296,7 @@ export default function NotificationsPage() {
             title={tab === 'All' ? 'No notifications yet' : `No ${tab.toLowerCase()} notifications`}
             subtitle={tab === 'All'
               ? 'Interests, profile views, accepted connections, and new profiles from your saved places will all show up here.'
-              : 'Nothing in this category yet — set an alert and we’ll keep you posted.'}
+              : 'Nothing in this category yet - set an alert and we will keep you posted.'}
             primary={{ label: 'Browse profiles', href: '/browse' }}
             secondary={{ label: 'Your alerts', href: '/alerts' }}
           />

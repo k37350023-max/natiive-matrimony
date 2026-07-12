@@ -60,6 +60,11 @@
   --shadow-card-hover: 0 16px 36px rgba(11, 19, 43, 0.12);
 }
 
+/* Hide the local Next.js dev indicator so mobile visual QA matches production. */
+nextjs-portal {
+  display: none !important;
+}
+
 body {
   background: var(--bg);
   color: var(--text);
@@ -1159,7 +1164,7 @@ select.input {
   display: inline-flex;
   font-size: 13px;
   font-weight: 800;
-  height: 30px;
+  height: 28px;
   justify-content: center;
   position: static;
   grid-row: 1 / span 2;
@@ -1531,7 +1536,7 @@ select.input {
   height: 42px;
   justify-content: center;
   padding: 4px;
-  width: 42px;
+  width: 38px;
 }
 
 .nmh-menu span {
@@ -3237,9 +3242,30 @@ select.input {
 }
 
 .mobile-tabbar a.active .mobile-tabbar-icon {
-  background: #14241C;
-  color: #FFFFFF;
-  transform: translateY(-3px);
+  background: transparent;
+  border: 0;
+  color: #14241C;
+  transform: none;
+}
+
+@media (max-width: 639px) {
+  .mobile-tabbar {
+    box-shadow: 0 -10px 24px rgba(20, 36, 28, 0.07);
+  }
+
+  .mobile-tabbar a {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .pricing-hero-title {
+    font-size: 28px !important;
+    line-height: 1.12 !important;
+  }
+
+  .notification-tabs {
+    flex-wrap: wrap;
+    overflow-x: visible !important;
+  }
 }
 
 .browse-stats-grid {

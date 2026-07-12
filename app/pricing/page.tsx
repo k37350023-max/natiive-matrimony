@@ -35,7 +35,7 @@ export default function PricingPage() {
       <main className="max-w-6xl mx-auto px-5 py-10 sm:py-14">
         <div className="max-w-3xl mb-8 sm:mb-10">
           <p className="section-label mb-3">Simple pricing</p>
-          <h1 className="font-serif-display text-3xl sm:text-5xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 className="pricing-hero-title font-serif-display text-3xl sm:text-5xl font-bold text-gray-900 mb-4 leading-tight">
             Start free. Upgrade only when you need more access.
           </h1>
           <p className="text-base text-gray-600 leading-relaxed">
