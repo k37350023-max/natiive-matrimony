@@ -22,11 +22,11 @@ const REGIONS: Record<string, Record<string, string[]>> = {
 const HIDEABLE_FIELDS: { key: string; label: string; desc: string }[] = [
   { key: 'full_profile', label: 'Full profile', desc: 'Visible by default; hide it if you want people to connect first' },
   { key: 'name', label: 'Name', desc: 'Visible by default; hide it if you want to appear as Name hidden' },
-  { key: 'photo', label: 'Profile photo', desc: 'Visible by default; hide it if you want people to request access first' },
-  { key: 'phone', label: 'Phone number', desc: 'Hidden from everyone; they can request it' },
-  { key: 'gotra', label: 'Gotra', desc: 'Blurred on your profile; requestable' },
+  { key: 'photo', label: 'Profile photo', desc: 'Visible by default; hide it if you want people to ask first' },
+  { key: 'phone', label: 'Phone number', desc: 'Hidden from everyone; connected families can ask to see it' },
+  { key: 'gotra', label: 'Gotra', desc: 'Blurred on your profile; families can ask to see it' },
   { key: 'native_location', label: 'Native district & region', desc: 'Only your state is shown; district is hidden' },
-  { key: 'current_city', label: 'Current city', desc: 'Blurred on your profile; requestable' },
+  { key: 'current_city', label: 'Current city', desc: 'Blurred on your profile; families can ask to see it' },
 ]
 
 const COUNTRY_CODES = [
@@ -506,7 +506,7 @@ function EditProfilePageInner() {
           {/* Additional photos */}
           <div className="mb-5 pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-2">More photos <span className="font-normal text-gray-400">({additionalPhotos.length}/4 added)</span></p>
-            <p className="text-xs text-gray-400 mb-3">Add up to 4 more photos. Profiles with multiple photos get more requests.</p>
+            <p className="text-xs text-gray-400 mb-3">Add up to 4 more photos so families can understand the profile better.</p>
             <div className="flex flex-wrap gap-2">
               {additionalPhotos.map((url, idx) => (
                 <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden group">
@@ -543,7 +543,7 @@ function EditProfilePageInner() {
 
           <div className="pt-4 border-t" style={{ borderColor: '#E7E3D8' }}>
             <p className="form-label mb-1">Privacy - what do you want to hide?</p>
-            <p className="text-xs text-gray-400 mb-3">Your profile is visible by default. Hide only the parts you want people to request first.</p>
+            <p className="text-xs text-gray-400 mb-3">Your profile is visible by default. Hide only the parts you want people to ask to see first.</p>
             <div className="space-y-2">
               {HIDEABLE_FIELDS.map(f => {
                 const checked = hiddenFields.includes(f.key)

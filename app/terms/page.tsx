@@ -38,7 +38,7 @@ export default function TermsPage() {
             },
             {
               title: '5. Service access',
-              body: 'NativeMatrimony is currently a request-based profile platform. We may add paid services later, but any pricing changes will be presented clearly before they apply.',
+              body: 'NativeMatrimony is currently a connection-based profile platform. We may add paid services later, but any pricing changes will be presented clearly before they apply.',
             },
             {
               title: '6. Limitation of liability',

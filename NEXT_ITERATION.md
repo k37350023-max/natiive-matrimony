@@ -6,14 +6,14 @@
 - Signup: 96/100 after essential fields and one required photo were added
 - Browse: 94/100 after visible filters and card language were simplified
 - Profile: 92/100 after connection and hidden-info wording cleanup
-- Edit Profile: 84/100
+- Edit Profile: 88/100 after privacy wording cleanup
 - Requests: 91/100 after outgoing accepted connections and tab copy were fixed
 - Notifications: 87/100 after action labels and categories were aligned
 - Alerts: 88/100
 - Messages: 90/100 after naming was standardized
 - Settings / Privacy: 84/100
 
-Overall launch score: 95/100
+Overall launch score: 96/100
 
 ## Completed Work
 
@@ -32,6 +32,7 @@ Overall launch score: 95/100
 - Chat lock states now say `Interest sent`, `Remove interest`, and `wants to connect` instead of request-heavy language.
 - Signup now requires one clear profile photo in the basics step and uploads it immediately after profile creation.
 - Hidden profile details now use `Ask to see` / `Asked` instead of blunt `Request` labels.
+- Profile edit, privacy, and terms copy now use connection/interest language instead of request-heavy phrasing.
 
 ## Remaining P0 Issues
 
@@ -51,17 +52,19 @@ Overall launch score: 95/100
 
 ## Exact Next Task
 
-Make profile edit privacy wording simpler:
+Do a visual QA pass next:
 
-1. Replace privacy setting descriptions that still say `request access` with `ask to see`.
-2. Keep the privacy behavior intact.
-3. Verify profile edit does not sound like profile details are locked by default.
+1. Start the local app and capture home, register, browse, connections, messages, profile, and profile edit.
+2. Fix any clipping, crowding, inconsistent labels, or dead-looking empty states found in screenshots.
+3. Keep changes surgical and verify after each fix.
 
 ## Files Likely To Edit
 
 - `app/browse/page.tsx`
 - `app/register/page.tsx`
 - `app/profile/edit/page.tsx`
+- `app/interests/page.tsx`
+- `app/matches/page.tsx`
 - `NEXT_ITERATION.md`
 
 ## Known UX Problems
