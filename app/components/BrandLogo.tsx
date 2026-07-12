@@ -10,15 +10,17 @@ export default function BrandLogo({ href = '/', className = '', showTagline = tr
   return (
     <Link href={href} className={`app-brand ${className}`.trim()} aria-label="Native Matrimony home">
       <span className="app-brand-mark app-brand-emblem" aria-hidden="true">
-        <svg viewBox="0 0 44 54" role="img" focusable="false">
-          {/* Paddy / rice stalk — native roots: cream grains fanning up from a green stalk */}
-          <path d="M22 48C26 35 31 22 37 13 35 26 31 41 23 49Z" fill="#1B4D2E" />
-          <path d="M22 47C22 43 22 42 22 40" stroke="#2E7D46" strokeWidth="1.7" strokeLinecap="round" fill="none" />
-          <path d="M22 46C17.5 44 12 46 8.5 50 13.5 51.5 19 49.5 22 45Z" fill="#5FA03C" />
-          <path d="M22 45.5C24.5 44 29.5 44.5 32.5 47 29 48.5 24.5 48 22 45Z" fill="#5FA03C" />
-          <path d="M22 44C19.6 36 19.6 24 22 16 24.4 24 24.4 36 22 44Z" fill="#ECE4D0" />
-          <path d="M22 44C17.8 37.5 14.6 27.5 14 20.5 18.2 24.5 21.4 35 22 44Z" fill="#ECE4D0" />
-          <path d="M22 44C26.2 37.5 29.4 27.5 30 20.5 25.8 24.5 22.6 35 22 44Z" fill="#ECE4D0" />
+        <svg viewBox="0 0 44 56" role="img" focusable="false">
+          {/* Simple paddy grain: one green stalk with clear golden grains. */}
+          <path d="M20 51C21 38 23 24 31 8" fill="none" stroke="#166534" strokeWidth="3.1" strokeLinecap="round" />
+          <path d="M20 51C16 39 13 28 12 17" fill="none" stroke="#22A447" strokeWidth="2.2" strokeLinecap="round" />
+          <ellipse cx="30" cy="13" rx="4.1" ry="7.4" fill="#F2B21C" stroke="#C98508" strokeWidth="0.7" transform="rotate(31 30 13)" />
+          <ellipse cx="27" cy="20" rx="4.1" ry="7.4" fill="#F5C33A" stroke="#C98508" strokeWidth="0.7" transform="rotate(38 27 20)" />
+          <ellipse cx="24" cy="27" rx="4.1" ry="7.4" fill="#F2B21C" stroke="#C98508" strokeWidth="0.7" transform="rotate(42 24 27)" />
+          <ellipse cx="21" cy="34" rx="4.1" ry="7.4" fill="#F5C33A" stroke="#C98508" strokeWidth="0.7" transform="rotate(46 21 34)" />
+          <ellipse cx="15" cy="21" rx="3.8" ry="6.8" fill="#F3B526" stroke="#C98508" strokeWidth="0.65" transform="rotate(-30 15 21)" />
+          <ellipse cx="16" cy="29" rx="3.8" ry="6.8" fill="#F6C747" stroke="#C98508" strokeWidth="0.65" transform="rotate(-22 16 29)" />
+          <path d="M18 47C14 45 10 46 7 50C12 52 16 51 20 47Z" fill="#2F7D32" />
         </svg>
       </span>
       <span className="app-brand-copy">

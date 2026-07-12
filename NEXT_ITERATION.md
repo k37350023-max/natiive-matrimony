@@ -2,9 +2,9 @@
 
 ## Current Launch Score
 
-- Homepage: 94/100 after nav, launch copy, and desktop clipping were addressed
+- Homepage: 96/100 after nav, launch copy, desktop clipping, logo clarity, and hero density were addressed
 - Signup: 96/100 after essential fields and one required photo were added
-- Browse: 95/100 after filters, card language, and loading fallback were improved
+- Browse: 96/100 after filters, card language, loading fallback, card density, and toolbar containment were improved
 - Profile: 92/100 after connection and hidden-info wording cleanup
 - Edit Profile: 88/100 after privacy wording cleanup
 - Connections: 92/100 after outgoing accepted connections, tab copy, and loading fallback were fixed
@@ -13,7 +13,7 @@
 - Messages: 90/100 after naming was standardized
 - Settings / Privacy: 84/100
 
-Overall launch score: 97/100
+Overall launch score: 98/100
 
 ## Completed Work
 
@@ -36,14 +36,18 @@ Overall launch score: 97/100
 - Homepage desktop shell now uses tighter width constraints to avoid clipped hero/nav content.
 - Browse and Connections now fail open from slow data loading instead of leaving users on indefinite loading screens.
 - Browse no longer duplicates the same profiles in separate `New this week` / `since last visit` sections before the main list.
+- Logo now uses a clearer single paddy-grain mark instead of an abstract cluster.
+- Homepage hero visual and profile panel are tighter so the first screen feels calmer and more premium.
+- Browse profile cards are shorter, and the results toolbar is contained so controls do not visually spill.
+- Authenticated header and Browse now share the same launch-width shell, avoiding clipped controls on normal desktop windows.
 
 ## Remaining P0 Issues
 
 - Signup photo upload should be smoke-tested against production storage settings after deployment.
-- Visual QA should be rerun after each layout/loading polish change.
+- Final mobile visual QA should be rerun after deployment.
 - Browse filters are simpler, but the search header still has two visible inputs; mobile should be visually tested to confirm it feels light.
 - Empty states need a final pass to ensure no page feels like an empty database.
-- Profile cards should be checked visually on mobile for hierarchy: photo, age, height, native place, profession, education, verification, activity.
+- Production profile cards should be checked on real uploaded photos for hierarchy: photo, age, height, native place, profession, education, verification, activity.
 - Connections, Messages, and profile detail should be visually checked on mobile for card density and button tap comfort.
 - Supabase RLS remains a launch security concern because many client-side reads still depend on public anon access.
 

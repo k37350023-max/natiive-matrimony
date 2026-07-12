@@ -92,7 +92,7 @@ export default function AppHeader() {
       transition: 'box-shadow 0.2s',
     }}>
       <div className="app-header-inner" style={{
-        maxWidth: '1120px', margin: '0 auto', padding: '0 20px',
+        maxWidth: '1040px', margin: '0 auto', padding: '0 20px',
         minHeight: '60px', display: 'flex', alignItems: 'center',
         justifyContent: 'space-between', gap: '16px',
       }}>

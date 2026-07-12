@@ -454,7 +454,7 @@ function ProfileCard({
       onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 3px rgba(20,36,28,0.05), 0 8px 24px rgba(20,36,28,0.04)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
     >
       {/* Photo (4:5) - visible when allowed, hidden only when the member chooses privacy */}
-      <div className="browse-profile-media" style={{ position: 'relative', paddingBottom: '78%', overflow: 'hidden' }}>
+      <div className="browse-profile-media" style={{ position: 'relative', paddingBottom: '68%', overflow: 'hidden' }}>
         {showPhoto ? (
           <img loading="lazy"
             src={p.photo_url} alt={visibleName}
@@ -1222,7 +1222,7 @@ export default function BrowsePage() {
     <div className="min-h-screen pb-20 sm:pb-0" style={{ background: '#FBFAF5' }}>
       <AppHeader />
 
-      <div className="max-w-6xl mx-auto px-4 py-4">
+      <div className="mx-auto px-4 py-4" style={{ maxWidth: '1040px' }}>
 
         {/* ── Profile completeness banner ─────────────────────── */}
         {completenessPercent !== null && (!myHasPhoto || completenessPercent < 50) && !bannerDismissed && (
@@ -1286,7 +1286,7 @@ export default function BrowsePage() {
               Search
             </button>
           </form>
-          <div className="flex gap-1.5 overflow-x-auto mb-3" style={{ scrollbarWidth: 'none' }}>
+          <div className="browse-chip-row flex gap-1.5 overflow-x-auto mb-3" style={{ scrollbarWidth: 'none' }}>
             {POPULAR_NATIVE_PLACES.map(place => (
               <Chip key={place} active={nativePlace.toLowerCase() === place.toLowerCase()} onClick={() => { setNativePlace(nativePlace === place ? '' : place); setPage(1) }} label={place} />
             ))}
@@ -1322,7 +1322,7 @@ export default function BrowsePage() {
             </div>
           )}
           {/* Mobile filter row */}
-          <div className="sm:hidden flex items-center gap-2">
+          <div className="browse-mobile-filter-row sm:hidden flex items-center gap-2">
             <button
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold shrink-0"
               style={activeFilterCount > 0
@@ -1334,7 +1334,7 @@ export default function BrowsePage() {
               </svg>
               Filters{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
             </button>
-            <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+            <div className="browse-chip-row flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
               {['All','Telangana','Coastal Andhra','Rayalaseema'].map(r => (
                 <Chip key={r} active={r==='All'?!region:region===r}
                   onClick={()=>handleMapRegion(r==='All'?'':(region===r?'':r))} label={r} />
