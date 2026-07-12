@@ -1,68 +1,58 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import BrandLogo from './components/BrandLogo'
 import { slugify } from '@/lib/nativePlaces'
 
-const popularPlaces = ['Karimnagar', 'Warangal', 'Guntur', 'Nellore', 'Rajahmundry', 'Nizamabad', 'Vijayawada', 'Vizag']
+const popularPlaces = ['Hyderabad', 'Warangal', 'Guntur', 'Nellore', 'Vijayawada', 'Karimnagar', 'Rajahmundry', 'Mysore']
+
+const steps = [
+  ['Choose your native place', 'Search by village, town, district, or city.', 'pin'],
+  ['Create your profile', 'Start with basics. Add more details when ready.', 'card'],
+  ['Get notified and connect', 'We alert you when matching families join.', 'bell'],
+]
+
+const stats = [
+  ['1,000', '2-year Premium spots per district'],
+  ['Free', 'profile creation and place alerts'],
+  ['Private', 'contact after connection'],
+  ['30 sec', 'to start your profile'],
+]
 
 const trustItems = [
-  ['Native place first', 'Focused on families who care about roots, hometowns, and serious introductions.', 'pin'],
-  ['Useful preview', 'Photos and key profile details stay visible so browsing feels real.', 'check'],
-  ['No Random Messages', 'Chat starts only when both sides accept.', 'chat'],
-  ['Family Friendly', 'Built around native place, parents, and serious family review.', 'family'],
-  ['Verified Profiles', 'Phone verification, approval flow, and optional manual review.', 'shield'],
+  ['Verified profiles', 'Phone verification and approval flow for serious families.', 'shield'],
+  ['Privacy first', 'Contact details are shared only after both sides connect.', 'lock'],
+  ['Built for families', 'Designed around native place, parents, and serious review.', 'family'],
+  ['Native place first', 'Because hometown roots matter in every search.', 'map'],
 ]
 
-const journey = [
-  ['Create in 30 seconds', 'Just your name, native place, and a few basics. Complete the rest whenever you like.'],
-  ['Search your native place', 'See families from your hometown, or set an alert if the right one has not joined yet.'],
-  ['Let matches find you', 'We notify you when a matching profile from your native place joins. Create once, then relax.'],
-  ['Connect on mutual interest', 'Chat and contact open only when both families accept. No random messages.'],
-]
-
-const regions: Array<[string, string[]]> = [
-  ['Telangana', ['Karimnagar', 'Warangal', 'Nizamabad', 'Khammam', 'Adilabad', 'Mahabubnagar']],
-  ['Andhra Pradesh', ['Guntur', 'Nellore', 'Rajahmundry', 'Kakinada', 'Vijayawada', 'Tirupati']],
-]
-
-const profilePreview = [
-  ['Roots', 'Karimnagar'],
-  ['Work', 'Engineer in Austin'],
-  ['Contact', 'Shown after connection'],
-]
-
-const proofStats = [
-  ['Free basics', 'Create, browse, receive interests'],
-  ['2 years premium', 'For the first 1,000 profiles in each district'],
-  ['Private contact', 'Phone and chat after connection'],
-  ['Human help', 'Optional shortlist support'],
+const regions = [
+  ['Telangana', 'Hyderabad, Warangal, Karimnagar', '#EAF5EA'],
+  ['Coastal Andhra', 'Guntur, Vijayawada, Rajahmundry', '#EEF6FA'],
+  ['Rayalaseema', 'Tirupati, Kurnool, Kadapa', '#F8F1E4'],
+  ['All India', 'Search by roots across states', '#F1F3EA'],
 ]
 
 const navItems = [
   ['/', 'Home', 'home'],
   ['/browse', 'Browse', 'search'],
-  ['/interests', 'Connections', 'heart'],
-  ['/matches', 'Messages', 'chat'],
-  ['/dashboard', 'Profile', 'user'],
+  ['/native', 'Places', 'map'],
+  ['/pricing', 'Pricing', 'shield'],
+  ['/login', 'Login', 'user'],
 ]
 
 function Icon({ name, size = 22 }: { name: string; size?: number }) {
   const paths: Record<string, string> = {
+    bell: 'M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9 M13.73 21a2 2 0 0 1-3.46 0',
+    card: 'M4 4h16v16H4z M8 8h8 M8 12h8 M8 16h5',
     check: 'M20 6 9 17l-5-5',
-    lock: 'M7 10V7a5 5 0 0 1 10 0v3 M5 10h14v10H5z',
-    chat: 'M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z',
     family: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8 M22 21v-2a4 4 0 0 0-3-3.87',
-    shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
-    pin: 'M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z',
-    search: 'm21 21-4.35-4.35 M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z',
-    briefcase: 'M10 6V5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v1 M3 8h18v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z M3 13h18',
-    card: 'M3 6h18v12H3z M3 10h18 M7 15h4',
-    home: 'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
     heart: 'M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78z',
+    home: 'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+    lock: 'M7 10V7a5 5 0 0 1 10 0v3 M5 10h14v10H5z',
+    map: 'M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3z M9 3v15 M15 6v15',
+    pin: 'M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+    search: 'm21 21-4.35-4.35 M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16z',
+    shield: 'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',
     user: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
-    arrow: 'M5 12h14 M13 5l7 7-7 7',
-    sparkle: 'M12 3l1.7 5.1L19 10l-5.3 1.9L12 17l-1.7-5.1L5 10l5.3-1.9L12 3z M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z',
-    upload: 'M12 16V4 M7 9l5-5 5 5 M4 20h16',
   }
 
   return (
@@ -72,42 +62,30 @@ function Icon({ name, size = 22 }: { name: string; size?: number }) {
   )
 }
 
-function Logo() {
-  return <BrandLogo className="app-brand-home" />
-}
-
-function HeroVisual() {
+function MapVisual() {
   return (
-    <div className="nmh-hero-visual" aria-label="Matrimonial profile preview">
-      <Image
-        src="/home-hero-match.webp"
-        alt=""
-        width={1672}
-        height={941}
-        priority
-        sizes="(min-width: 960px) 520px, 100vw"
-        className="nmh-hero-image"
-      />
-      <div className="nmh-profile-panel">
-        <div className="nmh-panel-top">
-          <span className="nmh-avatar-lock"><Icon name="shield" size={21} /></span>
-          <div>
-            <p>Verified preview</p>
-            <strong>Contact is shown after connection</strong>
-          </div>
-        </div>
-        <div className="nmh-preview-list">
-          {profilePreview.map(([label, value]) => (
-            <div key={label}>
-              <span>{label}</span>
-              <strong>{value}</strong>
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="nmh-match-chip">
-        <Icon name="sparkle" size={17} />
-        Serious profiles, less noise
+    <div className="nmh-map-visual" aria-hidden="true">
+      <svg viewBox="0 0 520 560" className="nmh-india-map">
+        <path d="M244 42c38 18 57 44 55 80 34-2 68 18 85 51 15 30 45 51 78 64-14 28-35 43-64 45 6 33-4 64-30 91-23 23-33 53-31 91-42 4-78-10-108-41-32 13-66 12-101-2-5-39 6-73 34-101-30-19-49-45-58-78 24-16 50-23 78-20-9-38 12-81 62-180z" />
+        <path d="M197 204c74 20 133 58 178 114M224 124c42 60 68 122 77 188M156 254c65 6 129 25 192 58M228 396c34-43 72-75 115-96" className="nmh-map-line" />
+      </svg>
+      {[
+        ['Hyderabad', 61, 52],
+        ['Warangal', 66, 42],
+        ['Guntur', 58, 61],
+        ['Karimnagar', 54, 36],
+        ['Nellore', 63, 72],
+        ['Vijayawada', 70, 58],
+      ].map(([label, x, y]) => (
+        <span key={label} className="nmh-map-pin" style={{ left: `${x}%`, top: `${y}%` }} title={label as string}>
+          <Icon name="pin" size={14} />
+        </span>
+      ))}
+      <div className="nmh-map-card">
+        <span><Icon name="family" size={24} /></span>
+        <strong>Rooted in your place.</strong>
+        <p>Create once. We notify you when matching families join.</p>
+        <Link href="/register">Create profile</Link>
       </div>
     </div>
   )
@@ -137,182 +115,66 @@ const homeJsonLd = {
 
 export default function Home() {
   return (
-    <main className="nmh-page">
+    <main className="nmh-page nmh-directory-page">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }} />
       <div className="nmh-shell">
         <header className="nmh-header">
-          <Logo />
+          <BrandLogo className="app-brand-home" />
           <nav className="nmh-desktop-nav" aria-label="Main navigation">
-            <Link href="/browse">Browse</Link>
-            <Link href="/interests">Connections</Link>
+            <Link href="/browse">Browse Profiles</Link>
+            <Link href="/native">Native Places</Link>
+            <Link href="#how-it-works">How It Works</Link>
+            <Link href="/pricing">Membership</Link>
             <Link href="/login">Login</Link>
-            <Link href="/register" className="nmh-nav-cta">Join Free</Link>
+            <Link href="/register" className="nmh-nav-cta">Create Profile</Link>
           </nav>
           <div className="nmh-mobile-actions">
             <Link href="/login" className="nmh-mobile-login">Login</Link>
-            <Link href="/register" className="nmh-menu" aria-label="Join free">
-              <Icon name="user" size={24} />
+            <Link href="/register" className="nmh-menu" aria-label="Create profile">
+              <Icon name="user" size={22} />
             </Link>
           </div>
         </header>
 
-        <section className="nmh-hero">
+        <section className="nmh-hero nmh-directory-hero">
           <div className="nmh-hero-copy">
-            <div className="nmh-eyebrow">
-              <Icon name="pin" size={17} />
-              Takes less than 30 seconds
-            </div>
-            <h1>Create your profile in 30 seconds. Let native matches find you.</h1>
-            <p>Search by native place, save alerts, and get notified when matching profiles join.</p>
-            <div className="nmh-actions">
-              <Link href="/register" className="nmh-primary">
-                <Icon name="user" size={19} />
-                Create Free Profile
-              </Link>
-              <Link href="/browse" className="nmh-secondary">
-                Browse Native Places
-              </Link>
-            </div>
+            <h1>Find your life partner from your native place.</h1>
+            <p>Search by hometown, save alerts, and connect with families who share your roots, values, and culture.</p>
             <div className="nmh-proof-row" aria-label="Trust highlights">
-              <span>Native-place first</span>
-              <span>Free to start</span>
-              <span>Place alerts</span>
-              <span>Mutual interest only</span>
-              <span>Parents welcome</span>
+              <span><Icon name="shield" size={15} />100% verified</span>
+              <span><Icon name="lock" size={15} />Privacy first</span>
+              <span><Icon name="family" size={15} />Family friendly</span>
             </div>
-            <p className="nmh-independent-note">Independent platform, not affiliated with Matrimony.com Limited.</p>
-          </div>
-          <HeroVisual />
-        </section>
-
-        <section className="nmh-proof-band" aria-label="Launch trust points">
-          {proofStats.map(([title, body]) => (
-            <article key={title}>
-              <strong>{title}</strong>
-              <span>{body}</span>
-            </article>
-          ))}
-        </section>
-
-        <section className="nmh-search-panel" aria-labelledby="native-search-heading">
-          <div>
-            <p className="nmh-section-kicker">Start with hometown</p>
-            <h2 id="native-search-heading">Search Native Places</h2>
-            <p className="nmh-search-sub">Find families from your native place — or set an alert and we&apos;ll notify you when one joins.</p>
-          </div>
-          <form action="/browse" className="nmh-search-form">
-            <input name="native_place" placeholder="Village, town, district, or city" aria-label="Native place" />
-            <button type="submit" aria-label="Search native place"><Icon name="search" size={23} /></button>
-          </form>
-          <div className="nmh-place-row" aria-label="Popular native place searches">
-            {popularPlaces.map((place) => (
-              <Link key={place} href={`/native/${slugify(place)}`}>{place}</Link>
-            ))}
-          </div>
-        </section>
-
-        <section className="nmh-section nmh-intent-section">
-          <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Why families join now</p>
-            <h2>Build useful local matches before the crowd arrives.</h2>
-          </div>
-          <div className="nmh-intent-grid">
-            <article>
-              <Icon name="upload" size={25} />
-              <h3>Be early in your place</h3>
-              <p>Create a real profile now so families from your native place can find you as the community grows.</p>
-            </article>
-            <article>
-              <Icon name="lock" size={25} />
-              <h3>Free stays free</h3>
-              <p>Basic profile creation, native place search, and receiving interests stay free. Premium is free for 2 years for the first 1,000 profiles in each district, and 3 months for everyone else.</p>
-            </article>
-            <article>
-              <Icon name="heart" size={25} />
-              <h3>Get notified later</h3>
-              <p>If the right profile is not here yet, save your place and we will notify you as matching families join.</p>
-            </article>
-          </div>
-        </section>
-
-        <section className="nmh-section">
-          <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Simple privacy</p>
-            <h2>Profiles feel real. Contact stays private.</h2>
-          </div>
-          <div className="nmh-trust-grid">
-            {trustItems.map(([title, body, icon]) => (
-              <article key={title} className="nmh-trust-card">
-                <span><Icon name={icon} size={24} /></span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="nmh-section">
-          <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">What families see</p>
-            <h2>Real profile context before anyone shares contact.</h2>
-          </div>
-          <div className="nmh-preview-demo">
-            <article>
-              <div className="nmh-demo-photo">
-                <span><Icon name="shield" size={22} /></span>
+            <section className="nmh-search-panel nmh-hero-search" aria-labelledby="native-search-heading">
+              <div>
+                <h2 id="native-search-heading">Start with your native place</h2>
+                <p className="nmh-search-sub">This is the first step to finding the right family.</p>
               </div>
-              <div className="nmh-demo-body">
-                <div className="nmh-demo-topline">
-                  <strong>Verified profile</strong>
-                  <em>Phone checked</em>
+              <form action="/browse" className="nmh-search-form">
+                <input name="native_place" placeholder="Search by native place, city, or district" aria-label="Native place" />
+                <button type="submit">Search</button>
+              </form>
+              <div>
+                <p className="nmh-popular-label">Popular native places</p>
+                <div className="nmh-place-row" aria-label="Popular native place searches">
+                  {popularPlaces.map((place) => (
+                    <Link key={place} href={`/native/${slugify(place)}`}>{place}</Link>
+                  ))}
                 </div>
-                <div className="nmh-demo-tags">
-                  <span><Icon name="briefcase" size={13} />Software engineer</span>
-                  <span><Icon name="pin" size={13} />Roots in Guntur</span>
-                  <span><Icon name="home" size={13} />Family reviewing</span>
-                </div>
-                <p>See the profile first. Connect to chat or view contact.</p>
               </div>
-            </article>
-            <aside>
-              <span><Icon name="lock" size={18} /> Contact stays private</span>
-              <span><Icon name="check" size={18} /> Enough context to decide</span>
-              <span><Icon name="chat" size={18} /> No random messages</span>
-            </aside>
+            </section>
           </div>
+          <MapVisual />
         </section>
 
-        <section className="nmh-section">
-          <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Launch model</p>
-            <h2>Start local, fill each place, then expand with trust.</h2>
-          </div>
-          <div className="nmh-trust-grid">
-            {[
-              ['Freemium launch', 'Profile creation, basic search, and receiving interests stay free. The first 1,000 profiles in each district get 2 years premium free; everyone else gets 3 months free.', 'pin'],
-              ['Useful profiles', 'Profiles show roots, work, location, and photo choice before a family connects.', 'search'],
-              ['Guided introductions', 'Optional matchmaker help is available when families want extra vetting and coordination.', 'family'],
-            ].map(([title, body, icon]) => (
-              <article key={title} className="nmh-trust-card">
-                <span><Icon name={icon} size={24} /></span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="nmh-section">
-          <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Simple connection flow</p>
-            <h2>From profile to match, without pressure.</h2>
-          </div>
-          <div className="nmh-journey">
-            {journey.map(([title, body], index) => (
-              <article key={title} className="nmh-journey-step">
-                <span>{index + 1}</span>
+        <section id="how-it-works" className="nmh-how-band">
+          <h2>How it works</h2>
+          <div className="nmh-how-grid">
+            {steps.map(([title, body, icon], index) => (
+              <article key={title}>
+                <span><Icon name={icon} size={26} /></span>
                 <div>
-                  <h3>{title}</h3>
+                  <strong>{index + 1}. {title}</strong>
                   <p>{body}</p>
                 </div>
               </article>
@@ -320,55 +182,57 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="nmh-section">
-          <div className="nmh-section-heading">
-            <p className="nmh-section-kicker">Featured native places</p>
-            <h2>Find families from familiar roots.</h2>
-          </div>
-          <div className="nmh-region-grid">
-            {regions.map(([region, places]) => (
-              <article key={region} className="nmh-region-card">
-                <div className="nmh-region-art" aria-hidden="true"><span /></div>
-                <div>
-                  <h3>{region}</h3>
-                  <div className="nmh-region-places">
-                    {places.map((place) => (
-                      <Link key={place} href={`/native/${slugify(place)}`}>{place}</Link>
-                    ))}
-                  </div>
-                </div>
+        <section className="nmh-stats-trust">
+          <div className="nmh-stat-row" aria-label="Launch trust numbers">
+            {stats.map(([value, label]) => (
+              <article key={label}>
+                <strong>{value}</strong>
+                <span>{label}</span>
               </article>
             ))}
           </div>
-          <Link href="/browse" className="nmh-text-link">View All Native Places <Icon name="arrow" size={18} /></Link>
-        </section>
-
-        <section className="nmh-consultant">
-          <div className="nmh-consultant-art" aria-hidden="true">
-            <span />
-          </div>
-          <div>
-            <p className="nmh-section-kicker">Guided introductions</p>
-            <h2>Want a family coordinator?</h2>
-            <p>Use optional human-assisted matchmaking when your family wants profile vetting, shortlist help, and guided introductions.</p>
-            <div className="nmh-check-list">
-              <span><Icon name="check" size={15} />Native place and profile review</span>
-              <span><Icon name="check" size={15} />Native place context</span>
-              <span><Icon name="check" size={15} />Optional guided support</span>
+          <div className="nmh-trust-row">
+            <h2>Why families trust Native Matrimony</h2>
+            <div>
+              {trustItems.map(([title, body, icon]) => (
+                <article key={title}>
+                  <span><Icon name={icon} size={22} /></span>
+                  <strong>{title}</strong>
+                  <p>{body}</p>
+                </article>
+              ))}
             </div>
           </div>
-          <Link href="/consultants" className="nmh-primary">View Consultants</Link>
         </section>
 
-        <section className="nmh-final">
+        <section className="nmh-section nmh-region-section">
+          <div className="nmh-section-heading">
+            <p className="nmh-section-kicker">Browse by roots</p>
+            <h2>Explore active native-place regions.</h2>
+          </div>
+          <div className="nmh-region-grid">
+            {regions.map(([region, body, bg]) => (
+              <Link key={region} href={`/browse?native_place=${encodeURIComponent(region)}`} className="nmh-region-card" style={{ background: bg }}>
+                <div className="nmh-region-art" aria-hidden="true"><span /></div>
+                <div>
+                  <h3>{region}</h3>
+                  <p>{body}</p>
+                </div>
+                <span className="nmh-region-arrow" aria-hidden="true">&gt;</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <section className="nmh-final nmh-directory-final">
           <div>
-            <p className="nmh-section-kicker">Create now, match when ready</p>
-            <h2>Be visible to the right family before they search elsewhere.</h2>
-            <p>Join the always-free version today. Get 2 years of free premium if your district still has one of its first 1,000 spots, or get 3 months of premium free.</p>
+            <p className="nmh-section-kicker">Create once. Get notified.</p>
+            <h2>Be visible when the right family searches your place.</h2>
+            <p>The free version stays free. First 1,000 profiles per district get 2 years Premium.</p>
           </div>
           <div className="nmh-actions">
-            <Link href="/register" className="nmh-primary">Join Free</Link>
-            <Link href="/browse" className="nmh-secondary">Browse Native Profiles</Link>
+            <Link href="/register" className="nmh-primary">Create Your Profile</Link>
+            <Link href="/browse" className="nmh-secondary">Browse Profiles</Link>
           </div>
         </section>
       </div>
