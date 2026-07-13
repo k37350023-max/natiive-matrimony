@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import BrandLogo from './components/BrandLogo'
 import { slugify } from '@/lib/nativePlaces'
 import { createClient } from '@supabase/supabase-js'
 
@@ -107,7 +106,12 @@ export default async function Home() {
 
       <header className="nmhome-header">
         <div className="nmhome-header-in">
-          <BrandLogo className="app-brand-home" />
+          <Link href="/" className="nmhome-brand" aria-label="Native Matrimony home">
+            <span className="nmhome-brand-mark" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F3E4C6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <span className="nmhome-brand-text"><b>Native</b>Matrimony</span>
+          </Link>
           <nav className="nmhome-nav" aria-label="Main navigation">
             <Link href="/browse">Browse Profiles</Link>
             <Link href="/native">Native Places</Link>
@@ -127,7 +131,7 @@ export default async function Home() {
         <div className="nmhome-hero-in">
           <div className="nmhome-hero-copy">
             <span className="nmhome-eyebrow"><Icon name="pin" size={14} /> Native-place-first matrimony</span>
-            <h1>Find serious matches from your native place.</h1>
+            <h1>Find serious matches from your <span className="nmhome-hl">native place</span>.</h1>
             <p className="nmhome-lede">Start with your hometown. Browse verified families who share your roots, and connect only when interest is mutual.</p>
 
             <form action="/browse" className="nmhome-search" role="search">
@@ -225,6 +229,12 @@ const CSS = `
 .nmhome h1,.nmhome h2{font-family:var(--font-playfair),Georgia,serif;letter-spacing:-.01em;margin:0}
 .nmhome-header{position:sticky;top:0;z-index:40;background:rgba(251,246,236,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nmhome-header-in{max-width:1120px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.nmhome-brand{display:flex;align-items:center;gap:10px}
+.nmhome-brand-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,#7A1E29,#5E141E);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(94,20,30,.22)}
+.nmhome-brand-text{font-family:var(--font-playfair),Georgia,serif;font-size:20px;color:var(--ink);letter-spacing:-.01em}
+.nmhome-brand-text b{color:var(--maroon);font-weight:700}
+.nmhome-hl{position:relative;white-space:nowrap;color:var(--maroon)}
+.nmhome-hl:after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:.16em;background:linear-gradient(90deg,var(--gold),#E4C784);border-radius:2px;opacity:.55;z-index:-1}
 .nmhome-nav{display:none;align-items:center;gap:26px;font-size:14.5px;font-weight:500;color:#4A3A36}
 .nmhome-nav a:hover{color:var(--maroon)}
 .nmhome-nav-cta{background:var(--maroon);color:#fff!important;padding:9px 18px;border-radius:8px;font-weight:700}
@@ -234,7 +244,7 @@ const CSS = `
 .nmhome-mcreate{background:var(--maroon);color:#fff!important;padding:9px 16px;border-radius:8px;font-weight:700;font-size:14px}
 @media(min-width:900px){.nmhome-nav{display:flex}.nmhome-header-mobile{display:none}}
 
-.nmhome-hero{padding:34px 20px 8px}
+.nmhome-hero{padding:34px 20px 8px;position:relative;overflow:hidden;background:radial-gradient(120% 90% at 85% -10%,#F7EAD3 0%,rgba(247,234,211,0) 55%),radial-gradient(90% 70% at -5% 10%,#F6E7E3 0%,rgba(246,231,227,0) 45%)}
 .nmhome-hero-in{max-width:1120px;margin:0 auto;display:grid;gap:30px;align-items:center}
 @media(min-width:900px){.nmhome-hero{padding:56px 20px 20px}.nmhome-hero-in{grid-template-columns:1.05fr .95fr;gap:48px}}
 .nmhome-eyebrow{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.03em;color:var(--maroon);background:#fff;border:1px solid var(--gold-s);padding:6px 12px;border-radius:99px}
