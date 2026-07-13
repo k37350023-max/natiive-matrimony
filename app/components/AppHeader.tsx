@@ -1,0 +1,284 @@
+'use client'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { computeCompleteness } from '@/lib/completeness'
+import { getMyBadgeCounts } from '@/lib/counts'
+import NotificationBell from './NotificationBell'
+import BrandLogo from './BrandLogo'
+
+export default function AppHeader() {
+  const path = usePathname()
+  const router = useRouter()
+  const [profileId, setProfileId] = useState<string | null>(null)
+  const [profileName, setProfileName] = useState('')
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
+  const [memberNumber, setMemberNumber] = useState<number | null>(null)
+  const [premiumExpiresAt, setPremiumExpiresAt] = useState<string | null>(null)
+  const [pendingInterests, setPendingInterests] = useState(0)
+  const [unreadMessages, setUnreadMessages] = useState(0)
+  const [completeness, setCompleteness] = useState<number | null>(null)
+  const [ready, setReady] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const id = localStorage.getItem('my_profile_id')
+    setProfileId(id)
+    setReady(true)
+    if (!id) return
+
+    supabase.from('profiles')
+      .select('full_name, photo_url, photo_visibility, premium_expires_at, member_number, gender, date_of_birth, native_state, native_district, about, profession, education, height_cm, religion, current_city, caste, annual_income, mother_tongue, family_type, company, diet, star, rashi')
+      .eq('id', id).maybeSingle()
+      .then(({ data }) => {
+        if (!data) {
+          localStorage.removeItem('my_profile_id')
+          localStorage.removeItem('my_user_id')
+          router.replace('/login')
+          return
+        }
+        setProfileName(data.full_name || '')
+        setPhotoUrl(data.photo_visibility !== 'hidden' ? data.photo_url : null)
+        setMemberNumber(data.member_number ?? null)
+        setPremiumExpiresAt(data.premium_expires_at ?? null)
+        setCompleteness(computeCompleteness(data).percent)
+      })
+
+    getMyBadgeCounts(id).then(({ pendingInterests, unreadMessages }) => {
+      setPendingInterests(pendingInterests)
+      setUnreadMessages(unreadMessages)
+    })
+  }, [])
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  function initials(name: string) {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  }
+
+  function signOut() {
+    localStorage.removeItem('my_profile_id')
+    localStorage.removeItem('my_user_id')
+    router.push('/')
+  }
+
+  const navItems = [
+    { href: '/browse',    label: 'Browse',      active: path.startsWith('/browse') },
+    { href: '/interests', label: 'Connections', active: path.startsWith('/interests'), badge: pendingInterests },
+    { href: '/matches',   label: 'Messages',    active: path.startsWith('/matches') || path.startsWith('/chat'), badge: unreadMessages },
+    { href: '/alerts',    label: 'Alerts',      active: path.startsWith('/alerts') },
+    { href: '/dashboard', label: 'Profile',     active: path.startsWith('/dashboard') || path.startsWith('/profile') },
+  ]
+
+  const premiumDate = premiumExpiresAt ? new Date(premiumExpiresAt) : null
+  const premiumActive = !!premiumDate && premiumDate > new Date()
+  const daysLeft = premiumDate ? Math.ceil((premiumDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000)) : 0
+  const isDistrictPremium = premiumActive && daysLeft > 120
+  const accessLabel = premiumActive ? (isDistrictPremium ? '2Y Premium' : 'Premium') : 'Free'
+  const accessShortLabel = accessLabel
+  const accessSubline = premiumActive && premiumDate
+    ? `${accessLabel} until ${premiumDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}`
+    : 'Free profile'
+
+  return (
+    <header className="app-header" style={{
+      background: '#FFFFFF',
+      borderBottom: '1px solid #E7E3D8',
+      position: 'sticky', top: 0, zIndex: 40,
+      boxShadow: scrolled ? '0 6px 20px rgba(20,36,28,0.08)' : 'none',
+      transition: 'box-shadow 0.2s',
+    }}>
+      <div className="app-header-inner" style={{
+        maxWidth: '1040px', margin: '0 auto', padding: '0 20px',
+        minHeight: '60px', display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', gap: '16px',
+      }}>
+
+        <BrandLogo href={profileId ? '/browse' : '/'} />
+
+        {/* Nav links - desktop */}
+        {ready && profileId && (
+          <nav style={{ display: 'none', alignItems: 'center', gap: '0px' }} className="hdr-nav">
+            <style>{`.hdr-nav { display: none; } @media(min-width:640px){.hdr-nav{display:flex;}}`}</style>
+            {navItems.map(item => (
+              <Link key={item.href} href={item.href}
+                className="app-nav-link"
+                style={{
+                  position: 'relative', display: 'flex', alignItems: 'center', gap: '5px',
+                  fontSize: '13.5px', fontWeight: item.active ? 700 : 500,
+                  padding: '8px 14px', textDecoration: 'none',
+                  color: item.active ? '#14241C' : '#555555',
+                  borderBottom: item.active ? '2.5px solid #14241C' : '2.5px solid transparent',
+                  marginBottom: '-1px',
+                  transition: 'color 0.15s',
+                }}>
+                {item.label}
+                {(item.badge ?? 0) > 0 && (
+                  <span style={{
+                    minWidth: '16px', height: '16px', borderRadius: '99px',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    background: '#DC2626', color: 'white', fontSize: '9.5px', fontWeight: 700, padding: '0 4px',
+                  }}>
+                    {(item.badge ?? 0) > 9 ? '9+' : item.badge}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </nav>
+        )}
+
+        {/* Right side */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+          {ready && profileId ? (
+            <>
+              <NotificationBell />
+              <span
+                className="account-access-badge"
+                title={accessSubline}
+                aria-label={accessSubline}
+                style={{
+                  alignItems: 'center',
+                  background: premiumActive ? '#FFF7D6' : '#F4F7F1',
+                  border: premiumActive ? '1px solid #E7C45B' : '1px solid #DDE8DE',
+                  borderRadius: '999px',
+                  color: premiumActive ? '#6F4B00' : '#475569',
+                  display: 'inline-flex',
+                  fontSize: '11px',
+                  fontWeight: 900,
+                  gap: '5px',
+                  minHeight: '28px',
+                  padding: '0 9px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill={premiumActive ? '#D99A00' : 'none'} stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polygon points="12 2 15.1 8.3 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 8.9 8.3 12 2" />
+                </svg>
+                {accessShortLabel}
+              </span>
+              <div style={{ position: 'relative' }} ref={menuRef}>
+                {completeness !== null && completeness < 100 && (
+                  <>
+                    {/* Completeness ring around the avatar */}
+                    <svg width="46" height="46" viewBox="0 0 46 46"
+                      style={{ position: 'absolute', top: '-5px', left: '-5px', pointerEvents: 'none', transform: 'rotate(-90deg)' }}>
+                      <circle cx="23" cy="23" r="21" fill="none" stroke="#EFE7E2" strokeWidth="3" />
+                      <circle cx="23" cy="23" r="21" fill="none" stroke="#14241C" strokeWidth="3" strokeLinecap="round"
+                        strokeDasharray={2 * Math.PI * 21}
+                        strokeDashoffset={2 * Math.PI * 21 * (1 - completeness / 100)}
+                        style={{ transition: 'stroke-dashoffset 0.5s ease' }} />
+                    </svg>
+                  </>
+                )}
+                <button
+                  onClick={() => setMenuOpen(o => !o)}
+                  style={{
+                    width: '36px', height: '36px', borderRadius: '50%', overflow: 'hidden',
+                    border: menuOpen ? '2px solid #14241C' : '2px solid #E0E0E0',
+                    cursor: 'pointer', background: 'none', padding: 0,
+                    transition: 'border-color 0.15s',
+                  }}>
+                  {photoUrl ? (
+                    <img loading="lazy" src={photoUrl} alt={profileName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#14241C', color: 'white', fontSize: '12px', fontWeight: 700 }}>
+                      {profileName ? initials(profileName) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                      )}
+                    </div>
+                  )}
+                </button>
+
+                {menuOpen && (
+                  <div style={{
+                    position: 'absolute', right: 0, top: 'calc(100% + 8px)',
+                    width: '224px', borderRadius: '12px',
+                    background: 'white', border: '1px solid #E8E8E8',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)', overflow: 'hidden', zIndex: 50,
+                  }}>
+                    <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0F0F0' }}>
+                      <p style={{ fontSize: '13.5px', fontWeight: 700, color: '#111', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{profileName}</p>
+                      <p style={{ fontSize: '11.5px', color: '#667085', margin: '2px 0 0' }}>
+                        {memberNumber ? `Profile #${memberNumber}` : 'Private profile'}
+                      </p>
+                      <p style={{ alignItems: 'center', color: premiumActive ? '#7A5200' : '#64748B', display: 'flex', fontSize: '11.5px', fontWeight: 800, gap: '5px', margin: '8px 0 0' }}>
+                        <span style={{ background: premiumActive ? '#FFF7D6' : '#F4F7F1', border: premiumActive ? '1px solid #E7C45B' : '1px solid #DDE8DE', borderRadius: '999px', padding: '3px 8px' }}>
+                          {accessSubline}
+                        </span>
+                      </p>
+                    </div>
+                    {completeness !== null && completeness < 100 && (
+                      <Link href="/profile/edit" onClick={() => setMenuOpen(false)}
+                        style={{ display: 'block', padding: '12px 16px', borderBottom: '1px solid #F0F0F0', textDecoration: 'none' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '12px', fontWeight: 700, color: '#14241C' }}>Profile {completeness}% complete</span>
+                          <span style={{ fontSize: '11px', color: '#14241C', fontWeight: 600 }}>Complete →</span>
+                        </div>
+                        <div style={{ height: '5px', borderRadius: '99px', background: '#EFE7E2', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${completeness}%`, background: '#14241C', borderRadius: '99px', transition: 'width 0.5s ease' }} />
+                        </div>
+                      </Link>
+                    )}
+                    <div style={{ padding: '6px' }}>
+                      {[
+                        { href: `/profile/${profileId}`, label: 'View Profile', icon: 'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4' },
+                        { href: '/profile/edit', label: 'Edit Profile', icon: 'M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z' },
+                      ].map(item => (
+                        <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
+                          style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', textDecoration: 'none', color: '#333', fontSize: '13.5px', transition: 'background 0.1s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#EFF1EC')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                            <path d={item.icon} />
+                          </svg>
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+                    <div style={{ borderTop: '1px solid #F0F0F0', padding: '6px' }}>
+                      <button onClick={signOut}
+                        style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 10px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer', color: '#999', fontSize: '13.5px', transition: 'all 0.1s', textAlign: 'left' }}
+                        onMouseEnter={e => { (e.currentTarget.style.background = '#EFF1EC'); (e.currentTarget.style.color = '#333') }}
+                        onMouseLeave={e => { (e.currentTarget.style.background = 'transparent'); (e.currentTarget.style.color = '#999') }}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Sign out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : ready && (
+            <>
+              <Link href="/login"
+                style={{ fontSize: '13.5px', fontWeight: 500, color: '#555', padding: '7px 14px', borderRadius: '8px', textDecoration: 'none', transition: 'color 0.15s' }}
+                className="hidden sm:block">
+                Login
+              </Link>
+              <Link href="/register" className="btn-primary" style={{ fontSize: '13.5px', padding: '8px 18px' }}>
+                Join Free
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  )
+}

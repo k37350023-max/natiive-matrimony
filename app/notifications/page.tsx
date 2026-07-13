@@ -1,0 +1,390 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
+import AppHeader from '../components/AppHeader'
+import MobileNav from '../components/MobileNav'
+import EmptyState from '../components/EmptyState'
+
+type Notif = {
+  id: string
+  type: string
+  message: string
+  read: boolean
+  created_at: string
+  from_profile_id: string | null
+  link: string | null
+}
+
+type DisplayNotif = Notif & {
+  count: number
+  ids: string[]
+}
+
+type FromProfile = {
+  id: string
+  full_name: string
+  photo_url: string | null
+  photo_visibility: string | null
+  profession: string | null
+  native_district: string | null
+}
+
+const TAB_FILTERS: Record<string, string[]> = {
+  All:       [],
+  Connections: ['interest_received','interest_accepted','interest_declined','interest_withdrawn'],
+  Views:     ['profile_view'],
+  Connected: ['interest_accepted'],
+  Alerts: ['place_alert_saved','place_match_joined','alert_match_joined','waitlist_joined'],
+  System:    ['system','field_request','field_request_approved'],
+}
+
+function timeAgo(d: string) {
+  const m = Math.floor((Date.now() - new Date(d).getTime()) / 60000)
+  if (m < 1)    return 'Just now'
+  if (m < 60)   return `${m}m ago`
+  if (m < 1440) return `${Math.floor(m / 60)}h ago`
+  if (m < 2880) return 'Yesterday'
+  if (m < 10080)return `${Math.floor(m / 1440)}d ago`
+  return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+}
+
+function typeLabel(type: string) {
+  if (type === 'interest_received')        return { label: 'Request Received', color: '#14241C', bg: '#EDF3ED' }
+  if (type === 'interest_accepted')        return { label: 'Connected', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'interest_declined')        return { label: 'Declined', color: '#5E6B62', bg: '#F3F4F6' }
+  if (type === 'interest_withdrawn')       return { label: 'Withdrawn', color: '#5E6B62', bg: '#F3F4F6' }
+  if (type === 'profile_view')             return { label: 'Profile View', color: '#1E40AF', bg: '#EFF6FF' }
+  if (type === 'place_alert_saved')        return { label: 'Place Alert On', color: '#075E3E', bg: '#EDF3ED' }
+  if (type === 'place_match_joined')       return { label: 'New Native Place Profile', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'alert_match_joined')       return { label: 'Alert Match', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'waitlist_joined')          return { label: 'Native Place Update', color: '#065F46', bg: '#ECFDF5' }
+  if (type === 'field_request')            return { label: 'Contact Request', color: '#7C3AED', bg: '#F5F3FF' }
+  if (type === 'field_request_approved')   return { label: 'Contact Shared', color: '#065F46', bg: '#ECFDF5' }
+  return { label: 'Notification', color: '#5E6B62', bg: '#F3F4F6' }
+}
+
+function notifIcon(type: string) {
+  const d: Record<string, string> = {
+    interest_received:      '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+    interest_accepted:      '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    field_request_approved: '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+    interest_declined:      '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+    interest_withdrawn:     '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+    profile_view:           '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+    place_alert_saved:      '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M16 3.8 19 2l3 1.8v3.4L19 9l-3-1.8z"/>',
+    place_match_joined:     '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M9 18h6"/>',
+    field_request:          '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>',
+  }
+  const path = d[type] || '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>'
+  return <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#14241C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: path }} />
+}
+
+function notifAction(type: string, fromProfileId: string | null, link?: string | null): { label: string; href: string } | null {
+  if (type === 'interest_received')  return { label: 'View interest →', href: '/interests?tab=received' }
+  if (type === 'interest_accepted')  return { label: 'Open messages →', href: '/matches' }
+  if (type === 'profile_view' && fromProfileId) return { label: 'View their profile →', href: `/profile/${fromProfileId}` }
+  if (type === 'field_request' && fromProfileId) return { label: 'View profile →', href: `/profile/${fromProfileId}` }
+  if (type === 'field_request_approved') return { label: 'View connection →', href: '/interests?tab=matched' }
+  if (type === 'place_alert_saved' || type === 'place_match_joined') return { label: 'Open saved search →', href: link || '/browse' }
+  if (type === 'alert_match_joined' || type === 'waitlist_joined') return { label: 'View profiles →', href: link || '/browse' }
+  return null
+}
+
+function compactNotifications(items: Notif[]): DisplayNotif[] {
+  const compacted: DisplayNotif[] = []
+  const seen = new Map<string, DisplayNotif>()
+
+  for (const n of items) {   // items are newest-first (created_at desc)
+    // Collapse repeat profile views AND repeat requests from the SAME person into
+    // one row — a person can only have one active request, and repeated views are
+    // noise. The newest one is kept; older ids ride along so dismiss clears them all.
+    const mergeable = (n.type === 'profile_view' || n.type === 'interest_received') && n.from_profile_id
+    if (!mergeable) {
+      compacted.push({ ...n, count: 1, ids: [n.id] })
+      continue
+    }
+
+    const key = `${n.type}:${n.from_profile_id}`
+    const existing = seen.get(key)
+    if (existing) {
+      existing.count += 1
+      existing.ids.push(n.id)
+      existing.read = existing.read && n.read
+      continue
+    }
+
+    const display = { ...n, count: 1, ids: [n.id] }
+    seen.set(key, display)
+    compacted.push(display)
+  }
+
+  return compacted
+}
+
+function Avatar({ profile, size = 44 }: { profile: FromProfile | null; size?: number }) {
+  const showPhoto = !!(profile?.photo_url && profile.photo_visibility !== 'hidden')
+  const colors = ['#14241C','#1D4E7F','#1D7F4E','#7F5A1D']
+  const bg = colors[(profile?.full_name?.charCodeAt(0) || 0) % colors.length]
+  const initials = profile?.full_name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?'
+
+  return (
+    <div style={{ width: size, height: size, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {showPhoto
+        ? <img src={profile!.photo_url!} alt={profile!.full_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : <span style={{ fontSize: size * 0.35, fontWeight: 700, color: 'white' }}>{initials}</span>}
+    </div>
+  )
+}
+
+export default function NotificationsPage() {
+  const router = useRouter()
+  const [userId,    setUserId]    = useState<string | null>(null)
+  const [notifs,    setNotifs]    = useState<Notif[]>([])
+  const [profiles,  setProfiles]  = useState<Record<string, FromProfile>>({})
+  const [tab,       setTab]       = useState('All')
+  const [loading,   setLoading]   = useState(true)
+
+  useEffect(() => {
+    const uid = localStorage.getItem('my_user_id')
+    if (!uid) { router.replace('/login'); return }
+    setUserId(uid)
+    load(uid)
+
+    const ch = supabase.channel('notif_page_' + uid)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` },
+        ({ new: n }) => setNotifs(prev => [n as Notif, ...prev]))
+      .subscribe()
+
+    return () => { supabase.removeChannel(ch) }
+  }, [])
+
+  async function load(uid: string) {
+    setLoading(true)
+    const { data } = await supabase.from('notifications')
+      .select('*').eq('user_id', uid)
+      .order('created_at', { ascending: false }).limit(100)
+
+    const notifList = data || []
+    setNotifs(notifList)
+
+    // Load from-profiles for avatar display
+    const profileIds = [...new Set(notifList.map(n => n.from_profile_id).filter(Boolean))] as string[]
+    if (profileIds.length > 0) {
+      const { data: pData } = await supabase.from('profiles')
+        .select('id, full_name, photo_url, photo_visibility, profession, native_district')
+        .in('id', profileIds)
+      const map: Record<string, FromProfile> = {}
+      pData?.forEach(p => { map[p.id] = p })
+      setProfiles(map)
+    }
+    setLoading(false)
+
+    // Mark all as read (secured: scoped to session user server-side)
+    fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'markAllRead' }) })
+  }
+
+  async function markAllRead() {
+    await fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'markAllRead' }) })
+    setNotifs(p => p.map(n => ({ ...n, read: true })))
+  }
+
+  async function dismissNotif(id: string) {
+    await fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'dismiss', id }) })
+    setNotifs(p => p.filter(n => n.id !== id))
+  }
+
+  async function dismissNotifications(ids: string[]) {
+    await Promise.all(ids.map(id =>
+      fetch('/api/notifications', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'dismiss', id }) })
+    ))
+    setNotifs(p => p.filter(n => !ids.includes(n.id)))
+  }
+
+  const tabs = Object.keys(TAB_FILTERS)
+  const unread = notifs.filter(n => !n.read).length
+
+  const filteredRaw = tab === 'All'
+    ? notifs
+    : notifs.filter(n => TAB_FILTERS[tab].includes(n.type))
+  const filtered = compactNotifications(filteredRaw)
+
+  // Group by date
+  const grouped: { date: string; items: DisplayNotif[] }[] = []
+  filtered.forEach(n => {
+    const d = new Date(n.created_at)
+    const now = new Date()
+    const diff = Math.floor((now.getTime() - d.getTime()) / 86400000)
+    const label = diff === 0 ? 'Today' : diff === 1 ? 'Yesterday' : d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })
+    const last = grouped[grouped.length - 1]
+    if (last && last.date === label) last.items.push(n)
+    else grouped.push({ date: label, items: [n] })
+  })
+
+  const tabCounts: Record<string, number> = {}
+  Object.entries(TAB_FILTERS).forEach(([t, types]) => {
+    const raw = t === 'All' ? notifs : notifs.filter(n => types.includes(n.type))
+    tabCounts[t] = compactNotifications(raw).length
+  })
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#FBFAF5', paddingBottom: '80px' }}>
+      <AppHeader />
+
+      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '20px 16px' }}>
+
+        {/* Page header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 2px', letterSpacing: 0 }}>
+              Notifications
+            </h1>
+            {unread > 0 && (
+              <span aria-label={`${unread} unread notifications`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: '20px', height: '20px', borderRadius: '99px', background: '#14241C', color: 'white', fontSize: '11px', fontWeight: 700, padding: '0 5px' }}>
+                {unread}
+              </span>
+            )}
+            </div>
+            <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>Interests, views, connected profiles, and native place alerts</p>
+          </div>
+          {notifs.some(n => !n.read) && (
+            <button onClick={markAllRead} style={{ fontSize: '12.5px', fontWeight: 600, color: '#14241C', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '7px 14px', cursor: 'pointer' }}>
+              Mark all read
+            </button>
+          )}
+        </div>
+
+        {/* Tabs */}
+        <div className="notification-tabs" style={{ display: 'flex', gap: '4px', background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', padding: '5px', marginBottom: '16px', overflowX: 'auto' }}>
+          {tabs.map(t => (
+            <button key={t} onClick={() => setTab(t)} style={{
+              flex: '0 0 auto', minWidth: 'auto', padding: '8px 11px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontSize: '12px', fontWeight: 800, transition: 'all 0.15s', whiteSpace: 'nowrap',
+              background: tab === t ? '#14241C' : 'transparent',
+              color: tab === t ? 'white' : '#777',
+            }}>
+              {t}
+              {tabCounts[t] > 0 && (
+                <span style={{ marginLeft: '5px', fontSize: '10px', fontWeight: 700, opacity: tab === t ? 0.8 : 0.5 }}>
+                  {tabCounts[t]}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Loading */}
+        {loading && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {[1,2,3,4].map(i => (
+              <div key={i} style={{ background: 'white', borderRadius: '12px', border: '1px solid #E8E8E8', padding: '16px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#E7E3D8', flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <div style={{ height: 13, background: '#E7E3D8', borderRadius: '6px', width: '60%', marginBottom: '8px' }} />
+                  <div style={{ height: 11, background: '#E7E3D8', borderRadius: '6px', width: '80%' }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && filtered.length === 0 && (
+          <EmptyState
+            icon={<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>}
+            title={tab === 'All' ? 'No notifications yet' : `No ${tab.toLowerCase()} notifications`}
+            subtitle={tab === 'All'
+              ? 'Interests, profile views, accepted connections, and new profiles from your saved places will all show up here.'
+              : 'Nothing in this category yet - set an alert and we will keep you posted.'}
+            primary={{ label: 'Browse profiles', href: '/browse' }}
+            secondary={{ label: 'Your alerts', href: '/alerts' }}
+          />
+        )}
+
+        {/* Notification groups */}
+        {!loading && grouped.map(group => (
+          <div key={group.date} style={{ marginBottom: '20px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: '#AAAAAA', marginBottom: '8px', paddingLeft: '4px' }}>
+              {group.date}
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {group.items.map(n => {
+                const from = n.from_profile_id ? profiles[n.from_profile_id] : null
+                const action = notifAction(n.type, n.from_profile_id, n.link)
+                const badge = typeLabel(n.type)
+                const message = n.type === 'profile_view'
+                  ? `${from?.full_name || 'This profile'} viewed your profile${n.count > 1 ? ` ${n.count} times` : ''}`
+                  : n.message
+
+                return (
+                  <div key={n.id} style={{
+                    background: n.read ? 'white' : '#FFFBFB',
+                    borderRadius: '12px',
+                    border: `1px solid ${n.read ? '#E8E8E8' : '#CADFCA'}`,
+                    padding: '14px 16px',
+                    display: 'flex',
+                    gap: '12px',
+                    alignItems: 'flex-start',
+                    position: 'relative',
+                    transition: 'box-shadow 0.15s',
+                  }}
+                    onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.06)')}
+                    onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}>
+
+                    {/* Unread dot */}
+                    {!n.read && (
+                      <div style={{ position: 'absolute', top: '16px', right: '16px', width: '7px', height: '7px', borderRadius: '50%', background: '#14241C' }} />
+                    )}
+
+                    {/* Avatar or icon */}
+                    {from
+                      ? <Avatar profile={from} />
+                      : <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#EDF3ED', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                          {notifIcon(n.type)}
+                        </div>}
+
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '99px', background: badge.bg, color: badge.color }}>
+                          {badge.label}
+                        </span>
+                        <span style={{ fontSize: '11px', color: '#94A3B8' }}>{timeAgo(n.created_at)}</span>
+                      </div>
+
+                      <p style={{ fontSize: '13.5px', color: '#14241C', margin: '0 0 4px', lineHeight: 1.5 }}>
+                        {message}
+                      </p>
+
+                      {from && (
+                        <p style={{ fontSize: '12px', color: '#94A3B8', margin: '0 0 8px' }}>
+                          {[from.profession, from.native_district].filter(Boolean).join(' · ')}
+                        </p>
+                      )}
+
+                      {action && (
+                        <button onClick={() => router.push(action.href)}
+                          style={{ fontSize: '12px', fontWeight: 700, padding: '6px 14px', borderRadius: '7px', background: '#14241C', color: 'white', border: 'none', cursor: 'pointer' }}>
+                          {action.label}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Dismiss */}
+                    <button onClick={() => n.ids.length > 1 ? dismissNotifications(n.ids) : dismissNotif(n.id)}
+                      style={{ position: 'absolute', bottom: '12px', right: '14px', background: 'none', border: 'none', cursor: 'pointer', color: '#CCC', fontSize: '11px', padding: '2px 6px' }}
+                      title="Dismiss">
+                      ✕
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        ))}
+
+      </div>
+      <MobileNav />
+    </div>
+  )
+}

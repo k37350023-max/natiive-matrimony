@@ -1,0 +1,117 @@
+{
+  "generated_at": "2026-06-20T13:49:00.023Z",
+  "top_pairs": [
+    {
+      "groom": "Aditya Reddy Pullela",
+      "bride": "Meghana Reddy Vangala",
+      "score": 108,
+      "breakdown": {
+        "appearance": 20,
+        "lifestyle": 35,
+        "family": 28,
+        "native": 25
+      },
+      "reason": "Excellent alignment on education (both from premier institutions), complementary high-status professions, ideal age gap of 3 years, matching height difference, and perfect alignment on religion, caste, mother tongue, and native city.",
+      "groom_profile": "/profile/a1000001-0000-0000-0000-000000000001",
+      "bride_profile": "/profile/a1000004-0000-0000-0000-000000000004"
+    },
+    {
+      "groom": "Venkat Brahmin Sastry",
+      "bride": "Sravani Brahmin Yerra",
+      "score": 108,
+      "breakdown": {
+        "appearance": 20,
+        "lifestyle": 35,
+        "family": 28,
+        "native": 25
+      },
+      "reason": "Strong match with aligned education, complementary tech careers, ideal age gap, same caste/religion/language, and shared Andhra Pradesh roots.",
+      "groom_profile": "/profile/a1000003-0000-0000-0000-000000000003",
+      "bride_profile": "/profile/a1000006-0000-0000-0000-000000000006"
+    },
+    {
+      "groom": "Karthik Varma Dasari",
+      "bride": "Preethi Kamma Nadella",
+      "score": 106,
+      "breakdown": {
+        "appearance": 17,
+        "lifestyle": 35,
+        "family": 29,
+        "native": 25
+      },
+      "reason": "Excellent alignment on education quality, professional compatibility in tech-adjacent fields, ideal age gap, matching religion/caste/language, and shared regional roots from Krishna district.",
+      "groom_profile": "/profile/a1000002-0000-0000-0000-000000000002",
+      "bride_profile": "/profile/a1000005-0000-0000-0000-000000000005"
+    },
+    {
+      "groom": "Karthik Varma Dasari",
+      "bride": "Meghana Reddy Vangala",
+      "score": 105,
+      "breakdown": {
+        "appearance": 24,
+        "lifestyle": 35,
+        "family": 28,
+        "native": 18
+      },
+      "reason": "Strong professional alignment with complementary high-achieving careers, ideal age gap, and shared Telugu Hindu values despite different castes, though intercaste marriage requires family acceptance.",
+      "groom_profile": "/profile/a1000002-0000-0000-0000-000000000002",
+      "bride_profile": "/profile/a1000004-0000-0000-0000-000000000004"
+    },
+    {
+      "groom": "Venkat Brahmin Sastry",
+      "bride": "Meghana Reddy Vangala",
+      "score": 101,
+      "breakdown": {
+        "appearance": 20,
+        "lifestyle": 35,
+        "family": 28,
+        "native": 18
+      },
+      "reason": "Both are highly educated professionals from Andhra Pradesh with shared Telugu language and Hindu faith, though inter-caste match requires family acceptance and the bride's higher professional status needs mutual respect.",
+      "groom_profile": "/profile/a1000003-0000-0000-0000-000000000003",
+      "bride_profile": "/profile/a1000004-0000-0000-0000-000000000004"
+    },
+    {
+      "groom": "Aditya Reddy Pullela",
+      "bride": "Preethi Kamma Nadella",
+      "score": 100,
+      "breakdown": {
+        "appearance": 19,
+        "lifestyle": 35,
+        "family": 28,
+        "native": 18
+      },
+      "reason": "Both are highly educated professionals from Andhra Pradesh with matching age, Telugu mother tongue, and Hindu religion, though different castes may require family discussion.",
+      "groom_profile": "/profile/a1000001-0000-0000-0000-000000000001",
+      "bride_profile": "/profile/a1000005-0000-0000-0000-000000000005"
+    },
+    {
+      "groom": "Aditya Reddy Pullela",
+      "bride": "Sravani Brahmin Yerra",
+      "score": 93,
+      "breakdown": {
+        "appearance": 20,
+        "lifestyle": 35,
+        "family": 20,
+        "native": 18
+      },
+      "reason": "Strong career alignment as both are software engineers with comparable education, appropriate age gap of 3 years, and height difference of 20cm, but caste difference (Reddy-Brahmin) presents a significant family values compatibility challenge in traditional Telugu matrimony context.",
+      "groom_profile": "/profile/a1000001-0000-0000-0000-000000000001",
+      "bride_profile": "/profile/a1000006-0000-0000-0000-000000000006"
+    },
+    {
+      "groom": "Karthik Varma Dasari",
+      "bride": "Sravani Brahmin Yerra",
+      "score": 92,
+      "breakdown": {
+        "appearance": 21,
+        "lifestyle": 35,
+        "family": 18,
+        "native": 18
+      },
+      "reason": "Strong professional alignment and Telugu cultural roots offset by caste difference which may face family resistance despite shared religion and regional background.",
+      "groom_profile": "/profile/a1000002-0000-0000-0000-000000000002",
+      "bride_profile": "/profile/a1000006-0000-0000-0000-000000000006"
+    }
+  ]
+}

@@ -1,289 +1,691 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import BrandLogo from '../components/BrandLogo'
+import type { ConfirmationResult, RecaptchaVerifier } from 'firebase/auth'
+import { INDIA_STATES } from '@/lib/nativePlaces'
 
-const REGIONS: Record<string, Record<string, string[]>> = {
-  'Coastal Andhra': {
-    'Andhra Pradesh': ['Visakhapatnam', 'East Godavari', 'West Godavari', 'Krishna', 'Guntur', 'Prakasam', 'Nellore'],
-  },
-  'Rayalaseema': {
-    'Andhra Pradesh': ['Kurnool', 'Kadapa', 'Chittoor', 'Anantapur'],
-  },
-  'Telangana': {
-    'Telangana': ['Hyderabad', 'Rangareddy', 'Medchal', 'Warangal', 'Karimnagar', 'Khammam', 'Nizamabad', 'Adilabad', 'Mahbubnagar', 'Nalgonda'],
-  },
+const COUNTRY_CODES = [
+  { code: '+91', label: '🇮🇳 +91' },
+  { code: '+1',  label: '🇺🇸 +1' },
+  { code: '+44', label: '🇬🇧 +44' },
+  { code: '+61', label: '🇦🇺 +61' },
+  { code: '+971', label: '🇦🇪 +971' },
+  { code: '+65', label: '🇸🇬 +65' },
+  { code: '+60', label: '🇲🇾 +60' },
+  { code: '+64', label: '🇳🇿 +64' },
+  { code: '+974', label: '🇶🇦 +974' },
+]
+
+/* ─── Label ──────────────────────────────────────────────────── */
+function Label({ children, optional }: { children: React.ReactNode; optional?: boolean }) {
+  return (
+    <label style={{ display: 'block', fontSize: '12.5px', fontWeight: 600, color: '#334155', marginBottom: '5px' }}>
+      {children} {optional && <span style={{ fontWeight: 400, color: '#94A3B8' }}>(optional)</span>}
+    </label>
+  )
 }
 
-const STEPS = ['Basic Info', 'Native Place', 'Profession & Photo']
+const inputStyle: React.CSSProperties = {
+  width: '100%', border: '1.5px solid #E7E3D8', borderRadius: '8px',
+  padding: '11px 13px', fontSize: '14px', outline: 'none', boxSizing: 'border-box',
+  background: 'white', color: '#111', transition: 'border-color 0.15s',
+}
 
+const FOUNDING_MEMBER_LIMIT = 1000
+
+const PREMIUM_PERKS = [
+  'Free forever basics',
+  'Premium trial included',
+  'Contact shown after connection',
+]
+
+function phoneAuthErrorMessage(err: unknown) {
+  const message = err instanceof Error ? err.message : ''
+  if (message.includes('auth/operation-not-allowed')) {
+    return 'SMS is not enabled for this country yet. Please contact support or try another country code.'
+  }
+  if (message.includes('auth/too-many-requests')) {
+    return 'Too many code requests. Please wait a few minutes and try again.'
+  }
+  if (message.includes('auth/invalid-phone-number')) {
+    return 'Enter a valid mobile number with the correct country code.'
+  }
+  return message || 'Could not send code'
+}
+
+async function readApiJson(res: Response) {
+  const text = await res.text()
+  const contentType = res.headers.get('content-type') || ''
+  if (!contentType.includes('application/json')) {
+    if (text.includes('Vercel Security Checkpoint')) {
+      throw new Error('Security check blocked this request. Please refresh the page and try again.')
+    }
+    throw new Error('Server returned an unexpected response. Please try again.')
+  }
+  return JSON.parse(text)
+}
+
+/* ─── Main ───────────────────────────────────────────────────── */
 export default function RegisterPage() {
   const router = useRouter()
+  // step: 1 = profile owner, 2 = basic details, 3 = OTP verification
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [phoneCode, setPhoneCode] = useState('+91')
+  const [otp, setOtp] = useState('')
+  const [otpToken, setOtpToken] = useState('')
+  const [devOtp, setDevOtp] = useState('')   // shown only in dev mode (no SMS key)
+  const [firebaseConfirmation, setFirebaseConfirmation] = useState<ConfirmationResult | null>(null)
+  const [sending, setSending] = useState(false)
+  const [resendIn, setResendIn] = useState(0)
+  const [districtCount, setDistrictCount] = useState<number | null>(null)
+  const otpRef = useRef<HTMLInputElement>(null)
+  const recaptchaRef = useRef<RecaptchaVerifier | null>(null)
+
+  // Resend countdown - 30s between OTP sends.
+  useEffect(() => {
+    if (resendIn <= 0) return
+    const t = setInterval(() => setResendIn(v => (v > 1 ? v - 1 : 0)), 1000)
+    return () => clearInterval(t)
+  }, [resendIn > 0])
 
   const [form, setForm] = useState({
-    email: '', password: '', full_name: '', gender: '',
-    date_of_birth: '', phone: '', profession: '', education: '',
-    about: '', native_region: '', native_state: '', native_district: '',
-    current_city: '', current_state: '', height_cm: '',
-    religion: 'Hindu', caste: '', mother_tongue: 'Telugu', family_type: '',
+    profile_created_by: 'self', full_name: '', gender: '', phone: '',
+    date_of_birth: '', native_state: '', native_district: '', current_city: '',
+    religion: 'Hindu', caste: '', profession: '', education: '',
   })
-
-  const [photo, setPhoto] = useState<File | null>(null)
-  const [photoPreview, setPhotoPreview] = useState('')
-
   const set = (field: string, value: string) => setForm(f => ({ ...f, [field]: value }))
+  const [googleAuth, setGoogleAuth] = useState<{ idToken: string; email: string; name: string } | null>(null)
+  const [signupEmail, setSignupEmail] = useState('')
+  const [signupPassword, setSignupPassword] = useState('')
+  const [profilePhoto, setProfilePhoto] = useState<File | null>(null)
+  const [profilePhotoPreview, setProfilePhotoPreview] = useState('')
 
-  const availableStates = form.native_region ? Object.keys(REGIONS[form.native_region] || {}) : []
-  const availableDistricts = form.native_state ? (REGIONS[form.native_region]?.[form.native_state] || []) : []
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const place = params.get('native_place')?.trim()
+    if (place) setForm(f => f.native_district ? f : ({ ...f, native_district: place }))
+    // Google-verified signup: prefill name + email, skip phone entirely.
+    if (params.get('google') === '1') {
+      try {
+        const g = JSON.parse(sessionStorage.getItem('nm_google') || 'null')
+        if (g?.idToken) {
+          setGoogleAuth(g)
+          setForm(f => ({ ...f, full_name: f.full_name || g.name || '' }))
+        }
+      } catch {}
+    }
+  }, [])
 
-  function validateStep(s: number): string {
-    if (s === 1) {
-      if (!form.full_name.trim()) return 'Full name is required'
-      if (!form.email.trim()) return 'Email is required'
-      if (!form.password || form.password.length < 6) return 'Password must be at least 6 characters'
-      if (!form.gender) return 'Please select gender'
-      if (!form.date_of_birth) return 'Date of birth is required'
+  useEffect(() => {
+    const id = localStorage.getItem('my_profile_id')
+    if (id) router.replace(`/profile/${id}`)
+  }, [])
+
+  useEffect(() => { if (step === 3) setTimeout(() => otpRef.current?.focus(), 100) }, [step])
+  useEffect(() => {
+    return () => {
+      if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview)
     }
-    if (s === 2) {
-      if (!form.native_region) return 'Please select native region'
-      if (!form.native_state) return 'Please select state'
-      if (!form.native_district) return 'Please select district'
-      if (!form.current_city.trim()) return 'Current city is required'
+  }, [profilePhotoPreview])
+
+  const districts = form.native_state ? (INDIA_STATES[form.native_state] || []) : []
+  const foundingClaimed = Math.min(districtCount ?? 0, FOUNDING_MEMBER_LIMIT)
+  const foundingRemaining = Math.max(FOUNDING_MEMBER_LIMIT - foundingClaimed, 0)
+  const foundingPct = districtCount === null ? 0 : Math.min(Math.round((foundingClaimed / FOUNDING_MEMBER_LIMIT) * 100), 100)
+  const selectedDistrict = form.native_district.trim()
+  const foundingApplied = !!selectedDistrict && districtCount !== null && foundingRemaining > 0
+  useEffect(() => {
+    if (!selectedDistrict) {
+      setDistrictCount(null)
+      return
     }
-    if (s === 3) {
-      if (!form.profession.trim()) return 'Profession is required'
-      if (!photo) return 'Please upload a profile photo'
+    let cancelled = false
+    supabase.from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('native_state', form.native_state)
+      .eq('native_district', selectedDistrict)
+      .eq('status', 'approved')
+      .then(({ count }) => { if (!cancelled) setDistrictCount(count ?? 0) })
+    return () => { cancelled = true }
+  }, [selectedDistrict, form.native_state])
+
+  /* Step 1 → send a real OTP (dev mode returns the code in the response) */
+  async function sendFirebaseOtp(fullPhone: string) {
+    const { firebaseClientConfigured, getFirebaseAuth } = await import('@/lib/firebaseClient')
+    if (!firebaseClientConfigured()) return false
+
+    const auth = getFirebaseAuth()
+    if (!auth) return false
+
+    const { RecaptchaVerifier, signInWithPhoneNumber } = await import('firebase/auth')
+    if (!recaptchaRef.current) {
+      recaptchaRef.current = new RecaptchaVerifier(auth, 'firebase-recaptcha-register', {
+        size: 'invisible',
+      })
     }
-    return ''
+
+    const confirmation = await signInWithPhoneNumber(auth, fullPhone, recaptchaRef.current)
+    setFirebaseConfirmation(confirmation)
+    setOtpToken('')
+    setDevOtp('')
+    return true
   }
 
-  async function handleSubmit() {
-    const err = validateStep(3)
-    if (err) { setError(err); return }
-    setLoading(true)
-    setError('')
+  async function sendOtp() {
+    if (!form.full_name.trim()) return setError('Please enter your name')
+    if (!form.gender) return setError('Please select gender')
+    if (!form.date_of_birth) return setError('Date of birth is required')
+    if (!form.native_state) return setError('Please select your native state')
+    if (!form.native_district) return setError('Please select your native place')
+    if (!form.current_city.trim()) return setError('Current city is required')
+    if (!form.religion.trim()) return setError('Religion is required')
+    if (!form.caste.trim()) return setError('Community is required')
+    if (!form.profession.trim()) return setError('Profession is required')
+    if (!form.education.trim()) return setError('Education is required')
+    if (form.phone.trim().length < 7) return setError('Enter a valid mobile number')
+    setError(''); setSending(true)
     try {
-      // Create Supabase auth account
-      const { data: authData, error: authError } = await supabase.auth.signUp({ email: form.email, password: form.password })
-      if (authError) throw authError
-      const userId = authData.user?.id
-      if (!userId) throw new Error('Signup failed — no user ID returned')
+      const fullPhone = `${phoneCode}${form.phone.trim()}`
 
-      let photoUrl = ''
-      if (photo) {
-        const ext = photo.name.split('.').pop()
-        const fileName = `${userId}/main.${ext}`
-        const { error: uploadError } = await supabase.storage.from('profile-photos').upload(fileName, photo)
-        if (uploadError) throw uploadError
-        const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(fileName)
-        photoUrl = urlData.publicUrl
+      // Firebase phone auth first; fall back to server OTP if it fails OR hangs
+      // (region not enabled, billing, stuck reCAPTCHA) so signup still works.
+      let sentWithFirebase = false
+      try {
+        sentWithFirebase = await Promise.race([
+          sendFirebaseOtp(fullPhone),
+          new Promise<boolean>((_, reject) => setTimeout(() => reject(new Error('firebase-timeout')), 8000)),
+        ])
+      } catch {
+        try { recaptchaRef.current?.clear() } catch {}
+        recaptchaRef.current = null
+        setFirebaseConfirmation(null)
+        sentWithFirebase = false
       }
-      const { data: profileData, error: profileError } = await supabase.from('profiles').insert({
-        user_id: userId, full_name: form.full_name, gender: form.gender, date_of_birth: form.date_of_birth,
-        phone: form.phone, email: form.email, profession: form.profession,
-        education: form.education, about: form.about, native_region: form.native_region,
-        native_state: form.native_state, native_district: form.native_district,
-        current_city: form.current_city, current_state: form.current_state,
-        height_cm: form.height_cm ? parseInt(form.height_cm) : null,
-        religion: form.religion, caste: form.caste, mother_tongue: form.mother_tongue,
-        family_type: form.family_type, photo_url: photoUrl, status: 'pending', verified: false,
-      }).select('id').single()
-      if (profileError) throw profileError
-      localStorage.setItem('my_user_id', userId)
-      if (profileData?.id) localStorage.setItem('my_profile_id', profileData.id)
-      router.push('/pending')
+      if (sentWithFirebase) {
+        setStep(3); setResendIn(30)
+        return
+      }
+
+      const res = await fetch('/api/send-otp', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: fullPhone }),
+      })
+      const data = await readApiJson(res)
+      if (!res.ok) throw new Error(data.error || 'Could not send code')
+      setOtpToken(data.token)
+      setDevOtp(data.dev_otp || '')   // present only when no SMS gateway configured
+      setStep(3); setResendIn(30)
+    } catch (err) {
+      setError(phoneAuthErrorMessage(err))
+    } finally { setSending(false) }
+  }
+
+  /* Step 2 → verify the OTP server-side */
+  async function verifyOtp() {
+    if (otp.trim().length < 4) return setError('Enter the 6-digit code')
+    setError(''); setSending(true)
+    try {
+      const fullPhone = `${phoneCode}${form.phone.trim()}`
+      if (firebaseConfirmation) {
+        await firebaseConfirmation.confirm(otp.trim())
+        await handleSubmit()
+        return
+      }
+
+      const res = await fetch('/api/verify-otp', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ otp: otp.trim(), token: otpToken, phone: fullPhone }),
+      })
+      const data = await readApiJson(res)
+      if (!res.ok) throw new Error(data.error || 'Incorrect code')
+      await handleSubmit()
+    } catch (err) {
+      setError(phoneAuthErrorMessage(err))
+    } finally { setSending(false) }
+  }
+
+  /* Create the minimal profile and go inside */
+  async function handleSubmit() {
+    if (!form.full_name.trim()) return setError('Enter your full name')
+    if (!form.gender) return setError('Select gender')
+    if (!form.date_of_birth) return setError('Date of birth is required')
+    if (!form.native_state) return setError('Please select your native state')
+    if (!form.native_district) return setError('Please select your native district')
+    if (!form.current_city.trim()) return setError('Current city is required')
+    if (!form.religion.trim()) return setError('Religion is required')
+    if (!form.caste.trim()) return setError('Community is required')
+    if (!form.profession.trim()) return setError('Profession is required')
+    if (!form.education.trim()) return setError('Education is required')
+    if (!profilePhoto) return setError('Please add one clear profile photo')
+    if (!googleAuth) {
+      if (!signupEmail.includes('@')) return setError('Enter a valid email address')
+      if (signupPassword.length < 6) return setError('Password must be at least 6 characters')
+    }
+    setLoading(true); setError('')
+    localStorage.removeItem('my_profile_id')
+    localStorage.removeItem('my_user_id')
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: form.full_name, gender: form.gender,
+          date_of_birth: form.date_of_birth, native_state: form.native_state,
+          native_district: form.native_district, current_city: form.current_city,
+          religion: form.religion.trim(), caste: form.caste.trim(),
+          profession: form.profession.trim(), education: form.education.trim(),
+          profile_created_by: form.profile_created_by,
+          ...(googleAuth
+            ? { googleIdToken: googleAuth.idToken }
+            : { email: signupEmail.trim().toLowerCase(), password: signupPassword }),
+        }),
+      })
+      const data = await readApiJson(res)
+      if (!res.ok) throw new Error(data.error || 'Something went wrong')
+      try { sessionStorage.removeItem('nm_google') } catch {}
+      localStorage.setItem('my_user_id', data.userId)
+      localStorage.setItem('my_profile_id', data.profileId)
+      await uploadSignupPhoto(data.profileId)
+      const benefit = data.foundingMemberEligible ? 'founding_2y' : 'premium_3m'
+      const place = form.native_district.trim()
+      // verify_phone=1 pops the phone-verification prompt on arrival.
+      router.push(`/browse?new=1&verify_phone=1&benefit=${benefit}${place ? `&native_place=${encodeURIComponent(place)}` : ''}`)
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
-    } finally {
       setLoading(false)
     }
   }
 
+  async function uploadSignupPhoto(profileId: string) {
+    if (!profilePhoto) return
+    if (profilePhoto.size > 5 * 1024 * 1024) {
+      throw new Error('Profile photo must be under 5MB')
+    }
+    const ext = profilePhoto.name.split('.').pop()?.toLowerCase() || 'jpg'
+    const path = `${profileId}/main-signup-${Date.now()}.${ext}`
+    const { error: uploadError } = await supabase.storage.from('profile-photos')
+      .upload(path, profilePhoto, { upsert: true })
+    if (uploadError) throw new Error(uploadError.message || 'Could not upload photo')
+    const { data: urlData } = supabase.storage.from('profile-photos').getPublicUrl(path)
+    const res = await fetch('/api/profiles/photo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'setMain', url: urlData.publicUrl }),
+    })
+    const data = await readApiJson(res)
+    if (!res.ok) throw new Error(data.error || 'Could not save photo')
+  }
+
+  function chooseProfilePhoto(file: File | undefined) {
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload a JPG or PNG photo')
+      return
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Profile photo must be under 5MB')
+      return
+    }
+    if (profilePhotoPreview) URL.revokeObjectURL(profilePhotoPreview)
+    setProfilePhoto(file)
+    setProfilePhotoPreview(URL.createObjectURL(file))
+    setError('')
+  }
+
+  async function handleGoogleSignup() {
+    setError('')
+    try {
+      const { signInWithGoogle } = await import('@/lib/firebaseClient')
+      const g = await signInWithGoogle()
+      setGoogleAuth(g)
+      setForm(f => ({ ...f, full_name: f.full_name || g.name || '' }))
+      if (!form.native_district) setStep(1)
+      else setStep(2)
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Google sign-in failed'
+      if (!/popup-closed|cancelled|closed by user/i.test(msg)) setError(msg)
+    }
+  }
+
+  function continueFromOwnerStep() {
+    if (!form.native_state) return setError('Please select your native state')
+    if (!form.native_district) return setError('Please select your native place')
+    if (!form.profile_created_by) return setError('Please select who this profile is for')
+    setError('')
+    setStep(2)
+  }
+
+  const STEP_META = [
+    { n: 1, title: 'Create your free profile', sub: 'Takes less than 30 seconds. Start with your native place.' },
+    { n: 2, title: 'Profile basics', sub: 'Only what families need to understand your profile at a glance.' },
+    { n: 3, title: 'Verify your mobile', sub: `We sent a code to ${phoneCode} ${form.phone}` },
+  ][step - 1]
+
   return (
-    <div className="min-h-screen flex flex-col" style={{background: '#FFF7ED'}}>
-      {/* Header */}
-      <header style={{background: 'white', borderBottom: '1px solid #E7E5E4'}}>
-        <div className="max-w-xl mx-auto px-6 py-4 flex justify-between items-center">
-          <Link href="/" className="text-base font-bold text-stone-900">
-            Natiive<span className="text-orange-700">Matrimony</span>
-          </Link>
-          <Link href="/browse" className="text-sm text-stone-500 hover:text-orange-700">Browse profiles</Link>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#FBFAF5' }}>
+      <div id="firebase-recaptcha-register" />
+      <header style={{ background: 'white', borderBottom: '1px solid #E8E8E8' }}>
+        <div style={{ maxWidth: '390px', margin: '0 auto', padding: '0 16px', height: '56px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
+          <BrandLogo className="app-brand-compact" showTagline={false} />
+          <Link href="/login" style={{ fontSize: '13px', color: '#94A3B8', textDecoration: 'none' }}>Sign in instead</Link>
         </div>
       </header>
 
-      <div className="flex-1 flex items-start justify-center px-4 py-10">
-        <div className="w-full max-w-md">
-          {/* Step indicator */}
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-4">
-              {STEPS.map((s, i) => (
-                <div key={s} className="flex items-center gap-2 flex-1">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${i + 1 < step ? 'bg-orange-700 text-white' : i + 1 === step ? 'bg-orange-700 text-white' : 'bg-stone-200 text-stone-400'}`}>
-                      {i + 1 < step ? '✓' : i + 1}
-                    </div>
-                    <span className={`text-xs font-medium hidden sm:block ${i + 1 === step ? 'text-stone-800' : 'text-stone-400'}`}>{s}</span>
-                  </div>
-                  {i < STEPS.length - 1 && <div className={`flex-1 h-0.5 ${i + 1 < step ? 'bg-orange-700' : 'bg-stone-200'}`} />}
-                </div>
-              ))}
-            </div>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '28px 16px 56px' }}>
+        <div style={{ width: '100%', maxWidth: '360px' }}>
+
+          {/* Progress dots */}
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '22px' }}>
+            {[1, 2].map(n => (
+              <div key={n} style={{ flex: 1, height: '4px', borderRadius: '99px', background: n <= step ? '#14241C' : '#E7E3D8', transition: 'background 0.3s' }} />
+            ))}
           </div>
 
-          <div className="card p-6">
-            <h2 className="text-xl font-bold text-stone-900 mb-1">{STEPS[step - 1]}</h2>
-            <p className="text-sm text-stone-500 mb-6">Step {step} of {STEPS.length}</p>
+          {step === 1 ? (
+            <h1 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 4px', letterSpacing: 0 }}>{STEP_META.title}</h1>
+          ) : (
+            <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#0F0F0F', margin: '0 0 4px', letterSpacing: 0 }}>{STEP_META.title}</h2>
+          )}
+          <p style={{ fontSize: '13.5px', color: '#94A3B8', margin: '0 0 22px' }}>{STEP_META.sub}</p>
 
+          {step === 1 ? (
+            <div style={{
+              background: '#FFFFFF',
+              border: '1px solid #DCE9D7',
+              borderRadius: '14px',
+              boxShadow: '0 14px 34px rgba(20,36,28,0.08)',
+              marginBottom: '16px',
+              overflow: 'hidden',
+            }}>
+              <div style={{ padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', marginBottom: '14px' }}>
+                  <div>
+                    <p style={{ color: '#075E3E', fontSize: '10.5px', fontWeight: 900, letterSpacing: '0.08em', margin: '0 0 5px', textTransform: 'uppercase' }}>
+                      Launch benefit
+                    </p>
+                    <p style={{ color: '#14241C', fontSize: '18px', fontWeight: 900, lineHeight: 1.15, margin: 0 }}>
+                      Free to start. Premium is included.
+                    </p>
+                  </div>
+                  <span style={{ background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '99px', color: '#075E3E', flexShrink: 0, fontSize: '11px', fontWeight: 900, padding: '5px 9px' }}>
+                    No payment now
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gap: '10px', marginBottom: '13px' }}>
+                  <div>
+                    <Label>Native state</Label>
+                    <select style={inputStyle} value={form.native_state} onChange={e => {
+                      const nextState = e.target.value
+                      // Keep a prefilled/typed native place if it exists in the chosen state
+                      // (e.g. arriving via /register?native_place=Guntur) instead of wiping it.
+                      const options = INDIA_STATES[nextState] || []
+                      const match = options.find(d => d.toLowerCase() === form.native_district.trim().toLowerCase())
+                      setForm(f => ({ ...f, native_state: nextState, native_district: match || '' }))
+                    }}>
+                      <option value="">Select state</option>
+                      {Object.keys(INDIA_STATES).map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <Label>Native place</Label>
+                    {districts.length > 0 ? (
+                      <select style={inputStyle} value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
+                        <option value="">Select native place</option>
+                        {districts.map(d => <option key={d} value={d}>{d}</option>)}
+                      </select>
+                    ) : (
+                      <select style={{ ...inputStyle, color: '#94A3B8' }} value="" disabled>
+                        <option>Select state first</option>
+                      </select>
+                    )}
+                  </div>
+                </div>
+
+                <p style={{ color: '#5E6B62', fontSize: '12.5px', lineHeight: 1.55, margin: '0 0 11px' }}>
+                  {selectedDistrict
+                    ? districtCount === null
+                      ? `Checking 2-year Premium spots for ${selectedDistrict}...`
+                      : foundingRemaining > 0
+                        ? `${foundingRemaining.toLocaleString('en-IN')} 2-year Premium spots still open in ${selectedDistrict}. You get 2 years premium free after signup.`
+                        : `2-year Premium spots are full in ${selectedDistrict}; your free profile still includes 3 months premium.`
+                    : 'Choose your native place to check 2-year Premium spots.'}
+                </p>
+                <div style={{ height: '7px', background: '#EEF4EA', borderRadius: '99px', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.max(foundingPct, selectedDistrict && districtCount !== null ? 2 : 0)}%`, height: '100%', background: '#075E3E', borderRadius: '99px', transition: 'width 0.35s ease' }} />
+                </div>
+              </div>
+              <div style={{ background: '#FBFAF5', borderTop: '1px solid #EEF0EA', display: 'grid', gap: '8px', padding: '12px 16px' }}>
+                {PREMIUM_PERKS.map((perk) => (
+                  <div key={perk} style={{ alignItems: 'flex-start', display: 'flex', gap: '8px' }}>
+                    <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '10px', fontWeight: 900, height: '17px', justifyContent: 'center', marginTop: '1px', width: '17px' }}>✓</span>
+                    <span style={{ color: '#475569', fontSize: '12px', lineHeight: 1.4 }}>{perk}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : selectedDistrict ? (
+            <div style={{ alignItems: 'center', background: '#FFFFFF', border: '1px solid #DCE9D7', borderRadius: '12px', display: 'flex', gap: '10px', marginBottom: '16px', padding: '12px 14px' }}>
+              <span style={{ alignItems: 'center', background: '#D8EFC9', borderRadius: '50%', color: '#075E3E', display: 'inline-flex', flexShrink: 0, fontSize: '11px', fontWeight: 900, height: '22px', justifyContent: 'center', width: '22px' }}>✓</span>
+              <p style={{ color: '#475569', fontSize: '12.5px', lineHeight: 1.45, margin: 0 }}>
+                Native place: <strong style={{ color: '#14241C' }}>{selectedDistrict}</strong>. {foundingApplied ? '2 years Premium will be applied.' : '3 months Premium will be applied.'}
+              </p>
+            </div>
+          ) : null}
+
+          <div style={{ background: 'white', borderRadius: '10px', border: '1px solid #E8E8E8', boxShadow: '0 2px 16px rgba(0,0,0,0.06)', padding: '20px' }}>
             {error && (
-              <div className="mb-4 px-4 py-3 rounded-lg text-sm font-medium" style={{background: '#FEE2E2', color: '#991B1B'}}>
+              <div style={{ marginBottom: '16px', padding: '12px 16px', borderRadius: '8px', fontSize: '13.5px', background: '#EDF3ED', color: '#14241C', border: '1px solid #CADFCA' }}>
                 {error}
               </div>
             )}
 
+            {/* ── STEP 1: profile owner ─────────────────────────── */}
             {step === 1 && (
-              <div className="space-y-4">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label className="section-label block mb-1.5">Full Name *</label>
-                  <input className="input" placeholder="e.g. Ravi Kumar" value={form.full_name} onChange={e => set('full_name', e.target.value)} />
+                  <p style={{ fontSize: '13px', color: '#475569', margin: '0 0 16px', lineHeight: 1.6 }}>
+                    Please select whose profile you are creating.
+                  </p>
+                  <div style={{ border: '1px solid #E7E3D8', borderRadius: '10px', overflow: 'hidden', background: '#FFFFFF' }}>
+                    {[
+                      ['self', 'Myself'], ['son', 'Son'], ['daughter', 'Daughter'],
+                      ['brother', 'Brother'], ['sister', 'Sister'], ['relative', 'Relative'],
+                    ].map(([val, lbl], idx, arr) => (
+                      <button key={val} type="button" onClick={() => set('profile_created_by', val)} style={{
+                        width: '100%', minHeight: '54px', display: 'flex', alignItems: 'center', gap: '12px',
+                        padding: '0 14px', background: 'white', border: 'none',
+                        borderBottom: idx < arr.length - 1 ? '1px solid #EEF0EA' : 'none',
+                        color: '#071527', fontSize: '14px', fontWeight: 700, cursor: 'pointer', textAlign: 'left',
+                      }}>
+                        <span style={{
+                          width: '18px', height: '18px', borderRadius: '50%', border: '1.5px solid',
+                          borderColor: form.profile_created_by === val ? '#075E3E' : '#CBD5E1',
+                          background: form.profile_created_by === val ? '#075E3E' : 'white',
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          {form.profile_created_by === val && (
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="m20 6-11 11-5-5" />
+                            </svg>
+                          )}
+                        </span>
+                        {lbl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <button onClick={continueFromOwnerStep} className="btn-primary" style={{ padding: '13px', fontSize: '15px' }}>
+                  Continue with email
+                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '2px 0' }}>
+                  <div style={{ flex: 1, height: '1px', background: '#E7E3D8' }} />
+                  <span style={{ fontSize: '12px', color: '#94A3B8', fontWeight: 600 }}>or</span>
+                  <div style={{ flex: 1, height: '1px', background: '#E7E3D8' }} />
+                </div>
+                <button type="button" onClick={handleGoogleSignup}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', padding: '12px', fontSize: '14.5px', fontWeight: 700, color: '#14241C', background: 'white', border: '1.5px solid #E7E3D8', borderRadius: '10px', cursor: 'pointer' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
+                  Continue with Google
+                </button>
+              </div>
+            )}
+
+            {/* ── STEP 2: basic details + mobile ────────────────── */}
+            {step === 2 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <Label>Full name</Label>
+                  <input style={inputStyle} placeholder="e.g. Ravi Kumar Reddy" value={form.full_name} onChange={e => set('full_name', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Email *</label>
-                  <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={e => set('email', e.target.value)} />
+                  <Label>Gender</Label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    {[['male', 'Male'], ['female', 'Female']].map(([val, lbl]) => (
+                      <button key={val} type="button" onClick={() => set('gender', val)} style={{
+                        padding: '11px', borderRadius: '8px', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer',
+                        border: '1.5px solid', transition: 'all 0.12s',
+                        background: form.gender === val ? '#14241C' : 'white',
+                        color: form.gender === val ? 'white' : '#555',
+                        borderColor: form.gender === val ? '#14241C' : '#E7E3D8',
+                      }}>{lbl}</button>
+                    ))}
+                  </div>
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Password *</label>
-                  <input className="input" type="password" placeholder="Min. 6 characters" value={form.password} onChange={e => set('password', e.target.value)} />
+                  <Label>Date of birth</Label>
+                  <input style={inputStyle} type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Phone</label>
-                  <input className="input" type="tel" placeholder="10-digit mobile number" value={form.phone} onChange={e => set('phone', e.target.value)} />
+                  <Label>Current city</Label>
+                  <input style={inputStyle} placeholder="e.g. Dallas, Hyderabad, Chennai" value={form.current_city} onChange={e => set('current_city', e.target.value)} />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   <div>
-                    <label className="section-label block mb-1.5">Gender *</label>
-                    <select className="input" value={form.gender} onChange={e => set('gender', e.target.value)}>
+                    <Label>Religion</Label>
+                    <select style={inputStyle} value={form.religion} onChange={e => set('religion', e.target.value)}>
                       <option value="">Select</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
+                      {['Hindu', 'Muslim', 'Christian', 'Sikh', 'Jain', 'Buddhist', 'Other'].map(r => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
-                    <label className="section-label block mb-1.5">Date of Birth *</label>
-                    <input className="input" type="date" value={form.date_of_birth} onChange={e => set('date_of_birth', e.target.value)} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {step === 2 && (
-              <div className="space-y-4">
-                <div>
-                  <label className="section-label block mb-1.5">Native Region *</label>
-                  <select className="input" value={form.native_region} onChange={e => { set('native_region', e.target.value); set('native_state', ''); set('native_district', '') }}>
-                    <option value="">Select region</option>
-                    {Object.keys(REGIONS).map(r => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="section-label block mb-1.5">Native State *</label>
-                  <select className="input" value={form.native_state} onChange={e => { set('native_state', e.target.value); set('native_district', '') }} disabled={!form.native_region}>
-                    <option value="">Select state</option>
-                    {availableStates.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="section-label block mb-1.5">Native District *</label>
-                  <select className="input" value={form.native_district} onChange={e => set('native_district', e.target.value)} disabled={!form.native_state}>
-                    <option value="">Select district</option>
-                    {availableDistricts.map(d => <option key={d} value={d}>{d}</option>)}
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="section-label block mb-1.5">Current City *</label>
-                    <input className="input" placeholder="e.g. Hyderabad" value={form.current_city} onChange={e => set('current_city', e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="section-label block mb-1.5">Current State</label>
-                    <input className="input" placeholder="e.g. Telangana" value={form.current_state} onChange={e => set('current_state', e.target.value)} />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {step === 3 && (
-              <div className="space-y-4">
-                <div>
-                  <label className="section-label block mb-1.5">Profession *</label>
-                  <input className="input" placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
-                </div>
-                <div>
-                  <label className="section-label block mb-1.5">Education</label>
-                  <input className="input" placeholder="e.g. B.Tech, MBA" value={form.education} onChange={e => set('education', e.target.value)} />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="section-label block mb-1.5">Caste</label>
-                    <input className="input" placeholder="Optional" value={form.caste} onChange={e => set('caste', e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="section-label block mb-1.5">Height (cm)</label>
-                    <input className="input" type="number" placeholder="e.g. 170" value={form.height_cm} onChange={e => set('height_cm', e.target.value)} />
+                    <Label>Community</Label>
+                    <input style={inputStyle} placeholder="e.g. Reddy, Kamma" value={form.caste} onChange={e => set('caste', e.target.value)} />
                   </div>
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Family Type</label>
-                  <select className="input" value={form.family_type} onChange={e => set('family_type', e.target.value)}>
-                    <option value="">Select</option>
-                    <option value="nuclear">Nuclear</option>
-                    <option value="joint">Joint</option>
-                  </select>
+                  <Label>Profession</Label>
+                  <input style={inputStyle} placeholder="e.g. Software Engineer" value={form.profession} onChange={e => set('profession', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">About yourself</label>
-                  <textarea className="input" rows={3} placeholder="A short note about yourself, family background, expectations..." value={form.about} onChange={e => set('about', e.target.value)} />
+                  <Label>Education</Label>
+                  <input style={inputStyle} placeholder="e.g. B.Tech, MBA, MBBS" value={form.education} onChange={e => set('education', e.target.value)} />
                 </div>
                 <div>
-                  <label className="section-label block mb-1.5">Profile Photo *</label>
-                  <div className="flex items-center gap-4">
-                    {photoPreview && (
-                      <img src={photoPreview} alt="Preview" className="w-16 h-16 rounded-full object-cover border-2 border-orange-200" />
+                  <Label>Profile photo</Label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', border: '1.5px solid #E7E3D8', borderRadius: '10px', padding: '12px', background: '#FFFFFF' }}>
+                    {profilePhotoPreview ? (
+                      <img src={profilePhotoPreview} alt="Profile photo preview" style={{ width: '58px', height: '58px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                    ) : (
+                      <div style={{ alignItems: 'center', background: '#EDF3ED', borderRadius: '50%', color: '#5E6B62', display: 'flex', flexShrink: 0, height: '58px', justifyContent: 'center', width: '58px' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                      </div>
                     )}
-                    <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-stone-300 rounded-lg text-sm text-stone-500 cursor-pointer hover:border-orange-400 hover:text-orange-600 transition-colors">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                      {photo ? photo.name : 'Upload photo'}
-                      <input type="file" accept="image/*" className="hidden" onChange={e => {
-                        const file = e.target.files?.[0]
-                        if (file) { setPhoto(file); setPhotoPreview(URL.createObjectURL(file)) }
-                      }} />
-                    </label>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <label style={{ color: '#14241C', cursor: 'pointer', display: 'inline-flex', fontSize: '13px', fontWeight: 800, marginBottom: '4px' }}>
+                        {profilePhoto ? 'Change photo' : 'Upload photo'}
+                        <input type="file" accept="image/*" className="hidden" onChange={e => chooseProfilePhoto(e.target.files?.[0])} />
+                      </label>
+                      <p style={{ color: '#94A3B8', fontSize: '11.5px', lineHeight: 1.45, margin: 0 }}>
+                        One clear photo is required so profiles feel real. You can hide it later in privacy settings.
+                      </p>
+                    </div>
                   </div>
                 </div>
+                {googleAuth ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#EDF3ED', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: '#14241C' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38z"/></svg>
+                    Signing up with Google as <strong>{googleAuth.email}</strong>
+                  </div>
+                ) : (
+                  <>
+                    <div>
+                      <Label>Email address</Label>
+                      <input style={inputStyle} type="email" placeholder="you@example.com" value={signupEmail}
+                        onChange={e => setSignupEmail(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Create a password</Label>
+                      <input style={inputStyle} type="password" placeholder="At least 6 characters" value={signupPassword}
+                        onChange={e => setSignupPassword(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleSubmit() }} />
+                      <p style={{ fontSize: '11px', color: '#94A3B8', marginTop: '4px' }}>You&apos;ll verify your phone in one tap after — your number is never shown to members.</p>
+                    </div>
+                  </>
+                )}
+                <button onClick={() => handleSubmit()} disabled={loading} className="btn-primary" style={{ padding: '13px', fontSize: '15px', marginTop: '4px' }}>
+                  {loading ? 'Creating profile…' : 'Create my profile'}
+                </button>
               </div>
             )}
 
-            <div className="flex justify-between mt-8 pt-6" style={{borderTop: '1px solid #F5F5F4'}}>
-              {step > 1 ? (
-                <button onClick={() => { setError(''); setStep(s => s - 1) }} className="btn-outline px-5 py-2.5 text-sm">Back</button>
-              ) : <div />}
-              {step < 3 ? (
-                <button onClick={() => {
-                  const err = validateStep(step)
-                  if (err) { setError(err); return }
-                  setError(''); setStep(s => s + 1)
-                }} className="btn-primary px-5 py-2.5 text-sm">Continue</button>
-              ) : (
-                <button onClick={handleSubmit} disabled={loading} className="btn-primary px-5 py-2.5 text-sm disabled:opacity-50">
-                  {loading ? 'Submitting...' : 'Submit Profile'}
+            {/* ── STEP 3: OTP ───────────────────────────────────── */}
+            {step === 3 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ background: '#EAF3EA', border: '1px solid #CADFCA', borderRadius: '8px', padding: '10px 14px', fontSize: '12px', color: '#14241C' }}>
+                  {devOtp
+                    ? <>Dev mode - your code is <strong>{devOtp}</strong>. (Real SMS sends automatically once a gateway key is added.)</>
+                    : <>We sent a 6-digit code to {phoneCode} {form.phone}. Enter it below.</>}
+                </div>
+                <div>
+                  <Label>Enter 6-digit code</Label>
+                  <input ref={otpRef} style={{ ...inputStyle, letterSpacing: '0.5em', textAlign: 'center', fontSize: '20px', fontWeight: 700 }}
+                    inputMode="numeric" maxLength={6} placeholder="••••••" value={otp}
+                    onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
+                    onKeyDown={e => { if (e.key === 'Enter') verifyOtp() }} />
+                </div>
+                <button onClick={verifyOtp} disabled={sending} className="btn-primary" style={{ padding: '13px', fontSize: '15px' }}>
+                  {sending || loading ? 'Creating profile…' : 'Verify & create profile'}
                 </button>
-              )}
-            </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <button onClick={() => { setStep(2); setOtp(''); setError(''); setResendIn(0) }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', color: '#94A3B8' }}>
+                    ← Change details
+                  </button>
+                  {resendIn > 0 ? (
+                    <span style={{ fontSize: '13px', color: '#94A3B8' }}>Resend OTP in {resendIn}s</span>
+                  ) : (
+                    <button onClick={() => { if (!sending) { setOtp(''); sendOtp() } }} disabled={sending}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#1B5E20', fontSize: '13px', fontWeight: 700 }}>
+                      Resend OTP
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
+
+          <p style={{ textAlign: 'center', fontSize: '13px', color: '#94A3B8', marginTop: '20px' }}>
+            Already have an account?{' '}
+            <Link href="/login" style={{ fontWeight: 600, color: '#14241C', textDecoration: 'none' }}>Sign in</Link>
+          </p>
+          <p style={{ textAlign: 'center', fontSize: '12px', color: '#8A93A6', marginTop: '8px', lineHeight: 1.6 }}>
+            Your profile is visible unless you hide it. Contact details are shown only after connection.<br />
+            By registering you agree to our{' '}
+            <Link href="/terms" style={{ textDecoration: 'underline', color: 'inherit' }}>Terms</Link>
+            {' '}&amp;{' '}
+            <Link href="/privacy" style={{ textDecoration: 'underline', color: 'inherit' }}>Privacy Policy</Link>
+          </p>
         </div>
       </div>
     </div>

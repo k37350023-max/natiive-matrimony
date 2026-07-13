@@ -16,6 +16,27 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Firebase Phone Auth
+
+The app can use Firebase Authentication for production phone OTP while keeping the existing local/dev OTP fallback.
+
+Enable Phone sign-in in Firebase Auth, add your web app, and allow the production domains in Firebase Authentication settings. Add these variables to Vercel and local `.env.local` when testing live Firebase OTP:
+
+```bash
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
+```
+
+Instead of the three server variables above, you may set `FIREBASE_SERVICE_ACCOUNT_JSON` to the full Firebase service-account JSON, or `FIREBASE_SERVICE_ACCOUNT_BASE64` to the base64-encoded service-account JSON. Base64 is recommended on hosts where multiline JSON escaping is unreliable. Keep Firebase server credentials private and never expose them with a `NEXT_PUBLIC_` prefix.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
