@@ -59,7 +59,7 @@ async function getData() {
   try {
     const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
     const monthAgo = new Date(Date.now() - 30 * 864e5).toISOString()
-    const queries: Promise<{ count: number | null }>[] = [
+    const queries: PromiseLike<{ count: number | null }>[] = [
       sb.from('profiles').select('id', { count: 'exact', head: true }).eq('status', 'approved'),
     ]
     FEATURED.forEach(p => {
