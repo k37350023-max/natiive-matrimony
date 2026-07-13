@@ -4239,6 +4239,53 @@ select.input {
   }
 }
 
+/* Supplied brand emblem artwork. */
+.app-brand .app-brand-emblem {
+  align-items: center;
+  border-radius: 999px !important;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 46px !important;
+  justify-content: center;
+  overflow: hidden !important;
+  width: 46px !important;
+}
+
+.app-brand .app-brand-emblem img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+.app-brand-home .app-brand-emblem {
+  height: 52px !important;
+  width: 52px !important;
+}
+
+.app-brand-compact .app-brand-emblem {
+  height: 38px !important;
+  width: 38px !important;
+}
+
+@media (max-width: 639px) {
+  .app-brand .app-brand-emblem {
+    height: 42px !important;
+    width: 42px !important;
+  }
+
+  .app-brand-home .app-brand-emblem {
+    height: 44px !important;
+    width: 44px !important;
+  }
+
+  .app-brand-compact .app-brand-emblem {
+    height: 34px !important;
+    width: 34px !important;
+  }
+}
+
 /* Emergency homepage correction: simple product UI beats decorative concept art. */
 .nmh-directory-page {
   background:
@@ -4652,5 +4699,206 @@ select.input {
   .nmh-region-places,
   .nmh-proof-row {
     max-width: 100%;
+  }
+}
+
+/* Premium teal-gold brand pass, matched to the supplied emblem without adding heavy assets. */
+:root {
+  --nm-premium-ink: #062f33;
+  --nm-premium-teal: #0c4a4f;
+  --nm-premium-teal-2: #08383c;
+  --nm-premium-gold: #b88a3c;
+  --nm-premium-gold-soft: #ead8ad;
+  --nm-premium-ivory: #fbf7ee;
+}
+
+.app-brand {
+  gap: 11px;
+}
+
+.app-brand .app-brand-emblem {
+  align-items: center !important;
+  background: #0c4a4f !important;
+  border: 1px solid rgba(184, 138, 60, 0.34) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 24px rgba(6, 47, 51, 0.14) !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  height: 46px !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  width: 46px !important;
+}
+
+.app-brand .app-brand-emblem img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+}
+
+.app-brand .app-brand-emblem svg {
+  display: none !important;
+}
+
+.app-brand-home .app-brand-emblem {
+  height: 52px !important;
+  width: 52px !important;
+}
+
+.app-brand-compact .app-brand-emblem {
+  height: 38px !important;
+  width: 38px !important;
+}
+
+.app-brand-native {
+  color: var(--nm-premium-ink) !important;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
+.app-brand-matrimony {
+  color: rgba(6, 47, 51, 0.76) !important;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.app-brand-copy small {
+  color: rgba(6, 47, 51, 0.66) !important;
+  letter-spacing: 0.08em;
+}
+
+.nmh-directory-page {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(184, 138, 60, 0.14), transparent 260px),
+    radial-gradient(circle at 88% 10%, rgba(12, 74, 79, 0.14), transparent 360px),
+    linear-gradient(180deg, #fbf7ee 0%, #fffdf8 42%, #f4f6ee 100%) !important;
+  color: var(--nm-premium-ink);
+}
+
+.nmh-directory-page .nmh-header {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 251, 242, 0.88)) !important;
+  border: 1px solid rgba(12, 74, 79, 0.11) !important;
+  box-shadow: 0 18px 48px rgba(6, 47, 51, 0.1) !important;
+}
+
+.nmh-directory-page .nmh-desktop-nav a {
+  color: #17363a !important;
+}
+
+.nmh-directory-page .nmh-desktop-nav a:not(.nmh-nav-cta):hover {
+  color: var(--nm-premium-teal) !important;
+}
+
+.nmh-directory-page .nmh-nav-cta,
+.nmh-directory-page .nmh-primary,
+.nmh-directory-page .nmh-hero-search .nmh-search-form button {
+  background: linear-gradient(145deg, #0d555b 0%, #062f33 100%) !important;
+  box-shadow: 0 16px 34px rgba(6, 47, 51, 0.2) !important;
+  color: #fffaf0 !important;
+}
+
+.nmh-directory-page .nmh-desktop-nav a.nmh-nav-cta {
+  color: #fffaf0 !important;
+}
+
+.nmh-directory-hero h1,
+.nmh-directory-page .nmh-hero-search h2,
+.nmh-how-band h2,
+.nmh-trust-row h2,
+.nmh-region-section .nmh-section-heading h2,
+.nmh-directory-final h2 {
+  color: var(--nm-premium-ink) !important;
+}
+
+.nmh-directory-hero .nmh-hero-copy > p {
+  color: #31484b !important;
+}
+
+.nmh-directory-page .nmh-proof-row span,
+.nmh-directory-page .nmh-hero-search,
+.nmh-directory-preview,
+.nmh-how-band,
+.nmh-region-section {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 252, 245, 0.9)) !important;
+  border-color: rgba(12, 74, 79, 0.12) !important;
+}
+
+.nmh-directory-page .nmh-proof-row svg,
+.nmh-preview-steps svg,
+.nmh-directory-page .nmh-proof-row span {
+  color: var(--nm-premium-teal) !important;
+}
+
+.nmh-directory-page .nmh-hero-search,
+.nmh-directory-preview {
+  box-shadow: 0 24px 70px rgba(6, 47, 51, 0.11) !important;
+}
+
+.nmh-directory-page .nmh-hero-search .nmh-search-form input,
+.nmh-preview-search {
+  background: #fffdf8 !important;
+  border-color: rgba(12, 74, 79, 0.16) !important;
+}
+
+.nmh-hero-search .nmh-place-row a,
+.nmh-preview-grid a,
+.nmh-preview-profile {
+  background: rgba(255, 253, 248, 0.92) !important;
+  border-color: rgba(12, 74, 79, 0.12) !important;
+}
+
+.nmh-preview-top > span,
+.nmh-preview-avatar,
+.nmh-how-grid article > span,
+.nmh-trust-row article > span {
+  background: linear-gradient(180deg, rgba(234, 216, 173, 0.52), rgba(236, 246, 237, 0.82)) !important;
+  border-color: rgba(184, 138, 60, 0.22) !important;
+  color: var(--nm-premium-teal) !important;
+}
+
+.nmh-preview-profile > span,
+.nmh-region-arrow {
+  background: linear-gradient(145deg, #d9bd78, #a9782f) !important;
+  color: #fff !important;
+}
+
+.nmh-region-card {
+  box-shadow: 0 14px 34px rgba(6, 47, 51, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.65) !important;
+}
+
+.nmh-directory-final {
+  background:
+    radial-gradient(circle at 92% 18%, rgba(234, 216, 173, 0.24), transparent 210px),
+    linear-gradient(135deg, #0c4a4f 0%, #062f33 100%) !important;
+}
+
+.nmh-directory-final .nmh-primary {
+  background: #fffaf0 !important;
+  color: var(--nm-premium-ink) !important;
+}
+
+.nmh-directory-final .nmh-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(234, 216, 173, 0.42) !important;
+}
+
+@media (max-width: 639px) {
+  .app-brand .app-brand-emblem {
+    height: 42px !important;
+    width: 42px !important;
+  }
+
+  .app-brand-home .app-brand-emblem {
+    height: 44px !important;
+    width: 44px !important;
+  }
+
+  .app-brand-compact .app-brand-emblem {
+    height: 34px !important;
+    width: 34px !important;
   }
 }

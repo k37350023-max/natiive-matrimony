@@ -18,6 +18,7 @@ Overall launch score: 98/100
 ## Completed Work
 
 - Homepage was corrected from an over-decorated concept into a simpler product-led native-place search page with a real profile/district preview and clearer first action.
+- Brand logo now uses the supplied heritage emblem as an optimized small WebP, and the homepage received a lightweight teal-gold premium styling pass to match it.
 - Signup now asks for and saves the essential browse-quality fields: religion, community, profession, and education.
 - Server-side registration now requires and persists those fields instead of creating thin profiles with hardcoded defaults.
 - Fixed `EmptyState` lint blocker by moving the action button component outside render.
