@@ -7,12 +7,14 @@ import { useEffect } from 'react'
    when JS is off or reduced-motion is requested. */
 export default function HomeMotion() {
   useEffect(() => {
-    const hdr = document.getElementById('nmhome-header')
+    const hdr = document.getElementById('nmh-header')
     const onScroll = () => hdr?.classList.toggle('nmhome-scrolled', window.scrollY > 8)
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
 
     function countUp(el: Element) {
+      if (el.getAttribute('data-counted')) return
+      el.setAttribute('data-counted', '1')
       const target = parseFloat(el.getAttribute('data-count') || '0') || 0
       const suffix = el.getAttribute('data-suffix') || ''
       if (target === 0) { el.textContent = '0' + suffix; return }
@@ -33,12 +35,12 @@ export default function HomeMotion() {
 
     if (reduce || !('IntersectionObserver' in window)) {
       reveals.forEach(el => el.classList.add('nmhome-in'))
-      counters.forEach(el => { el.textContent = (parseFloat(el.getAttribute('data-count') || '0') || 0).toLocaleString() + (el.getAttribute('data-suffix') || '') })
+      counters.forEach(countUp)
       return () => window.removeEventListener('scroll', onScroll)
     }
 
     // Enable the "hidden then reveal" styling only now that JS drives it.
-    document.querySelector('.nmhome')?.classList.add('nmhome-anim')
+    document.querySelector('.nmh')?.classList.add('nmh-anim')
 
     const io = new IntersectionObserver((entries) => {
       entries.forEach(e => {
@@ -50,6 +52,7 @@ export default function HomeMotion() {
       })
     }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' })
     reveals.forEach(el => io.observe(el))
+    counters.forEach(el => io.observe(el))
 
     return () => { window.removeEventListener('scroll', onScroll); io.disconnect() }
   }, [])
